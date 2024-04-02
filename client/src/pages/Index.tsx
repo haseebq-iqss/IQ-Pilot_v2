@@ -9,11 +9,11 @@ import { SnackBarContextTypes } from "../types/SnackbarTypes";
 import { ColFlex, PageFlex } from "../style_extentions/Flex";
 import EmployeeTypes from "../types/EmployeeTypes";
 import { FadeIn } from "../animations/transition";
+import UserAuthTypes from "../types/UserAuthTypes";
 
 type UserContextTypes = {
   userData?: EmployeeTypes;
-  setUserData?: (userData: EmployeeTypes
-    ) => void | any;
+  setUserData?: React.Dispatch<React.SetStateAction<EmployeeTypes>>;
 };
 
 function Index() {
@@ -23,13 +23,13 @@ function Index() {
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
   const { setUserData }: UserContextTypes = useContext(UserDataContext);
 
-  const loginMF = (loginData: any) => {
+  const loginMF = (loginData: UserAuthTypes) => {
     return useAxios.post("auth/login", loginData);
   };
 
   const { mutate: loginUser, status } = useMutation({
     mutationFn: loginMF,
-    onSuccess: (data: any) => {
+    onSuccess: (data) => {
       setOpenSnack({
         open: true,
         message: data.data.message,
@@ -51,7 +51,7 @@ function Index() {
   function HandleLogin(e: FormEvent) {
     e.preventDefault();
     const currentTarget = e.currentTarget as HTMLFormElement;
-    const loginData: any = {
+    const loginData: UserAuthTypes = {
       email: currentTarget.email.value,
       password: currentTarget.password.value,
     };
@@ -60,7 +60,7 @@ function Index() {
 
   useEffect(() => {
     const timeout: number = window.setTimeout(() => {
-      setScreenClicked((prevState) => !prevState);
+      setScreenClicked(true);
     }, 1.5 * 1000);
 
     return () => clearTimeout(timeout);

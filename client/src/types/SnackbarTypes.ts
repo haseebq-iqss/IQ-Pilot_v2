@@ -1,10 +1,10 @@
 export type SnackbarTypes = {
-    open: boolean;
-    message: string;
-    severity: "warning" | "error" | "success" | "info";
-}
+  open: boolean;
+  message: string;
+  severity: "warning" | "error" | "success" | "info";
+};
 
 export type SnackBarContextTypes = {
-    openSnack: SnackbarTypes
-    setOpenSnack: (value: SnackbarTypes) => void;
-} 
+  openSnack: SnackbarTypes;
+  setOpenSnack: (value: SnackbarTypes) => void;
+};
