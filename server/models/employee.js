@@ -1,6 +1,27 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 const validator = require("validator");
 
+const pickupSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    default: "Point",
+    enum: ["Point"],
+  },
+  coordinates: [Number],
+  address: String,
+  description: String,
+});
+
+const workStationSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    default: "Point",
+    enum: ["Point"],
+  },
+  coordinates: [Number],
+  description: String,
+});
 const employeeSchema = new mongoose.Schema(
   {
     fName: {
@@ -10,6 +31,11 @@ const employeeSchema = new mongoose.Schema(
     lName: {
       type: String,
       required: [true, "Please provide your lname"],
+    },
+    password: {
+      type: String,
+      select: false,
+      required: [true, "Please provide your password"],
     },
     phone: {
       type: String,
@@ -32,39 +58,21 @@ const employeeSchema = new mongoose.Schema(
     profilePicture: String,
     department: String,
     pickup: {
-      type: {
-        type: String,
-        default: "Point",
-        enum: "Point",
-      },
-      coordinates: [Number],
-      description: String,
+      type: pickupSchema,
+      required: [true, "Please provide your location"],
     },
     currenShift: String,
-    workLocation: [
-      {
-        type: {
-          type: String,
-          default: "Point",
-          enum: ["Point"],
-        },
-        // LonLat
-        coordinates: [Number],
-        description: String,
-      },
-      {
-        type: {
-          type: String,
-          default: "Point",
-          enum: ["Point"],
-        },
-        coordinates: [Number],
-        description: String,
-      },
-    ],
+    workLocation: [workStationSchema],
   },
   { timestamp: true }
 );
-
+employeeSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) next();
+  this.password = await bcrypt.hash(this.password, 12);
+  next();
+});
+employeeSchema.methods.checkPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 const Employee = mongoose.model("employee", employeeSchema);
 module.exports = Employee;

@@ -1,8 +1,12 @@
 const globalErrorController = require("./controller/errorController");
 const express = require("express");
 const AppError = require("./utils/appError");
+const authRoutes = require("./routes/authRoutes");
 const app = express();
 
+app.use(express.json());
+
+app.use("/api/v2/auth", authRoutes);
 app.all("*", (req, res, next) => {
   const error = new AppError(`This page ${req.url} does not exist`, 404);
   next(error);
