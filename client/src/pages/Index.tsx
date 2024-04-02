@@ -3,69 +3,71 @@ import { useMutation } from "@tanstack/react-query";
 import { FormEvent, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAxios from "../api/useAxios";
-// import SnackbarContext from "../context/SnackbarContext";
-// import UserDataContext from "../context/UserDataContext";
-// import { SnackBarContextTypes } from "../types/SnackbarTypes";
-// import { UserTypes } from "../types/UserTypes";
+import SnackbarContext from "../context/SnackbarContext";
+import UserDataContext from "../context/UserDataContext";
+import { SnackBarContextTypes } from "../types/SnackbarTypes";
 import { ColFlex, PageFlex } from "../style_extentions/Flex";
+import EmployeeTypes from "../types/EmployeeTypes";
 import { FadeIn } from "../animations/transition";
+import UserAuthTypes from "../types/UserAuthTypes";
 
-// type UserContextTypes = {
-//   userData?: UserTypes;
-//   setUserData?: (userData: UserTypes) => void | any;
-// };
+type UserContextTypes = {
+  userData?: EmployeeTypes;
+  setUserData?: React.Dispatch<React.SetStateAction<EmployeeTypes>>;
+};
 
 function Index() {
   const [screenClicked, setScreenClicked] = useState(false);
 
   const navigate = useNavigate();
-  // const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
-  // const { setUserData }: UserContextTypes = useContext(UserDataContext);
+  const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
+  const { setUserData }: UserContextTypes = useContext(UserDataContext);
 
-  // const loginMF = (loginData: any) => {
-  //   return useAxios.post("auth/login", loginData);
-  // };
+  const loginMF = (loginData: UserAuthTypes) => {
+    return useAxios.post("auth/login", loginData);
+  };
 
-  // const { mutate: loginUser, status } = useMutation({
-  //   mutationFn: loginMF,
-  //   onSuccess: (data: any) => {
-  //     setOpenSnack({
-  //       open: true,
-  //       message: data.data.message,
-  //       severity: "success",
-  //     });
-  //     const user: UserTypes = data.data.user;
-  //     setUserData?.(data.data.user);
-  //     navigate(`/${user?.role}`);
-  //   },
-  //   onError: (err) => {
-  //     setOpenSnack({
-  //       open: true,
-  //       message: err.message,
-  //       severity: "warning",
-  //     });
-  //   },
-  // });
+  const { mutate: loginUser, status } = useMutation({
+    mutationFn: loginMF,
+    onSuccess: (data) => {
+      setOpenSnack({
+        open: true,
+        message: data.data.message,
+        severity: "success",
+      });
+      const user: EmployeeTypes = data.data.user;
+      setUserData?.(data.data.user);
+      navigate(`/${user?.role}`);
+    },
+    onError: (err) => {
+      setOpenSnack({
+        open: true,
+        message: err.message,
+        severity: "warning",
+      });
+    },
+  });
 
-  // function HandleLogin(e: FormEvent) {
-  //   e.preventDefault();
-  //   const currentTarget = e.currentTarget as HTMLFormElement;
-  //   const loginData: any = {
-  //     email: currentTarget.email.value,
-  //     password: currentTarget.password.value,
-  //   };
-  //   loginUser(loginData);
-  // }
+  function HandleLogin(e: FormEvent) {
+    e.preventDefault();
+    const currentTarget = e.currentTarget as HTMLFormElement;
+    const loginData: UserAuthTypes = {
+      email: currentTarget.email.value,
+      password: currentTarget.password.value,
+    };
+    loginUser(loginData);
+  }
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setScreenClicked(!screenClicked);
-      return clearTimeout(timeout);
+    const timeout: number = window.setTimeout(() => {
+      setScreenClicked(true);
     }, 1.5 * 1000);
-  }, []);
+
+    return () => clearTimeout(timeout);
+  }, [setScreenClicked]);
 
   return (
-<Box sx={{ ...PageFlex, overflow: "hidden" }}>
+    <Box sx={{ ...PageFlex, overflow: "hidden" }}>
       <Box
         onClick={() => setScreenClicked(!screenClicked)}
         sx={{
@@ -109,7 +111,7 @@ function Index() {
               display: screenClicked ? "flex" : "none",
               marginTop: "50px",
             }}
-            // onSubmit={HandleLogin}
+            onSubmit={HandleLogin}
           >
             {/* HEADER */}
             <Box sx={{ ...ColFlex }}>
