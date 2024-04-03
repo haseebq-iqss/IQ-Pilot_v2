@@ -8,7 +8,10 @@ const globalErrorController = require("./controller/errorController");
 const app = express();
 
 // Middlewares
-app.use(cors(["http://localhost:5173/", "http://localhost:5174/"]));
+app.use(cors({
+  credentials : true,
+  origin : ["http://localhost:5173", "http://localhost:5174"]
+}));
 app.use(cookieParser());
 app.use(express.json());
 
