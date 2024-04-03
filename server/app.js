@@ -1,8 +1,10 @@
-const globalErrorController = require("./controller/errorController");
 const express = require("express");
-const AppError = require("./utils/appError");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
+
 const authRoutes = require("./routes/authRoutes");
+const AppError = require("./utils/appError");
+const globalErrorController = require("./controller/errorController");
 const app = express();
 
 // Middlewares

@@ -5,14 +5,18 @@ const { promisify } = require("util");
 const AppError = require("../utils/appError");
 
 const signingFunction = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET);
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES,
+  });
 };
 
 const createSendToken = function (user, statusCode, res) {
   const jwt_token = signingFunction(user._id);
   const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+    ),
     httpOnly: true,
-    expiresIn: Date.now() + process.env.JWT_EXPIRES * 24 * 60 * 60 * 1000,
   };
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
@@ -73,9 +77,22 @@ const restrictTo = (...roles) => {
   };
 };
 
+// LOGOUT
+const logout = (req, res, next) => {
+  let token = req.cookies.jwt;
+  if (token) {
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+    res.status(200).json({ status: "Success", message: "User logged out" });
+  } else return next(new AppError(`No JWT cookie found`, 400));
+};
+
 module.exports = {
   signUp,
   login,
   protect,
   restrictTo,
+  logout,
 };
