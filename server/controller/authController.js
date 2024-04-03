@@ -14,23 +14,16 @@ const createSendToken = function (user, statusCode, res) {
     httpOnly: true,
     expiresIn: Date.now() + process.env.JWT_EXPIRES * 24 * 60 * 60 * 1000,
   };
-  if (process.env.NODE_ENV === "production")
-    (cookieOptions.secure = true), res.cookie("jwt", jwt_token, cookieOptions);
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
+  res.cookie("jwt", jwt_token, cookieOptions);
   user.password = undefined;
-
   res.status(statusCode).json({ status: "Success", jwt_token, user });
 };
 
 const signUp = catchAsync(async (req, res, next) => {
   const employee = await Employee.create(req.body);
-  // const token = signingFunction(employee._id);
   createSendToken(employee, 201, res);
-  // res.cookie("jwt", token, {
-  //   secure: true,
-  //   httpOnly: true,
-  // });
-  // res.status(201).json({ message: "Success", employee, token });
 });
 
 const login = catchAsync(async (req, res, next) => {
@@ -42,30 +35,21 @@ const login = catchAsync(async (req, res, next) => {
   if (!employee || !(await employee.checkPassword(password))) {
     return next(new AppError("Incorrect email or password", 401));
   }
-  // const token = signingFunction(user._id);
-  // res.cookie("jwt", token, {
-  //   secure: true,
-  //   httpOnly: true,
-  //   expiresIn: Date.now() + process.env.JWT_EXPIRES * 24 * 60 * 60 * 1000,
-  // });
-  // res.status(201).json({ status: "Success", user, token });
   createSendToken(employee, 200, res);
 });
 
 // Authentication
 const protect = catchAsync(async (req, res, next) => {
-  let token = req.headers.cookie;
-  if (req.headers.cookie && req.headers.cookie.startsWith("jwt")) {
-    token = req.headers.cookie.jwt;
-  }
+  let token;
+  token = req.cookies.jwt;
   if (!token) {
     return next(
-      new AppError("You are not logged in, Please log in to get access", 400)
+      new AppError("You are not logged in! Please log in to get access", 400)
     );
   }
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
   if (!decoded) {
-    return next(new AppError("invalid token", 401));
+    return next(new AppError("Invalid token! Please login again", 401));
   }
   const currentUser = await Employee.findById(decoded.id);
   if (!currentUser) {
@@ -88,8 +72,6 @@ const restrictTo = (...roles) => {
     next();
   };
 };
-
-// const logout = catchAsync(async());
 
 module.exports = {
   signUp,
