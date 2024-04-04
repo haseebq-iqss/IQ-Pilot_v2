@@ -1,4 +1,5 @@
 const { catchAsync } = require("../utils/catchAsync");
+const imageProcess = require("../utils/imageUpload");
 const Employee = require("../models/employee");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
@@ -26,7 +27,18 @@ const createSendToken = function (user, statusCode, res) {
 };
 
 const signUp = catchAsync(async (req, res, next) => {
-  const employee = await Employee.create(req.body);
+  const { profilePicture, fName, lName } = req.body;
+  // console.log(profilePicture?.split(",")[1]);
+  const processedImage = await imageProcess(
+    fName,
+    lName,
+    profilePicture,
+    "profilePictures"
+  );
+  const employee = await Employee.create({
+    ...req.body,
+    profilePicture: processedImage,
+  });
   createSendToken(employee, 201, res);
 });
 
