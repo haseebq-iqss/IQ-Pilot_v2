@@ -10,11 +10,7 @@ import { ColFlex, PageFlex } from "../style_extentions/Flex";
 import EmployeeTypes from "../types/EmployeeTypes";
 import { FadeIn } from "../animations/transition";
 import UserAuthTypes from "../types/UserAuthTypes";
-
-type UserContextTypes = {
-  userData?: EmployeeTypes;
-  setUserData?: React.Dispatch<React.SetStateAction<EmployeeTypes>>;
-};
+import { UserContextTypes } from "../types/UserContextTypes";
 
 function Index() {
   const [screenClicked, setScreenClicked] = useState(false);

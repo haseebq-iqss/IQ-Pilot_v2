@@ -1,14 +1,90 @@
-import { Routes, Route, Outlet } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
+import { IOSExpand, SlideInOut } from "../animations/transition";
+import { useContext } from "react";
+import UserDataContext from "../context/UserDataContext";
+import { AnimatePresence } from "framer-motion";
+import PageNotFound from "../pages/PageNotFound/PageNotFound";
 import Index from "../pages/Index";
+import AdminDashboardLayout from "../layouts/AdminDashboardLayout";
+import AdminDashboard from "../pages/AdminDashboard/AdminDashboard";
+import { UserContextTypes } from "../types/UserContextTypes";
 
 function MainRouter() {
+  const { userData }: UserContextTypes = useContext(UserDataContext);
+  const location = useLocation();
+
+  const isBaseRoute: boolean =
+    !location.pathname.includes("admin") &&
+    !location.pathname.includes("employee") &&
+    !location.pathname.includes("driver");
+
   return (
-    <Routes>
-      <Route index element={<Index />}></Route>
-      <Route path="admin" element={<><>Layout</><Outlet/></>}>
-        <Route index element={<h1>Index Admin</h1>} />
-      </Route>
-    </Routes>
+    <AnimatePresence mode="wait">
+      <Routes key={location.pathname} location={location}>
+        {/* <Route path="*" element={<Navigate to={"/"} />} /> */}
+        {userData !== undefined && (
+          <Route path="*" element={<PageNotFound />} />
+        )}
+        {isBaseRoute && <Route path="*" element={<PageNotFound />} />}
+        <Route
+          index
+          element={
+            <IOSExpand>
+              <Index /> {/* This is also a Login */}
+            </IOSExpand>
+          }
+        />
+
+        {/* <Route path="/signup" element={<Signup />} /> */}
+        {/* ADMIN ROUTER */}
+        {userData?.role === "admin" && (
+          <>
+            <Route path="/admin" element={<AdminDashboardLayout />}>
+              <Route
+                index
+                element={
+                  <SlideInOut>
+                    <AdminDashboard />
+                  </SlideInOut>
+                }
+              />
+              {/* <Route
+                path="allCabDrivers"
+                element={
+                  <SlideInOut>
+                    <AllCabDrivers />
+                  </SlideInOut>
+                }
+              />
+              <Route
+                path="scheduledRoutes"
+                element={
+                  <SlideInOut>
+                    <ScheduledRoutes />
+                  </SlideInOut>
+                }
+              />
+              <Route
+                path="allTeamMembers"
+                element={
+                  <SlideInOut>
+                    <AllTeamMembers />
+                  </SlideInOut>
+                }
+              /> */}
+            </Route>
+            {/* <Route
+              path="admin/addPassengers"
+              element={
+                <SlideInOut>
+                  <AddPassengers />
+                </SlideInOut>
+              }
+            /> */}
+          </>
+        )}
+      </Routes>
+    </AnimatePresence>
   );
 }
 
