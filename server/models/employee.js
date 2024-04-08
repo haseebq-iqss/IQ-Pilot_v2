@@ -13,22 +13,13 @@ const pickupSchema = new mongoose.Schema({
   description: String,
 });
 
-const workStationSchema = new mongoose.Schema({
-  type: {
-    type: String,
-    default: "Point",
-    enum: ["Point"],
-  },
-  coordinates: [Number],
-  description: String,
-});
 const employeeSchema = new mongoose.Schema(
   {
-    fName: {
+    fname: {
       type: String,
       required: [true, "Please provide your fname"],
     },
-    lName: {
+    lname: {
       type: String,
       required: [true, "Please provide your lname"],
     },
@@ -57,12 +48,15 @@ const employeeSchema = new mongoose.Schema(
     },
     profilePicture: String,
     department: String,
-    pickup: {
+    pickUp: {
       type: pickupSchema,
-      required: [true, "Please provide your location"],
+      // required: [true, "Please provide your location"],
     },
     currenShift: String,
-    workLocation: [workStationSchema],
+    workLocation: {
+      type: String,
+      enum: ["Zaira Tower", "Rangreth"],
+    },
   },
   { timestamp: true }
 );

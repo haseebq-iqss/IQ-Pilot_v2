@@ -17,7 +17,7 @@ const cabSchema = new mongoose.Schema(
     },
     numberPlate: {
       type: String,
-      required: [true, "Please provide your email"],
+      required: [true, "Please provide your number Plate"],
     },
     carModel: {
       type: String,
