@@ -7,7 +7,6 @@ const filterReqObj = (reqObj) => {
   Object.keys(reqObj).forEach((key) => {
     if (key !== "role") newObj[key] = reqObj[key];
   });
-  console.log(newObj);
   return newObj;
 };
 
@@ -64,6 +63,7 @@ const getDriver = catchAsync(async (req, res, next) => {
 // Update tm and driver details
 // Employee and Admin Actions
 const updateUser = catchAsync(async (req, res, next) => {
+  // console.log((await Employee.findById(req.params.id)).profilePicture);
   if (req.body.password) {
     return next(new AppError(`This route is not for password updates.`, 404));
   }
@@ -72,13 +72,18 @@ const updateUser = catchAsync(async (req, res, next) => {
     req.params.id,
     {
       ...filteredReqObj,
-      profilePicture: req.file?.filename || updated_user.profilePicture,
+      profilePicture:
+        req.file?.filename ||
+        (
+          await Employee.findById(req.params.id)
+        ).profilePicture,
     },
     {
       new: true,
       runValidators: true,
     }
   );
+
   if (updated_user) {
     return next(new AppError(`No document found with this id`, 404));
   }
