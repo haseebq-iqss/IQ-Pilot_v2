@@ -42,7 +42,7 @@ const {
   getDriver,
   updateUser,
   deleteUser,
-} = require("../controller/employeeController");
+} = require("../controller/userController");
 const { protect, restrictTo } = require("../controller/authController");
 
 const router = express.Router();
