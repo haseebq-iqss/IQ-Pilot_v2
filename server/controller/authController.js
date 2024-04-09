@@ -1,5 +1,4 @@
 const { catchAsync } = require("../utils/catchAsync");
-const imageProcess = require("../utils/imageUpload");
 const Employee = require("../models/employee");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
@@ -26,18 +25,10 @@ const createSendToken = function (user, statusCode, res) {
   res.status(statusCode).json({ status: "Success", jwt_token, user });
 };
 
-const signUp = catchAsync(async (req, res, next) => {
-  const { profilePicture, fName, lName } = req.body;
-  // console.log(profilePicture?.split(",")[1]);
-  const processedImage = await imageProcess(
-    fName,
-    lName,
-    profilePicture,
-    "profilePictures"
-  );
+const signup = catchAsync(async (req, res, next) => {
   const employee = await Employee.create({
     ...req.body,
-    profilePicture: processedImage,
+    profilePicture: req.file?.filename || "dummy.jpg",
   });
   createSendToken(employee, 201, res);
 });
@@ -102,7 +93,7 @@ const logout = (req, res, next) => {
 };
 
 module.exports = {
-  signUp,
+  signup,
   login,
   protect,
   restrictTo,

@@ -2,91 +2,104 @@ const Employee = require("../models/employee");
 const AppError = require("../utils/appError");
 const { catchAsync } = require("../utils/catchAsync");
 
-const filter_req_obj = function (reqBody) {
-  const newReqObj = {};
-  Object.keys(reqBody).forEach((key) => {
-    if (key !== "role") {
-      newReqObj[key] = reqBody[key];
-    }
+const filterReqObj = (reqObj) => {
+  const newObj = {};
+  Object.keys(reqObj).forEach((key) => {
+    if (key !== "role") newObj[key] = reqObj[key];
   });
-  return newReqObj;
+  console.log(newObj);
+  return newObj;
 };
-//get all employees
-const getAllEmployees = catchAsync(async function (req, res, next) {
-  const allUsers = await Employee.find();
-  if (allUsers.length === 0) {
-    return next(new AppError("No Users Found", 404));
+
+const getAllUsers = catchAsync(async (req, res, next) => {
+  const all_users = await Employee.find({});
+  if (all_users.length === 0) {
+    return next(new AppError(`No users found...`), 404);
   }
   res
     .status(200)
-    .json({ status: "Success", data: allUsers, results: allUsers.length });
+    .json({ status: "Success", results: all_users.length, data: all_users });
 });
 
-// get all team members
-const getAllTeamMembers = catchAsync(async function (req, res, next) {
-  const tms = await Employee.find({ role: "employee" });
-  if (tms.length === 0) {
-    return next(new AppError("No Team Members Found", 404));
-  }
-  res.status(200).json({ status: "Success", data: tms, results: tms.length });
-});
-
-// get all drivers
-const getAllDrivers = catchAsync(async function (req, res, next) {
-  const drivers = await Employee.find({ role: "driver" });
-  if (drivers.length === 0) {
-    return next(new AppError("No Driver Found", 404));
+const getAllTMS = catchAsync(async (req, res, next) => {
+  const all_tms = await Employee.find({ role: "employee" });
+  if (all_tms.length === 0) {
+    return next(new AppError(`No team members found...`), 404);
   }
   res
     .status(200)
-    .json({ status: "Success", data: drivers, results: drivers.length });
+    .json({ status: "Success", results: all_tms.length, data: all_tms });
 });
 
-// get tm
-const getTm = catchAsync(async function (req, res, next) {
-  const tm = await Employee.findById(req.params.id);
-  if (!tm) {
-    return next(new AppError("No Team Member Found ", 404));
+const getAllDrivers = catchAsync(async (req, res, next) => {
+  const all_drivers = await Employee.find({ role: "driver" });
+  if (all_drivers.length === 0) {
+    return next(new AppError(`No team members found...`), 404);
   }
-  res.status(200).json({ status: "Success", data: tm });
+  res.status(200).json({
+    status: "Success",
+    results: all_drivers.length,
+    data: all_drivers,
+  });
 });
 
-// get driver
-const getDriver = catchAsync(async function (req, res, next) {
-  const driver = await Employee.findById(req.params.id);
+// GET a Employee and a Driver
+const getTM = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const employee = await Employee.findById(id);
+  if (!employee) {
+    return next(new AppError(`No document found with this id`, 404));
+  }
+  res.status(200).json({ status: "Success", data: employee });
+});
+const getDriver = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const driver = await Employee.findById(id);
   if (!driver) {
-    return next(new AppError("No Driver Found ", 404));
+    return next(new AppError(`No document found with this id`, 404));
   }
   res.status(200).json({ status: "Success", data: driver });
 });
 
-// update User
-const updateUser = catchAsync(async function (req, res, next) {
+// Update tm and driver details
+// Employee and Admin Actions
+const updateUser = catchAsync(async (req, res, next) => {
   if (req.body.password) {
-    return next(new AppError("This route is not for password updates", 401));
+    return next(new AppError(`This route is not for password updates.`, 404));
   }
-  const filteredReqObj = filter_req_obj(req.body);
-  const user = await Employee.findByIdAndUpdate(req.params.id, filteredReqObj, {
-    new: true,
-    runValidators: true,
-  });
-  if (!user) {
-    return next(new AppError("No User Found", 404));
+  const filteredReqObj = filterReqObj(req.body);
+  const updated_user = await Employee.findByIdAndUpdate(
+    req.params.id,
+    {
+      ...filteredReqObj,
+      profilePicture: req.file?.filename || updated_user.profilePicture,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  if (updated_user) {
+    return next(new AppError(`No document found with this id`, 404));
   }
-  res.status(200).json({ status: "Success", data: user });
+  res.status(200).json({ status: "Success", data: updated_user });
 });
 
-// delete user
-const deleteUser = catchAsync(async function (req, res, next) {
-  await Employee.findByIdAndDelete(req.params.id);
+// Admin Action only
+const deleteUser = catchAsync(async (req, res, next) => {
+  const id = req.params.id;
+  const deleted_user = await Employee.findByIdAndDelete(id);
+  if (!deleteUser) {
+    return next(new AppError(`No document found with this id`, 404));
+  }
   res.status(204).json({ status: "Success" });
 });
 
 module.exports = {
-  getAllEmployees,
-  getAllTeamMembers,
+  getAllUsers,
+  getAllTMS,
   getAllDrivers,
-  getTm,
+  getTM,
   getDriver,
   updateUser,
   deleteUser,

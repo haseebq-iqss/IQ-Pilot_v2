@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { signUp, login, logout } = require("../controller/authController");
+const { signup, login, logout } = require("../controller/authController");
+const upload_profile_pic = require("../controller/uploadProfilePicController");
 
-router.route("/signup").post(signUp);
-router.route("/login").post(login);
-router.route("/logout").get(logout);
+router.post("/signup", upload_profile_pic, signup);
+router.post("/login", login);
+router.post("/logout", logout);
 
 module.exports = router;
