@@ -13,7 +13,7 @@ const pickupSchema = new mongoose.Schema({
   description: String,
 });
 
-const employeeSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
     fname: {
       type: String,
@@ -60,13 +60,13 @@ const employeeSchema = new mongoose.Schema(
   },
   { timestamp: true }
 );
-employeeSchema.pre("save", async function (next) {
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) next();
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
-employeeSchema.methods.checkPassword = async function (enteredPassword) {
+userSchema.methods.checkPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
-const Employee = mongoose.model("employee", employeeSchema);
-module.exports = Employee;
+const User = mongoose.model("User", userSchema);
+module.exports = User;

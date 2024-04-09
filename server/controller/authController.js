@@ -1,5 +1,5 @@
 const { catchAsync } = require("../utils/catchAsync");
-const Employee = require("../models/employee");
+const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
 const AppError = require("../utils/appError");
@@ -26,11 +26,11 @@ const createSendToken = function (user, statusCode, res) {
 };
 
 const signup = catchAsync(async (req, res, next) => {
-  const employee = await Employee.create({
+  const user = await User.create({
     ...req.body,
     profilePicture: req.file?.filename || "dummy.jpg",
   });
-  createSendToken(employee, 201, res);
+  createSendToken(user, 201, res);
 });
 
 const login = catchAsync(async (req, res, next) => {
@@ -38,11 +38,11 @@ const login = catchAsync(async (req, res, next) => {
   if (!email || !password) {
     return next(new AppError("Please provide email and password", 400));
   }
-  const employee = await Employee.findOne({ email }).select("+password");
-  if (!employee || !(await employee.checkPassword(password))) {
+  const user = await User.findOne({ email }).select("+password");
+  if (!user || !(await user.checkPassword(password))) {
     return next(new AppError("Incorrect email or password", 401));
   }
-  createSendToken(employee, 200, res);
+  createSendToken(user, 200, res);
 });
 
 // Authentication
@@ -58,7 +58,7 @@ const protect = catchAsync(async (req, res, next) => {
   if (!decoded) {
     return next(new AppError("Invalid token! Please login again", 401));
   }
-  const currentUser = await Employee.findById(decoded.id);
+  const currentUser = await User.findById(decoded.id);
   if (!currentUser) {
     return next(
       new AppError(" The user belonging to this token does not exist", 400)

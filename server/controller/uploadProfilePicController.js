@@ -1,4 +1,4 @@
-const multerConfig = require("../utils/multerConfig");
+const multerConfig = require("../utils/multerProfilePicConfig");
 
 const upload_profile_pic = multerConfig(
   `./public/images/profileImages`,

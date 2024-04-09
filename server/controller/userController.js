@@ -1,4 +1,4 @@
-const Employee = require("../models/employee");
+const User = require("../models/user");
 const AppError = require("../utils/appError");
 const { catchAsync } = require("../utils/catchAsync");
 
@@ -11,7 +11,7 @@ const filterReqObj = (reqObj) => {
 };
 
 const getAllUsers = catchAsync(async (req, res, next) => {
-  const all_users = await Employee.find({});
+  const all_users = await User.find({});
   if (all_users.length === 0) {
     return next(new AppError(`No users found...`), 404);
   }
@@ -21,7 +21,7 @@ const getAllUsers = catchAsync(async (req, res, next) => {
 });
 
 const getAllTMS = catchAsync(async (req, res, next) => {
-  const all_tms = await Employee.find({ role: "employee" });
+  const all_tms = await User.find({ role: "employee" });
   if (all_tms.length === 0) {
     return next(new AppError(`No team members found...`), 404);
   }
@@ -31,7 +31,7 @@ const getAllTMS = catchAsync(async (req, res, next) => {
 });
 
 const getAllDrivers = catchAsync(async (req, res, next) => {
-  const all_drivers = await Employee.find({ role: "driver" });
+  const all_drivers = await User.find({ role: "driver" });
   if (all_drivers.length === 0) {
     return next(new AppError(`No team members found...`), 404);
   }
@@ -45,7 +45,7 @@ const getAllDrivers = catchAsync(async (req, res, next) => {
 // GET a Employee and a Driver
 const getTM = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  const employee = await Employee.findById(id);
+  const employee = await User.findById(id);
   if (!employee) {
     return next(new AppError(`No document found with this id`, 404));
   }
@@ -53,7 +53,7 @@ const getTM = catchAsync(async (req, res, next) => {
 });
 const getDriver = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  const driver = await Employee.findById(id);
+  const driver = await User.findById(id);
   if (!driver) {
     return next(new AppError(`No document found with this id`, 404));
   }
@@ -67,7 +67,7 @@ const updateUser = catchAsync(async (req, res, next) => {
     return next(new AppError(`This route is not for password updates.`, 404));
   }
   const filteredReqObj = filterReqObj(req.body);
-  const updatedUser = await Employee.findByIdAndUpdate(
+  const updatedUser = await User.findByIdAndUpdate(
     req.params.id,
     {
       ...filteredReqObj,
@@ -87,7 +87,7 @@ const updateUser = catchAsync(async (req, res, next) => {
 // Admin Action only
 const deleteUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
-  const deleted_user = await Employee.findByIdAndDelete(id);
+  const deleted_user = await User.findByIdAndDelete(id);
   if (!deleteUser) {
     return next(new AppError(`No document found with this id`, 404));
   }

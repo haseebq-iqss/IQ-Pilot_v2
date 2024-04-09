@@ -1,14 +1,17 @@
 const multer = require("multer");
 const AppError = require("../utils/appError");
+const User = require("../models/user");
 
 const createMulterStorage = (destination) => {
   return multer.diskStorage({
     destination: (req, file, cb) => {
       return cb(null, `${destination}`);
     },
-    filename: (req, file, cb) => {
+    filename: async (req, file, cb) => {
       const { fname, lname } =
-        Object.keys(req.body).length === 0 ? req.user : req.body;
+        req.user.role === "admin"
+          ? await User.findById(req.params.id)
+          : req.user;
       const upload_name = `${fname[0].toLowerCase() + fname.slice(1)}_${
         lname[0].toLowerCase() + lname.slice(1)
       }_${Date.now()}`;
