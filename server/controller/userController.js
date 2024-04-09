@@ -63,31 +63,25 @@ const getDriver = catchAsync(async (req, res, next) => {
 // Update tm and driver details
 // Employee and Admin Actions
 const updateUser = catchAsync(async (req, res, next) => {
-  // console.log((await Employee.findById(req.params.id)).profilePicture);
   if (req.body.password) {
     return next(new AppError(`This route is not for password updates.`, 404));
   }
   const filteredReqObj = filterReqObj(req.body);
-  const updated_user = await Employee.findByIdAndUpdate(
+  const updatedUser = await Employee.findByIdAndUpdate(
     req.params.id,
     {
       ...filteredReqObj,
-      profilePicture:
-        req.file?.filename ||
-        (
-          await Employee.findById(req.params.id)
-        ).profilePicture,
+      profilePicture: req.file?.filename || updateUser.profilePicture,
     },
     {
       new: true,
       runValidators: true,
     }
   );
-
-  if (updated_user) {
+  if (!updateUser) {
     return next(new AppError(`No document found with this id`, 404));
   }
-  res.status(200).json({ status: "Success", data: updated_user });
+  res.status(200).json({ status: "Success", data: updatedUser });
 });
 
 // Admin Action only
