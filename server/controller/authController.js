@@ -92,10 +92,33 @@ const logout = (req, res, next) => {
   } else return next(new AppError(`No JWT cookie found`, 400));
 };
 
+// AutoLogin
+const autologin = catchAsync(async (req, res, next) => {
+  let token = req.cookies.jwt;
+  if (!token) {
+    return next(
+      new AppError("You are not logged in! Please log in to get access", 400)
+    );
+  }
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser)
+    return next(
+      new AppError(" The user belonging to this token does not exist", 400)
+    );
+  res.status(200).json({
+    status: "Success",
+    message: "User is already logged In",
+    data: currentUser,
+  });
+  next();
+});
+
 module.exports = {
   signup,
   login,
   protect,
   restrictTo,
   logout,
+  autologin,
 };

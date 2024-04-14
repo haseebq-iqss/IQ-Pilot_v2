@@ -1,24 +1,19 @@
 const express = require("express");
-const router = express.Router();
-
 const { protect, restrictTo } = require("../controller/authController");
 const {
+  getAllCabs,
   createCab,
-  getCabDetails,
-  getCab,
+  getCabByDriver,
   updateCab,
   deleteCab,
 } = require("../controller/cabController");
 
+const router = express.Router();
+
 router.use(protect);
+router.use(restrictTo("admin"));
 
-router.post("/", restrictTo("admin"), createCab);
-router.get("/details", restrictTo("admin"), getCabDetails);
-
-router
-  .route("cab/:id")
-  .get(restrictTo("admin"), getCab)
-  .patch(restrictTo("admin"), updateCab)
-  .delete(restrictTo("admin"), deleteCab);
+router.route("/").get(getAllCabs).post(createCab);
+router.route("/:id").get(getCabByDriver).patch(updateCab).delete(deleteCab);
 
 module.exports = router;

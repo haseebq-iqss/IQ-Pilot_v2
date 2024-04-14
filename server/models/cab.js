@@ -1,35 +1,36 @@
 const mongoose = require("mongoose");
 
-const cabSchema = new mongoose.Schema(
-  {
-    cabDriver: {
-      type: mongoose.Schema.ObjectId,
-      ref: "employee",
-      required: true,
-    },
-    cabNumber: {
-      type: String,
-      required: [true, "Please provude your cab Number"],
-    },
-    seatingCapacity: {
-      type: Number,
-      required: [true, "Please provide your seating capacity"],
-    },
-    numberPlate: {
-      type: String,
-      required: [true, "Please provide your number Plate"],
-    },
-    carModel: {
-      type: String,
-      required: [true, "Please provide a car model"],
-    },
-    carColor: {
-      type: String,
-      required: [true, "Please provide a car color"],
-    },
+const cabSchema = new mongoose.Schema({
+  cabDriver: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+    required: [true, "Please provide the cab driver"],
+    unique: true,
   },
-  { timestamp: true }
-);
+  cabNumber: {
+    type: String,
+    required: [true, "Please provide the cab number"],
+    unique: true,
+  },
+  seatingCapacity: {
+    type: Number,
+    required: [true, "Please provide the seating capacity for the cab"],
+    unique: false,
+  },
+  numberPlate: {
+    type: String,
+    required: [true, "Please provide the number-plate of the cab "],
+    unique: true,
+  },
+  carModel: {
+    type: String,
+    required: [true, "Please provide the car model"],
+  },
+  carColor: {
+    type: String,
+    required: [true, "Please provide the car color"],
+  },
+});
 
-const Cab = mongoose.model("cab", cabSchema);
+const Cab = mongoose.model("Cab", cabSchema);
 module.exports = Cab;

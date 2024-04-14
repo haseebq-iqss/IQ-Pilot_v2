@@ -2,53 +2,42 @@ const Cab = require("../models/cab");
 const AppError = require("../utils/appError");
 const { catchAsync } = require("../utils/catchAsync");
 
-//create cab
-const createCab = catchAsync(async function (req, res, next) {
+exports.createCab = catchAsync(async (req, res, next) => {
   const cab = await Cab.create(req.body);
-  res.status(200).json({ message: "Success", cab });
+  res.status(201).json({ status: "Success", data: cab });
 });
 
-// get cab details
-const getCabDetails = catchAsync(async function (req, res, next) {
-  const cab = await Cab.find();
-  if (!cab) {
-    return next(new AppError("No Cab  found", 404));
-  }
-  res.status(200).json({ message: "Success", cab });
-});
-
-// get cab by id
-const getCab = catchAsync(async function (req, res, next) {
-  const cab = await Cab.findById(req.params.id);
-  if (!cab) {
-    return next(new AppError("No Cab found", 404));
-  }
-  res.status(200).json({ message: "Success", cab });
-});
-
-// update cab
-const updateCab = catchAsync(async function (req, res, next) {
-  const cab = await Cab.findOneAndUpdate(req.params.id, req.body, {
+exports.updateCab = catchAsync(async (req, res, next) => {
+  const updated_cab = await Cab.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
-  });
-  if (!cab) {
-    return next(new AppError("No Cab found", 404));
+  }).populate("cabDriver");
+  if (!updated_cab) {
+    return next(new AppError(`No cab with this id`, 404));
   }
-  res.status(200).json({ message: "Success", cab });
+  res.status(201).json({ status: "Success", data: updated_cab });
 });
 
-// delete cab
-
-const deleteCab = catchAsync(async function (req, res, next) {
-  await Cab.findOneAndDelete(req.params.id);
-  res.status(200).json({ message: "Success" });
+exports.deleteCab = catchAsync(async (req, res, next) => {
+  const id = req.params.id;
+  const deleted_cab = await Cab.findByIdAndDelete(id);
+  if (!deleted_cab) {
+    return next(new AppError(`No document found with this id`, 404));
+  }
+  res.status(204).json({ status: "Success" });
 });
 
-module.exports = {
-  createCab,
-  getCabDetails,
-  getCab,
-  updateCab,
-  deleteCab,
-};
+exports.getAllCabs = catchAsync(async (req, res, next) => {
+  const cabs = await Cab.find({}).populate("cabDriver");
+  if (!cabs) return next(new AppError(`No cabs available...`, 404));
+  res.status(200).json({ status: "Success", results: cabs.length, data: cabs });
+});
+
+exports.getCabByDriver = catchAsync(async (req, res, next) => {
+  const cab = await Cab.find({ cabDriver: req.params.id }).populate(
+    "cabDriver"
+  );
+  if (cab.length === 0)
+    return next(new AppError(`No cab for this driver...`, 404));
+  res.status(200).json({ status: "Success", data: cab });
+});
