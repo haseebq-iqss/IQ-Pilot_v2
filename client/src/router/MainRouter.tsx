@@ -8,6 +8,8 @@ import Index from "../pages/Index";
 import AdminDashboardLayout from "../layouts/AdminDashboardLayout";
 import AdminDashboard from "../pages/AdminDashboard/AdminDashboard";
 import { UserContextTypes } from "../types/UserContextTypes";
+import AllCabDrivers from "../pages/AllCabDrivers/AllCabDrivers";
+import AllTeamMembers from "../pages/AllTeamMembers/AllTeamMembers";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -48,7 +50,7 @@ function MainRouter() {
                   </SlideInOut>
                 }
               />
-              {/* <Route
+              <Route
                 path="allCabDrivers"
                 element={
                   <SlideInOut>
@@ -56,14 +58,14 @@ function MainRouter() {
                   </SlideInOut>
                 }
               />
-              <Route
+              {/* <Route
                 path="scheduledRoutes"
                 element={
                   <SlideInOut>
                     <ScheduledRoutes />
                   </SlideInOut>
                 }
-              />
+              /> */}
               <Route
                 path="allTeamMembers"
                 element={
@@ -71,7 +73,7 @@ function MainRouter() {
                     <AllTeamMembers />
                   </SlideInOut>
                 }
-              /> */}
+              />
             </Route>
             {/* <Route
               path="admin/addPassengers"

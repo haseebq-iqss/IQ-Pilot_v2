@@ -145,7 +145,7 @@ function Sidebar() {
           src={baseURL + userData?.profilePicture}
         />
         <Typography variant="body1" fontWeight={600}>
-          {userData?.fName![0] + "." + " " + userData?.lName}
+          {userData?.fname![0] + "." + " " + userData?.lname}
         </Typography>
         <Typography
           sx={{

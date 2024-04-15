@@ -1,7 +1,7 @@
 type EmployeeTypes = {
   _id?: string;
-  fName?: string;
-  lName?: string;
+  fname?: string;
+  lname?: string;
   phone?: number;
   email?: string;
   role?: "admin" | "employee" | "driver";
