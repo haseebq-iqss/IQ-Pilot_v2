@@ -67,21 +67,23 @@ const updateUser = catchAsync(async (req, res, next) => {
     return next(new AppError(`This route is not for password updates.`, 404));
   }
   const filteredReqObj = filterReqObj(req.body);
-  const updatedUser = await User.findByIdAndUpdate(
+  const updated_user = await User.findByIdAndUpdate(
     req.params.id,
     {
       ...filteredReqObj,
-      profilePicture: req.file?.filename || updateUser.profilePicture,
+      profilePicture:
+        req.file?.filename ||
+        (await User.findById(req.params.id).profilePicture),
     },
     {
       new: true,
       runValidators: true,
     }
   );
-  if (!updateUser) {
+  if (!updated_user) {
     return next(new AppError(`No document found with this id`, 404));
   }
-  res.status(200).json({ status: "Success", data: updatedUser });
+  res.status(200).json({ status: "Success", data: updated_user });
 });
 
 // Admin Action only

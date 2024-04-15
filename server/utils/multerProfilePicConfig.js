@@ -8,10 +8,18 @@ const createMulterStorage = (destination) => {
       return cb(null, `${destination}`);
     },
     filename: async (req, file, cb) => {
-      const { fname, lname } =
-        req.user.role === "admin"
-          ? await User.findById(req.params.id)
-          : req.user;
+      let fname, lname;
+      if (!req.user) {
+        fname = req.body.fname;
+        lname = req.body.lname;
+      } else {
+        const user =
+          req.user.role === "admin"
+            ? await User.findById(req.params.id)
+            : req.user;
+        fname = user.fname;
+        lname = user.lname;
+      }
       const upload_name = `${fname[0].toLowerCase() + fname.slice(1)}_${
         lname[0].toLowerCase() + lname.slice(1)
       }_${Date.now()}`;
