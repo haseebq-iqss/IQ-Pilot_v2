@@ -24,10 +24,11 @@ import { MouseEventHandler, useState } from "react";
 import PageContainer from "../../components/ui/PageContainer";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import baseURL from "../../utils/baseURL";
-import useCachedData from "./../../hooks/useCachedData";
+// import useCachedData from "./../../hooks/useCachedData";
 import { RowFlex } from "../../style_extentions/Flex";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
+import Cabtypes from "../../types/CabTypes";
 
 type driverTypes = {
   drivers: [EmployeeTypes];
@@ -35,19 +36,21 @@ type driverTypes = {
 
 function AllCabDrivers() {
   const [searchtext, setSearchText] = useState("");
-  const { data: driverData, status } = useQuery({
-    queryKey: ["all-drivers"],
+  const { data: cabDetails, status } = useQuery({
+    queryKey: ["all-cabs"],
     queryFn: async () => {
-      const response = await useAxios.get("/users/drivers");
+      const response = await useAxios.get("/cabs/");
+      // console.log(response);
       return response?.data?.data;
     },
   });
 
-  const cachedDrivers: driverTypes = useCachedData("All Cabs");
+  // const cachedDrivers: driverTypes = useCachedData("All Cabs");
 
-  const filteredCabDrivers = driverData?.filter((driver: EmployeeTypes) => {
-    return driver?.fname?.includes(searchtext);
+  const filteredCabDrivers = cabDetails?.filter((cab: Cabtypes) => {
+    return (cab?.cabDriver as EmployeeTypes)?.fname?.includes(searchtext);
   });
+
   // const drivers = cachedDrivers?.drivers;
 
   const [anchorEl, setAnchorEl] = useState<null | SVGSVGElement>(null);
@@ -62,8 +65,8 @@ function AllCabDrivers() {
 
   return (
     <PageContainer
-      headerText={`All Cab Drivers (${driverData?.length || 0})`}
-      subHeadingText="All cab drivers that part of your company."
+      headerText={`All Cab Drivers (${cabDetails?.length || 0})`}
+      subHeadingText="All cab drivers that are part of your company"
       parentStyles={{}}
     >
       <Box
@@ -102,7 +105,7 @@ function AllCabDrivers() {
             </TableHead>
             <TableBody>
               {filteredCabDrivers?.length &&
-                filteredCabDrivers?.map((driver: EmployeeTypes) => (
+                filteredCabDrivers?.map((driver: Cabtypes) => (
                   <TableRow
                     key={driver._id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -117,20 +120,23 @@ function AllCabDrivers() {
                         }}
                       >
                         <Avatar
-                          src={baseURL + driver?.profilePicture}
+                          src={
+                            baseURL +
+                            (driver?.cabDriver as EmployeeTypes)?.profilePicture
+                          }
                           sx={{ width: "30px", height: "30px" }}
                         />
-                        {driver?.fname + " " + driver?.lname}
+                        {(driver?.cabDriver as EmployeeTypes)?.fname +
+                          " " +
+                          (driver?.cabDriver as EmployeeTypes)?.lname}
                       </Box>
                     </TableCell>
+                    <TableCell align="center">{driver?.cabNumber}</TableCell>
+                    <TableCell align="center">{driver?.numberPlate}</TableCell>
                     <TableCell align="center">
-                      {"driver.cabDetails?.cabNumber"}
-                    </TableCell>
-                    <TableCell align="center">
-                      {"driver.cabDetails?.numberPlate"}
-                    </TableCell>
-                    <TableCell align="center">
-                      {'!driver.cancelCab ? "Active" : "Suspended"'}
+                      {!(driver?.cabDriver as EmployeeTypes)?.isCabCancelled
+                        ? "Active"
+                        : "Suspended"}
                     </TableCell>
                     <TableCell align="center">
                       <MoreHoriz

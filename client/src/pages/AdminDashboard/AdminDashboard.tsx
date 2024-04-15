@@ -71,16 +71,15 @@ function AdminDashboard() {
   });
 
   // ALL AVAILABLE CABS
-  const getAllCabsQF = () => {
-    return useAxios.get("users/drivers");
+  const getAllCabsQF = async () => {
+    const response = await useAxios.get("/cabs");
+    console.log(response);
+    return response?.data?.results;
   };
 
   const { data: allCabs, status: allCabStatus } = useQuery({
     queryFn: getAllCabsQF,
     queryKey: ["All Cabs"],
-    select: (data) => {
-      return data.data.drivers;
-    },
   });
 
   // ALL ROASTERED PASSENGERS
@@ -297,7 +296,7 @@ function AdminDashboard() {
           </Box>
           <Box sx={{ ...ColFlex, gap: "5px" }}>
             <Typography sx={{ fontWeight: 600 }} variant="h4">
-              {allCabStatus === "success" ? allCabs?.length : 6}
+              {allCabStatus === "success" ? allCabs : 0}
             </Typography>
             <Typography
               sx={{

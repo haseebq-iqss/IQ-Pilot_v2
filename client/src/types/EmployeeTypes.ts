@@ -8,7 +8,7 @@ type EmployeeTypes = {
   password?: string;
   profilePicture?: string;
   department?: string;
-  pickup?: {
+  pickUp?: {
     type: "Point";
     coordiantes: [number, number];
     address: string;
@@ -19,7 +19,7 @@ type EmployeeTypes = {
   workLocation?: "Rangreth" | "Zaira Tower";
   isCabCancelled?: {
     leaveType?: "pickup" | "drop" | "both" | number;
-    startTime?: number;
+    startTime?: number | null;
   };
   createdAt?: Date;
 };

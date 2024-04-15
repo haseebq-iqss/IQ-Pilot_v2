@@ -1,11 +1,13 @@
-type CabTypes = {
-  id?: string;
-  cabDriver: string;
+import EmployeeTypes from "./EmployeeTypes";
+
+type Cabtypes = {
+  _id: string;
+  cabDriver: string | EmployeeTypes;
   cabNumber: string;
   seatingCapacity: number;
   numberPlate: string;
-  carModel?: string;
-  carColor?: string;
+  carModel: string;
+  carColor: string;
 };
 
-export default CabTypes;
+export default Cabtypes;

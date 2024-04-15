@@ -120,7 +120,9 @@ function AllTeamMembers() {
                       </Box>
                     </TableCell>
                     <TableCell align="center">{employee.email}</TableCell>
-                    <TableCell align="center">{employee.address}</TableCell>
+                    <TableCell align="center">
+                      {employee.pickUp?.address}
+                    </TableCell>
                     <TableCell align="center">
                       {!employee.isCabCancelled ? "Active" : "On Leave"}
                     </TableCell>

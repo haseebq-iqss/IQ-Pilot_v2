@@ -111,7 +111,7 @@ const autologin = catchAsync(async (req, res, next) => {
     message: "User is already logged In",
     data: currentUser,
   });
-  next();
+
 });
 
 module.exports = {
