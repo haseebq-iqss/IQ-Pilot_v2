@@ -6,6 +6,7 @@ const authRoutes = require("./routes/authRoutes");
 const AppError = require("./utils/appError");
 const globalErrorController = require("./controller/errorController");
 const usersRoutes = require("./routes/usersRoutes");
+const routeRouter = require("./routes/routeRoute");
 const app = express();
 
 // Middlewares
@@ -26,6 +27,7 @@ app.use(express.static(`${__dirname}/public/images/profileImages/`));
 app.use("/api/v2/auth", authRoutes);
 app.use("/api/v2/users", usersRoutes);
 app.use("/api/v2/cabs", cabRoutes);
+app.use("/api/v2/routes", routeRouter);
 
 app.all("*", (req, res, next) => {
   const error = new AppError(`This page ${req.url} does not exist`, 404);

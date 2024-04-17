@@ -1,17 +1,19 @@
 const mongoose = require("mongoose");
 
-const Schema = new mongoose.Schema(
+const routeSchema = new mongoose.Schema(
   {
     cab: {
       type: mongoose.Schema.ObjectId,
       ref: "cab",
       required: true,
     },
-    passangers: {
-      type: mongoose.Schema.ObjectId,
-      ref: "employee",
-      required: true,
-    },
+    passengers: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "employee",
+        required: true,
+      },
+    ],
     shiftTime: {
       type: String,
       required: true,
