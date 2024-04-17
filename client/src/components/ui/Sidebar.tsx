@@ -82,8 +82,8 @@ function Sidebar() {
       <Box sx={{ ...ColFlex, width: "100%", height: "20%" }}>
         <Box
           component={"img"}
-          src="/images/logo-full.png"
-          sx={{ width: "75px", aspectRatio: 1 }}
+          src="/images/logo_new.png"
+          sx={{ width: "75px", aspectRatio: 0.95 }}
         />
       </Box>
 

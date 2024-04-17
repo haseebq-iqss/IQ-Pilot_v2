@@ -2,6 +2,7 @@ import {
   AddCircleOutline,
   ArrowForward,
   Notifications,
+  Route,
   Settings,
 } from "@mui/icons-material";
 import {
@@ -31,6 +32,7 @@ function Appbar() {
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
+  const [onHover, setOnHover] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [selectedTime, setSelectedTime] = useState<string>();
   const [selectedDate, setSelectedDate] = useState<any>(dayjs());
@@ -93,13 +95,13 @@ function Appbar() {
         // height: "10vh",
         padding: "10px",
         borderRadius: "150px",
-        gap: "30px",
+        gap: "20px",
         pr: "15px",
       }}
     >
       {/* SCHEDULE A ROUTE MODAL */}
       <GlobalModal
-        headerText={"Schedule a Route"}
+        headerText={"Schedule a Custom Route"}
         openModal={openModal}
         setOpenModal={setOpenModal}
       >
@@ -243,8 +245,65 @@ function Appbar() {
           </Box>
         </Box>
       </GlobalModal>
-      <Notifications sx={{ width: "30px", height: "30px" }} />
-      <Settings sx={{ width: "30px", height: "30px" }} />
+      <Notifications
+        sx={{
+          width: "30px",
+          height: "30px",
+          cursor: "pointer",
+          "&:hover": {
+            transform: "translateY(-2.5px)",
+            scale: "1.2",
+            transition: "all 0.5s",
+          },
+          "&:not(:hover)": {
+            scale: "1",
+            transition: "all 0.4s",
+          },
+        }}
+      />
+
+      <Settings
+        sx={{
+          width: "30px",
+          height: "30px",
+          cursor: "pointer",
+          "&:hover": {
+            rotate: "180deg",
+            scale: "1.2",
+            transition: "all 0.5s",
+          },
+          "&:not(:hover)": {
+            rotate: "0deg",
+            scale: "1",
+            transition: "all 0.4s",
+          },
+        }}
+      />
+
+      {/* <Box sx={{ ...RowFlex, gap:1,backgroundColor: "text.primary",  borderRadius:"100px", py:0.75, px:2.5 }}>
+        <Typography sx={{ color: "white" }} fontWeight={600} variant="body2">
+          Create a Custom Route
+        </Typography>
+        <Route sx={{ color: "white", p:0.25 }} />
+      </Box> */}
+
+      <Button
+        className="HoverButton"
+        onMouseEnter={() => setOnHover(true)}
+        onMouseLeave={() => setOnHover(false)}
+        sx={{
+          backgroundColor: "text.primary",
+          color: "white",
+          borderRadius: "100px",
+          px: 2.5,
+        }}
+        variant="contained"
+        onClick={() => setOpenModal(!openModal)}
+        endIcon={<Route />}
+      >
+        {onHover ? "Create a Custom Route" : "CR"}
+      </Button>
+
       <Button
         sx={{
           backgroundColor: "text.primary",
@@ -252,11 +311,10 @@ function Appbar() {
           borderRadius: "100px",
           px: 2.5,
         }}
-        onClick={() => setOpenModal(!openModal)}
         variant="contained"
         startIcon={<AddCircleOutline />}
       >
-        Schedule Route
+        Create a Shift
       </Button>
     </Box>
   );
