@@ -36,7 +36,7 @@ type driverTypes = {
 function AllTeamMembers() {
   const [searchtext, setSearchText] = useState("");
   const { data: teamMemberData, status } = useQuery({
-    queryKey: ["all-teamMembes"],
+    queryKey: ["all-teamMembers"],
     queryFn: async () => {
       const response = await useAxios.get("/users/tms");
       return response?.data?.data;

@@ -11,6 +11,7 @@ import { SnackbarTypes } from "./types/SnackbarTypes";
 import GlobalSnackbar from "./components/ui/Snackbar";
 import useAxios from "./api/useAxios";
 import { useNavigate } from "react-router-dom";
+import SelectedEmpsContext from "./context/SelectedEmpsContext";
 
 function App() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ function App() {
     message: "no message",
     severity: "success",
   });
+  const [selectedEmps, setSelectedEmps] = useState<EmployeeTypes[]>([]);
 
   const isBaseRoute: boolean =
     !location.pathname.includes("admin") &&
@@ -44,15 +46,17 @@ function App() {
 
   return (
     <ThemeProvider theme={ProjectTheme(themeMode)}>
-      <SnackbarContext.Provider value={{ openSnack, setOpenSnack }}>
-        <GlobalSnackbar value={{ openSnack, setOpenSnack }} />
-        <ThemeModeContext.Provider value={{ themeMode, setThemeMode }}>
-          <UserDataContext.Provider value={{ userData, setUserData }}>
-            <MainRouter />
-            <ReactQueryDevtools />
-          </UserDataContext.Provider>
-        </ThemeModeContext.Provider>
-      </SnackbarContext.Provider>
+      <SelectedEmpsContext.Provider value={{ selectedEmps, setSelectedEmps }}>
+        <SnackbarContext.Provider value={{ openSnack, setOpenSnack }}>
+          <GlobalSnackbar value={{ openSnack, setOpenSnack }} />
+          <ThemeModeContext.Provider value={{ themeMode, setThemeMode }}>
+            <UserDataContext.Provider value={{ userData, setUserData }}>
+              <MainRouter />
+              <ReactQueryDevtools />
+            </UserDataContext.Provider>
+          </ThemeModeContext.Provider>
+        </SnackbarContext.Provider>
+      </SelectedEmpsContext.Provider>
     </ThemeProvider>
   );
 }

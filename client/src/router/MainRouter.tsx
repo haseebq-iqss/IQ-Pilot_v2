@@ -10,6 +10,7 @@ import AdminDashboard from "../pages/AdminDashboard/AdminDashboard";
 import { UserContextTypes } from "../types/UserContextTypes";
 import AllCabDrivers from "../pages/AllCabDrivers/AllCabDrivers";
 import AllTeamMembers from "../pages/AllTeamMembers/AllTeamMembers";
+import AddPassengers from "../pages/AddPassengers/AddPassengers";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -75,14 +76,14 @@ function MainRouter() {
                 }
               />
             </Route>
-            {/* <Route
+            <Route
               path="admin/addPassengers"
               element={
                 <SlideInOut>
                   <AddPassengers />
                 </SlideInOut>
               }
-            /> */}
+            />
           </>
         )}
       </Routes>

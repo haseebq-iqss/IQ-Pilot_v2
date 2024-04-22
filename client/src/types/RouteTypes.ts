@@ -1,9 +1,10 @@
+import Cabtypes from "./CabTypes";
 import EmployeeTypes from "./EmployeeTypes";
 import routeStatusTypes from "./RouteStatusTypes";
 
 type RouteTypes = {
   _id?: string;
-  cab?: string;
+  cab?: string | Cabtypes;
   passengers?: Array<EmployeeTypes | string>;
   shiftTime?: string;
   shiftDate?: Date;

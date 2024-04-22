@@ -16,7 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import { DateCalendar, MobileTimePicker } from "@mui/x-date-pickers";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +26,8 @@ import EmployeeTypes from "../../types/EmployeeTypes";
 import DateDifference from "../../utils/DateDifference";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import GlobalModal from "./Modal";
+import useAxios from "../../api/useAxios";
+import Cabtypes from "../../types/CabTypes";
 
 function Appbar() {
   const navigate = useNavigate();
@@ -41,7 +43,15 @@ function Appbar() {
   const [office, setOffice] = useState("");
   const qc = useQueryClient();
 
-  const drivers = (qc.getQueryData(["All Cabs"]) as any)?.data?.drivers;
+  // const drivers = (qc.getQueryData(["All Cabs"]) as any)?.data?.drivers;
+  const { data: cabs } = useQuery({
+    queryKey: ["all-drivers"],
+    queryFn: async () => {
+      const response = await useAxios.get("/cabs");
+      return response?.data?.data;
+    },
+  });
+
   const todaysDate = new Date();
 
   const handleTimeChange = (newTime: any) => {
@@ -83,6 +93,8 @@ function Appbar() {
       });
     }
   }
+
+  // console.log(drivers);
 
   return (
     <Box
@@ -206,11 +218,13 @@ function Appbar() {
                   label="Pickup or Drop"
                   onChange={handleSelectDriver}
                 >
-                  {drivers?.length ? (
-                    drivers.map((driver: EmployeeTypes) => {
+                  {cabs?.length ? (
+                    cabs?.map((driver: Cabtypes) => {
                       return (
                         <MenuItem key={driver?._id} value={driver as any}>
-                          {driver.fname + " " + driver.lname}
+                          {driver?.cabDriver.fname +
+                            " " +
+                            driver?.cabDriver.lname}
                         </MenuItem>
                       );
                     })
