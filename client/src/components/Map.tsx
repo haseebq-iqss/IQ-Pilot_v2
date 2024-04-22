@@ -12,7 +12,7 @@ import { Icon, LatLngExpression } from "leaflet";
 import { useContext } from "react";
 import SelectedEmpsContext from "../context/SelectedEmpsContext";
 import EmployeeTypes from "../types/EmployeeTypes";
-// import RoutingMachine from "./RoutingMachine";
+import RoutingMachine from "../utils/RoutingMachine";
 
 type MapTypes = {
   width?: string;
@@ -124,8 +124,8 @@ const MapComponent = ({
             return (
               <Marker
                 icon={cabIcon}
-                key={drivers?.name}
-                position={drivers?.location as LatLngExpression}
+                key={drivers?.fname}
+                position={drivers?.pickUp?.coordinates as LatLngExpression}
               >
                 <Tooltip
                   className="driver-tooltip"
@@ -133,7 +133,7 @@ const MapComponent = ({
                   offset={[0, -40]}
                   permanent
                 >
-                  <span>{drivers.name}</span>
+                  <span>{drivers.fname}</span>
                 </Tooltip>
               </Marker>
             );
@@ -141,12 +141,12 @@ const MapComponent = ({
 
         {employees &&
           employees?.length >= 1 &&
-          employees.map((employee: UserTypes) => {
+          employees.map((employee: EmployeeTypes) => {
             return (
               <Marker
                 icon={empIcon}
                 key={employee?._id}
-                position={employee?.pickup as LatLngExpression}
+                position={employee?.pickUp?.coordinates as LatLngExpression}
               >
                 <Tooltip
                   className="employee-tooltip"
@@ -154,7 +154,9 @@ const MapComponent = ({
                   offset={[0, -40]}
                   permanent
                 >
-                  <span>{employee.fName[0] + "." + " " + employee.lName}</span>
+                  <span>
+                    {(employee?.fname)![0] + "." + " " + employee.lname!}
+                  </span>
                 </Tooltip>
               </Marker>
             );

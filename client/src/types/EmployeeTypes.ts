@@ -10,7 +10,7 @@ type EmployeeTypes = {
   department?: string;
   pickUp?: {
     type: "Point";
-    coordiantes: [number, number];
+    coordinates: [number, number];
     address: string;
     _id?: string;
   };

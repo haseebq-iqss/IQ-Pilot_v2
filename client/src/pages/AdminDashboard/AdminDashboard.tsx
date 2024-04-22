@@ -73,7 +73,7 @@ function AdminDashboard() {
   // ALL AVAILABLE CABS
   const getAllCabsQF = async () => {
     const response = await useAxios.get("/cabs");
-    console.log(response);
+    // console.log(response);
     return response?.data?.results;
   };
 
@@ -113,14 +113,14 @@ function AdminDashboard() {
 
   // ALL EMPLOYEES
   const getAllEmployees = () => {
-    return useAxios.get("users/employees");
+    return useAxios.get("/users/tms");
   };
 
   const { data: allEmployees, status: allEmployeesStatus } = useQuery({
     queryFn: getAllEmployees,
     queryKey: ["All Employees"],
     select: (data) => {
-      return data.data.employees;
+      return data.data.data;
     },
   });
 
@@ -207,6 +207,7 @@ function AdminDashboard() {
                 SOS={SOSEmergency}
                 zoom={13}
                 center={SOSEmergency?.location}
+                employees={allEmployees}
               />
             </Box>
 
