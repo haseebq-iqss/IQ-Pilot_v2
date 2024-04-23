@@ -1,3 +1,5 @@
+const AppError = require("../utils/appError");
+
 function sendDevError(err, res) {
   return res.status(err.statusCode).json({
     message: err.message,
@@ -6,7 +8,8 @@ function sendDevError(err, res) {
   });
 }
 function handleDBDuplicateError(error) {
-  const { name } = error.keyValue;
+  const name = Object.keys(error.keyValue);
+  // console.log(name);
   const message = `Duplicate field name ${name}. Please provide another value.`;
   return new AppError(message, 400);
 }
@@ -43,10 +46,11 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === "development") {
     sendDevError(err, res);
   } else if (process.env.NODE_ENV === "production") {
-    const error = Object.assign({}, err);
+    let error = Object.assign({}, err);
     if (error.name === "CastError") {
       error = handleDBCastError(err);
     } else if (error.code === 11000) {
+      console.log(error);
       error = handleDBDuplicateError(err);
     } else if (error.code === "ValidationError") {
       error = handleDBValidationError(err);

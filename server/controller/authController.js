@@ -2,7 +2,8 @@ const { catchAsync } = require("../utils/catchAsync");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
-const AppError = require("../utils/appError");
+const { AppError } = require("../utils/appError");
+const Cab = require("../models/cab");
 
 const signingFunction = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -30,6 +31,16 @@ const signup = catchAsync(async (req, res, next) => {
     ...req.body,
     profilePicture: req.file?.filename || "dummy.jpg",
   });
+  if (user.role === "driver") {
+    await Cab.create({
+      cabDriver: user._id,
+      cabNumber: req.body.cabNumber,
+      seatingCapacity: req.body.seatingCapacity,
+      numberPlate: req.body.numberPlate,
+      carModel: req.body.carModel,
+      carColor: req.body.carColor,
+    });
+  }
   createSendToken(user, 201, res);
 });
 
@@ -111,7 +122,6 @@ const autologin = catchAsync(async (req, res, next) => {
     message: "User is already logged In",
     data: currentUser,
   });
-
 });
 
 module.exports = {
