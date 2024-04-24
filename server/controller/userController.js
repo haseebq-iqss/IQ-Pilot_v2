@@ -1,3 +1,4 @@
+const Cab = require("../models/cab");
 const User = require("../models/user");
 const AppError = require("../utils/appError");
 const { catchAsync } = require("../utils/catchAsync");
@@ -93,6 +94,12 @@ const deleteUser = catchAsync(async (req, res, next) => {
   if (!deleteUser) {
     return next(new AppError(`No document found with this id`, 404));
   }
+  if (deleted_user.role === "driver") {
+    const cab = await Cab.find({ cabDriver: deleted_user._id });
+    if (!cab) return next(new AppError(`No cab assigned for this driver`, 404));
+    await Cab.findByIdAndDelete(cab._id);
+  }
+
   res.status(204).json({ status: "Success" });
 });
 
