@@ -41,7 +41,8 @@ const signup = catchAsync(async (req, res, next) => {
       carColor: req.body.carColor,
     });
   }
-  createSendToken(user, 201, res);
+  // createSendToken(user, 201, res);
+  res.status(201).json({ status: "Success", user });
 });
 
 const login = catchAsync(async (req, res, next) => {
