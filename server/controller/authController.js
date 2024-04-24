@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
 const { AppError } = require("../utils/appError");
 const Cab = require("../models/cab");
+const { json } = require("express");
 
 const signingFunction = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -28,7 +29,7 @@ const createSendToken = function (user, statusCode, res) {
 
 const signup = catchAsync(async (req, res, next) => {
   const user = await User.create({
-    ...req.body,
+    ...req.body, pickUp: JSON.parse(req.body.pickUp),
     profilePicture: req.file?.filename || "dummy.jpg",
   });
   if (user.role === "driver") {
@@ -41,6 +42,7 @@ const signup = catchAsync(async (req, res, next) => {
       carColor: req.body.carColor,
     });
   }
+  console.log(user)
   // createSendToken(user, 201, res);
   res.status(201).json({ status: "Success", user });
 });

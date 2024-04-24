@@ -131,17 +131,17 @@ function AddPassengers() {
   };
 
   // Function to handle changes in the department selection
-  const handleChangeDepartment = (event: any) => {
-    setDepartment(event.target.value);
-    // setFilteredEmployees
-    setFilteredEmployees(() =>
-      filteredEmployees?.filter(
-        (employee: EmployeeTypes) =>
-          employee.department?.toLocaleLowerCase() ==
-          event.target.value?.toLocaleLowerCase()
-      )
-    );
-  };
+  // const handleChangeDepartment = (event: any) => {
+  //   setDepartment(event.target.value);
+  //   // setFilteredEmployees
+  //   setFilteredEmployees(() =>
+  //     filteredEmployees?.filter(
+  //       (employee: EmployeeTypes) =>
+  //         employee.department?.toLocaleLowerCase() ==
+  //         event.target.value?.toLocaleLowerCase()
+  //     )
+  //   );
+  // };
 
   const SearchEmployees = (e: any) => {
     // setSearchField(e.target.value);
@@ -358,7 +358,7 @@ function AddPassengers() {
                 labelId="department-label"
                 id="department-select"
                 value={department}
-                onChange={handleChangeDepartment}
+                // onChange={handleChangeDepartment}
                 label="Department"
               >
                 <MenuItem value={"BD"}>BD</MenuItem>

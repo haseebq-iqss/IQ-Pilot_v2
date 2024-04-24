@@ -1,15 +1,16 @@
 const AppError = require("../utils/appError");
 
 function sendDevError(err, res) {
+
   return res.status(err.statusCode).json({
     message: err.message,
     error: err,
     stack: err.stack,
+
   });
 }
 function handleDBDuplicateError(error) {
   const name = Object.keys(error.keyValue);
-  // console.log(name);
   const message = `Duplicate field name ${name}. Please provide another value.`;
   return new AppError(message, 400);
 }
@@ -27,11 +28,14 @@ function handleDBValidationError(error) {
 }
 
 function sendProdError(err, res) {
-  if (err.isOperational)
+
+  if (err.isOperational) {
     return res.status(err.statusCode).json({
       status: err.status,
       message: err.message,
     });
+  }
+
   else {
     return res.status(500).json({
       status: "ERROR",
@@ -50,7 +54,6 @@ module.exports = (err, req, res, next) => {
     if (error.name === "CastError") {
       error = handleDBCastError(err);
     } else if (error.code === 11000) {
-      console.log(error);
       error = handleDBDuplicateError(err);
     } else if (error.code === "ValidationError") {
       error = handleDBValidationError(err);

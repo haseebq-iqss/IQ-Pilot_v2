@@ -5,6 +5,7 @@ const User = require("../models/user");
 const createMulterStorage = (destination) => {
   return multer.diskStorage({
     destination: (req, file, cb) => {
+      console.log(file)
       return cb(null, `${destination}`);
     },
     filename: async (req, file, cb) => {
@@ -20,9 +21,8 @@ const createMulterStorage = (destination) => {
         fname = user.fname;
         lname = user.lname;
       }
-      const upload_name = `${fname[0].toLowerCase() + fname.slice(1)}_${
-        lname[0].toLowerCase() + lname.slice(1)
-      }_${Date.now()}`;
+      const upload_name = `${fname[0].toLowerCase() + fname.slice(1)}_${lname[0].toLowerCase() + lname.slice(1)
+        }_${Date.now()}`;
       return cb(null, `${upload_name}.${file.originalname.split(".")[1]}`);
     },
   });

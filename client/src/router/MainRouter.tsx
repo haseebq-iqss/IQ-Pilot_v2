@@ -11,6 +11,7 @@ import { UserContextTypes } from "../types/UserContextTypes";
 import AllCabDrivers from "../pages/AllCabDrivers/AllCabDrivers";
 import AllTeamMembers from "../pages/AllTeamMembers/AllTeamMembers";
 import AddPassengers from "../pages/AddPassengers/AddPassengers";
+import { AddTeamMembers } from "../components/ui/AddTeamMembers";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -75,7 +76,16 @@ function MainRouter() {
                   </SlideInOut>
                 }
               />
+              <Route
+                path="addTeamMembers"
+                element={
+                  <SlideInOut>
+                    <AddTeamMembers />
+                  </SlideInOut>
+                }
+              />
             </Route>
+
             <Route
               path="admin/addPassengers"
               element={

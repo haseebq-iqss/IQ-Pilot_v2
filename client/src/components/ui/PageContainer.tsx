@@ -1,7 +1,9 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { CSSProperties, ReactNode } from "react";
 import { ColFlex } from "../../style_extentions/Flex";
 import PageHeader from "./PageHeader";
+import { AddCircleOutline } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 type PageContainerPropTypes = {
   children: ReactNode;
@@ -16,6 +18,7 @@ function PageContainer({
   subHeadingText,
   parentStyles,
 }: PageContainerPropTypes) {
+  const navigate = useNavigate();
   return (
     <Box
       sx={{
@@ -34,18 +37,47 @@ function PageContainer({
     >
       <Box
         sx={{
-          ...ColFlex,
+          display: "flex",
           justifyContent: "flex-start",
           alignItems: "flex-start",
           width: "100%",
           gap: 0,
         }}
       >
-        <PageHeader>{headerText}</PageHeader>
-        <Typography color={"GrayText"} variant="body1">
-          {subHeadingText}
-        </Typography>
+        <Box
+          sx={{
+            ...ColFlex,
+            justifyContent: "flex-start",
+            alignItems: "flex-start",
+            width: "100%",
+            gap: 0,
+          }}
+        >
+          {" "}
+          <PageHeader>{headerText}</PageHeader>
+          <Typography color={"GrayText"} variant="body1">
+            {subHeadingText}
+          </Typography>
+        </Box>
+
+        <Button
+          sx={{
+            backgroundColor: "text.primary",
+            color: "white",
+            borderRadius: "4px",
+            px: 2.5,
+            width: "15rem",
+          }}
+          variant="contained"
+          startIcon={<AddCircleOutline />}
+          onClick={() => {
+            navigate("/admin/addTeamMembers");
+          }}
+        >
+          Add Team Member
+        </Button>
       </Box>
+
       {children}
     </Box>
   );

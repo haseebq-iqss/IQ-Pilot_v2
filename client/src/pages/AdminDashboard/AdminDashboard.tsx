@@ -368,11 +368,11 @@ function AdminDashboard() {
       >
         <MapComponent
           height="100%"
-          employees={
-            allEmployeesStatus === "success" &&
-            allEmployees?.length > 1 &&
-            allEmployees
-          }
+          // employees={
+          //   allEmployeesStatus === "success" &&
+          //   allEmployees?.length > 1 &&
+          //   allEmployees
+          // }
           activeDrivers={activeDrivers}
         />
       </Box>

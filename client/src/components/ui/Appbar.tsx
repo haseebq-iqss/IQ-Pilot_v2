@@ -16,7 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import { DateCalendar, MobileTimePicker } from "@mui/x-date-pickers";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -41,7 +41,7 @@ function Appbar() {
   const [selectedDriver, setSelectedDriver] = useState<any>({});
   const [routeType, setRouteType] = useState<"pickup" | "drop">("pickup");
   const [office, setOffice] = useState("");
-  const qc = useQueryClient();
+  // const qc = useQueryClient();
 
   // const drivers = (qc.getQueryData(["All Cabs"]) as any)?.data?.drivers;
   const { data: cabs } = useQuery({
@@ -222,9 +222,9 @@ function Appbar() {
                     cabs?.map((driver: Cabtypes) => {
                       return (
                         <MenuItem key={driver?._id} value={driver as any}>
-                          {driver?.cabDriver.fname +
+                          {(driver?.cabDriver as EmployeeTypes).fname +
                             " " +
-                            driver?.cabDriver.lname}
+                            (driver?.cabDriver as EmployeeTypes).lname}
                         </MenuItem>
                       );
                     })
