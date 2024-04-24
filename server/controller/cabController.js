@@ -24,7 +24,7 @@ exports.deleteCab = catchAsync(async (req, res, next) => {
   if (!deleted_cab) {
     return next(new AppError(`No document found with this id`, 404));
   }
-  await User.findById(deleted_cab.cabDriver);
+  await User.findByIdAndDelete(deleted_cab.cabDriver);
   res.status(204).json({ status: "Success" });
 });
 
