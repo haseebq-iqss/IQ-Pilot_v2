@@ -22,7 +22,7 @@ const getAllUsers = catchAsync(async (req, res, next) => {
 });
 
 const getAllTMS = catchAsync(async (req, res, next) => {
-  const all_tms = await User.find({ role: "employee" });
+  const all_tms = await User.find({ role: "employee" }).sort({ fname: 1 });
   if (all_tms.length === 0) {
     return next(new AppError(`No team members found...`), 404);
   }
@@ -32,7 +32,7 @@ const getAllTMS = catchAsync(async (req, res, next) => {
 });
 
 const getAllDrivers = catchAsync(async (req, res, next) => {
-  const all_drivers = await User.find({ role: "driver" });
+  const all_drivers = await User.find({ role: "driver" }).sort({ fname: 1 });
   if (all_drivers.length === 0) {
     return next(new AppError(`No team members found...`), 404);
   }
