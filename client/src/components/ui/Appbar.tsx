@@ -196,7 +196,7 @@ function Appbar() {
                   label="Location"
                   onChange={handleOfficeLocationChange}
                 >
-                  <MenuItem value="Zaira Towers">Zaira Towers</MenuItem>
+                  <MenuItem value="Zaira Tower">Zaira Tower</MenuItem>
                   <MenuItem value="Rangreth">Rangreth</MenuItem>
                 </Select>
               </FormControl>
@@ -222,7 +222,7 @@ function Appbar() {
                     cabs?.map((driver: Cabtypes) => {
                       return (
                         <MenuItem key={driver?._id} value={driver as any}>
-                          {(driver?.cabDriver as EmployeeTypes).fname +
+                          {(driver?.cabDriver as EmployeeTypes)?.fname +
                             " " +
                             (driver?.cabDriver as EmployeeTypes).lname}
                         </MenuItem>

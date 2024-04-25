@@ -84,6 +84,14 @@ function MainRouter() {
                   </SlideInOut>
                 }
               />
+              <Route
+                path="addCabDrivers"
+                element={
+                  <SlideInOut>
+                    <AddTeamMembers />
+                  </SlideInOut>
+                }
+              />
             </Route>
 
             <Route

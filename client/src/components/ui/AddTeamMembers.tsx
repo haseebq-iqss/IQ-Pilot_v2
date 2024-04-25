@@ -7,10 +7,11 @@ import {
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { FormEvent, useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useAxios from "../../api/useAxios";
 import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
@@ -22,7 +23,8 @@ export const AddTeamMembers = () => {
   const [profilePic, setProfilePic] = useState("");
   const [department, setDepartment] = useState("");
   const [workLocation, setWorkLocation] = useState("");
-
+  const location = useLocation();
+  const driverPath = location.pathname.includes("/admin/addCabDrivers");
   const handleWorkLocation = (event: any) => {
     setWorkLocation(event.target.value);
   };
@@ -31,20 +33,15 @@ export const AddTeamMembers = () => {
   };
 
   const addTMMF = (teamMemberData: EmployeeTypes) => {
-    console.log(teamMemberData);
     return useAxios.post("auth/signup", teamMemberData);
   };
 
+  const addCabDriver = (cabDriverData: EmployeeTypes) => {
+    // console.log(cabDriverData);
+    return useAxios.post("auth/signup", cabDriverData);
+  };
+
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
-  function LiveDp(event: any) {
-    setProfilePic(event.target.files[0]);
-    //   if (event.target.files && event.target.files[0]) {
-    //     let reader = new FileReader();
-    //     reader.onload = (e: any) => {
-    //     };
-    //     reader.readAsDataURL(event.target.files[0]);
-    //   }
-  }
   const { mutate: AddTeamMember } = useMutation({
     mutationFn: addTMMF,
     onSuccess: (data) => {
@@ -62,6 +59,62 @@ export const AddTeamMembers = () => {
       });
     },
   });
+
+  const { mutate: AddCabDriver } = useMutation({
+    mutationFn: addCabDriver,
+    onSuccess: (data) => {
+      setOpenSnack({
+        open: true,
+        message: data.data.message,
+        severity: "success",
+      });
+    },
+    onError: (err: any) => {
+      setOpenSnack({
+        open: true,
+        message: err?.response?.data?.message,
+        severity: "warning",
+      });
+    },
+  });
+
+  function HandleCabDriver(e: FormEvent) {
+    e.preventDefault();
+    const currentTarget = e.currentTarget as HTMLFormElement;
+
+    const cabDriverData = {
+      fname: currentTarget.firstName.value,
+      lname: currentTarget.lastName.value,
+      email: currentTarget.email.value,
+      phone: currentTarget.phone.value,
+      address: currentTarget.address.value,
+      profilePicture: currentTarget.profilePicture.files[0],
+      password: currentTarget.password.value,
+      seatingCapacity: currentTarget.seatingCapacity.value,
+      cabNumber: currentTarget.cabNumber.value,
+      numberPlate: currentTarget.numberPlate.value,
+      carModel: currentTarget.carModel.value,
+      carColor: currentTarget.carColor.value,
+      role: "driver",
+    };
+
+    const formData = new FormData();
+
+    for (const key in cabDriverData) {
+      if (cabDriverData.hasOwnProperty(key)) {
+        const value = cabDriverData[key];
+        if (key === "profilePicture") {
+          formData.append(key, value as File); // Append file directly
+        } else if (typeof value === "object") {
+          formData.append(key, JSON.stringify(value)); // Convert nested objects to JSON strings
+        } else {
+          formData.append(key, String(value)); // Convert other values to strings
+        }
+      }
+    }
+    // console.log(formData);
+    AddCabDriver(formData);
+  }
 
   function HandleAddTM(e: FormEvent) {
     e.preventDefault();
@@ -105,7 +158,11 @@ export const AddTeamMembers = () => {
 
   return (
     <PageContainer
-      headerText={`Add Team Member`}
+      headerText={`${
+        location.pathname.includes("/admin/addCabDrivers")
+          ? " Add Cab Driver"
+          : "Add Team Member"
+      }`}
       subHeadingText="Add details of new team member"
       parentStyles={{}}
     >
@@ -115,7 +172,8 @@ export const AddTeamMembers = () => {
           justifyContent: "center",
           width: "100%",
           py: "2rem",
-          height: "65vh",
+          // height: "65vh",
+          // overflow: "scroll",
         }}
       >
         {/* FORM */}
@@ -128,7 +186,11 @@ export const AddTeamMembers = () => {
             // py: "5%",
             // my: "2.5%",
           }}
-          onSubmit={HandleAddTM}
+          onSubmit={
+            location.pathname.includes("/admin/addCabDrivers")
+              ? HandleCabDriver
+              : HandleAddTM
+          }
         >
           {/* HEADER */}
 
@@ -292,7 +354,6 @@ export const AddTeamMembers = () => {
             <Button
               variant="contained"
               component="label"
-              onChange={LiveDp}
               sx={{
                 width: "50%",
                 height: "3.4rem",
@@ -310,6 +371,84 @@ export const AddTeamMembers = () => {
               />
             </Button>
           </Box>
+
+          {driverPath && (
+            <>
+              <Typography variant="h5">Cab Details</Typography>
+              <Box
+                sx={{
+                  ...RowFlex,
+                  width: "100%",
+                  justifyContent: "space-between",
+                  gap: "15px",
+                }}
+              >
+                <TextField
+                  required={driverPath}
+                  fullWidth
+                  name="cabNumber"
+                  label="cab number"
+                  type="cab number"
+                  placeholder="Cab Number"
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Box>
+              <Box
+                sx={{
+                  ...RowFlex,
+                  width: "100%",
+                  justifyContent: "space-between",
+                  gap: "15px",
+                }}
+              >
+                <TextField
+                  required={driverPath}
+                  fullWidth
+                  name="carColor"
+                  label="cab color"
+                  type="cab color"
+                  placeholder="Cab Color"
+                  InputLabelProps={{ shrink: true }}
+                />
+                <TextField
+                  required={driverPath}
+                  fullWidth
+                  name="seatingCapacity"
+                  label="seating capacity"
+                  type="number"
+                  placeholder="Seating Capacity"
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Box>
+              <Box
+                sx={{
+                  ...RowFlex,
+                  width: "100%",
+                  justifyContent: "space-between",
+                  gap: "15px",
+                }}
+              >
+                <TextField
+                  required={driverPath}
+                  fullWidth
+                  name="numberPlate"
+                  label="number plate"
+                  type="text"
+                  placeholder="Number plate"
+                  InputLabelProps={{ shrink: true }}
+                />
+                <TextField
+                  required={driverPath}
+                  fullWidth
+                  name="carModel"
+                  label="model"
+                  type="text"
+                  placeholder="Cab Model"
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Box>
+            </>
+          )}
           <Box
             sx={{
               width: "100%",

@@ -5,7 +5,6 @@ const User = require("../models/user");
 const createMulterStorage = (destination) => {
   return multer.diskStorage({
     destination: (req, file, cb) => {
-      console.log(file)
       return cb(null, `${destination}`);
     },
     filename: async (req, file, cb) => {

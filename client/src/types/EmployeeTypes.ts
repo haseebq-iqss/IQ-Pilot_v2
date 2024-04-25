@@ -16,7 +16,7 @@ type EmployeeTypes = {
   };
   address?: string;
   currentShift?: string;
-  workLocation?: "Rangreth" | "Zaira Tower";
+  workLocation?: "Rangreth" | "Zaira Tower" | "";
   isCabCancelled?: {
     leaveType?: "pickup" | "drop" | "both" | number;
     startTime?: number | null;
