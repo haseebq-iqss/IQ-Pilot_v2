@@ -7,6 +7,11 @@ const routeSchema = new mongoose.Schema(
       ref: "cab",
       required: true,
     },
+    workLocation: {
+      type: String,
+      enum: ["Zaira Tower", "Rangreth"],
+    },
+    currentShift: String,
     passengers: [
       {
         type: mongoose.Schema.ObjectId,
@@ -14,10 +19,6 @@ const routeSchema = new mongoose.Schema(
         required: true,
       },
     ],
-    shiftTime: {
-      type: String,
-      required: true,
-    },
     shiftDate: {
       type: String,
       required: true,

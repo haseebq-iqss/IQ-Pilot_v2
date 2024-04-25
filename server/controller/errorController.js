@@ -1,12 +1,10 @@
 const AppError = require("../utils/appError");
 
 function sendDevError(err, res) {
-
   return res.status(err.statusCode).json({
     message: err.message,
     error: err,
     stack: err.stack,
-
   });
 }
 function handleDBDuplicateError(error) {
@@ -28,15 +26,12 @@ function handleDBValidationError(error) {
 }
 
 function sendProdError(err, res) {
-
   if (err.isOperational) {
     return res.status(err.statusCode).json({
       status: err.status,
       message: err.message,
     });
-  }
-
-  else {
+  } else {
     return res.status(500).json({
       status: "ERROR",
       message: "Something went wrong...",
@@ -47,17 +42,21 @@ function sendProdError(err, res) {
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "fail";
+
   if (process.env.NODE_ENV === "development") {
     sendDevError(err, res);
   } else if (process.env.NODE_ENV === "production") {
-    let error = Object.assign({}, err);
-    if (error.name === "CastError") {
-      error = handleDBCastError(err);
-    } else if (error.code === 11000) {
-      error = handleDBDuplicateError(err);
-    } else if (error.code === "ValidationError") {
-      error = handleDBValidationError(err);
+    // let error = { ...err };
+    console.log(err);
+    if (err.name === "CastError") {
+      err = handleDBCastError(err);
     }
-    sendProdError(error, res);
+    if (err.code === 11000) {
+      err = handleDBDuplicateError(err);
+    }
+    if (err.code === "ValidationError") {
+      err = handleDBValidationError(err);
+    }
+    sendProdError(err, res);
   }
 };

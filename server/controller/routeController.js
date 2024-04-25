@@ -8,9 +8,10 @@ const assignCabToEmployees = (employees, cabs, workLocation, currentShift) => {
   const groups = [];
 
   for (const cab of cabs) {
-    const cabRoutes = cab.routes.filter((route) =>
-      route.currentShift.startsWith(currentShift.split("-")[0])
-    );
+    const cabRoutes = cab.routes.filter((route) => {
+      console.log(route);
+      return route.currentShift.startsWith(currentShift.split("-")[0]);
+    });
     const cabPassengers = cabRoutes.flatMap((route) => route.passengers);
     const availableCapacity = cab.seatingCapacity - cabPassengers.length;
 
