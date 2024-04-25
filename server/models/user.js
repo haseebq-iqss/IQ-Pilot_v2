@@ -54,12 +54,10 @@ const userSchema = new mongoose.Schema(
     pickUp: pickupSchema,
     currentShift: {
       type: String,
-      // required: [true, "Please provide the current shift"],
     },
     workLocation: {
       type: String,
       enum: ["Zaira Tower", "Rangreth"],
-      // required: [true, "Please provide the work location"],
     },
   },
   { timestamps: true }
