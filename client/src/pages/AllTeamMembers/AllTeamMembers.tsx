@@ -144,7 +144,8 @@ function AllTeamMembers() {
                           style={{
                             position: "absolute",
                             right: "10rem",
-                            // margin: "1px solid red",
+                            border: "1px solid red",
+                            padding: "1rem",
                           }}
                           onClick={handleMenuOpen}
                         >
