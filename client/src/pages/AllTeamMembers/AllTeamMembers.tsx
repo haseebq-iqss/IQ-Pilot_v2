@@ -1,11 +1,11 @@
 import {
-  // AddCircleOutline,
   DeleteForever,
   EditLocation,
   MoreHoriz,
   Search,
   Visibility,
 } from "@mui/icons-material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
   Avatar,
   Box,
@@ -25,14 +25,9 @@ import { useState } from "react";
 import PageContainer from "../../components/ui/PageContainer";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import baseURL from "../../utils/baseURL";
-// import useCachedData from "./../../hooks/useCachedData";
 import { RowFlex } from "../../style_extentions/Flex";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
-
-// type driverTypes = {
-//   employees: [EmployeeTypes];
-// };
 
 function AllTeamMembers() {
   const [searchtext, setSearchText] = useState("");
@@ -49,24 +44,22 @@ function AllTeamMembers() {
       return teamMember?.fname?.includes(searchtext);
     }
   );
-  // const cachedEmployees: driverTypes = useCachedData("All Employees");
-
-  // const employees = cachedEmployees?.employees;
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [openMenu, setOpenMenu] = useState<boolean>(false);
+  const [selectedTeamMember, setSelectedTeamMember] =
+    useState<EmployeeTypes | null>(null);
 
-  const handleMenuOpen = (e: any) => {
+  const handleMenuOpen = (e: any, teamMember: EmployeeTypes) => {
     setAnchorEl(e.currentTarget);
-    setOpenMenu(!openMenu);
+    setSelectedTeamMember(
+      teamMember === selectedTeamMember ? null : teamMember
+    );
   };
-
-  //   console.log(cachedDrivers?.drivers);
 
   return (
     <PageContainer
       headerText={`All Team Members (${teamMemberData?.length || 0})`}
-      subHeadingText="All team members that part of your company."
+      subHeadingText="All team members that are part of your company."
       parentStyles={{}}
     >
       <Box sx={{ width: "100%", height: "50vh" }}>
@@ -74,7 +67,6 @@ function AllTeamMembers() {
           <TextField
             variant="outlined"
             size="small"
-            // value={searchField}
             onChange={(e) => {
               setSearchText(e.target.value);
             }}
@@ -98,100 +90,94 @@ function AllTeamMembers() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredTeamMembers?.length &&
-                filteredTeamMembers?.map((employee: EmployeeTypes) => (
-                  <TableRow
-                    key={employee._id}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "flex-start",
-                          alignItems: "center",
-                          gap: "10px",
+              {filteredTeamMembers?.map((employee: EmployeeTypes) => (
+                <TableRow
+                  key={employee._id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}
+                    >
+                      <Avatar
+                        src={baseURL + employee?.profilePicture}
+                        sx={{ width: "30px", height: "30px" }}
+                      />
+                      {employee.fname + " " + employee.lname}
+                    </Box>
+                  </TableCell>
+                  <TableCell align="center">{employee.email}</TableCell>
+                  <TableCell align="center">
+                    {employee.pickUp?.address}
+                  </TableCell>
+                  <TableCell align="center">
+                    {!employee.isCabCancelled ? "Active" : "On Leave"}
+                  </TableCell>
+                  <TableCell align="center" sx={{ position: "relative" }}>
+                    <MoreHoriz
+                      sx={{ cursor: "pointer" }}
+                      onClick={(e) => handleMenuOpen(e, employee)}
+                    />
+                    {selectedTeamMember === employee && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          borderRadius: "10px",
+                          right: "3rem",
+                          boxShadow:
+                            "rgba(0, 0, 0, 0.2) 0px 2px 1px -1px, rgba(0, 0, 0, 0.14) 0px 1px 1px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px 0px",
+                          padding: "8px 0px",
+                          backgroundColor: "white",
                         }}
                       >
-                        <Avatar
-                          src={baseURL + employee?.profilePicture}
-                          sx={{ width: "30px", height: "30px" }}
-                        />
-                        {employee.fname + " " + employee.lname}
-                      </Box>
-                    </TableCell>
-                    <TableCell align="center">{employee.email}</TableCell>
-                    <TableCell align="center">
-                      {employee.pickUp?.address}
-                    </TableCell>
-                    <TableCell align="center">
-                      {!employee.isCabCancelled ? "Active" : "On Leave"}
-                    </TableCell>
-                    <TableCell align="center" sx={{ position: "relative" }}>
-                      <MoreHoriz
-                        sx={{ cursor: "pointer" }}
-                        onClick={handleMenuOpen}
-                      />
-                      {openMenu && (
-                        <div
-                          // elevation={1}
-                          // anchorEl={anchorEl}
-                          // open={openMenu}
-                          // onClose={() => setOpenMenu(!openMenu)}
-                          // MenuListProps={{
-                          //   "aria-labelledby": "basic-button",
-                          // }}
-                          style={{
-                            position: "absolute",
-                            right: "10rem",
-                            border: "1px solid red",
-                            padding: "1rem",
+                        <MenuItem
+                          sx={{
+                            ...RowFlex,
+                            color: "info.main",
+                            fontWeight: 600,
+                            justifyContent: "flex-start",
+                            gap: "10px",
                           }}
-                          onClick={handleMenuOpen}
                         >
-                          <div
-                          // style={{
-                          //   ...RowFlex,
-                          //   color: "info.main",
-                          //   fontWeight: 600,
-                          //   justifyContent: "flex-start",
-                          //   gap: "10px",
-                          // }}
-                          >
-                            {/* <Visibility sx={{}} /> */}
-                            {employee._id}View Details
-                          </div>
-                          <Divider />
-                          <MenuItem
-                            sx={{
-                              ...RowFlex,
-                              color: "warning.main",
-                              fontWeight: 600,
-                              justifyContent: "flex-start",
-                              gap: "10px",
-                            }}
-                          >
-                            <EditLocation sx={{}} />
-                            Edit Details
-                          </MenuItem>
-                          <Divider />
-                          <MenuItem
-                            sx={{
-                              ...RowFlex,
-                              color: "error.main",
-                              fontWeight: 600,
-                              justifyContent: "flex-start",
-                              gap: "10px",
-                            }}
-                          >
-                            <DeleteForever sx={{}} />
-                            Remove Employee
-                          </MenuItem>
-                        </div>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                          <VisibilityIcon sx={{}} />
+                          View Details
+                        </MenuItem>
+                        <Divider />
+                        <MenuItem
+                          sx={{
+                            ...RowFlex,
+                            color: "warning.main",
+                            fontWeight: 600,
+                            justifyContent: "flex-start",
+                            gap: "10px",
+                          }}
+                        >
+                          <EditLocation sx={{}} />
+                          Edit Details
+                        </MenuItem>
+                        <Divider />
+                        <MenuItem
+                          sx={{
+                            ...RowFlex,
+                            color: "error.main",
+                            fontWeight: 600,
+                            justifyContent: "flex-start",
+                            gap: "10px",
+                          }}
+                        >
+                          <DeleteForever sx={{}} />
+                          Remove Employee
+                        </MenuItem>
+                      </div>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>

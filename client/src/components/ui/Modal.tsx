@@ -8,6 +8,7 @@ type ModalPropTypes = {
   openModal: boolean;
   setOpenModal: (openModal: boolean) => void;
   headerText: string;
+  subHeading?: string;
   children: ReactNode;
 };
 
@@ -15,13 +16,14 @@ export default function GlobalModal({
   openModal = false,
   setOpenModal,
   headerText,
+  subHeading,
   children,
 }: ModalPropTypes) {
   const { isXS } = isXSmall();
   return (
     <>
       <Modal
-        sx={{ ...ColFlex, width: "100%", height: "100%" }}
+        sx={{ ...ColFlex, height: "100%" }}
         open={openModal}
         onClose={() => setOpenModal(!openModal)}
       >
@@ -30,7 +32,7 @@ export default function GlobalModal({
             ...ColFlex,
             p: { xs: 1, lg: 2.5 },
             minHeight: "50vh",
-            width: { xs: "100%", lg: "75%" },
+            width: { xs: "100%", lg: "60%" },
             borderRadius: "5px",
             gap: 1,
             alignItems: "flex-start",
@@ -49,13 +51,28 @@ export default function GlobalModal({
               pr: { xs: 1, lg: 2.5 },
             }}
           >
-            <Typography
-              color="text.primary"
-              fontWeight={600}
-              variant={isXS ? "h5" : "h4"}
+            <Box
+              sx={{
+                ...ColFlex,
+                gap: "0.5rem",
+              }}
             >
-              {headerText}
-            </Typography>
+              <Typography
+                color="text.primary"
+                fontWeight={600}
+                variant={isXS ? "h5" : "h4"}
+              >
+                {headerText}
+              </Typography>
+              <Typography
+                color="text.secondary"
+                fontWeight={600}
+                variant={isXS ? "h5" : "h4"}
+                sx={{ fontSize: "15px", color: "#BBBBBB" }}
+              >
+                {subHeading}
+              </Typography>
+            </Box>
             <Clear
               sx={{ cursor: "pointer", color: "text.primary" }}
               onClick={() => setOpenModal(!openModal)}

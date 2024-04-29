@@ -3,14 +3,12 @@ import {
   EditLocation,
   MoreHoriz,
   Search,
-  Visibility,
 } from "@mui/icons-material";
 import {
   Avatar,
   Box,
   Divider,
   IconButton,
-  Menu,
   MenuItem,
   Table,
   TableBody,
@@ -20,48 +18,42 @@ import {
   TableRow,
   TextField,
 } from "@mui/material";
-import { MouseEventHandler, useState } from "react";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { useState } from "react";
 import PageContainer from "../../components/ui/PageContainer";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import baseURL from "../../utils/baseURL";
-// import useCachedData from "./../../hooks/useCachedData";
 import { RowFlex } from "../../style_extentions/Flex";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
 import Cabtypes from "../../types/CabTypes";
 
-type driverTypes = {
-  drivers: [EmployeeTypes];
-};
+// type driverTypes = {
+//   drivers: [EmployeeTypes];
+// };
 
 function AllCabDrivers() {
   const [searchtext, setSearchText] = useState("");
-  const { data: cabDetails, status } = useQuery({
+  const { data: cabDetails } = useQuery({
     queryKey: ["all-cabs"],
     queryFn: async () => {
       const response = await useAxios.get("/cabs/");
-      // console.log(response);
       return response?.data?.data;
     },
   });
-
-  // const cachedDrivers: driverTypes = useCachedData("All Cabs");
 
   const filteredCabDrivers = cabDetails?.filter((cab: Cabtypes) => {
     return (cab?.cabDriver as EmployeeTypes)?.fname?.includes(searchtext);
   });
 
-  // const drivers = cachedDrivers?.drivers;
+  // const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedDriver, setSelectedDriver] = useState<EmployeeTypes | null>(
+    null
+  );
 
-  const [anchorEl, setAnchorEl] = useState<null | SVGSVGElement>(null);
-  const [openMenu, setOpenMenu] = useState<boolean>(false);
-
-  const handleMenuOpen: MouseEventHandler<SVGSVGElement> = (e) => {
-    setAnchorEl(e.currentTarget);
-    setOpenMenu(!openMenu);
+  const handleMenuOpen = (driver: Cabtypes) => {
+    setSelectedDriver(driver === selectedDriver ? null : driver);
   };
-
-  //   console.log(cachedDrivers?.drivers);
 
   return (
     <PageContainer
@@ -71,7 +63,6 @@ function AllCabDrivers() {
     >
       <Box
         sx={{
-          // ...ColFlex,
           width: "100%",
           height: "50vh",
         }}
@@ -80,7 +71,6 @@ function AllCabDrivers() {
           <TextField
             variant="outlined"
             size="small"
-            // value={searchField}
             onChange={(e) => {
               setSearchText(e.target.value);
             }}
@@ -104,52 +94,54 @@ function AllCabDrivers() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredCabDrivers?.length &&
-                filteredCabDrivers?.map((driver: Cabtypes) => (
-                  <TableRow
-                    key={driver._id}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "flex-start",
-                          alignItems: "center",
-                          gap: "10px",
-                        }}
-                      >
-                        <Avatar
-                          src={
-                            baseURL +
-                            (driver?.cabDriver as EmployeeTypes)?.profilePicture
-                          }
-                          sx={{ width: "30px", height: "30px" }}
-                        />
-                        {(driver?.cabDriver as EmployeeTypes)?.fname +
-                          " " +
-                          (driver?.cabDriver as EmployeeTypes)?.lname}
-                      </Box>
-                    </TableCell>
-                    <TableCell align="center">{driver?.cabNumber}</TableCell>
-                    <TableCell align="center">{driver?.numberPlate}</TableCell>
-                    <TableCell align="center">
-                      {!(driver?.cabDriver as EmployeeTypes)?.isCabCancelled
-                        ? "Active"
-                        : "Suspended"}
-                    </TableCell>
-                    <TableCell align="center">
-                      <MoreHoriz
-                        sx={{ cursor: "pointer" }}
-                        onClick={handleMenuOpen}
+              {filteredCabDrivers?.map((driver: Cabtypes) => (
+                <TableRow
+                  key={driver._id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}
+                    >
+                      <Avatar
+                        src={
+                          baseURL +
+                          (driver?.cabDriver as EmployeeTypes)?.profilePicture
+                        }
+                        sx={{ width: "30px", height: "30px" }}
                       />
-                      <Menu
-                        elevation={1}
-                        anchorEl={anchorEl}
-                        open={openMenu}
-                        onClose={() => setOpenMenu(!openMenu)}
-                        MenuListProps={{
-                          "aria-labelledby": "basic-button",
+                      {(driver?.cabDriver as EmployeeTypes)?.fname +
+                        " " +
+                        (driver?.cabDriver as EmployeeTypes)?.lname}
+                    </Box>
+                  </TableCell>
+                  <TableCell align="center">{driver?.cabNumber}</TableCell>
+                  <TableCell align="center">{driver?.numberPlate}</TableCell>
+                  <TableCell align="center">
+                    {!(driver?.cabDriver as EmployeeTypes)?.isCabCancelled
+                      ? "Active"
+                      : "Suspended"}
+                  </TableCell>
+                  <TableCell align="center">
+                    <MoreHoriz
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => handleMenuOpen(driver)}
+                    />
+                    {selectedDriver === driver && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          borderRadius: "10px",
+                          right: "8rem",
+                          boxShadow:
+                            "rgba(0, 0, 0, 0.2) 0px 2px 1px -1px, rgba(0, 0, 0, 0.14) 0px 1px 1px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px 0px",
+                          padding: "8px 0px",
+                          backgroundColor: "white",
                         }}
                       >
                         <MenuItem
@@ -161,7 +153,7 @@ function AllCabDrivers() {
                             gap: "10px",
                           }}
                         >
-                          <Visibility sx={{}} />
+                          <VisibilityIcon sx={{}} />
                           View Details
                         </MenuItem>
                         <Divider />
@@ -190,10 +182,11 @@ function AllCabDrivers() {
                           <DeleteForever sx={{}} />
                           Remove Driver
                         </MenuItem>
-                      </Menu>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </div>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>

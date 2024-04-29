@@ -51,7 +51,8 @@ function AddPassengers() {
   const { setSelectedEmps } = useContext(SelectedEmpsContext);
 
   const rangreth = [33.996807, 74.79202];
-  const zaira = [34.1639168, 74.8158976];
+  // const zaira = [34.1639168, 74.8158976];
+  const zaira = [34.17342209237591, 74.80831111718207];
 
   const routeState = location?.state;
 
@@ -131,17 +132,17 @@ function AddPassengers() {
   };
 
   // Function to handle changes in the department selection
-  // const handleChangeDepartment = (event: any) => {
-  //   setDepartment(event.target.value);
-  //   // setFilteredEmployees
-  //   setFilteredEmployees(() =>
-  //     filteredEmployees?.filter(
-  //       (employee: EmployeeTypes) =>
-  //         employee.department?.toLocaleLowerCase() ==
-  //         event.target.value?.toLocaleLowerCase()
-  //     )
-  //   );
-  // };
+  const handleChangeDepartment = (event: any) => {
+    setDepartment(event.target.value);
+    // setFilteredEmployees
+    setFilteredEmployees(() =>
+      filteredEmployees?.filter(
+        (employee: EmployeeTypes) =>
+          employee.department?.toLocaleLowerCase() ==
+          event.target.value?.toLocaleLowerCase()
+      )
+    );
+  };
 
   const SearchEmployees = (e: any) => {
     // setSearchField(e.target.value);
@@ -195,7 +196,7 @@ function AddPassengers() {
     // console.log(passengersLatLons)
 
     const passengersLatLons: string[] = selectedPassengers.map(
-      (passenger: any) => passenger.pickup
+      (passenger: any) => passenger.pickUp.coordinates
     );
 
     setSelectedEmps([
@@ -621,7 +622,7 @@ function AddPassengers() {
                         }}
                       >
                         <Avatar
-                          src={baseURL + employee?.profilePicture}
+                          // src={baseURL + employee?.profilePicture}
                           sx={{
                             width: "25px",
                             height: "25px",

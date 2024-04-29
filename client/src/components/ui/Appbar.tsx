@@ -28,6 +28,7 @@ import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import GlobalModal from "./Modal";
 import useAxios from "../../api/useAxios";
 import Cabtypes from "../../types/CabTypes";
+import { CreateShiftModal } from "./CreateShiftModal";
 
 function Appbar() {
   const navigate = useNavigate();
@@ -36,6 +37,8 @@ function Appbar() {
 
   const [onHover, setOnHover] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openShiftModal, setShiftOpenModal] = useState<boolean>(false);
+
   const [selectedTime, setSelectedTime] = useState<string>();
   const [selectedDate, setSelectedDate] = useState<any>(dayjs());
   const [selectedDriver, setSelectedDriver] = useState<any>({});
@@ -327,9 +330,16 @@ function Appbar() {
         }}
         variant="contained"
         startIcon={<AddCircleOutline />}
+        onClick={() => setShiftOpenModal(!openShiftModal)}
       >
         Create a Shift
       </Button>
+      {openShiftModal && (
+        <CreateShiftModal
+          openModal={openShiftModal}
+          setOpenModal={setShiftOpenModal}
+        />
+      )}
     </Box>
   );
 }
