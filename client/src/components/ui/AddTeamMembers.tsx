@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { FormEvent, useContext, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import useAxios from "../../api/useAxios";
 import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
@@ -19,8 +19,6 @@ import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import EmployeeTypes from "../../types/EmployeeTypes";
 
 export const AddTeamMembers = () => {
-  const navigate = useNavigate();
-  const [profilePic, setProfilePic] = useState("");
   const [department, setDepartment] = useState("");
   const [workLocation, setWorkLocation] = useState("");
   const location = useLocation();
@@ -81,16 +79,31 @@ export const AddTeamMembers = () => {
   function HandleCabDriver(e: FormEvent) {
     e.preventDefault();
     const currentTarget = e.currentTarget as HTMLFormElement;
+    interface CabDriverData {
+      fname: string;
+      lname: string;
+      email: string;
+      phone: string;
+      address: string;
+      profilePicture: File;
+      password: string;
+      seatingCapacity: number;
+      cabNumber: string;
+      numberPlate: string;
+      carModel: string;
+      carColor: string;
+      role: string;
+    }
 
-    const cabDriverData = {
+    const cabDriverData: CabDriverData = {
       fname: currentTarget.firstName.value,
       lname: currentTarget.lastName.value,
       email: currentTarget.email.value,
       phone: currentTarget.phone.value,
       address: currentTarget.address.value,
-      profilePicture: currentTarget.profilePicture.files[0],
+      profilePicture: currentTarget.profilePicture.files?.[0] as File,
       password: currentTarget.password.value,
-      seatingCapacity: currentTarget.seatingCapacity.value,
+      seatingCapacity: parseInt(currentTarget.seatingCapacity.value, 10),
       cabNumber: currentTarget.cabNumber.value,
       numberPlate: currentTarget.numberPlate.value,
       carModel: currentTarget.carModel.value,
@@ -102,13 +115,13 @@ export const AddTeamMembers = () => {
 
     for (const key in cabDriverData) {
       if (cabDriverData.hasOwnProperty(key)) {
-        const value = cabDriverData[key];
+        const value = cabDriverData[key as keyof CabDriverData];
         if (key === "profilePicture") {
-          formData.append(key, value as File); // Append file directly
+          formData.append(key, value);
         } else if (typeof value === "object") {
-          formData.append(key, JSON.stringify(value)); // Convert nested objects to JSON strings
+          formData.append(key, JSON.stringify(value));
         } else {
-          formData.append(key, String(value)); // Convert other values to strings
+          formData.append(key, String(value));
         }
       }
     }
@@ -120,17 +133,19 @@ export const AddTeamMembers = () => {
     e.preventDefault();
     const currentTarget = e.currentTarget as HTMLFormElement;
 
-    // Assuming EmployeeTypes is defined somewhere and includes all the necessary types
     const teamMemberData: EmployeeTypes = {
       fname: currentTarget.firstName.value,
       lname: currentTarget.lastName.value,
       email: currentTarget.email.value,
       phone: currentTarget.phone.value,
       address: currentTarget.address.value,
-      profilePicture: currentTarget.profilePicture.files[0], // Assuming profilePicture is the file input for the profile picture
+      profilePicture: currentTarget.profilePicture.files[0],
       pickUp: {
-        coordinates: currentTarget.coordinates.value.split(",").map(Number),
-        address: currentTarget.address.value,
+        coordinates: currentTarget.coordinates.value.split(",").map(Number) as [
+          number,
+          number
+        ],
+        address: currentTarget.address.value as string,
       },
       password: currentTarget.password.value,
       workLocation: workLocation,
@@ -142,13 +157,13 @@ export const AddTeamMembers = () => {
 
     for (const key in teamMemberData) {
       if (teamMemberData.hasOwnProperty(key)) {
-        const value = teamMemberData[key];
+        const value = teamMemberData[key as keyof EmployeeTypes];
         if (key === "profilePicture") {
-          formData.append(key, value as File); // Append file directly
+          formData.append(key, value as File);
         } else if (typeof value === "object") {
-          formData.append(key, JSON.stringify(value)); // Convert nested objects to JSON strings
+          formData.append(key, JSON.stringify(value));
         } else {
-          formData.append(key, String(value)); // Convert other values to strings
+          formData.append(key, String(value));
         }
       }
     }
@@ -320,7 +335,7 @@ export const AddTeamMembers = () => {
                 label="worklocation"
               >
                 <MenuItem value={"Rangreth"}>Rangreth</MenuItem>
-                <MenuItem value={"Zaira Towers"}>Zaira Tower</MenuItem>
+                <MenuItem value={"Zaira Tower"}>Zaira Tower</MenuItem>
               </Select>
             </FormControl>
             <TextField
