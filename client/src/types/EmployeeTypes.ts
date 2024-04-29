@@ -9,14 +9,14 @@ type EmployeeTypes = {
   profilePicture?: string;
   department?: string;
   pickUp?: {
-    type: "Point";
+    // type: "Point";
     coordinates: [number, number];
     address: string;
     _id?: string;
   };
   address?: string;
   currentShift?: string;
-  workLocation?: "Rangreth" | "Zaira Tower" | "";
+  workLocation?: string;
   isCabCancelled?: {
     leaveType?: "pickup" | "drop" | "both" | number;
     startTime?: number | null;

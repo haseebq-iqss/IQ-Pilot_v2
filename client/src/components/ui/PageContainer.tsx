@@ -4,6 +4,7 @@ import { ColFlex } from "../../style_extentions/Flex";
 import PageHeader from "./PageHeader";
 import { AddCircleOutline } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
 type PageContainerPropTypes = {
   children: ReactNode;
@@ -19,6 +20,9 @@ function PageContainer({
   parentStyles,
 }: PageContainerPropTypes) {
   const navigate = useNavigate();
+  const goBackHandler = () => {
+    navigate(-1);
+  };
   return (
     <Box
       sx={{
@@ -66,12 +70,24 @@ function PageContainer({
             borderRadius: "4px",
             px: 2.5,
             width: "15rem",
+            display: "flex",
+            alignItems: "center",
           }}
           variant="contained"
-          startIcon={<AddCircleOutline />}
-          onClick={() => {
-            navigate("/admin/addTeamMembers");
-          }}
+          startIcon={
+            !location.pathname.includes("/admin/addTeamMembers") ? (
+              <AddCircleOutline />
+            ) : (
+              <ChevronLeftIcon />
+            )
+          }
+          onClick={
+            location.pathname.includes("/admin/addTeamMembers")
+              ? goBackHandler
+              : () => {
+                  navigate("/admin/addTeamMembers");
+                }
+          }
         >
           {`${
             location.pathname.includes("/admin/allTeamMembers")

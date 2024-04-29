@@ -1,5 +1,5 @@
 import {
-  AddCircleOutline,
+  // AddCircleOutline,
   DeleteForever,
   EditLocation,
   MoreHoriz,
@@ -9,7 +9,6 @@ import {
 import {
   Avatar,
   Box,
-  Button,
   Divider,
   IconButton,
   Menu,
@@ -26,18 +25,18 @@ import { useState } from "react";
 import PageContainer from "../../components/ui/PageContainer";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import baseURL from "../../utils/baseURL";
-import useCachedData from "./../../hooks/useCachedData";
+// import useCachedData from "./../../hooks/useCachedData";
 import { RowFlex } from "../../style_extentions/Flex";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
 
-type driverTypes = {
-  employees: [EmployeeTypes];
-};
+// type driverTypes = {
+//   employees: [EmployeeTypes];
+// };
 
 function AllTeamMembers() {
   const [searchtext, setSearchText] = useState("");
-  const { data: teamMemberData, status } = useQuery({
+  const { data: teamMemberData } = useQuery({
     queryKey: ["all-teamMembers"],
     queryFn: async () => {
       const response = await useAxios.get("/users/tms");
@@ -50,9 +49,9 @@ function AllTeamMembers() {
       return teamMember?.fname?.includes(searchtext);
     }
   );
-  const cachedEmployees: driverTypes = useCachedData("All Employees");
+  // const cachedEmployees: driverTypes = useCachedData("All Employees");
 
-  const employees = cachedEmployees?.employees;
+  // const employees = cachedEmployees?.employees;
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openMenu, setOpenMenu] = useState<boolean>(false);
@@ -128,59 +127,67 @@ function AllTeamMembers() {
                     <TableCell align="center">
                       {!employee.isCabCancelled ? "Active" : "On Leave"}
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell align="center" sx={{ position: "relative" }}>
                       <MoreHoriz
                         sx={{ cursor: "pointer" }}
                         onClick={handleMenuOpen}
                       />
-                      <Menu
-                        elevation={1}
-                        anchorEl={anchorEl}
-                        open={openMenu}
-                        onClose={() => setOpenMenu(!openMenu)}
-                        MenuListProps={{
-                          "aria-labelledby": "basic-button",
-                        }}
-                      >
-                        <MenuItem
-                          sx={{
-                            ...RowFlex,
-                            color: "info.main",
-                            fontWeight: 600,
-                            justifyContent: "flex-start",
-                            gap: "10px",
+                      {openMenu && (
+                        <div
+                          // elevation={1}
+                          // anchorEl={anchorEl}
+                          // open={openMenu}
+                          // onClose={() => setOpenMenu(!openMenu)}
+                          // MenuListProps={{
+                          //   "aria-labelledby": "basic-button",
+                          // }}
+                          style={{
+                            position: "absolute",
+                            right: "10rem",
+                            // margin: "1px solid red",
                           }}
+                          onClick={handleMenuOpen}
                         >
-                          <Visibility sx={{}} />
-                          View Details
-                        </MenuItem>
-                        <Divider />
-                        <MenuItem
-                          sx={{
-                            ...RowFlex,
-                            color: "warning.main",
-                            fontWeight: 600,
-                            justifyContent: "flex-start",
-                            gap: "10px",
-                          }}
-                        >
-                          <EditLocation sx={{}} />
-                          Edit Details
-                        </MenuItem>
-                        <Divider />
-                        <MenuItem
-                          sx={{
-                            ...RowFlex,
-                            color: "error.main",
-                            fontWeight: 600,
-                            justifyContent: "flex-start",
-                            gap: "10px",
-                          }}
-                        >
-                          <DeleteForever sx={{}} />
-                          Remove Employee
-                        </MenuItem>
-                      </Menu>
+                          <div
+                          // style={{
+                          //   ...RowFlex,
+                          //   color: "info.main",
+                          //   fontWeight: 600,
+                          //   justifyContent: "flex-start",
+                          //   gap: "10px",
+                          // }}
+                          >
+                            {/* <Visibility sx={{}} /> */}
+                            {employee._id}View Details
+                          </div>
+                          <Divider />
+                          <MenuItem
+                            sx={{
+                              ...RowFlex,
+                              color: "warning.main",
+                              fontWeight: 600,
+                              justifyContent: "flex-start",
+                              gap: "10px",
+                            }}
+                          >
+                            <EditLocation sx={{}} />
+                            Edit Details
+                          </MenuItem>
+                          <Divider />
+                          <MenuItem
+                            sx={{
+                              ...RowFlex,
+                              color: "error.main",
+                              fontWeight: 600,
+                              justifyContent: "flex-start",
+                              gap: "10px",
+                            }}
+                          >
+                            <DeleteForever sx={{}} />
+                            Remove Employee
+                          </MenuItem>
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
