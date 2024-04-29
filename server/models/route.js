@@ -21,9 +21,8 @@ const routeSchema = new mongoose.Schema(
     ],
     shiftDate: {
       type: String,
-      required: true,
     },
-    typeofRoute: {
+    typeOfRoute: {
       type: String,
       enum: ["pickup", "drop", "supply"],
       required: true,
