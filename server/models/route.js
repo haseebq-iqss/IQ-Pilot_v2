@@ -4,7 +4,7 @@ const routeSchema = new mongoose.Schema(
   {
     cab: {
       type: mongoose.Schema.ObjectId,
-      ref: "cab",
+      ref: "Cab",
       required: true,
     },
     workLocation: {
@@ -15,14 +15,14 @@ const routeSchema = new mongoose.Schema(
     passengers: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "employee",
+        ref: "User",
         required: true,
       },
     ],
     shiftDate: {
       type: String,
     },
-    typeOfRoute: {
+    typefRoute: {
       type: String,
       enum: ["pickup", "drop", "supply"],
       required: true,

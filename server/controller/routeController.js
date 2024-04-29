@@ -2,6 +2,7 @@ const Cab = require("../models/cab");
 const User = require("../models/user");
 const Route = require("../models/route");
 const { catchAsync } = require("../utils/catchAsync");
+const AppError = require("../utils/appError");
 
 const assignCabToEmployees = (employees, cabs, workLocation, currentShift) => {
   const remainingEmployees = [...employees];
@@ -46,7 +47,7 @@ const assignCabToEmployees = (employees, cabs, workLocation, currentShift) => {
     if (availableCapacity <= 0) continue;
 
     const group = {
-      cab: cab._id,
+      cab: cab,
       passengers: [],
       availableCapacity,
     };
@@ -202,4 +203,64 @@ exports.getRoutes = catchAsync(async (req, res, next) => {
     return next(new AppError("No routes found...", 404));
   }
   res.status(200).json({ status: "Success", data: routes });
+});
+
+exports.pendingPassengers = catchAsync(async (req, res, next) => {
+  const passengers = await Route.aggregate([
+    {
+      $unwind: "$passengers",
+    },
+    {
+      $group: {
+        _id: "$passengers",
+      },
+    },
+  ]);
+
+  const passengersIds = passengers.map((passenger) => passenger._id);
+
+  const pendingPassengers = await User.find({
+    _id: { $nin: passengersIds },
+    role: { $ne: "driver" },
+  });
+  res.status(200).json({
+    status: "Success",
+    results: pendingPassengers.length,
+    data: pendingPassengers,
+  });
+});
+
+exports.rosteredPassengers = catchAsync(async (req, res, next) => {
+  const passengers = await Route.aggregate([
+    {
+      $unwind: "$passengers",
+    },
+    {
+      $group: {
+        _id: "$passengers",
+      },
+    },
+  ]);
+
+  const passengersIds = passengers.map((passenger) => passenger._id);
+
+  const rostered = await User.find({
+    _id: { $in: passengersIds },
+    role: { $ne: "driver" },
+  });
+  res.status(200).json({
+    status: "Success",
+    results: rostered.length,
+    data: rostered,
+  });
+});
+
+exports.driverRoute = catchAsync(async (req, res, next) => {
+  const id = req.params.id;
+  const route = await Route.find({ cab: id })
+    .populate({ path: "cab", populate: { path: "cabDriver" } })
+    .populate("passengers");
+  if (!route)
+    return next(new AppError(`No route for this driver id:${id}`, 404));
+  res.status(200).json({ status: "Success", data: route });
 });
