@@ -29,7 +29,8 @@ const createSendToken = function (user, statusCode, res) {
 
 const signup = catchAsync(async (req, res, next) => {
   const user = await User.create({
-    ...req.body, pickUp: req.body.pickUp && JSON.parse(req.body.pickUp),
+    ...req.body,
+    // pickUp: req.body.pickUp && JSON.parse(req.body.pickUp),
     profilePicture: req.file?.filename || "dummy.jpg",
   });
   if (user.role === "driver") {

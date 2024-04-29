@@ -1,3 +1,4 @@
+const fs = require("node:fs");
 const Cab = require("../models/cab");
 const User = require("../models/user");
 const AppError = require("../utils/appError");
@@ -91,16 +92,18 @@ const updateUser = catchAsync(async (req, res, next) => {
 const deleteUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const deleted_user = await User.findByIdAndDelete(id);
-  if (!deleteUser) {
+  if (!deleted_user) {
     return next(new AppError(`No document found with this id`, 404));
   }
+  fs.unlinkSync(
+    `./public/images/profileImages/${deleted_user?.profilePicture}`
+  );
+
   if (deleted_user.role === "driver") {
-    const cab = await Cab.find({ cabDriver: deleted_user._id });
-    if (!cab) return next(new AppError(`No cab assigned for this driver`, 404));
-    await Cab.findByIdAndDelete(cab._id);
+    await Cab.findOneAndDelete({ cabDriver: deleted_user._id });
   }
 
-  res.status(204).json({ status: "Success" });
+  res.status(204).json({ status: "Success", message: "User deleted!" });
 });
 
 module.exports = {
