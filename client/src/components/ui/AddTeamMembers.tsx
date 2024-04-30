@@ -21,6 +21,10 @@ import EmployeeTypes from "../../types/EmployeeTypes";
 export const AddTeamMembers = () => {
   const [department, setDepartment] = useState("");
   const [workLocation, setWorkLocation] = useState("");
+  const [fullName, setFullName] = useState({
+    firstName: "",
+    lastName: "",
+  });
   const location = useLocation();
   const driverPath = location.pathname.includes("/admin/addCabDrivers");
   const handleWorkLocation = (event: any) => {
@@ -128,6 +132,13 @@ export const AddTeamMembers = () => {
     // console.log(formData);
     AddCabDriver(formData);
   }
+  const handleFullName: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    const { name, value } = e.target;
+    setFullName((prevFullName) => ({
+      ...prevFullName,
+      [name]: value,
+    }));
+  };
 
   function HandleAddTM(e: FormEvent) {
     e.preventDefault();
@@ -161,7 +172,17 @@ export const AddTeamMembers = () => {
         if (key === "profilePicture") {
           formData.append(key, value as File);
         } else if (typeof value === "object") {
-          formData.append(key, JSON.stringify(value));
+          formData.append(
+            "pickUp[coordinates][]",
+            teamMemberData.pickUp!.coordinates[0].toString()
+          );
+          formData.append(
+            "pickUp[coordinates][]",
+            teamMemberData.pickUp!.coordinates[1].toString()
+          );
+          formData.append("pickUp[address]", teamMemberData.pickUp!.address);
+          // console.log(key, value);
+          // console.log(JSON.stringify(value));
         } else {
           formData.append(key, String(value));
         }
@@ -208,7 +229,6 @@ export const AddTeamMembers = () => {
           }
         >
           {/* HEADER */}
-
           <Box
             sx={{
               ...RowFlex,
@@ -225,6 +245,7 @@ export const AddTeamMembers = () => {
               type="text"
               placeholder="Enter your first name"
               InputLabelProps={{ shrink: true }}
+              onChange={handleFullName}
             />
             <TextField
               required
@@ -234,6 +255,7 @@ export const AddTeamMembers = () => {
               type="text"
               placeholder="Enter your last name"
               InputLabelProps={{ shrink: true }}
+              onChange={handleFullName}
             />
           </Box>
           <Box
@@ -262,6 +284,87 @@ export const AddTeamMembers = () => {
               placeholder="Enter your phone number"
               InputLabelProps={{ shrink: true }}
             />
+          </Box>{" "}
+          {driverPath && (
+            <Box
+              sx={{
+                ...RowFlex,
+                width: "100%",
+                justifyContent: "space-between",
+                gap: "15px",
+              }}
+            >
+              <TextField
+                required
+                fullWidth
+                name="password"
+                label="password"
+                type="password"
+                placeholder="Password"
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                required
+                fullWidth
+                name="address"
+                label="address"
+                type="text"
+                placeholder="Enter your address"
+                InputLabelProps={{ shrink: true }}
+              />
+            </Box>
+          )}
+          <Box
+            sx={{
+              ...RowFlex,
+              width: "100%",
+              justifyContent: "space-between",
+              gap: "15px",
+            }}
+          >
+            {!driverPath && (
+              <FormControl fullWidth>
+                <InputLabel
+                  sx={{ lineHeight: "10px", fontSize: "0.8rem" }}
+                  id="department-label"
+                >
+                  Department
+                </InputLabel>
+                <Select
+                  // size="small"
+                  labelId="department-label"
+                  id="department-select"
+                  value={department}
+                  onChange={handleChangeDepartment}
+                  label="Department"
+                >
+                  <MenuItem value={"BD"}>BD</MenuItem>
+                  <MenuItem value={"BD-SD"}>BD-SD</MenuItem>
+                  <MenuItem value={"BD-SES2"}>BD-SES2</MenuItem>
+                  <MenuItem value={"Civil-SES2"}>Civil-SES2</MenuItem>
+                  <MenuItem value={"Cyber"}>Cyber</MenuItem>
+                  <MenuItem value={"L&D"}>L&D</MenuItem>
+                  <MenuItem value={"Marketing"}>Marketing</MenuItem>
+                  <MenuItem value={"PD"}>PD</MenuItem>
+                  <MenuItem value={"PSD"}>PSD</MenuItem>
+                  <MenuItem value={"S&S (HR)"}>S&S (HR)</MenuItem>
+                  <MenuItem value={"S&S (IT)"}>S&S (IT)</MenuItem>
+                  <MenuItem value={"S&S (OPS)"}>S&S (OPS)</MenuItem>
+                  <MenuItem value={"Software"}>Software</MenuItem>
+                </Select>
+              </FormControl>
+            )}
+            {!driverPath && (
+              <TextField
+                required
+                fullWidth
+                name="password"
+                label="password"
+                type="password"
+                placeholder="Password"
+                InputLabelProps={{ shrink: true }}
+              />
+            )}
           </Box>
           <Box
             sx={{
@@ -271,45 +374,38 @@ export const AddTeamMembers = () => {
               gap: "15px",
             }}
           >
-            <FormControl fullWidth>
-              <InputLabel
-                sx={{ lineHeight: "10px", fontSize: "0.8rem" }}
-                id="department-label"
-              >
-                Department
-              </InputLabel>
-              <Select
-                // size="small"
-                labelId="department-label"
-                id="department-select"
-                value={department}
-                onChange={handleChangeDepartment}
-                label="Department"
-              >
-                <MenuItem value={"BD"}>BD</MenuItem>
-                <MenuItem value={"BD-SD"}>BD-SD</MenuItem>
-                <MenuItem value={"BD-SES2"}>BD-SES2</MenuItem>
-                <MenuItem value={"Civil-SES2"}>Civil-SES2</MenuItem>
-                <MenuItem value={"Cyber"}>Cyber</MenuItem>
-                <MenuItem value={"L&D"}>L&D</MenuItem>
-                <MenuItem value={"Marketing"}>Marketing</MenuItem>
-                <MenuItem value={"PD"}>PD</MenuItem>
-                <MenuItem value={"PSD"}>PSD</MenuItem>
-                <MenuItem value={"S&S (HR)"}>S&S (HR)</MenuItem>
-                <MenuItem value={"S&S (IT)"}>S&S (IT)</MenuItem>
-                <MenuItem value={"S&S (OPS)"}>S&S (OPS)</MenuItem>
-                <MenuItem value={"Software"}>Software</MenuItem>
-              </Select>
-            </FormControl>
-            <TextField
-              required
-              fullWidth
-              name="password"
-              label="password"
-              type="password"
-              placeholder="Password"
-              InputLabelProps={{ shrink: true }}
-            />
+            {!driverPath && (
+              <FormControl fullWidth>
+                <InputLabel
+                  sx={{ lineHeight: "10px", fontSize: "0.8rem" }}
+                  id="worklocation-label"
+                >
+                  Work Location
+                </InputLabel>
+                <Select
+                  // size="small"
+                  labelId="worklocation-label"
+                  id="worklocation-select"
+                  value={workLocation}
+                  onChange={handleWorkLocation}
+                  label="worklocation"
+                >
+                  <MenuItem value={"Rangreth"}>Rangreth</MenuItem>
+                  <MenuItem value={"Zaira Tower"}>Zaira Tower</MenuItem>
+                </Select>
+              </FormControl>
+            )}
+            {!driverPath && (
+              <TextField
+                required
+                fullWidth
+                name="address"
+                label="address"
+                type="text"
+                placeholder="Enter your address"
+                InputLabelProps={{ shrink: true }}
+              />
+            )}
           </Box>
           <Box
             sx={{
@@ -319,53 +415,18 @@ export const AddTeamMembers = () => {
               gap: "15px",
             }}
           >
-            <FormControl fullWidth>
-              <InputLabel
-                sx={{ lineHeight: "10px", fontSize: "0.8rem" }}
-                id="worklocation-label"
-              >
-                Work Location
-              </InputLabel>
-              <Select
-                // size="small"
-                labelId="worklocation-label"
-                id="worklocation-select"
-                value={workLocation}
-                onChange={handleWorkLocation}
-                label="worklocation"
-              >
-                <MenuItem value={"Rangreth"}>Rangreth</MenuItem>
-                <MenuItem value={"Zaira Tower"}>Zaira Tower</MenuItem>
-              </Select>
-            </FormControl>
-            <TextField
-              required
-              fullWidth
-              name="address"
-              label="address"
-              type="text"
-              placeholder="Enter your address"
-              InputLabelProps={{ shrink: true }}
-            />
-          </Box>
-          <Box
-            sx={{
-              ...RowFlex,
-              width: "100%",
-              justifyContent: "space-between",
-              gap: "15px",
-            }}
-          >
-            <TextField
-              required
-              //   fullWidth
-              sx={{ width: "50%" }}
-              name="coordinates"
-              label="Coordinates"
-              type="string"
-              placeholder="Coordinates"
-              InputLabelProps={{ shrink: true }}
-            />
+            {!driverPath && (
+              <TextField
+                required
+                //   fullWidth
+                sx={{ width: "50%" }}
+                name="coordinates"
+                label="Coordinates"
+                type="string"
+                placeholder="Coordinates"
+                InputLabelProps={{ shrink: true }}
+              />
+            )}
             <Button
               variant="contained"
               component="label"
@@ -386,7 +447,6 @@ export const AddTeamMembers = () => {
               />
             </Button>
           </Box>
-
           {driverPath && (
             <>
               <Typography variant="h5">Cab Details</Typography>
@@ -484,7 +544,9 @@ export const AddTeamMembers = () => {
               color="primary"
               variant="contained"
             >
-              {`Confirm and Add john`}
+              {`Confirm and Add ${
+                fullName.firstName + " " + fullName.lastName
+              }`}
             </Button>
           </Box>
         </Box>

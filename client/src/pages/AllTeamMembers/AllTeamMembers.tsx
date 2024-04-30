@@ -21,15 +21,16 @@ import {
   TableRow,
   TextField,
 } from "@mui/material";
-import { useState } from "react";
+import { MouseEventHandler, useState } from "react";
 import PageContainer from "../../components/ui/PageContainer";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import baseURL from "../../utils/baseURL";
 import { RowFlex } from "../../style_extentions/Flex";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
 
 function AllTeamMembers() {
+  const qc = useQueryClient();
   const [searchtext, setSearchText] = useState("");
   const { data: teamMemberData } = useQuery({
     queryKey: ["all-teamMembers"],
@@ -54,6 +55,20 @@ function AllTeamMembers() {
     setSelectedTeamMember(
       teamMember === selectedTeamMember ? null : teamMember
     );
+  };
+
+  const { mutate: deleteEmpMf } = useMutation({
+    mutationKey: ["delete-employee"],
+    mutationFn: async (employeeId: string) => {
+      await useAxios.delete(`/users/tm/${employeeId}`);
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["all-teamMembers"] });
+    },
+  });
+
+  const handleDeleteEmployee = (employeeId: string) => {
+    deleteEmpMf(employeeId);
   };
 
   return (
@@ -169,6 +184,7 @@ function AllTeamMembers() {
                             justifyContent: "flex-start",
                             gap: "10px",
                           }}
+                          onClick={() => handleDeleteEmployee(employee._id)}
                         >
                           <DeleteForever sx={{}} />
                           Remove Employee

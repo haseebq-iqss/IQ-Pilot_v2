@@ -81,18 +81,19 @@ function PageContainer({
               <ChevronLeftIcon />
             )
           }
-          onClick={
-            location.pathname.includes("/admin/addTeamMembers")
-              ? goBackHandler
-              : () => {
-                  navigate("/admin/addTeamMembers");
-                }
+          onClick={() =>
+            location.pathname.includes("/admin/allCabDrivers")
+              ? navigate("/admin/addCabDrivers")
+              : location.pathname.includes("/admin/allTeamMembers")
+              ? navigate("/admin/addTeamMembers")
+              : goBackHandler()
           }
         >
           {`${
             location.pathname.includes("/admin/allTeamMembers")
               ? "Add Team Member"
-              : location.pathname.includes("/admin/addTeamMembers")
+              : location.pathname.includes("/admin/addTeamMembers") ||
+                location.pathname.includes("/admin/addCabDrivers")
               ? "Go Back"
               : " Add Cab Driver"
           }`}

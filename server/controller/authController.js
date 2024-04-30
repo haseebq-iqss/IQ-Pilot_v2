@@ -28,6 +28,7 @@ const createSendToken = function (user, statusCode, res) {
 };
 
 const signup = catchAsync(async (req, res, next) => {
+  console.log(req.body.pickUp);
   const user = await User.create({
     ...req.body,
     // pickUp: req.body.pickUp && JSON.parse(req.body.pickUp),
@@ -44,7 +45,9 @@ const signup = catchAsync(async (req, res, next) => {
     });
   }
   // createSendToken(user, 201, res);
-  res.status(201).json({ status: "Success", user });
+  res
+    .status(201)
+    .json({ status: "Success", message: "Created Successfully", user });
 });
 
 const login = catchAsync(async (req, res, next) => {
