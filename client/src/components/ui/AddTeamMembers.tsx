@@ -17,6 +17,7 @@ import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import EmployeeTypes from "../../types/EmployeeTypes";
+import Cabtypes from "../../types/CabTypes";
 
 export const AddTeamMembers = () => {
   const [department, setDepartment] = useState("");
@@ -34,11 +35,12 @@ export const AddTeamMembers = () => {
     setDepartment(event.target.value);
   };
 
-  const addTMMF = (teamMemberData: EmployeeTypes) => {
+  const addTMMF = (teamMemberData: any) => {
     return useAxios.post("auth/signup", teamMemberData);
   };
 
-  const addCabDriver = (cabDriverData: EmployeeTypes) => {
+  type CabDriverType = EmployeeTypes & Cabtypes;
+  const addCabDriver = (cabDriverData: CabDriverType) => {
     // console.log(cabDriverData);
     return useAxios.post("auth/signup", cabDriverData);
   };
@@ -99,7 +101,7 @@ export const AddTeamMembers = () => {
       role: string;
     }
 
-    const cabDriverData: CabDriverData = {
+    const cabDriverData: CabDriverType = {
       fname: currentTarget.firstName.value,
       lname: currentTarget.lastName.value,
       email: currentTarget.email.value,
@@ -119,7 +121,7 @@ export const AddTeamMembers = () => {
 
     for (const key in cabDriverData) {
       if (cabDriverData.hasOwnProperty(key)) {
-        const value = cabDriverData[key as keyof CabDriverData];
+        const value: any = cabDriverData[key as keyof CabDriverData];
         if (key === "profilePicture") {
           formData.append(key, value);
         } else if (typeof value === "object") {
@@ -130,7 +132,7 @@ export const AddTeamMembers = () => {
       }
     }
     // console.log(formData);
-    AddCabDriver(formData);
+    AddCabDriver(formData as CabDriverType);
   }
   const handleFullName: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { name, value } = e.target;

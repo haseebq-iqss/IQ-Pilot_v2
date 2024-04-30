@@ -39,7 +39,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
         timing,
         centralPoint: eval(centralPoint),
       };
-      // console.log(shiftData);
+      console.log(shiftData);
       navigate("createShift");
     } else {
       setOpenSnack({
