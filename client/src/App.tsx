@@ -37,7 +37,8 @@ function App() {
           let user: EmployeeTypes = res.data.data;
           setUserData(user);
           // if (res.data.currentUser?.role) {
-          isBaseRoute && navigate(`/${res.data.currentUser?.role}`);
+            // console.log(res.data)
+          isBaseRoute && navigate(`/${user.role}`);
           // }
         })
         .catch(() => navigate("/"));
