@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import GlobalModal from "./Modal";
 import {
   Box,
@@ -7,13 +7,12 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  TextField,
-  Typography,
 } from "@mui/material";
-import { DateCalendar, MobileTimePicker } from "@mui/x-date-pickers";
-import EmployeeTypes from "../../types/EmployeeTypes";
-import Cabtypes from "../../types/CabTypes";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex";
+import RouteIcon from "@mui/icons-material/Route";
+import SnackbarContext from "../../context/SnackbarContext";
+import { SnackBarContextTypes } from "../../types/SnackbarTypes";
+import { useNavigate } from "react-router-dom";
 
 type CreateShiftModalProps = {
   openModal: boolean;
@@ -23,6 +22,34 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
   openModal,
   setOpenModal,
 }) => {
+  const [routeType, setRouteType] = useState<"pickup" | "drop">("pickup");
+  const [location, setLocation] = useState("");
+  const [timing, setTiming] = useState("");
+  const [centralPoint, setCentralPoint] = useState<any>();
+
+  const navigate = useNavigate();
+
+  const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
+
+  const HandleProceedToCreateShiftPage = () => {
+    if (location?.length && timing?.length && centralPoint?.length) {
+      const shiftData = {
+        routeType,
+        location,
+        timing,
+        centralPoint: eval(centralPoint),
+      };
+      // console.log(shiftData);
+      navigate("createShift");
+    } else {
+      setOpenSnack({
+        open: true,
+        message: "Missing fields!",
+        severity: "warning",
+      });
+    }
+  };
+
   return (
     <GlobalModal
       headerText={"Configure Shift"}
@@ -42,40 +69,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
             gap: "25px",
           }}
         >
-          {/* Shift time and date*/}
-          {/* <Box
-            sx={{
-              ...RowFlex,
-              width: "100%",
-              justifyContent: "space-between",
-              gap: "15px",
-            }}
-          >
-            <Box sx={{ ...ColFlex, alignItems: "flex-start", width: "30%" }}>
-              <Typography sx={{}} variant="caption" fontWeight={500}>
-                Shift Time
-              </Typography>
-              <MobileTimePicker
-              // label="Select Time"
-              // value={selectedTime}
-              // onChange={handleTimeChange}
-              />
-            </Box>
-
-            <Box sx={{ ...ColFlex, alignItems: "flex-start", width: "70%" }}>
-              <Typography sx={{}} variant="caption" fontWeight={500}>
-                Shift Date
-              </Typography>
-              <TextField
-                fullWidth
-                // value={
-                //   selectedDate
-                //     ? DateDifference(selectedDate)
-                //     : DateDifference(todaysDate)
-                // }
-              />
-            </Box>
-          </Box> */}
+          {/* Pickup or Drop and Location*/}
           <Box
             sx={{
               ...RowFlex,
@@ -89,9 +83,9 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               <Select
                 labelId="pickup-or-drop-label"
                 id="pickup-or-drop"
-                // value={routeType}
+                value={routeType}
                 label="Pickup or Drop"
-                // onChange={handlePickupOrDropChange}
+                onChange={(e: any) => setRouteType(e.target.value)}
               >
                 <MenuItem value="pickup">Pickup</MenuItem>
                 <MenuItem value="drop">Drop</MenuItem>
@@ -103,15 +97,16 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               <Select
                 labelId="office-label"
                 id="office"
-                // value={office}
+                value={location}
                 label="Location"
-                // onChange={handleOfficeLocationChange}
+                onChange={(e) => setLocation(e.target.value)}
               >
                 <MenuItem value="Zaira Tower">Zaira Tower</MenuItem>
                 <MenuItem value="Rangreth">Rangreth</MenuItem>
               </Select>
             </FormControl>
           </Box>
+          {/* Shift time and central point*/}
           <Box
             sx={{
               ...RowFlex,
@@ -125,16 +120,16 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               <Select
                 labelId="shift-timing-label"
                 id="shift-timing-label"
-                // value={routeType}
+                value={timing}
                 label="Shift Timing"
-                // onChange={handlePickupOrDropChange}
+                onChange={(e) => setTiming(e.target.value)}
               >
-                <MenuItem value="2.00PM - 8.30PM">2.00PM - 8.30PM</MenuItem>
-                <MenuItem value="2.00PM - 11.00PM">2.00PM - 11.00PM</MenuItem>
-                <MenuItem value="4.00PM - 8.30PM">4.00PM - 8.30PM</MenuItem>
-                <MenuItem value="4.00PM - 01.00AM">4.00PM - 01.00AM</MenuItem>
-                <MenuItem value="12:30PM - 8:30PM">12:30PM - 8:30PM</MenuItem>
-                <MenuItem value="2:00PM - 6:00PM">2:00PM - 6:00PM</MenuItem>
+                <MenuItem value="14:00 - 20:30">2.00PM - 8.30PM</MenuItem>
+                <MenuItem value="14:00 - 23:00">2.00PM - 11.00PM</MenuItem>
+                <MenuItem value="16:00 - 20:30">4.00PM - 8.30PM</MenuItem>
+                <MenuItem value="16:00 - 01:00">4.00PM - 01.00AM</MenuItem>
+                <MenuItem value="12:30 - 20:30">12:30PM - 8:30PM</MenuItem>
+                <MenuItem value="14:00 - 18:00">2:00PM - 6:00PM</MenuItem>
               </Select>
             </FormControl>
 
@@ -143,15 +138,25 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               <Select
                 labelId="central-point-label"
                 id="central-point-label"
-                // value={office}
+                value={centralPoint}
                 label="central-point-label"
-                // onChange={handleOfficeLocationChange}
+                onChange={(e) => setCentralPoint(e.target.value)}
               >
-                <MenuItem value="Bemina Area">Bemina Area</MenuItem>
-                <MenuItem value="Lal Bazar Area">Lal Bazar Area</MenuItem>
-                <MenuItem value="Karanagar Area">Karanagar Area</MenuItem>
-                <MenuItem value="Rangreth Area">Rangreth Area</MenuItem>
-                <MenuItem value="Soura Area">Soura Area</MenuItem>
+                <MenuItem value={"[34.07918418861709, 74.76795882716988]"}>
+                  Bemina Area
+                </MenuItem>
+                <MenuItem value={"[34.07884610905441, 74.77249651656975]"}>
+                  Lal Bazar Area
+                </MenuItem>
+                <MenuItem value={"[34.084051032954854, 74.79703437982327]"}>
+                  Karanagar Area
+                </MenuItem>
+                <MenuItem value={"[34.01011349472341, 74.79879001141188]"}>
+                  Rangreth Area
+                </MenuItem>
+                <MenuItem value={"[34.13990801842636, 74.80077605668806]"}>
+                  Soura Area
+                </MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -198,10 +203,10 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               marginTop: 2.5,
               py: 1.5,
             }}
-            // onClick={HandleProceedToAddPassengers}
+            onClick={HandleProceedToCreateShiftPage}
             color="primary"
             variant="contained"
-            // endIcon={<ArrowForward  />}
+            endIcon={<RouteIcon />}
           >
             Request a Shift
           </Button>
