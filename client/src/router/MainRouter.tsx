@@ -12,6 +12,7 @@ import AllCabDrivers from "../pages/AllCabDrivers/AllCabDrivers";
 import AllTeamMembers from "../pages/AllTeamMembers/AllTeamMembers";
 import AddPassengers from "../pages/AddPassengers/AddPassengers";
 import { AddTeamMembers } from "../components/ui/AddTeamMembers";
+import CreateShift from "../pages/CreateShift/CreateShift";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -99,6 +100,15 @@ function MainRouter() {
               element={
                 <SlideInOut>
                   <AddPassengers />
+                </SlideInOut>
+              }
+            />
+
+            <Route
+              path="admin/createShift"
+              element={
+                <SlideInOut>
+                  <CreateShift />
                 </SlideInOut>
               }
             />

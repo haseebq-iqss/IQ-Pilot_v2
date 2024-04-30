@@ -49,6 +49,7 @@ function AddPassengers() {
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
   //   console.log(location);
   const { setSelectedEmps } = useContext(SelectedEmpsContext);
+  const [filteredEmployees, setFilteredEmployees] = useState<EmployeeTypes[]>();
 
   const rangreth = [33.996807, 74.79202];
   // const zaira = [34.1639168, 74.8158976];
@@ -68,13 +69,6 @@ function AddPassengers() {
     distanceInKilometers: number;
     totalMinutes: number;
   };
-
-  //   const employeesCache: EmployeeTypes = useCachedData<any>("All Employees");
-  //   const employees = employeesCache?.employees;
-
-  //   useEffect(() => {
-  //     setFilteredEmployees(employees);
-  //   }, [employees]);
 
   const [searchField, setSearchField] = useState<string>("");
   const [distNtime, setDistNtime] = useState<distNtimeTypes>({
@@ -131,38 +125,51 @@ function AddPassengers() {
     );
   };
 
-  // Function to handle changes in the department selection
-  const handleChangeDepartment = (event: any) => {
-    setDepartment(event.target.value);
-    // setFilteredEmployees
-    setFilteredEmployees(() =>
-      filteredEmployees?.filter(
-        (employee: EmployeeTypes) =>
-          employee.department?.toLocaleLowerCase() ==
-          event.target.value?.toLocaleLowerCase()
-      )
-    );
+  useEffect(() => {
+    setFilteredEmployees(employees);
+  }, [employees]);
+
+  // useEffect(() => {
+  //   if (department) {
+  //     const filteredEmp = employees?.filter(
+  //       (employee: EmployeeTypes) =>
+  //         employee.department?.toLowerCase() === department.toLowerCase()
+  //     );
+  //     setFilteredEmployees(filteredEmp || []);
+  //   } else {
+  //     setFilteredEmployees([]);
+  //   }
+  // }, [department, employees]);
+
+  const handleChangeDepartment = (e: any) => {
+    setDepartment(e.target.value);
+    // if (department) {
+    // } else {
+    //   setFilteredEmployees([]);
+    // }
   };
 
+  useEffect(() => {
+    if (department?.length) {
+      const filteredEmp = employees?.filter(
+        (employee: EmployeeTypes) =>
+          employee.department?.toLowerCase() === department.toLowerCase()
+      );
+      setFilteredEmployees(filteredEmp || []);
+    } else {
+      setFilteredEmployees(employees);
+    }
+  }, [department]);
+
   const SearchEmployees = (e: any) => {
-    // setSearchField(e.target.value);
-    // const searchInput: string = e.target.value.toLowerCase();
-    // //  INTEGRATION MISSING  -----> Department Sort due to no field of department on the BE
-    // if (employees?.length) {
-    //   const filteredEmps = employees.filter(
-    //     (emp: EmployeeTypes) =>
-    //       emp.fname!.toLowerCase().includes(searchInput) ||
-    //       emp.lname!.toLowerCase().includes(searchInput)
-    //   );
-    //   setFilteredEmployees(filteredEmps);
-    // }
-    // return;
     setSearchField(e.target.value);
   };
 
-  const filteredEmployees = employees?.filter((employee: EmployeeTypes) => {
-    return employee?.fname?.toLowerCase().includes(searchField);
-  });
+  const filterEmployees = filteredEmployees?.filter(
+    (employee: EmployeeTypes) => {
+      return employee?.fname?.toLowerCase().includes(searchField);
+    }
+  );
 
   const handleClearFilterAndSearch = () => {
     setSearchField("");
@@ -359,7 +366,7 @@ function AddPassengers() {
                 labelId="department-label"
                 id="department-select"
                 value={department}
-                // onChange={handleChangeDepartment}
+                onChange={handleChangeDepartment}
                 label="Department"
               >
                 <MenuItem value={"BD"}>BD</MenuItem>
@@ -390,7 +397,7 @@ function AddPassengers() {
             gap: "10px",
           }}
         >
-          {filteredEmployees?.map((employee: EmployeeTypes) => {
+          {filterEmployees?.map((employee: EmployeeTypes) => {
             // console.log(employee);
             return (
               <Box key={employee?._id} sx={{ ...RowFlex, width: "100%" }}>
