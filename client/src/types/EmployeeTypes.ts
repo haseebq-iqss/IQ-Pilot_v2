@@ -6,7 +6,7 @@ type EmployeeTypes = {
   email?: string;
   role?: "admin" | "employee" | "driver";
   password?: string;
-  profilePicture?: string;
+  profilePicture?: string | File;
   department?: string;
   pickUp?: {
     // type: "Point";

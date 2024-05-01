@@ -95,9 +95,12 @@ const deleteUser = catchAsync(async (req, res, next) => {
   if (!deleted_user) {
     return next(new AppError(`No document found with this id`, 404));
   }
-  fs.unlinkSync(
-    `./public/images/profileImages/${deleted_user?.profilePicture}`
-  );
+
+  if (deleted_user.profilePicture) {
+    fs.unlinkSync(
+      `./public/images/profileImages/${deleted_user?.profilePicture}`
+    );
+  }
 
   if (deleted_user.role === "driver") {
     await Cab.findOneAndDelete({ cabDriver: deleted_user._id });

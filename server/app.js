@@ -7,6 +7,8 @@ const AppError = require("./utils/appError");
 const globalErrorController = require("./controller/errorController");
 const usersRoutes = require("./routes/usersRoutes");
 const routeRouter = require("./routes/routeRoute");
+const cronJob = require("./utils/cronJob");
+const attendanceRouter = require("./routes/attendanceRoutes");
 const app = express();
 
 // Middlewares
@@ -28,11 +30,15 @@ app.use("/api/v2/auth", authRoutes);
 app.use("/api/v2/users", usersRoutes);
 app.use("/api/v2/cabs", cabRoutes);
 app.use("/api/v2/routes", routeRouter);
+app.use("/api/v2/attendances", attendanceRouter);
 
+// Error Handling Middleware
 app.all("*", (req, res, next) => {
   const error = new AppError(`This page ${req.url} does not exist`, 404);
   next(error);
 });
 
+// Global Error Controller
 app.use(globalErrorController);
+cronJob.run();
 module.exports = app;
