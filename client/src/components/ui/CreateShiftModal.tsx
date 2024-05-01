@@ -13,6 +13,8 @@ import RouteIcon from "@mui/icons-material/Route";
 import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import useAxios from "../../api/useAxios";
 
 type CreateShiftModalProps = {
   openModal: boolean;
@@ -39,8 +41,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
         timing,
         centralPoint: eval(centralPoint),
       };
-      // console.log(shiftData);
-      navigate("createShift");
+      navigate("createShift", { state: shiftData });
     } else {
       setOpenSnack({
         open: true,
@@ -124,12 +125,12 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
                 label="Shift Timing"
                 onChange={(e) => setTiming(e.target.value)}
               >
-                <MenuItem value="14:00 - 20:30">2.00PM - 8.30PM</MenuItem>
-                <MenuItem value="14:00 - 23:00">2.00PM - 11.00PM</MenuItem>
-                <MenuItem value="16:00 - 20:30">4.00PM - 8.30PM</MenuItem>
-                <MenuItem value="16:00 - 01:00">4.00PM - 01.00AM</MenuItem>
-                <MenuItem value="12:30 - 20:30">12:30PM - 8:30PM</MenuItem>
-                <MenuItem value="14:00 - 18:00">2:00PM - 6:00PM</MenuItem>
+                <MenuItem value="14:00-20:30">2.00PM - 8.30PM</MenuItem>
+                <MenuItem value="14:00-23:00">2.00PM - 11.00PM</MenuItem>
+                <MenuItem value="16:00-20:30">4.00PM - 8.30PM</MenuItem>
+                <MenuItem value="16:00-01:00">4.00PM - 01.00AM</MenuItem>
+                <MenuItem value="12:30-20:30">12:30PM - 8:30PM</MenuItem>
+                <MenuItem value="14:00-18:00">2:00PM - 6:00PM</MenuItem>
               </Select>
             </FormControl>
 
