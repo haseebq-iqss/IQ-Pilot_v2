@@ -141,7 +141,14 @@ const RosterCard = ({ passengers, cab }: RosterCardTypes) => {
         </Box>
         <Box sx={{ ...ColFlex, width: "100%", my: 2, gap: "0.8rem" }}>
           <Typography fontSize={24} fontWeight={600}>
-            <span style={{ color: "#2997FC" }}>
+            <span
+              style={{
+                color:
+                  passengers?.length !== cab?.seatingCapacity
+                    ? "crimson"
+                    : "#2997FC",
+              }}
+            >
               {passengers?.length + " " + "out of 6"}
             </span>{" "}
             Seats Used

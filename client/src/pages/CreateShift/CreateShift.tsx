@@ -91,6 +91,7 @@ function CreateShift() {
               backgroundColor: "white",
               border: "3px solid #2997fc",
               borderRadius: 1.5,
+              cursor: "pointer",
             }}
           >
             <Typography
