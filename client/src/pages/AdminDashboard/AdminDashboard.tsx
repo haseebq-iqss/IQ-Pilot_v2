@@ -59,16 +59,18 @@ function AdminDashboard() {
 
   // ALL ASSIGNED ROUTES
   const getAllAssignedRoutesQF = () => {
-    return useAxios.get("route/nonActive");
+    return useAxios.get("routes");
   };
 
   const { data: allRoutes, status: allRoutesStatus } = useQuery({
     queryFn: getAllAssignedRoutesQF,
     queryKey: ["All Assigned Routes"],
     select: (data) => {
-      return data.data.nonActiveroutes;
+      return data.data.data;
     },
   });
+
+  console.log(allRoutes)
 
   // ALL AVAILABLE CABS
   const getAllCabsQF = async () => {
@@ -84,7 +86,7 @@ function AdminDashboard() {
 
   // ALL ROASTERED PASSENGERS
   const getRosteredPassengersQF = () => {
-    return useAxios.get("route/rosteredPassengers");
+    return useAxios.get("routes/rosteredPassengers");
   };
 
   const { data: rosteredPassengers, status: rosteredPassengersStatus } =
@@ -92,24 +94,27 @@ function AdminDashboard() {
       queryFn: getRosteredPassengersQF,
       queryKey: ["All Rostered Passengers"],
       select: (data) => {
-        return data.data.roasterd;
+        return data.data.data;
       },
     });
 
-  // ALL PENDING PASSENGERS
-  const getPendingPassengersQF = () => {
-    return useAxios.get("route/pendingPassengers");
-  };
+    
+    // ALL PENDING PASSENGERS
+    const getPendingPassengersQF = () => {
+      return useAxios.get("routes/pendingPassengers");
+    };
+    
+    const { data: pendingPassengers, status: pendingPassengersStatus } = useQuery(
+      {
+        queryFn: getPendingPassengersQF,
+        queryKey: ["All Pending Passengers"],
+        select: (data) => {
+          return data.data.data;
+        },
+      }
+    );
 
-  const { data: pendingPassengers, status: pendingPassengersStatus } = useQuery(
-    {
-      queryFn: getPendingPassengersQF,
-      queryKey: ["All Pending Passengers"],
-      select: (data) => {
-        return data.data.pendingPassengers;
-      },
-    }
-  );
+    // console.log(pendingPassengers)
 
   // ALL EMPLOYEES
   const getAllEmployees = () => {
