@@ -24,24 +24,37 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
   openModal,
   setOpenModal,
 }) => {
-  const [routeType, setRouteType] = useState<"pickup" | "drop">("pickup");
-  const [location, setLocation] = useState("");
-  const [timing, setTiming] = useState("");
-  const [centralPoint, setCentralPoint] = useState<any>();
+  const [typeOfRoute, settypeOfRoute] = useState<"pickup" | "drop">("pickup");
+  const [workLocation, setworkLocation] = useState("");
+  const [currentShift, setcurrentShift] = useState("");
+  const [ref_coords, setref_coords] = useState<any>();
 
   const navigate = useNavigate();
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
+  const createShiftMF = (shiftData: any) => {
+    return useAxios.post("/routes/shifts", shiftData);
+  };
+
+  const { mutate: createShiftMutation, status } = useMutation({
+    mutationFn: createShiftMF,
+    onSuccess: (data: any) => {
+      // console.log(data);
+      navigate("createShift", {
+        state: { data: data.data, centralPoint: ref_coords },
+      });
+    },
+  });
   const HandleProceedToCreateShiftPage = () => {
-    if (location?.length && timing?.length && centralPoint?.length) {
+    if (workLocation?.length && currentShift?.length && ref_coords?.length) {
       const shiftData = {
-        routeType,
-        location,
-        timing,
-        centralPoint: eval(centralPoint),
+        typeOfRoute,
+        workLocation,
+        currentShift,
+        ref_coords: eval(ref_coords),
       };
-      navigate("createShift", { state: shiftData });
+      createShiftMutation(shiftData);
     } else {
       setOpenSnack({
         open: true,
@@ -70,7 +83,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
             gap: "25px",
           }}
         >
-          {/* Pickup or Drop and Location*/}
+          {/* Pickup or Drop and workLocation*/}
           <Box
             sx={{
               ...RowFlex,
@@ -84,9 +97,9 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               <Select
                 labelId="pickup-or-drop-label"
                 id="pickup-or-drop"
-                value={routeType}
+                value={typeOfRoute}
                 label="Pickup or Drop"
-                onChange={(e: any) => setRouteType(e.target.value)}
+                onChange={(e: any) => settypeOfRoute(e.target.value)}
               >
                 <MenuItem value="pickup">Pickup</MenuItem>
                 <MenuItem value="drop">Drop</MenuItem>
@@ -94,13 +107,13 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
             </FormControl>
 
             <FormControl sx={{ width: "50%" }}>
-              <InputLabel id="office-label">Location</InputLabel>
+              <InputLabel id="office-label">workLocation</InputLabel>
               <Select
                 labelId="office-label"
                 id="office"
-                value={location}
-                label="Location"
-                onChange={(e) => setLocation(e.target.value)}
+                value={workLocation}
+                label="workLocation"
+                onChange={(e) => setworkLocation(e.target.value)}
               >
                 <MenuItem value="Zaira Tower">Zaira Tower</MenuItem>
                 <MenuItem value="Rangreth">Rangreth</MenuItem>
@@ -117,13 +130,15 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
             }}
           >
             <FormControl sx={{ width: "50%" }}>
-              <InputLabel id="shift-timing-label">Shift Timing</InputLabel>
+              <InputLabel id="shift-currentShift-label">
+                Shift currentShift
+              </InputLabel>
               <Select
-                labelId="shift-timing-label"
-                id="shift-timing-label"
-                value={timing}
-                label="Shift Timing"
-                onChange={(e) => setTiming(e.target.value)}
+                labelId="shift-currentShift-label"
+                id="shift-currentShift-label"
+                value={currentShift}
+                label="Shift currentShift"
+                onChange={(e) => setcurrentShift(e.target.value)}
               >
                 <MenuItem value="14:00-20:30">2.00PM - 8.30PM</MenuItem>
                 <MenuItem value="14:00-23:00">2.00PM - 11.00PM</MenuItem>
@@ -139,9 +154,9 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               <Select
                 labelId="central-point-label"
                 id="central-point-label"
-                value={centralPoint}
+                value={ref_coords}
                 label="central-point-label"
-                onChange={(e) => setCentralPoint(e.target.value)}
+                onChange={(e) => setref_coords(e.target.value)}
               >
                 <MenuItem value={"[34.07918418861709, 74.76795882716988]"}>
                   Bemina Area
@@ -161,39 +176,6 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               </Select>
             </FormControl>
           </Box>
-          {/* <Box
-            sx={{
-              ...RowFlex,
-              width: "100%",
-              justifyContent: "space-between",
-              gap: "15px",
-            }}
-          >
-            <FormControl sx={{ width: "100%" }}>
-              <InputLabel id="select-driver-label">Select Driver</InputLabel>
-              <Select
-                labelId="select-driver-label"
-                id="select-driver"
-                // value={selectedDriver}
-                label="Pickup or Drop"
-                // onChange={handleSelectDriver}
-              >
-                {cabs?.length ? (
-                  cabs?.map((driver: Cabtypes) => {
-                    return (
-                      <MenuItem key={driver?._id} value={driver as any}>
-                        {(driver?.cabDriver as EmployeeTypes)?.fname +
-                          " " +
-                          (driver?.cabDriver as EmployeeTypes)?.lname}
-                      </MenuItem>
-                    );
-                  })
-                ) : (
-                  <MenuItem value={"No Driver"}>No Driver</MenuItem>
-                )}
-              </Select>
-            </FormControl>
-          </Box> */}
           <Button
             sx={{
               width: "48%",
@@ -206,6 +188,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
             }}
             onClick={HandleProceedToCreateShiftPage}
             color="primary"
+            disabled={status === "pending"}
             variant="contained"
             endIcon={<RouteIcon />}
           >

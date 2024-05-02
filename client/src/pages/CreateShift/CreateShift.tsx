@@ -1,41 +1,32 @@
-import {
-  Add,
-  Close,
-  FlightTakeoff,
-  LocalTaxi,
-  Visibility,
-} from "@mui/icons-material";
-import { Avatar, Box, Button, ButtonBase, Typography } from "@mui/material";
-import { Route, useLocation } from "react-router-dom";
+import { Box, Typography } from "@mui/material";
+import { useLocation } from "react-router-dom";
 import { ColFlex, RowFlex, PageFlex } from "../../style_extentions/Flex.ts";
-import { useState } from "react";
-import EmployeeTypes from "../../types/EmployeeTypes.ts";
-import TagIcon from "@mui/icons-material/Tag";
 import LogoImage from "/images/logo.png";
 import RosterCard from "../../components/ui/RosterCard.tsx";
-import useAxios from "../../api/useAxios.ts";
-import { useMutation } from "@tanstack/react-query";
-// import { useQuery } from "@tanstack/react-query";
-// import useAxios from "../../api/useAxios.ts";
 
 function CreateShift() {
   const location = useLocation();
 
   const routeState = location?.state;
+  console.log(location.state);
 
-  const { data } = useMutation({
-    mutationFn: async () => {
-      const response = await useAxios.post("/routes/shifts", routeState);
-      console.log(response);
-    },
-  });
-
-  //   const [department, setDepartment] = useState("");
-  //   const [selectedPassengers, setSelectedPassengers] = useState<
-  //     Array<EmployeeTypes>
-  //   >([]);
-  //   const [previewMode, setPreviewMode] = useState<boolean>(false);
   //   const driverId: string | undefined = (routeState?.driver as any)?._id;
+  function mapCoordinatesToText(value: string) {
+    switch (value) {
+      case "[34.07918418861709, 74.76795882716988]":
+        return "Bemina Area";
+      case "[34.07884610905441, 74.77249651656975]":
+        return "Lal Bazar Area";
+      case "[34.084051032954854, 74.79703437982327]":
+        return "Karanagar Area";
+      case "[34.01011349472341, 74.79879001141188]":
+        return "Rangreth Area";
+      case "[34.13990801842636, 74.80077605668806]":
+        return "Soura Area";
+      default:
+        return "Unknown Area";
+    }
+  }
 
   return (
     <Box
@@ -64,12 +55,15 @@ function CreateShift() {
         {/* S1 */}
         <Box sx={{ ...ColFlex, alignItems: "flex-start", width: "60%" }}>
           <Typography variant="h4" fontWeight={600}>
-            Zaira Towers
+            {routeState?.data?.workLocation}
           </Typography>
           <Typography variant="h6" fontWeight={600}>
-            Bemina - 2:00PM - 8:30PM
+            {mapCoordinatesToText(routeState?.centralPoint) +
+              " " +
+              routeState?.data?.currentShift}
           </Typography>
         </Box>
+
         {/* S2 */}
         <Box
           sx={{
@@ -168,18 +162,13 @@ function CreateShift() {
             justifyContent: "flex-start",
           }}
         >
-          {Array.from({ length: 10 }).map((_, index) => (
-            <RosterCard key={index} />
+          {routeState?.data?.data.map((shift, index) => (
+            <RosterCard
+              key={index}
+              passengers={shift?.passengers}
+              cab={shift?.cab}
+            />
           ))}
-          {/* <Box
-            sx={{ width: "30rem", height: "100%", backgroundColor: "green" }}
-          ></Box> */}
-          {/* <Box
-            sx={{ width: "30rem", height: "100%", backgroundColor: "green" }}
-          ></Box> */}
-          {/* <Box
-            sx={{ width: "40rem", height: "100%", backgroundColor: "green" }}
-          ></Box> */}
         </Box>
       </Box>
     </Box>
