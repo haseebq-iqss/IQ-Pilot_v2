@@ -6,8 +6,11 @@ import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import { Route } from "@mui/icons-material";
 import MultipleStopIcon from "@mui/icons-material/MultipleStop";
+import baseURL from "../../utils/baseURL.ts";
+import EmployeeTypes from "../../types/EmployeeTypes.ts";
 
-const RosterCard = () => {
+const RosterCard = ({ passengers, cab }) => {
+  console.log(cab);
   return (
     <>
       <Box
@@ -19,7 +22,8 @@ const RosterCard = () => {
           borderRadius: "15px",
           backgroundColor: "white",
           transition: "all 1s",
-          gap: "0.8rem",
+          justifyContent: "flex-start",
+          gap: "0.2rem",
         }}
       >
         <Box sx={{ ...RowFlex, gap: "0.7rem", justifyContent: "start" }}>
@@ -56,7 +60,7 @@ const RosterCard = () => {
                     color: "orange",
                   }}
                 />
-                V
+                {cab?.cabNumber}
               </Typography>
 
               <Typography
@@ -76,7 +80,7 @@ const RosterCard = () => {
                     color: "primary.main",
                   }}
                 />
-                6
+                {cab?.seatingCapacity}
               </Typography>
               <Typography
                 sx={{
@@ -95,7 +99,7 @@ const RosterCard = () => {
                     color: "green",
                   }}
                 />
-                Grey
+                {cab?.carColor}
               </Typography>
               <Typography
                 sx={{
@@ -114,516 +118,95 @@ const RosterCard = () => {
                     color: "black",
                   }}
                 />
-                1151
+                {cab?.numberPlate.slice(5, 9)}
               </Typography>
             </Box>
           </Box>
         </Box>
-        <Box sx={{ ...ColFlex, width: "100%", my: "0.5rem", gap: "1rem" }}>
+        <Box sx={{ ...ColFlex, width: "100%", my: "0.5rem", gap: "0.8rem" }}>
           <hr style={{ border: "1px solid #BDBDBD", width: "50%" }} />
-          <Typography fontSize={25} fontWeight={600}>
-            <span style={{ color: "#2997FC" }}> 6 out of 6</span> Seats Used
+          <Typography fontSize={22} fontWeight={600}>
+            <span style={{ color: "#2997FC" }}>
+              {passengers?.length + " " + "out of 6"}
+            </span>{" "}
+            Seats Used
           </Typography>
         </Box>
 
-        <Box
-          sx={{
-            ...ColFlex,
-            // alignItems: "flex-start",
-            // justifyContent: "cen",
-            width: "100%",
-            height: "100%",
-            // py: 5,
-            gap: "1rem",
-          }}
-        >
+        {passengers?.map((passenger: EmployeeTypes, index) => (
           <Box
-            //   key={employee?._id}
             sx={{
-              ...RowFlex,
+              ...ColFlex,
+              justifyContent: "flex-start",
               width: "100%",
-              paddingBottom: "4px",
-              borderBottom: "1px solid #BDBDBD",
             }}
+            key={index}
           >
             <Box
               sx={{
                 ...RowFlex,
-                width: "80%",
-                justifyContent: "flex-start",
-                gap: "10px",
+                width: "100%",
+                paddingBottom: "4px",
+                borderBottom: "1px solid #BDBDBD",
+                height: "100%",
               }}
             >
-              {/* <Avatar
-                // src={baseURL + employee?.profilePicture}
+              <Box
                 sx={{
-                  width: "25px",
-                  height: "25px",
-                  backgroundColor: "rgba(10.59%, 38.04%, 98.82%, 0.8)",
+                  ...RowFlex,
+                  width: "80%",
+                  justifyContent: "flex-start",
+                  gap: "10px",
                 }}
               >
-                <Typography fontWeight={600} variant="body1">
-                  {index + 1}
-                </Typography>
-              </Avatar>{" "}
-              <Typography
-                sx={{ color: "rgba(10.59%, 38.04%, 98.82%, 0.8)" }}
-                variant="body1"
-              >
-                -{">"}
-              </Typography> */}
-              <Avatar
-                sx={{ width: "35px", height: "35px" }}
-                // src={baseURL + employee?.profilePicture}
-              />
-              <Box>
-                <Typography fontSize={15} fontWeight={600}>
-                  {/* {employee.fname + " " + employee.lname} */}
-                  Haseeb Qureshi
-                </Typography>
-                <Typography
-                  sx={{
-                    fontSize: "0.8rem",
-                    display: "flex",
-                    alignItems: "center",
-                    color: "grey",
-                  }}
-                  fontWeight={500}
-                >
-                  <Route
+                <Avatar
+                  sx={{ width: "35px", height: "35px" }}
+                  src={baseURL + passenger?.profilePicture}
+                />
+                <Box>
+                  <Typography fontSize={15} fontWeight={600}>
+                    {passenger?.fname + " " + passenger?.lname}
+                  </Typography>
+                  <Typography
                     sx={{
-                      width: "12.5px",
-                      height: "12.5px",
-                      mr: "5px",
-                      color: "primary.main",
+                      fontSize: "0.8rem",
+                      display: "flex",
+                      alignItems: "center",
+                      color: "grey",
                     }}
-                  />
-                  Rawalpora, Wanbal - Lane 6{/* {employee?.pickUp?.address} */}
-                </Typography>
+                    fontWeight={500}
+                  >
+                    <Route
+                      sx={{
+                        width: "12.5px",
+                        height: "12.5px",
+                        mr: "5px",
+                        color: "primary.main",
+                      }}
+                    />
+                    {(passenger?.pickUp?.address as string).slice(0, 25) +
+                      "..."}
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
-            <ButtonBase
-              //   onClick={() => handleRemovePassengersFromCab(employee)}
-              sx={{ ...RowFlex, width: "20%", borderRadius: "100px" }}
-            >
-              <MultipleStopIcon
-                sx={{
-                  backgroundColor: "primary.main",
-                  borderRadius: "100px",
-                  p: 0.5,
-                  width: "35px",
-                  height: "35px",
-                  color: "white",
-                }}
-              />
-            </ButtonBase>
-          </Box>
-          <Box
-            //   key={employee?._id}
-            sx={{
-              ...RowFlex,
-              width: "100%",
-              paddingBottom: "4px",
-              borderBottom: "1px solid #BDBDBD",
-            }}
-          >
-            <Box
-              sx={{
-                ...RowFlex,
-                width: "80%",
-                justifyContent: "flex-start",
-                gap: "10px",
-              }}
-            >
-              {/* <Avatar
-                // src={baseURL + employee?.profilePicture}
-                sx={{
-                  width: "25px",
-                  height: "25px",
-                  backgroundColor: "rgba(10.59%, 38.04%, 98.82%, 0.8)",
-                }}
+              <ButtonBase
+                //   onClick={() => handleRemovePassengersFromCab(employee)}
+                sx={{ ...RowFlex, width: "20%", borderRadius: "100px" }}
               >
-                <Typography fontWeight={600} variant="body1">
-                  {index + 1}
-                </Typography>
-              </Avatar>{" "}
-              <Typography
-                sx={{ color: "rgba(10.59%, 38.04%, 98.82%, 0.8)" }}
-                variant="body1"
-              >
-                -{">"}
-              </Typography> */}
-              <Avatar
-                sx={{ width: "35px", height: "35px" }}
-                // src={baseURL + employee?.profilePicture}
-              />
-              <Box>
-                <Typography fontSize={15} fontWeight={600}>
-                  {/* {employee.fname + " " + employee.lname} */}
-                  Haseeb Qureshi
-                </Typography>
-                <Typography
+                <MultipleStopIcon
                   sx={{
-                    fontSize: "0.8rem",
-                    display: "flex",
-                    alignItems: "center",
-                    color: "grey",
+                    backgroundColor: "primary.main",
+                    borderRadius: "100px",
+                    p: 0.5,
+                    width: "35px",
+                    height: "35px",
+                    color: "white",
                   }}
-                  fontWeight={500}
-                >
-                  <Route
-                    sx={{
-                      width: "12.5px",
-                      height: "12.5px",
-                      mr: "5px",
-                      color: "primary.main",
-                    }}
-                  />
-                  Rawalpora, Wanbal - Lane 6{/* {employee?.pickUp?.address} */}
-                </Typography>
-              </Box>
+                />
+              </ButtonBase>
             </Box>
-            <ButtonBase
-              //   onClick={() => handleRemovePassengersFromCab(employee)}
-              sx={{ ...RowFlex, width: "20%", borderRadius: "100px" }}
-            >
-              <MultipleStopIcon
-                sx={{
-                  backgroundColor: "primary.main",
-                  borderRadius: "100px",
-                  p: 0.5,
-                  width: "35px",
-                  height: "35px",
-                  color: "white",
-                }}
-              />
-            </ButtonBase>
           </Box>
-          <Box
-            //   key={employee?._id}
-            sx={{
-              ...RowFlex,
-              width: "100%",
-              paddingBottom: "4px",
-              borderBottom: "1px solid #BDBDBD",
-            }}
-          >
-            <Box
-              sx={{
-                ...RowFlex,
-                width: "80%",
-                justifyContent: "flex-start",
-                gap: "10px",
-              }}
-            >
-              {/* <Avatar
-                // src={baseURL + employee?.profilePicture}
-                sx={{
-                  width: "25px",
-                  height: "25px",
-                  backgroundColor: "rgba(10.59%, 38.04%, 98.82%, 0.8)",
-                }}
-              >
-                <Typography fontWeight={600} variant="body1">
-                  {index + 1}
-                </Typography>
-              </Avatar>{" "}
-              <Typography
-                sx={{ color: "rgba(10.59%, 38.04%, 98.82%, 0.8)" }}
-                variant="body1"
-              >
-                -{">"}
-              </Typography> */}
-              <Avatar
-                sx={{ width: "35px", height: "35px" }}
-                // src={baseURL + employee?.profilePicture}
-              />
-              <Box>
-                <Typography fontSize={15} fontWeight={600}>
-                  {/* {employee.fname + " " + employee.lname} */}
-                  Haseeb Qureshi
-                </Typography>
-                <Typography
-                  sx={{
-                    fontSize: "0.8rem",
-                    display: "flex",
-                    alignItems: "center",
-                    color: "grey",
-                  }}
-                  fontWeight={500}
-                >
-                  <Route
-                    sx={{
-                      width: "12.5px",
-                      height: "12.5px",
-                      mr: "5px",
-                      color: "primary.main",
-                    }}
-                  />
-                  Rawalpora, Wanbal - Lane 6{/* {employee?.pickUp?.address} */}
-                </Typography>
-              </Box>
-            </Box>
-            <ButtonBase
-              //   onClick={() => handleRemovePassengersFromCab(employee)}
-              sx={{ ...RowFlex, width: "20%", borderRadius: "100px" }}
-            >
-              <MultipleStopIcon
-                sx={{
-                  backgroundColor: "primary.main",
-                  borderRadius: "100px",
-                  p: 0.5,
-                  width: "35px",
-                  height: "35px",
-                  color: "white",
-                }}
-              />
-            </ButtonBase>
-          </Box>
-          <Box
-            //   key={employee?._id}
-            sx={{
-              ...RowFlex,
-              width: "100%",
-              paddingBottom: "4px",
-              borderBottom: "1px solid #BDBDBD",
-            }}
-          >
-            <Box
-              sx={{
-                ...RowFlex,
-                width: "80%",
-                justifyContent: "flex-start",
-                gap: "10px",
-              }}
-            >
-              {/* <Avatar
-                // src={baseURL + employee?.profilePicture}
-                sx={{
-                  width: "25px",
-                  height: "25px",
-                  backgroundColor: "rgba(10.59%, 38.04%, 98.82%, 0.8)",
-                }}
-              >
-                <Typography fontWeight={600} variant="body1">
-                  {index + 1}
-                </Typography>
-              </Avatar>{" "}
-              <Typography
-                sx={{ color: "rgba(10.59%, 38.04%, 98.82%, 0.8)" }}
-                variant="body1"
-              >
-                -{">"}
-              </Typography> */}
-              <Avatar
-                sx={{ width: "35px", height: "35px" }}
-                // src={baseURL + employee?.profilePicture}
-              />
-              <Box>
-                <Typography fontSize={15} fontWeight={600}>
-                  {/* {employee.fname + " " + employee.lname} */}
-                  Haseeb Qureshi
-                </Typography>
-                <Typography
-                  sx={{
-                    fontSize: "0.8rem",
-                    display: "flex",
-                    alignItems: "center",
-                    color: "grey",
-                  }}
-                  fontWeight={500}
-                >
-                  <Route
-                    sx={{
-                      width: "12.5px",
-                      height: "12.5px",
-                      mr: "5px",
-                      color: "primary.main",
-                    }}
-                  />
-                  Rawalpora, Wanbal - Lane 6{/* {employee?.pickUp?.address} */}
-                </Typography>
-              </Box>
-            </Box>
-            <ButtonBase
-              //   onClick={() => handleRemovePassengersFromCab(employee)}
-              sx={{ ...RowFlex, width: "20%", borderRadius: "100px" }}
-            >
-              <MultipleStopIcon
-                sx={{
-                  backgroundColor: "primary.main",
-                  borderRadius: "100px",
-                  p: 0.5,
-                  width: "35px",
-                  height: "35px",
-                  color: "white",
-                }}
-              />
-            </ButtonBase>
-          </Box>
-          <Box
-            //   key={employee?._id}
-            sx={{
-              ...RowFlex,
-              width: "100%",
-              paddingBottom: "4px",
-              borderBottom: "1px solid #BDBDBD",
-            }}
-          >
-            <Box
-              sx={{
-                ...RowFlex,
-                width: "80%",
-                justifyContent: "flex-start",
-                gap: "10px",
-              }}
-            >
-              {/* <Avatar
-                // src={baseURL + employee?.profilePicture}
-                sx={{
-                  width: "25px",
-                  height: "25px",
-                  backgroundColor: "rgba(10.59%, 38.04%, 98.82%, 0.8)",
-                }}
-              >
-                <Typography fontWeight={600} variant="body1">
-                  {index + 1}
-                </Typography>
-              </Avatar>{" "}
-              <Typography
-                sx={{ color: "rgba(10.59%, 38.04%, 98.82%, 0.8)" }}
-                variant="body1"
-              >
-                -{">"}
-              </Typography> */}
-              <Avatar
-                sx={{ width: "35px", height: "35px" }}
-                // src={baseURL + employee?.profilePicture}
-              />
-              <Box>
-                <Typography fontSize={15} fontWeight={600}>
-                  {/* {employee.fname + " " + employee.lname} */}
-                  Haseeb Qureshi
-                </Typography>
-                <Typography
-                  sx={{
-                    fontSize: "0.8rem",
-                    display: "flex",
-                    alignItems: "center",
-                    color: "grey",
-                  }}
-                  fontWeight={500}
-                >
-                  <Route
-                    sx={{
-                      width: "12.5px",
-                      height: "12.5px",
-                      mr: "5px",
-                      color: "primary.main",
-                    }}
-                  />
-                  Rawalpora, Wanbal - Lane 6{/* {employee?.pickUp?.address} */}
-                </Typography>
-              </Box>
-            </Box>
-            <ButtonBase
-              //   onClick={() => handleRemovePassengersFromCab(employee)}
-              sx={{ ...RowFlex, width: "20%", borderRadius: "100px" }}
-            >
-              <MultipleStopIcon
-                sx={{
-                  backgroundColor: "primary.main",
-                  borderRadius: "100px",
-                  p: 0.5,
-                  width: "35px",
-                  height: "35px",
-                  color: "white",
-                }}
-              />
-            </ButtonBase>
-          </Box>
-          <Box
-            //   key={employee?._id}
-            sx={{
-              ...RowFlex,
-              width: "100%",
-              paddingBottom: "4px",
-              //   borderBottom: "1px solid #BDBDBD",
-            }}
-          >
-            <Box
-              sx={{
-                ...RowFlex,
-                width: "80%",
-                justifyContent: "flex-start",
-                gap: "10px",
-              }}
-            >
-              {/* <Avatar
-                // src={baseURL + employee?.profilePicture}
-                sx={{
-                  width: "25px",
-                  height: "25px",
-                  backgroundColor: "rgba(10.59%, 38.04%, 98.82%, 0.8)",
-                }}
-              >
-                <Typography fontWeight={600} variant="body1">
-                  {index + 1}
-                </Typography>
-              </Avatar>{" "}
-              <Typography
-                sx={{ color: "rgba(10.59%, 38.04%, 98.82%, 0.8)" }}
-                variant="body1"
-              >
-                -{">"}
-              </Typography> */}
-              <Avatar
-                sx={{ width: "35px", height: "35px" }}
-                // src={baseURL + employee?.profilePicture}
-              />
-              <Box>
-                <Typography fontSize={15} fontWeight={600}>
-                  {/* {employee.fname + " " + employee.lname} */}
-                  Haseeb Qureshi
-                </Typography>
-                <Typography
-                  sx={{
-                    fontSize: "0.8rem",
-                    display: "flex",
-                    alignItems: "center",
-                    color: "grey",
-                  }}
-                  fontWeight={500}
-                >
-                  <Route
-                    sx={{
-                      width: "12.5px",
-                      height: "12.5px",
-                      mr: "5px",
-                      color: "primary.main",
-                    }}
-                  />
-                  Rawalpora, Wanbal - Lane 6{/* {employee?.pickUp?.address} */}
-                </Typography>
-              </Box>
-            </Box>
-            <ButtonBase
-              //   onClick={() => handleRemovePassengersFromCab(employee)}
-              sx={{ ...RowFlex, width: "20%", borderRadius: "100px" }}
-            >
-              <MultipleStopIcon
-                sx={{
-                  backgroundColor: "primary.main",
-                  borderRadius: "100px",
-                  p: 0.5,
-                  width: "35px",
-                  height: "35px",
-                  color: "white",
-                }}
-              />
-            </ButtonBase>
-          </Box>
-        </Box>
+        ))}
       </Box>
     </>
   );
