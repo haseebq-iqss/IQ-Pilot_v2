@@ -12,6 +12,7 @@ const assignCabToEmployees = async (
 ) => {
   const remainingEmployees = [...employees];
   const groups = [];
+  const assignedEmployees = new Set();
 
   for (const cab of cabs) {
     if (cab.routes.length === 2) {
@@ -45,37 +46,41 @@ const assignCabToEmployees = async (
       );
     });
 
-    const cabPassengers = cabRoutesForShiftAndLocation.flatMap(
+    let cabPassengers = cabRoutesForShiftAndLocation.flatMap(
       (route) => route.passengers
     );
+    const populatedPassengers = await Promise.all(
+      cabPassengers.map(async (passengerID) => {
+        passengerID ? assignedEmployees.add(passengerID.toString()) : "";
+        const user = User.findById(passengerID);
+        return user;
+      })
+    );
+    cabPassengers = populatedPassengers.filter((val) => val !== null);
+
     const availableCapacity = cab.seatingCapacity - cabPassengers.length;
     if (availableCapacity <= 0) continue;
-
     const group = {
       cab: cab,
-      passengers: [],
+      passengers: [...cabPassengers],
       availableCapacity,
     };
-
-    // const matchingEmployees = remainingEmployees.filter(
-    //   (employee) =>
-    //     employee.workLocation === workLocation &&
-    //     employee.currentShift === currentShift
-    // );
 
     for (
       let i = 0;
       i < remainingEmployees.length && group.availableCapacity > 0;
       i++
     ) {
-      group.passengers.push(remainingEmployees[i]);
-      group.availableCapacity--;
+      const employee = remainingEmployees[i];
+      if (!assignedEmployees.has(employee._id.toString())) {
+        group.passengers.push(employee);
+        assignedEmployees.add(employee._id.toString());
+        group.availableCapacity--;
+      }
     }
 
     remainingEmployees.splice(0, group.passengers.length);
     if (group.passengers.length === 0) continue;
-    // const populatedCab = await Cab.findById(cab._id).populate("cabDriver");
-    // const cabDriver = populatedCab.cabDriver;
     groups.push(group);
   }
   return groups;
@@ -84,11 +89,6 @@ const assignCabToEmployees = async (
 exports.createShift = catchAsync(async (req, res, next) => {
   const { workLocation, currentShift, typeOfRoute, ref_coords } = req.body;
 
-  // let ref_coords;
-  // if (workLocation === "Rangreth")
-  //   ref_coords = [34.001141168626624, 74.79347489627929];
-  // else if (workLocation === "Zaira Tower")
-  //   ref_coords = [34.17354072479764, 74.80831445395951];
   const closestEmployees = await User.aggregate([
     {
       $geoNear: {
