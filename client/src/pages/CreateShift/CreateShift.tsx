@@ -3,6 +3,10 @@ import { useLocation } from "react-router-dom";
 import { ColFlex, RowFlex, PageFlex } from "../../style_extentions/Flex.ts";
 import LogoImage from "/images/logo.png";
 import RosterCard from "../../components/ui/RosterCard.tsx";
+import { ConvertShiftTimeTo12HrFormat } from "../../utils/12HourFormat.ts";
+import { ShiftTypes } from "../../types/ShiftTypes.ts";
+import EmployeeTypes from "../../types/EmployeeTypes.ts";
+import Cabtypes from "../../types/CabTypes.ts";
 
 function CreateShift() {
   const location = useLocation();
@@ -59,8 +63,8 @@ function CreateShift() {
           </Typography>
           <Typography variant="h6" fontWeight={600}>
             {mapCoordinatesToText(routeState?.centralPoint) +
-              " " +
-              routeState?.data?.currentShift}
+              " --> " +
+              ConvertShiftTimeTo12HrFormat(routeState?.data?.currentShift)}
           </Typography>
         </Box>
 
@@ -141,6 +145,7 @@ function CreateShift() {
       </Box>
       {/* R2 */}
       <Box
+      className="scroll-mod"
         sx={{
           ...RowFlex,
           display: "flex",
@@ -162,12 +167,15 @@ function CreateShift() {
             justifyContent: "flex-start",
           }}
         >
-          {routeState?.data?.data.map((shift, index) => (
+          {routeState?.data?.data.map((shift : ShiftTypes, index:number) => (
+            <>
+            {console.log(shift)}
             <RosterCard
               key={index}
-              passengers={shift?.passengers}
-              cab={shift?.cab}
-            />
+              passengers={(shift?.passengers as [EmployeeTypes])}
+              cab={(shift?.cab as Cabtypes)}
+              />
+              </>
           ))}
         </Box>
       </Box>

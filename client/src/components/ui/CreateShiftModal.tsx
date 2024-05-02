@@ -1,5 +1,4 @@
-import React, { useContext, useState } from "react";
-import GlobalModal from "./Modal";
+import RouteIcon from "@mui/icons-material/Route";
 import {
   Box,
   Button,
@@ -8,13 +7,15 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import { ColFlex, RowFlex } from "../../style_extentions/Flex";
-import RouteIcon from "@mui/icons-material/Route";
-import SnackbarContext from "../../context/SnackbarContext";
-import { SnackBarContextTypes } from "../../types/SnackbarTypes";
-import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
+import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useAxios from "../../api/useAxios";
+import SnackbarContext from "../../context/SnackbarContext";
+import { ColFlex, RowFlex } from "../../style_extentions/Flex";
+import { ShiftTypes } from "../../types/ShiftTypes";
+import { SnackBarContextTypes } from "../../types/SnackbarTypes";
+import GlobalModal from "./Modal";
 
 type CreateShiftModalProps = {
   openModal: boolean;
@@ -48,7 +49,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
   });
   const HandleProceedToCreateShiftPage = () => {
     if (workLocation?.length && currentShift?.length && ref_coords?.length) {
-      const shiftData = {
+      const shiftData: ShiftTypes = {
         typeOfRoute,
         workLocation,
         currentShift,
@@ -93,7 +94,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
             }}
           >
             <FormControl sx={{ width: "50%" }}>
-              <InputLabel id="pickup-or-drop-label">Pickup or Drop</InputLabel>
+              <InputLabel id="pickup-or-drop-label">Shift Type</InputLabel>
               <Select
                 labelId="pickup-or-drop-label"
                 id="pickup-or-drop"
@@ -107,7 +108,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
             </FormControl>
 
             <FormControl sx={{ width: "50%" }}>
-              <InputLabel id="office-label">workLocation</InputLabel>
+              <InputLabel id="office-label">Work Location</InputLabel>
               <Select
                 labelId="office-label"
                 id="office"
@@ -131,7 +132,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
           >
             <FormControl sx={{ width: "50%" }}>
               <InputLabel id="shift-currentShift-label">
-                Shift currentShift
+                Current Shift
               </InputLabel>
               <Select
                 labelId="shift-currentShift-label"

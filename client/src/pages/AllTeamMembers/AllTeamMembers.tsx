@@ -21,7 +21,7 @@ import {
   TableRow,
   TextField,
 } from "@mui/material";
-import { MouseEventHandler, useState } from "react";
+import { useState } from "react";
 import PageContainer from "../../components/ui/PageContainer";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import baseURL from "../../utils/baseURL";
@@ -42,7 +42,7 @@ function AllTeamMembers() {
 
   const filteredTeamMembers = teamMemberData?.filter(
     (teamMember: EmployeeTypes) => {
-      return teamMember?.fname?.includes(searchtext);
+      return teamMember?.fname?.toLowerCase()?.includes(searchtext) ||  teamMember?.lname?.toLowerCase()?.includes(searchtext);
     }
   );
 
@@ -184,7 +184,7 @@ function AllTeamMembers() {
                             justifyContent: "flex-start",
                             gap: "10px",
                           }}
-                          onClick={() => handleDeleteEmployee(employee._id)}
+                          onClick={() => handleDeleteEmployee((employee._id as string))}
                         >
                           <DeleteForever sx={{}} />
                           Remove Employee

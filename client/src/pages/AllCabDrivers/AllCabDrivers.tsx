@@ -43,7 +43,7 @@ function AllCabDrivers() {
   });
 
   const filteredCabDrivers = cabDetails?.filter((cab: Cabtypes) => {
-    return (cab?.cabDriver as EmployeeTypes)?.fname?.includes(searchtext);
+    return (cab?.cabDriver as EmployeeTypes)?.fname?.toLowerCase()?.includes(searchtext) || (cab?.cabDriver as EmployeeTypes)?.lname?.toLowerCase()?.includes(searchtext) ;
   });
 
   // const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
