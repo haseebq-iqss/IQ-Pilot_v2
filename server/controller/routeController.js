@@ -4,7 +4,12 @@ const Route = require("../models/route");
 const { catchAsync } = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
-const assignCabToEmployees = (employees, cabs, workLocation, currentShift) => {
+const assignCabToEmployees = async (
+  employees,
+  cabs,
+  workLocation,
+  currentShift
+) => {
   const remainingEmployees = [...employees];
   const groups = [];
 
@@ -69,9 +74,10 @@ const assignCabToEmployees = (employees, cabs, workLocation, currentShift) => {
 
     remainingEmployees.splice(0, group.passengers.length);
     if (group.passengers.length === 0) continue;
+    // const populatedCab = await Cab.findById(cab._id).populate("cabDriver");
+    // const cabDriver = populatedCab.cabDriver;
     groups.push(group);
   }
-
   return groups;
 };
 
@@ -140,9 +146,17 @@ exports.createShift = catchAsync(async (req, res, next) => {
         $expr: { $lt: ["$passengerCount", "$seatingCapacity"] },
       },
     },
+    {
+      $lookup: {
+        from: "users",
+        localField: "cabDriver",
+        foreignField: "_id",
+        as: "cabDriver",
+      },
+    },
   ]);
 
-  const groups = assignCabToEmployees(
+  const groups = await assignCabToEmployees(
     closestEmployees,
     cabs,
     workLocation,
