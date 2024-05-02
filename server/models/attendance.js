@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const validator = require("validator");
 
 const attendanceSchema = new mongoose.Schema(
   {
@@ -14,8 +13,18 @@ const attendanceSchema = new mongoose.Schema(
       required: true,
     },
     isPresent: Boolean,
+    onLeave: {
+      type: {
+        type: Boolean,
+        default: false,
+      },
+      numDays: {
+        type: Number,
+        default: 0,
+      },
+    },
   },
-  { timestamp: true }
+  { timestamps: true }
 );
 
 const Attendance = mongoose.model("attendance", attendanceSchema);
