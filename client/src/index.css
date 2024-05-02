@@ -76,7 +76,7 @@ body {
 
 .child-scroll::-webkit-scrollbar-thumb {
   background: #2997FC; /* Color of the scrollbar thumb */
-  border-radius: 5px; /* Radius of the scrollbar thumb */
+  border-radius: 500px; /* Radius of the scrollbar thumb */
   border:  "2px solid red";
 }
 

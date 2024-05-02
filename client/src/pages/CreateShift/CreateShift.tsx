@@ -7,12 +7,14 @@ import { ConvertShiftTimeTo12HrFormat } from "../../utils/12HourFormat.ts";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 import Cabtypes from "../../types/CabTypes.ts";
+import { useState } from "react";
 
 function CreateShift() {
   const location = useLocation();
 
   const routeState = location?.state;
   console.log(location.state);
+  const [reserve, setReserve] = useState<Array<EmployeeTypes>>([]);
 
   //   const driverId: string | undefined = (routeState?.driver as any)?._id;
   function mapCoordinatesToText(value: string) {
@@ -114,7 +116,7 @@ function CreateShift() {
                 sx={{ fontWeight: 700, color: "white", fontStyle: "italic" }}
                 variant="h5"
               >
-                10
+                {reserve?.length}
               </Typography>
             </Box>
           </Box>
@@ -127,6 +129,19 @@ function CreateShift() {
               ...RowFlex,
               gap: 2.5,
               borderRadius: 1.5,
+              cursor: "pointer",
+              "&:hover > img": {
+                scale: "1.025",
+                // rotate:"42.5deg",
+                transform: "rotateY(550deg) rotateZ(45deg)",
+                transition: "all 1s ease",
+              },
+              "&:not(:hover) > img": {
+                scale: "1",
+                // rotate:"42.5deg",
+                transform: "rotateY(0deg) rotateZ(0deg)",
+                transition: "all 1s ease",
+              },
             }}
           >
             <Typography
@@ -145,7 +160,7 @@ function CreateShift() {
       </Box>
       {/* R2 */}
       <Box
-      className="scroll-mod"
+        className="scroll-mod"
         sx={{
           ...RowFlex,
           display: "flex",
@@ -167,15 +182,15 @@ function CreateShift() {
             justifyContent: "flex-start",
           }}
         >
-          {routeState?.data?.data.map((shift : ShiftTypes, index:number) => (
+          {routeState?.data?.data.map((shift: ShiftTypes, index: number) => (
             <>
-            {console.log(shift)}
-            <RosterCard
-              key={index}
-              passengers={(shift?.passengers as [EmployeeTypes])}
-              cab={(shift?.cab as Cabtypes)}
+              {console.log(shift)}
+              <RosterCard
+                key={index}
+                passengers={shift?.passengers as [EmployeeTypes]}
+                cab={shift?.cab as Cabtypes}
               />
-              </>
+            </>
           ))}
         </Box>
       </Box>

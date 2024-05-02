@@ -134,7 +134,7 @@ const RosterCard = ({ passengers, cab }: RosterCardTypes) => {
                     color: "black",
                   }}
                 />
-                {(cab?.numberPlate as string).slice(0, 9)}
+                {cab?.numberPlate}
               </Typography>
             </Box>
           </Box>
@@ -156,7 +156,7 @@ const RosterCard = ({ passengers, cab }: RosterCardTypes) => {
         </Box>
 
         <Box
-        className="child-scroll"
+          className="child-scroll"
           sx={{
             ...ColFlex,
             width: "100%",
@@ -216,14 +216,16 @@ const RosterCard = ({ passengers, cab }: RosterCardTypes) => {
                           color: "primary.main",
                         }}
                       />
-                      {(passenger?.pickUp?.address as string).slice(0, 25) +
-                        "..."}
+                      {(passenger?.pickUp?.address as string)?.length > 30
+                        ? (passenger?.pickUp?.address as string).slice(0, 30) +
+                          "..."
+                        : (passenger?.pickUp?.address as string)}
                     </Typography>
                   </Box>
                 </Box>
                 <ButtonBase
                   //   onClick={() => handleRemovePassengersFromCab(employee)}
-                  sx={{ ...RowFlex, width: "20%", borderRadius: "100px" }}
+                  sx={{ ...RowFlex, borderRadius: "100px" }}
                 >
                   <MultipleStopIcon
                     sx={{
