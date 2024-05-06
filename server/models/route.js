@@ -22,7 +22,7 @@ const routeSchema = new mongoose.Schema(
     shiftDate: {
       type: String,
     },
-    typefRoute: {
+    typeOfRoute: {
       type: String,
       enum: ["pickup", "drop", "supply"],
       required: true,

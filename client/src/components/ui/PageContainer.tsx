@@ -63,41 +63,43 @@ function PageContainer({
           </Typography>
         </Box>
 
-        <Button
-          sx={{
-            backgroundColor: "text.primary",
-            color: "white",
-            borderRadius: "4px",
-            px: 2.5,
-            width: "15rem",
-            display: "flex",
-            alignItems: "center",
-          }}
-          variant="contained"
-          startIcon={
-            !location.pathname.includes("/admin/addTeamMembers") ? (
-              <AddCircleOutline />
-            ) : (
-              <ChevronLeftIcon />
-            )
-          }
-          onClick={() =>
-            location.pathname.includes("/admin/allCabDrivers")
-              ? navigate("/admin/addCabDrivers")
-              : location.pathname.includes("/admin/allTeamMembers")
-              ? navigate("/admin/addTeamMembers")
-              : goBackHandler()
-          }
-        >
-          {`${
-            location.pathname.includes("/admin/allTeamMembers")
-              ? "Add Team Member"
-              : location.pathname.includes("/admin/addTeamMembers") ||
-                location.pathname.includes("/admin/addCabDrivers")
-              ? "Go Back"
-              : " Add Cab Driver"
-          }`}
-        </Button>
+        {!location.pathname.includes("/admin/scheduledRoutes") && (
+          <Button
+            sx={{
+              backgroundColor: "text.primary",
+              color: "white",
+              borderRadius: "4px",
+              px: 2.5,
+              width: "15rem",
+              display: "flex",
+              alignItems: "center",
+            }}
+            variant="contained"
+            startIcon={
+              !location.pathname.includes("/admin/addTeamMembers") ? (
+                <AddCircleOutline />
+              ) : (
+                <ChevronLeftIcon />
+              )
+            }
+            onClick={() =>
+              location.pathname.includes("/admin/allCabDrivers")
+                ? navigate("/admin/addCabDrivers")
+                : location.pathname.includes("/admin/allTeamMembers")
+                ? navigate("/admin/addTeamMembers")
+                : goBackHandler()
+            }
+          >
+            {`${
+              location.pathname.includes("/admin/allTeamMembers")
+                ? "Add Team Member"
+                : location.pathname.includes("/admin/addTeamMembers") ||
+                  location.pathname.includes("/admin/addCabDrivers")
+                ? "Go Back"
+                : " Add Cab Driver"
+            }`}
+          </Button>
+        )}
       </Box>
 
       {children}

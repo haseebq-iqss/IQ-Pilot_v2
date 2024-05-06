@@ -13,6 +13,7 @@ import AllTeamMembers from "../pages/AllTeamMembers/AllTeamMembers";
 import AddPassengers from "../pages/AddPassengers/AddPassengers";
 import { AddTeamMembers } from "../components/ui/AddTeamMembers";
 import CreateShift from "../pages/CreateShift/CreateShift";
+import ScheduledRoutes from "../pages/ScheduledRoutes/ScheduledRoutes";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -61,14 +62,14 @@ function MainRouter() {
                   </SlideInOut>
                 }
               />
-              {/* <Route
+              <Route
                 path="scheduledRoutes"
                 element={
                   <SlideInOut>
                     <ScheduledRoutes />
                   </SlideInOut>
                 }
-              /> */}
+              />
               <Route
                 path="allTeamMembers"
                 element={
