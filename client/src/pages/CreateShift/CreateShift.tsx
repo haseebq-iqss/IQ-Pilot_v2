@@ -59,7 +59,7 @@ function CreateShift() {
   };
 
   const handleCreateRoute = () => {
-    const dataToDeploy = {
+    const dataToDeploy:any = {
       cabEmployeeGroups: rosterData,
       workLocation: routeState?.data?.workLocation,
       currentShift: routeState?.data?.currentShift,

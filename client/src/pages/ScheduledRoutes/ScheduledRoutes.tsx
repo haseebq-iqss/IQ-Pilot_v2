@@ -22,7 +22,6 @@ import PageContainer from "../../components/ui/PageContainer";
 import { RowFlex } from "../../style_extentions/Flex";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
-import RouteTypes from "../../types/RouteTypes";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import Cabtypes from "../../types/CabTypes";
 import { ConvertShiftTimeTo12HrFormat } from "../../utils/12HourFormat";
@@ -36,7 +35,7 @@ function ScheduledRoutes() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openMenu, setOpenMenu] = useState<boolean>(false);
 
-  const handleMenuOpen = (e) => {
+  const handleMenuOpen = (e: any) => {
     setAnchorEl(e.currentTarget);
     setOpenMenu(!openMenu);
   };
@@ -78,7 +77,7 @@ function ScheduledRoutes() {
             </TableHead>
             <TableBody>
               {routes?.length &&
-                routes?.map((route: RouteTypes) => (
+                routes?.map((route: any) => (
                   <TableRow
                     key={route._id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -112,7 +111,7 @@ function ScheduledRoutes() {
                         {/* {route.driver?.fName + " " + route.driver?.lName} */}
                         {((route?.cab as Cabtypes)?.cabDriver as EmployeeTypes)
                           ?.fname +
-                          ". " +
+                          " " +
                           ((route?.cab as Cabtypes)?.cabDriver as EmployeeTypes)
                             ?.lname}{" "}
                         {/* Cut the fName like B. Ahmed */}

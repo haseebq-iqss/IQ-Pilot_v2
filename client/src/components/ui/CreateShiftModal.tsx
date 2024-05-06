@@ -141,12 +141,12 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
                 label="Shift currentShift"
                 onChange={(e) => setcurrentShift(e.target.value)}
               >
-                <MenuItem value="14:00-20:30">2.00PM - 8.30PM</MenuItem>
-                <MenuItem value="14:00-23:00">2.00PM - 11.00PM</MenuItem>
-                <MenuItem value="16:00-20:30">4.00PM - 8.30PM</MenuItem>
-                <MenuItem value="16:00-01:00">4.00PM - 01.00AM</MenuItem>
-                <MenuItem value="12:30-20:30">12:30PM - 8:30PM</MenuItem>
-                <MenuItem value="14:00-18:00">2:00PM - 6:00PM</MenuItem>
+                <MenuItem value="14:00-20:30">02.00PM - 08.30PM</MenuItem>
+                <MenuItem value="14:00-18:00">02:00PM - 06:00PM</MenuItem>
+                <MenuItem value="14:00-23:00">02.00PM - 11.00PM</MenuItem>
+                <MenuItem value="16:00-20:30">04.00PM - 08.30PM</MenuItem>
+                <MenuItem value="16:00-01:00">04.00PM - 01.00AM</MenuItem>
+                <MenuItem value="12:30-20:30">12:30PM - 08:30PM</MenuItem>
               </Select>
             </FormControl>
 
