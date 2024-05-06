@@ -1,55 +1,55 @@
 const mongoose = require("mongoose");
 
-const routeSchema = new mongoose.Schema({
-  cab: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Cab",
-    required: true,
-  },
-  workLocation: {
-    type: String,
-    enum: ["Zaira Tower", "Rangreth"],
-  },
-  currentShift: String,
-  passengers: [
-    {
+const routeSchema = new mongoose.Schema(
+  {
+    cab: {
       type: mongoose.Schema.ObjectId,
-      ref: "User",
+      ref: "Cab",
       required: true,
     },
-  ],
-  shiftDate: String,
-  typeOfRoute: {
-    type: String,
-    enum: ["pickup", "drop", "supply"],
-    required: true,
-  },
-  routeStatus: {
-    type: String,
-    enum: ["notStarted", "inProgress", "completed"],
-    default: "notStarted",
-  },
-  estimatedTime: {
-    type: Number,
-  },
-  cabPath: [
-    {
-      type: {
-        type: String,
-        default: "Point",
-        enum: ["Point"],
-      },
-      // LonLat
-      coordinates: [Number],
-      description: String,
+    workLocation: {
+      type: String,
+      enum: ["Zaira Tower", "Rangreth"],
     },
-  ],
-  totalDistance: {
-    type: Number,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
+    currentShift: String,
+    passengers: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
+        required: true,
+      },
+    ],
+    shiftDate: {
+      type: String,
+    },
+    typefRoute: {
+      type: String,
+      enum: ["pickup", "drop", "supply"],
+      required: true,
+    },
+    routeStatus: {
+      type: String,
+      enum: ["notStarted", "inProgress", "completed"],
+      default: "notStarted",
+    },
+    estimatedTime: {
+      type: Number,
+    },
+    cabPath: [
+      {
+        type: {
+          type: String,
+          default: "Point",
+          enum: ["Point"],
+        },
+        // LonLat
+        coordinates: [Number],
+        description: String,
+      },
+    ],
+    totalDistance: {
+      type: Number,
+    },
   },
 });
 

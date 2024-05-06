@@ -9,15 +9,41 @@ import MultipleStopIcon from "@mui/icons-material/MultipleStop";
 import baseURL from "../../utils/baseURL.ts";
 import Cabtypes from "./../../types/CabTypes";
 import EmployeeTypes from "./../../types/EmployeeTypes";
+import { useEffect } from "react";
 
 type RosterCardTypes = {
   passengers: [EmployeeTypes];
   cab: Cabtypes;
+  setRosterData: React.Dispatch<
+    React.SetStateAction<
+      {
+        cab: Cabtypes;
+        passengers: [EmployeeTypes];
+      }[]
+    >
+  >;
 };
 
-const RosterCard = ({ passengers, cab }: RosterCardTypes) => {
+const RosterCard = ({ passengers, cab, setRosterData }: RosterCardTypes) => {
   const cabDriverDetails = (cab?.cabDriver as [EmployeeTypes])[0];
-  console.log(cabDriverDetails);
+
+  useEffect(() => {
+    const newData = {
+      cab,
+      passengers,
+    };
+    setRosterData((prevData) => {
+      if (
+        prevData.some(
+          (item) => item.cab === cab && item.passengers === passengers
+        )
+      ) {
+        return prevData;
+      } else {
+        return [...prevData, newData];
+      }
+    });
+  }, [cab, passengers, setRosterData]);
   return (
     <>
       <Box

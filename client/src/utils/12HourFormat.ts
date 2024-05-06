@@ -30,21 +30,24 @@ const ConvertTo12HourFormat = (time24: string): string => {
 export default ConvertTo12HourFormat;
 
 export function ConvertShiftTimeTo12HrFormat(time24hr: string): string {
-  const [startTime, endTime] = time24hr.split('-');
-  const [startHour, startMinute] = startTime.split(':').map(Number);
-  const [endHour, endMinute] = endTime.split(':').map(Number);
-  
+  const [startTime, endTime] = time24hr.split("-");
+  const [startHour, startMinute] = startTime.split(":").map(Number);
+  const [endHour, endMinute] = endTime.split(":").map(Number);
+
   const formatTime = (hour: number, minute: number): string => {
-      if (hour === 0) {
-          return `12:${minute.toString().padStart(2, '0')} AM`;
-      } else if (hour < 12) {
-          return `${hour}:${minute.toString().padStart(2, '0')} AM`;
-      } else if (hour === 12) {
-          return `${hour}:${minute.toString().padStart(2, '0')} PM`;
-      } else {
-          return `${hour - 12}:${minute.toString().padStart(2, '0')} PM`;
-      }
+    if (hour === 0) {
+      return `12:${minute.toString().padStart(2, "0")} AM`;
+    } else if (hour < 12) {
+      return `${hour}:${minute.toString().padStart(2, "0")} AM`;
+    } else if (hour === 12) {
+      return `${hour}:${minute.toString().padStart(2, "0")} PM`;
+    } else {
+      return `${hour - 12}:${minute.toString().padStart(2, "0")} PM`;
+    }
   };
 
-  return `${formatTime(startHour, startMinute)} - ${formatTime(endHour, endMinute)}`;
+  return `${formatTime(startHour, startMinute)} - ${formatTime(
+    endHour,
+    endMinute
+  )}`;
 }

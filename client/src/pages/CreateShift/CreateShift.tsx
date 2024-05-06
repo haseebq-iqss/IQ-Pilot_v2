@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ColFlex, RowFlex, PageFlex } from "../../style_extentions/Flex.ts";
 import LogoImage from "/images/logo.png";
 import RosterCard from "../../components/ui/RosterCard.tsx";
@@ -8,16 +8,40 @@ import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 import Cabtypes from "../../types/CabTypes.ts";
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import useAxios from "../../api/useAxios.ts";
 
 function CreateShift() {
   const location = useLocation();
-
   const routeState = location?.state;
-  console.log(location.state);
   const [reserve, setReserve] = useState<Array<EmployeeTypes>>([]);
+  const [rosterData, setRosterData] = useState<
+    {
+      cab: Cabtypes;
+      passengers: [EmployeeTypes];
+    }[]
+  >([]);
 
-  //   const driverId: string | undefined = (routeState?.driver as any)?._id;
-  function mapCoordinatesToText(value: string) {
+  const qc = useQueryClient();
+  const navigate = useNavigate();
+  const { mutate } = useMutation({
+    mutationFn: async (data) => {
+      try {
+        // console.log(data);
+        const response = await useAxios.post("routes/", data);
+        if (response?.status === 201) {
+          navigate("/admin");
+        }
+      } catch (error) {
+        console.error("Error creating route:", error);
+      }
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["all-routes"] });
+    },
+  });
+
+  const mapCoordinatesToText = (value: string) => {
     switch (value) {
       case "[34.07918418861709, 74.76795882716988]":
         return "Bemina Area";
@@ -32,7 +56,17 @@ function CreateShift() {
       default:
         return "Unknown Area";
     }
-  }
+  };
+
+  const handleCreateRoute = () => {
+    const dataToDeploy = {
+      cabEmployeeGroups: rosterData,
+      workLocation: routeState?.data?.workLocation,
+      currentShift: routeState?.data?.currentShift,
+      typeOfRoute: routeState?.data?.typeOfRoute,
+    };
+    mutate(dataToDeploy);
+  };
 
   return (
     <Box
@@ -42,11 +76,9 @@ function CreateShift() {
         height: "100vh",
         flexDirection: "column",
         gap: "15px",
-        // height: "100vh",
         backgroundColor: "white",
       }}
     >
-      {/* R1 */}
       <Box
         sx={{
           ...RowFlex,
@@ -58,7 +90,6 @@ function CreateShift() {
           alignItems: "center",
         }}
       >
-        {/* S1 */}
         <Box sx={{ ...ColFlex, alignItems: "flex-start", width: "60%" }}>
           <Typography variant="h4" fontWeight={600}>
             {routeState?.data?.workLocation}
@@ -70,7 +101,6 @@ function CreateShift() {
           </Typography>
         </Box>
 
-        {/* S2 */}
         <Box
           sx={{
             ...RowFlex,
@@ -82,7 +112,6 @@ function CreateShift() {
         >
           <Box
             sx={{
-              //   width: "50%",
               pl: 2.5,
               height: "50px",
               ...RowFlex,
@@ -123,7 +152,6 @@ function CreateShift() {
           </Box>
           <Box
             sx={{
-              //   width: "50%",
               px: 5,
               height: "50px",
               bgcolor: "primary.main",
@@ -133,17 +161,16 @@ function CreateShift() {
               cursor: "pointer",
               "&:hover > img": {
                 scale: "1.025",
-                // rotate:"42.5deg",
                 transform: "rotateY(550deg) rotateZ(45deg)",
                 transition: "all 1s ease",
               },
               "&:not(:hover) > img": {
                 scale: "1",
-                // rotate:"42.5deg",
                 transform: "rotateY(0deg) rotateZ(0deg)",
                 transition: "all 1s ease",
               },
             }}
+            onClick={handleCreateRoute}
           >
             <Typography
               variant="h5"
@@ -159,7 +186,6 @@ function CreateShift() {
           </Box>
         </Box>
       </Box>
-      {/* R2 */}
       <Box
         className="scroll-mod"
         sx={{
@@ -179,19 +205,16 @@ function CreateShift() {
             px: 2.5,
             whiteSpace: "nowrap",
             gap: "3rem",
-            // alignItems: "flex-start",
             justifyContent: "flex-start",
           }}
         >
           {routeState?.data?.data.map((shift: ShiftTypes, index: number) => (
-            <>
-              {console.log(shift)}
-              <RosterCard
-                key={index}
-                passengers={shift?.passengers as [EmployeeTypes]}
-                cab={shift?.cab as Cabtypes}
-              />
-            </>
+            <RosterCard
+              key={index}
+              passengers={shift?.passengers as [EmployeeTypes]}
+              cab={shift?.cab as Cabtypes}
+              setRosterData={setRosterData}
+            />
           ))}
         </Box>
       </Box>
