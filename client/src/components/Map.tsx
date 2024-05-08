@@ -105,8 +105,7 @@ const MapComponent = ({
 
   function MapController() {
     //@ts-ignore
-    const map = useMapEvents({
-    });
+    const map = useMapEvents({});
     return null;
   }
 
@@ -253,7 +252,7 @@ const MapComponent = ({
                       ? generateDistinctColors(10)[index]
                       : "transparent"
                   }
-                  weight={8}
+                  weight={10}
                   eventHandlers={{
                     click: (e) => {
                       handleSetActivePolyline(index);
@@ -264,44 +263,31 @@ const MapComponent = ({
                     },
                   }}
                 />
-                <Circle
-                  center={route[0]}
-                  radius={100}
-                  fillOpacity={0.4}
-                  color={generateDistinctColors(10)[index]}
-                >
-                  <Tooltip className="start-tooltip" permanent>
-                    <span
-                      style={{
-                        color: "black",
-                        fontWeight: 700,
-                        textShadow:
-                          "1px 1px 0px #fff, 1px 1px 0px rgba(0,0,0,0.15)",
-                      }}
-                    >
-                      START
-                    </span>
-                  </Tooltip>
-                </Circle>
-                <Circle
-                  center={route[route?.length - 1]}
-                  radius={100}
-                  fillOpacity={0.4}
-                  color={generateDistinctColors(10)[index]}
-                >
-                  <Tooltip className="end-tooltip" permanent>
-                    <span
-                      style={{
-                        color: "black",
-                        fontWeight: 700,
-                        textShadow:
-                          "1px 1px 0px #fff, 1px 1px 0px rgba(0,0,0,0.15)",
-                      }}
-                    >
-                      END
-                    </span>
-                  </Tooltip>
-                </Circle>
+                {activePolylineIndex === null ||
+                  (activePolylineIndex === index &&
+                    route.map((pickupPos:[number, number]) => {
+                      return (
+                        <Circle
+                          center={pickupPos}
+                          radius={200}
+                          fillOpacity={0.4}
+                          color={generateDistinctColors(10)[index]}
+                        >
+                          <Tooltip className="start-tooltip" permanent>
+                            <span
+                              style={{
+                                color: "black",
+                                fontWeight: 700,
+                                textShadow:
+                                  "1px 1px 0px #fff, 1px 1px 0px rgba(0,0,0,0.15)",
+                              }}
+                            >
+                              PICKUP
+                            </span>
+                          </Tooltip>
+                        </Circle>
+                      );
+                    }))}
               </>
             );
           })}
@@ -340,23 +326,23 @@ const MapComponent = ({
 
             return (
               // activePolylineIndex === null && isCoordinatesIncluded && (
-                <Marker
-                  icon={empIcon}
-                  key={employee?._id}
-                  position={employee?.pickUp?.coordinates as LatLngExpression}
+              <Marker
+                icon={empIcon}
+                key={employee?._id}
+                position={employee?.pickUp?.coordinates as LatLngExpression}
+              >
+                <Tooltip
+                  className="employee-tooltip"
+                  direction="top"
+                  offset={[0, -40]}
+                  permanent
                 >
-                  <Tooltip
-                    className="employee-tooltip"
-                    direction="top"
-                    offset={[0, -40]}
-                    permanent
-                  >
-                    <span>
-                      {employee?.fname! + " " + employee.lname![0] + "."}
-                    </span>
-                  </Tooltip>
-                </Marker>
-              )
+                  <span>
+                    {employee?.fname! + " " + employee.lname![0] + "."}
+                  </span>
+                </Tooltip>
+              </Marker>
+            );
             // );
           })}
 
