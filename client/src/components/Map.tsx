@@ -1,7 +1,9 @@
 import "leaflet/dist/leaflet.css";
 import {
+  Circle,
   MapContainer,
   Marker,
+  Polyline,
   TileLayer,
   Tooltip,
   useMapEvents,
@@ -9,10 +11,12 @@ import {
 // import "leaflet-routing-machine";
 // import { OpenStreetMapProvider } from "leaflet-geosearch";
 import { Icon, LatLngExpression } from "leaflet";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import SelectedEmpsContext from "../context/SelectedEmpsContext";
-import EmployeeTypes from "../types/EmployeeTypes";
 import RoutingMachine from "../utils/RoutingMachine";
+import useAxios from "../api/useAxios";
+import RouteTypes from "../types/RouteTypes";
+import EmployeeTypes from "./../types/EmployeeTypes";
 
 type MapTypes = {
   width?: string;
@@ -32,16 +36,54 @@ const MapComponent = ({
   employees,
   activeDrivers,
   SOS,
-  center = [34.0836, 74.7973],
-  zoom = 11,
+  center = [34.071635, 74.803872],
+  zoom = 14,
   driverOnFocus,
 }: MapTypes) => {
   // const [driversPosition, setDriversPosition] = useState<any>();
 
   const { selectedEmps } = useContext(SelectedEmpsContext);
+  const [mapDataView, setMapDataView] = useState<"TM-View" | "Routes-View">(
+    "TM-View"
+  );
+  const [routes, setRoutes] = useState<any>();
+  const [activeEmployees, setActiveEmployees] = useState<any>([]);
 
   const rangreth = [33.996807, 74.79202];
   const zaira = [34.173415, 74.808653];
+
+  const generateDistinctColors = (count: number) => {
+    const colors = [];
+    const hueStep = 360 / count;
+
+    for (let i = 0; i < count; i++) {
+      const hue = (hueStep * i) % 360;
+      const saturation = 100;
+      const lightness = 25 + Math.random() * 50; // Adjust the range to generate darker or lighter colors
+      const color = `hsl(${hue},${saturation}%,${lightness}%)`;
+      colors.push(color);
+    }
+
+    return colors;
+  };
+
+  useEffect(() => {
+    (async () => {
+      const res = await useAxios.get("/routes");
+      const groupedCoordinates = res.data.data
+        ?.map((route: RouteTypes) =>
+          route.passengers?.map(
+            (employee: any) => employee?.pickUp?.coordinates
+          )
+        )
+        .reduce((acc: any, coordinatesArray: any) => {
+          acc.push(coordinatesArray);
+          return acc;
+        }, []);
+
+      setRoutes(groupedCoordinates);
+    })();
+  }, []);
 
   const cabIcon = new Icon({
     iconUrl: "/images/cab-icon.png",
@@ -55,13 +97,6 @@ const MapComponent = ({
     iconAnchor: [20, 40],
   });
 
-  // const empIcon = (name: string) => {
-  //   return {
-  //     html: `<div>${name}</div>`,
-  //     iconSize: [40, 40],
-  //   };
-  // };
-
   const officeIcon = new Icon({
     iconUrl: "/images/office-icon.png",
     iconSize: [40, 40], // specify the size of your icon
@@ -71,27 +106,113 @@ const MapComponent = ({
   function MapController() {
     //@ts-ignore
     const map = useMapEvents({
-      //   click() {
-      //     map.locate({ watch: true, enableHighAccuracy:true});
-      //   },
-      //   locationfound(e: any) {
-      //     setPosition(e.latlng);
-      //     map.flyTo(e.latlng, 17.5);
-      //   },
     });
     return null;
   }
 
+  const [activePolylineIndex, setActivePolylineIndex] = useState<any>(null);
+
+  const handleSetActivePolyline = (index: any) => {
+    setActivePolylineIndex(index);
+  };
+
+  function transformLatLngArray(latLngArray: [any]) {
+    return latLngArray.map(({ lat, lng }) => [
+      Number(lat.toFixed(5)),
+      Number(lng.toFixed(5)),
+    ]);
+  }
+
   return (
     <div style={{ position: "relative", height, width, overflow: "hidden" }}>
-      {/* <button onClick={() => setPosition([34.0836, 74.7973])}>
-          Click to change LOC
-        </button> */}
       <MapContainer
         style={{ height: "100%", width: "100%" }}
         center={driverOnFocus?.length ? driverOnFocus : center}
         zoom={zoom}
       >
+        {/* OPTIONS BAR */}
+        <div
+          style={{
+            position: "absolute",
+            top: 10,
+            right: 10,
+            zIndex: 999,
+            display: "flex",
+            flexDirection: "row-reverse",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "10px",
+          }}
+        >
+          {/* TMs and Routes View */}
+          <div
+            onClick={() =>
+              setMapDataView(
+                mapDataView === "TM-View" ? "Routes-View" : "TM-View"
+              )
+            }
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#2997FC",
+              color: "white",
+              padding: "7.5px 15px",
+              borderRadius: "100px",
+              border: "2.5px solid white",
+              gap: 10,
+
+              // cursor:"grabbing"
+            }}
+          >
+            <h3
+              style={{
+                backgroundColor: "white",
+                borderRadius: 100,
+                padding: 1.5,
+              }}
+            >
+              {mapDataView === "Routes-View" ? "📌" : "👨🏻‍💻"}
+            </h3>
+            <h3>
+              {" "}
+              {mapDataView === "Routes-View"
+                ? "Routes View"
+                : "Team Members View"}
+            </h3>
+          </div>
+          {/* Reset Routes View */}
+          {activePolylineIndex != null && (
+            <div
+              onClick={() => setActivePolylineIndex(null)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#2997FC",
+                color: "white",
+                padding: "7.5px 15px",
+                borderRadius: "100px",
+                border: "2.5px solid white",
+                gap: 10,
+
+                // cursor:"grabbing"
+              }}
+            >
+              <h3
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: 100,
+                  padding: 1.5,
+                }}
+              >
+                ♻️
+              </h3>
+              <h3>RESET</h3>
+            </div>
+          )}
+        </div>
+
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">Haseeb Qureshi</a>'
@@ -118,6 +239,73 @@ const MapComponent = ({
           </Marker>
         )}
 
+        {mapDataView === "Routes-View" &&
+          routes &&
+          routes?.map((route: any, index: number) => {
+            return (
+              <>
+                <Polyline
+                  key={index + activePolylineIndex} // Change the key here
+                  positions={route}
+                  color={
+                    activePolylineIndex === null ||
+                    activePolylineIndex === index
+                      ? generateDistinctColors(10)[index]
+                      : "transparent"
+                  }
+                  weight={8}
+                  eventHandlers={{
+                    click: (e) => {
+                      handleSetActivePolyline(index);
+                      setActiveEmployees(
+                        transformLatLngArray(e.target._latlngs)
+                      );
+                      console.log(transformLatLngArray(e.target._latlngs));
+                    },
+                  }}
+                />
+                <Circle
+                  center={route[0]}
+                  radius={100}
+                  fillOpacity={0.4}
+                  color={generateDistinctColors(10)[index]}
+                >
+                  <Tooltip className="start-tooltip" permanent>
+                    <span
+                      style={{
+                        color: "black",
+                        fontWeight: 700,
+                        textShadow:
+                          "1px 1px 0px #fff, 1px 1px 0px rgba(0,0,0,0.15)",
+                      }}
+                    >
+                      START
+                    </span>
+                  </Tooltip>
+                </Circle>
+                <Circle
+                  center={route[route?.length - 1]}
+                  radius={100}
+                  fillOpacity={0.4}
+                  color={generateDistinctColors(10)[index]}
+                >
+                  <Tooltip className="end-tooltip" permanent>
+                    <span
+                      style={{
+                        color: "black",
+                        fontWeight: 700,
+                        textShadow:
+                          "1px 1px 0px #fff, 1px 1px 0px rgba(0,0,0,0.15)",
+                      }}
+                    >
+                      END
+                    </span>
+                  </Tooltip>
+                </Circle>
+              </>
+            );
+          })}
+
         {activeDrivers &&
           activeDrivers?.length &&
           activeDrivers?.map((drivers) => {
@@ -142,24 +330,34 @@ const MapComponent = ({
         {employees &&
           employees?.length >= 1 &&
           employees.map((employee: EmployeeTypes) => {
+            // const isCoordinatesIncluded = activeEmployees.find(
+            //   (employeeCord: any) =>
+            //     JSON.stringify(employeeCord) ===
+            //     JSON.stringify(employee?.pickUp?.coordinates)
+            // );
+
+            // console.log(isCoordinatesIncluded);
+
             return (
-              <Marker
-                icon={empIcon}
-                key={employee?._id}
-                position={employee?.pickUp?.coordinates as LatLngExpression}
-              >
-                <Tooltip
-                  className="employee-tooltip"
-                  direction="top"
-                  offset={[0, -40]}
-                  permanent
+              // activePolylineIndex === null && isCoordinatesIncluded && (
+                <Marker
+                  icon={empIcon}
+                  key={employee?._id}
+                  position={employee?.pickUp?.coordinates as LatLngExpression}
                 >
-                  <span>
-                    {(employee?.fname)![0] + "." + " " + employee.lname!}
-                  </span>
-                </Tooltip>
-              </Marker>
-            );
+                  <Tooltip
+                    className="employee-tooltip"
+                    direction="top"
+                    offset={[0, -40]}
+                    permanent
+                  >
+                    <span>
+                      {employee?.fname! + " " + employee.lname![0] + "."}
+                    </span>
+                  </Tooltip>
+                </Marker>
+              )
+            // );
           })}
 
         {SOS && (
