@@ -32,12 +32,17 @@ import useAxios from "../../api/useAxios";
 function AllTeamMembers() {
   const qc = useQueryClient();
   const [searchtext, setSearchText] = useState("");
+
+  const GetAllTeamMembersQF = () => {
+    return useAxios.get("/users/tms")
+  }
+
   const { data: teamMemberData } = useQuery({
     queryKey: ["all-teamMembers"],
-    queryFn: async () => {
-      const response = await useAxios.get("/users/tms");
-      return response?.data?.data;
-    },
+    queryFn: GetAllTeamMembersQF,
+    select: (data:any) => {
+      return data.data.data
+    }
   });
 
   const filteredTeamMembers = teamMemberData?.filter(
