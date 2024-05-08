@@ -446,7 +446,7 @@ exports.createShiftByCentroid = catchAsync(async (req, res, next) => {
     // console.log(cab);
   }
 
-  const groups = await assignCabToEmployees(
+  const groups = await assignCabToEmployeesForCentroidShift(
     closestEmployees,
     cabs,
     workLocation,
