@@ -11,11 +11,11 @@ import EmployeeTypes from "./../../types/EmployeeTypes";
 import { useEffect, useMemo, useState } from "react";
 import {
   SortableContext,
-  useSortable,
+  // useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import PassengerTab from "./PassengerTab.tsx";
-import { CSS } from "@dnd-kit/utilities";
+// import { CSS } from "@dnd-kit/utilities";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 
 type RosterCardTypes = {
@@ -40,71 +40,51 @@ const RosterCard = ({
   setRosterData,
 }: RosterCardTypes) => {
   const cabDriverDetails = (column?.cab?.cabDriver)[0];
-  const [passengers, setPassengers] = useState(passengerDetails);
-  const cab = column.cab;
-
-  useEffect(() => {
-    const newData = {
-      cab,
-      passengers,
-    };
-    setRosterData((prevData) => {
-      if (
-        prevData.some(
-          (item) => item.cab === cab && item.passengers === passengers
-        )
-      ) {
-        return prevData;
-      } else {
-        return [...prevData, newData];
-      }
-    });
-  }, [cab, passengers, setRosterData, column]);
 
   const tasksIds = useMemo(() => {
     return passengerDetails.map((passenger) => passenger.id);
   }, [passengerDetails]);
 
-  const {
-    setNodeRef,
-    attributes,
-    listeners,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: column?.id,
-    data: {
-      type: "Column",
-      column: { ...column, passengers: passengerDetails },
-    },
-  });
+  // const {
+  //   setNodeRef,
+  //   attributes,
+  //   listeners,
+  //   transform,
+  //   transition,
+  //   isDragging,
+  // } = useSortable({
+  //   id: column?.id,
+  //   data: {
+  //     type: "Column",
+  //     column: { ...column, passengers: passengerDetails },
+  //   },
+  // });
 
-  const style = {
-    transition,
-    transform: CSS.Transform.toString(transform),
-  };
-  if (isDragging) {
-    return (
-      <div
-        ref={setNodeRef}
-        style={{
-          ...style,
-          backgroundColor: "grey",
-          opacity: 0.4,
-          borderWidth: "2px",
-          borderColor: "#D946EF",
-          borderStyle: "solid",
-          width: "27.5vw",
-          height: "90rem",
-          maxHeight: "90%",
-          borderRadius: "0.375rem",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      ></div>
-    );
-  }
+  // const style = {
+  //   transition,
+  //   transform: CSS.Transform.toString(transform),
+  // };
+  // if (isDragging) {
+  //   return (
+  //     <div
+  //       ref={setNodeRef}
+  //       style={{
+  //         ...style,
+  //         backgroundColor: "grey",
+  //         opacity: 0.4,
+  //         borderWidth: "2px",
+  //         borderColor: "#D946EF",
+  //         borderStyle: "solid",
+  //         width: "27.5vw",
+  //         height: "90rem",
+  //         maxHeight: "90%",
+  //         borderRadius: "0.375rem",
+  //         display: "flex",
+  //         flexDirection: "column",
+  //       }}
+  //     ></div>
+  //   );
+  // }
   return (
     <>
       <Box
@@ -120,10 +100,10 @@ const RosterCard = ({
           justifyContent: "flex-start",
           gap: "0.5rem",
         }}
-        ref={setNodeRef}
-        {...attributes}
-        {...listeners}
-        style={style}
+        // ref={setNodeRef}
+        // {...attributes}
+        // {...listeners}
+        // style={style}
       >
         {/* <DndContext
           onDragEnd={handleDragEnd}

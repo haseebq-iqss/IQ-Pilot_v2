@@ -29,7 +29,6 @@ import {
 } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import PassengerTab from "../../components/ui/PassengerTab.tsx";
-import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 
 function CreateShift() {
   const location = useLocation();
@@ -84,6 +83,8 @@ function CreateShift() {
     },
   });
 
+  // console.log(columns);
+
   const mapCoordinatesToText = (value: string) => {
     switch (value) {
       case "[34.07918418861709, 74.76795882716988]":
@@ -102,12 +103,30 @@ function CreateShift() {
   };
 
   const handleCreateRoute = () => {
+    const combinedData = [];
+
+    columns.forEach((column) => {
+      const columnPassengers = passengers.filter(
+        (passenger) => passenger.columnId === column.id
+      );
+      combinedData.push({
+        cab: column.cab,
+        passengers: columnPassengers,
+        availableCapacity:
+          column?.cab?.seatingCapacity - columnPassengers?.length,
+      });
+    });
+
+    // console.log(rosterData);
     const dataToDeploy: any = {
-      cabEmployeeGroups: rosterData,
+      cabEmployeeGroups: combinedData,
       workLocation: routeState?.data?.workLocation,
       currentShift: routeState?.data?.currentShift,
       typeOfRoute: routeState?.data?.typeOfRoute,
+      // availableCapacity :
     };
+
+    // console.log(dataToDeploy);
     mutate(dataToDeploy);
   };
 
@@ -156,16 +175,16 @@ function CreateShift() {
         return arrayMove(passengers, activeIndex, overIndex);
       });
     }
-    const isOverAColumn = over.data.current?.type === "Column";
+    // const isOverAColumn = over.data.current?.type === "Column";
     //   // Im dropping a Task over a column
-    if (isActiveATask && isOverAColumn) {
-      setPassengers((passengers) => {
-        const activeIndex = getPassengerPos(activeId);
-        passengers[activeIndex]._id = String(overId);
-        console.log("DROPPING TASK OVER COLUMN", { activeIndex });
-        return arrayMove(passengers, activeIndex, activeIndex);
-      });
-    }
+    // if (isActiveATask && isOverAColumn) {
+    //   setPassengers((passengers) => {
+    //     const activeIndex = getPassengerPos(activeId);
+    //     passengers[activeIndex]._id = String(overId);
+    //     console.log("DROPPING TASK OVER COLUMN", { activeIndex });
+    //     return arrayMove(passengers, activeIndex, activeIndex);
+    //   });
+    // }
   }
 
   function onDragStart(event: DragStartEvent) {
@@ -205,6 +224,7 @@ function CreateShift() {
       return arrayMove(columns, activeColumnIndex, overColumnIndex);
     });
   }
+
   return (
     <Box
       sx={{
