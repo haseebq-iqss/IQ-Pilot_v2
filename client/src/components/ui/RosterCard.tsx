@@ -1,49 +1,109 @@
-import { Avatar, Box, ButtonBase, Typography } from "@mui/material";
+import { Avatar, Box, Typography } from "@mui/material";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex.ts";
 import TagIcon from "@mui/icons-material/Tag";
 import Groups2Icon from "@mui/icons-material/Groups2";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
-import { Route } from "@mui/icons-material";
-import MultipleStopIcon from "@mui/icons-material/MultipleStop";
+
 import baseURL from "../../utils/baseURL.ts";
 import Cabtypes from "./../../types/CabTypes";
 import EmployeeTypes from "./../../types/EmployeeTypes";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import PassengerTab from "./PassengerTab.tsx";
+import { CSS } from "@dnd-kit/utilities";
 
 type RosterCardTypes = {
-  passengers: [EmployeeTypes];
+  passengerDetails: EmployeeTypes[];
   cab: Cabtypes;
   setRosterData: React.Dispatch<
     React.SetStateAction<
       {
         cab: Cabtypes;
-        passengers: [EmployeeTypes];
+        passengers: EmployeeTypes[];
       }[]
     >
   >;
+  id: string;
 };
 
-const RosterCard = ({ passengers, cab, setRosterData }: RosterCardTypes) => {
+const RosterCard = ({
+  passengerDetails,
+  cab,
+  column,
+  setRosterData,
+}: RosterCardTypes) => {
   const cabDriverDetails = (cab?.cabDriver as [EmployeeTypes])[0];
 
   useEffect(() => {
+    if (!cab || !passengerDetails) return;
+
     const newData = {
       cab,
-      passengers,
+      passengerDetails,
     };
+
     setRosterData((prevData) => {
-      if (
-        prevData.some(
-          (item) => item.cab === cab && item.passengers === passengers
-        )
-      ) {
+      const existingDataIndex = prevData.findIndex(
+        (item) => item.cab === cab && item.passengerDetails === passengerDetails
+      );
+
+      if (existingDataIndex !== -1) {
         return prevData;
-      } else {
-        return [...prevData, newData];
       }
+
+      return [...prevData, newData];
     });
-  }, [cab, passengers, setRosterData]);
+  }, [setRosterData]);
+
+  const tasksIds = useMemo(() => {
+    return passengerDetails.map((passenger) => passenger.id);
+  }, [passengerDetails]);
+
+  const {
+    setNodeRef,
+    attributes,
+    listeners,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: column?.id,
+    data: {
+      type: "Column",
+      column,
+    },
+  });
+
+  const style = {
+    transition,
+    transform: CSS.Transform.toString(transform),
+  };
+  if (isDragging) {
+    return (
+      <div
+        ref={setNodeRef}
+        style={{
+          ...style,
+          backgroundColor: "grey",
+          opacity: 0.4,
+          borderWidth: "2px",
+          borderColor: "#D946EF",
+          borderStyle: "solid",
+          width: "27.5vw",
+          height: "90rem",
+          maxHeight: "90%",
+          borderRadius: "0.375rem",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      ></div>
+    );
+  }
   return (
     <>
       <Box
@@ -59,7 +119,18 @@ const RosterCard = ({ passengers, cab, setRosterData }: RosterCardTypes) => {
           justifyContent: "flex-start",
           gap: "0.5rem",
         }}
+        ref={setNodeRef}
+        {...attributes}
+        {...listeners}
+        style={style}
       >
+        {/* <DndContext
+          onDragEnd={handleDragEnd}
+          // onDragStart={() => setIsDragging(true)}
+          collisionDetection={closestCorners}
+          // onDragOver={onDragOver}
+          sensors={sensors}
+        > */}
         <Box
           sx={{
             ...RowFlex,
@@ -170,12 +241,12 @@ const RosterCard = ({ passengers, cab, setRosterData }: RosterCardTypes) => {
             <span
               style={{
                 color:
-                  passengers?.length !== cab?.seatingCapacity
+                  passengerDetails?.length !== cab?.seatingCapacity
                     ? "crimson"
                     : "#2997FC",
               }}
             >
-              {passengers?.length + " " + "out of 6"}
+              {passengerDetails?.length + " " + "out of 6"}
             </span>{" "}
             Seats Used
           </Typography>
@@ -192,89 +263,29 @@ const RosterCard = ({ passengers, cab, setRosterData }: RosterCardTypes) => {
           className="child-scroll"
           sx={{
             ...ColFlex,
+            alignItems: "flex-start",
             width: "100%",
             gap: 1.5,
             justifyContent: "flex-start",
             overflowY: "auto",
+            px: 1.5,
+            py: 1,
           }}
         >
-          {passengers?.map((passenger: EmployeeTypes, index) => (
-            <Box
-              sx={{
-                ...ColFlex,
-                justifyContent: "flex-start",
-                width: "100%",
-              }}
-              key={index}
-            >
-              <Box
-                sx={{
-                  ...RowFlex,
-                  width: "100%",
-                  paddingBottom: "4px",
-                  borderBottom: "1px solid #BDBDBD",
-                  height: "100%",
-                }}
-              >
-                <Box
-                  sx={{
-                    ...RowFlex,
-                    width: "80%",
-                    justifyContent: "flex-start",
-                    gap: "10px",
-                  }}
-                >
-                  <Avatar
-                    sx={{ width: "35px", height: "35px" }}
-                    src={baseURL + passenger?.profilePicture}
-                  />
-                  <Box>
-                    <Typography fontSize={15} fontWeight={600}>
-                      {passenger?.fname + " " + passenger?.lname}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: "0.8rem",
-                        display: "flex",
-                        alignItems: "center",
-                        color: "grey",
-                      }}
-                      fontWeight={500}
-                    >
-                      <Route
-                        sx={{
-                          width: "12.5px",
-                          height: "12.5px",
-                          mr: "5px",
-                          color: "primary.main",
-                        }}
-                      />
-                      {(passenger?.pickUp?.address as string)?.length > 30
-                        ? (passenger?.pickUp?.address as string).slice(0, 30) +
-                          "..."
-                        : (passenger?.pickUp?.address as string)}
-                    </Typography>
-                  </Box>
-                </Box>
-                <ButtonBase
-                  //   onClick={() => handleRemovePassengersFromCab(employee)}
-                  sx={{ ...RowFlex, borderRadius: "100px" }}
-                >
-                  <MultipleStopIcon
-                    sx={{
-                      backgroundColor: "primary.main",
-                      borderRadius: "100px",
-                      p: 0.5,
-                      width: "35px",
-                      height: "35px",
-                      color: "white",
-                    }}
-                  />
-                </ButtonBase>
-              </Box>
-            </Box>
-          ))}
+          <SortableContext
+            items={tasksIds}
+            strategy={verticalListSortingStrategy}
+          >
+            {passengerDetails?.map((passenger: EmployeeTypes) => (
+              <PassengerTab
+                id={passenger._id!}
+                passenger={passenger}
+                key={passenger._id}
+              />
+            ))}
+          </SortableContext>
         </Box>
+        {/* </DndContext> */}
       </Box>
     </>
   );

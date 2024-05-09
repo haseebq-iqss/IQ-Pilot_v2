@@ -10,6 +10,25 @@ import Cabtypes from "../../types/CabTypes.ts";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios.ts";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  UniqueIdentifier,
+  closestCorners,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  horizontalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { createPortal } from "react-dom";
+import PassengerTab from "../../components/ui/PassengerTab.tsx";
 
 function CreateShift() {
   const location = useLocation();
@@ -18,9 +37,30 @@ function CreateShift() {
   const [rosterData, setRosterData] = useState<
     {
       cab: Cabtypes;
-      passengers: [EmployeeTypes];
+      passengers: EmployeeTypes[];
     }[]
   >([]);
+
+  const [activeColumn, setActiveColumn] = useState(null);
+  const [activeTask, setActiveTask] = useState(null);
+  const [columns, setColumns] = useState(
+    (routeState?.data?.data || []).map((shift, index) => ({
+      ...shift,
+      id: shift._id || `${"Roster" + index.toString()}`,
+    }))
+  );
+
+  const [passengers, setPassengers] = useState(() => {
+    if (!routeState?.data?.data) return [];
+
+    return columns.flatMap((shift) =>
+      shift.passengers.map((passenger, index) => ({
+        ...passenger,
+        id: passenger._id || index.toString(),
+        columnId: shift.id,
+      }))
+    );
+  });
 
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -59,7 +99,7 @@ function CreateShift() {
   };
 
   const handleCreateRoute = () => {
-    const dataToDeploy:any = {
+    const dataToDeploy: any = {
       cabEmployeeGroups: rosterData,
       workLocation: routeState?.data?.workLocation,
       currentShift: routeState?.data?.currentShift,
@@ -67,6 +107,100 @@ function CreateShift() {
     };
     mutate(dataToDeploy);
   };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    })
+  );
+
+  const getPassengerPos = (id: UniqueIdentifier) =>
+    passengers.findIndex((passenger) => passenger._id === id);
+
+  function onDragOver(event: DragOverEvent) {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeId = active.id;
+    const overId = over.id;
+
+    if (activeId === overId) return;
+
+    const isActiveATask = active.data.current?.type === "Task";
+    const isOverATask = over.data.current?.type === "Task";
+
+    if (!isActiveATask) return;
+
+    // // Im dropping a Task over another Task
+
+    if (isActiveATask && isOverATask) {
+      setPassengers((passengers) => {
+        const activeIndex = getPassengerPos(activeId);
+        const overIndex = getPassengerPos(overId);
+
+        if (
+          passengers[activeIndex].columnId != passengers[overIndex].columnId
+        ) {
+          passengers[activeIndex].columnId = passengers[overIndex].columnId;
+          return arrayMove(passengers, activeIndex, overIndex - 1);
+        }
+
+        return arrayMove(passengers, activeIndex, overIndex);
+      });
+    }
+    const isOverAColumn = over.data.current?.type === "Column";
+    //   // Im dropping a Task over a column
+    if (isActiveATask && isOverAColumn) {
+      setPassengers((passengers) => {
+        const activeIndex = getPassengerPos(activeId);
+        passengers[activeIndex]._id = String(overId);
+        console.log("DROPPING TASK OVER COLUMN", { activeIndex });
+        return arrayMove(passengers, activeIndex, activeIndex);
+      });
+    }
+  }
+
+  // console.log(passengers);
+
+  function onDragStart(event: DragStartEvent) {
+    if (event.active.data.current?.type === "Column") {
+      setActiveColumn(event.active.data.current.column);
+      return;
+    }
+
+    if (event.active.data.current?.type === "Task") {
+      setActiveTask(event.active.data.current.task);
+      return;
+    }
+  }
+
+  function onDragEnd(event: DragEndEvent) {
+    setActiveColumn(null);
+    setActiveTask(null);
+
+    const { active, over } = event;
+    // if (!over) return;
+    if (active.id === over?.id) return;
+
+    const activeId = active.id;
+    const overId = over?.id;
+
+    if (activeId === overId) return;
+
+    const isActiveAColumn = active.data.current?.type === "Column";
+
+    if (!isActiveAColumn) return;
+
+    setColumns((columns) => {
+      const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
+
+      const overColumnIndex = columns.findIndex((col) => col.id === overId);
+
+      return arrayMove(columns, activeColumnIndex, overColumnIndex);
+    });
+  }
 
   return (
     <Box
@@ -96,7 +230,7 @@ function CreateShift() {
           </Typography>
           <Typography variant="h6" fontWeight={600}>
             {mapCoordinatesToText(routeState?.centralPoint) +
-              " --> " +
+              "-->" +
               ConvertShiftTimeTo12HrFormat(routeState?.data?.currentShift)}
           </Typography>
         </Box>
@@ -186,6 +320,7 @@ function CreateShift() {
           </Box>
         </Box>
       </Box>
+
       <Box
         className="scroll-mod"
         sx={{
@@ -197,26 +332,69 @@ function CreateShift() {
           backgroundColor: "rgba(158, 158, 158, 0.1)",
         }}
       >
-        <Box
-          sx={{
-            ...RowFlex,
-            height: "100%",
-            width: "100%",
-            px: 2.5,
-            whiteSpace: "nowrap",
-            gap: "3rem",
-            justifyContent: "flex-start",
-          }}
+        <DndContext
+          collisionDetection={closestCorners}
+          sensors={sensors}
+          onDragOver={onDragOver}
+          onDragStart={onDragStart}
+          onDragEnd={onDragEnd}
         >
-          {routeState?.data?.data.map((shift: ShiftTypes, index: number) => (
-            <RosterCard
-              key={index}
-              passengers={shift?.passengers as [EmployeeTypes]}
-              cab={shift?.cab as Cabtypes}
-              setRosterData={setRosterData}
-            />
-          ))}
-        </Box>
+          <Box
+            sx={{
+              ...RowFlex,
+              height: "100%",
+              width: "100%",
+              px: 2.5,
+              whiteSpace: "nowrap",
+              gap: "3rem",
+              justifyContent: "flex-start",
+            }}
+          >
+            <SortableContext
+              items={columns}
+              strategy={horizontalListSortingStrategy}
+            >
+              {columns.map((shift: ShiftTypes, index: number) => {
+                return (
+                  <RosterCard
+                    key={shift?.id}
+                    column={shift}
+                    passengerDetails={passengers.filter(
+                      (task) => task.columnId === shift.id
+                    )}
+                    cab={shift?.cab as Cabtypes}
+                    setRosterData={setRosterData}
+                    // id={index.toString()}
+                    handleCreateRoute={handleCreateRoute}
+                  />
+                );
+              })}
+            </SortableContext>
+          </Box>
+          {createPortal(
+            <DragOverlay>
+              {activeColumn && (
+                <RosterCard
+                  passengerDetails={passengers.filter(
+                    (passenger) => passenger.columnId === activeColumn.id
+                  )}
+                  cab={activeColumn?.cab}
+                  setRosterData={setRosterData}
+                  id={activeColumn.id}
+                  column={activeColumn}
+                  handleCreateRoute={handleCreateRoute}
+                />
+              )}
+              {activeTask && (
+                <PassengerTab
+                  id={activeTask?.id}
+                  passenger={activeTask?.passenger}
+                />
+              )}
+            </DragOverlay>,
+            document.body
+          )}
+        </DndContext>
       </Box>
     </Box>
   );
