@@ -60,7 +60,7 @@ function AddPassengers() {
   const { data: employees } = useQuery({
     queryKey: ["all-employees"],
     queryFn: async () => {
-      const response = await useAxios.get("/users/tms");
+      const response = await useAxios.get("/routes/pendingPassengers");
       return response.data.data;
     },
   });

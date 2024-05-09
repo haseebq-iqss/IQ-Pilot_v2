@@ -331,63 +331,25 @@ exports.createShiftByCentroid = catchAsync(async (req, res, next) => {
   const routes = await Route.find({});
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
+
   if (routes.length > 0) {
     const routesForCurrentDate = routes.filter((route) => {
       const routeCreatedAt = new Date(route.createdAt);
       routeCreatedAt.setHours(0, 0, 0, 0);
-      // console.log(routeCreatedAt.getTime(), currentDate.getTime());
       return (
         routeCreatedAt.getTime() === currentDate.getTime() &&
         route.workLocation === workLocation &&
         route.currentShift === currentShift
       );
     });
-    console.log(routesForCurrentDate);
+    // console.log(routesForCurrentDate);
     if (routesForCurrentDate.length !== 0)
       return res.status(401).json({
         message:
           "Routes already exist for the current date, current shift, and work location. Employees are already assigned for this shift.",
       });
-
-    // const passengersInRoutesIds = await Route.aggregate([
-    //   {
-    //     $match: {
-    //       workLocation,
-    //       currentShift,
-    //       typeOfRoute: "pickup",
-    //       createdAt: { $eq: currentDate },
-    //     },
-    //   },
-    //   {
-    //     $unwind: "$passengers",
-    //   },
-    //   {
-    //     $group: {
-    //       _id: "$passengers",
-    //     },
-    //   },
-    // ]);
-
-    // const passengersInRoutes = await Promise.all(
-    //   passengersInRoutesIds.map(async (passenger) =>
-    //     User.findById(passenger._id)
-    //   )
-    // );
-    // employees = passengersInRoutes;
   }
-  // console.log(employees.length);
-  // employees =
-  //   employees.length === 0
-  //     ? closestEmployees
-  //     : closestEmployees.splice(0, employees.length) && closestEmployees;
 
-  // console.log(employees);
-  //   if (employees.length === 0) {
-  //     return res.status(401).json({
-  //       message: "For this shift,employees are already assigned a cab...",
-  //     });
-  // }
-  // console.log(closestEmployees);
   const cabs = await Cab.aggregate([
     {
       $lookup: {
@@ -397,33 +359,6 @@ exports.createShiftByCentroid = catchAsync(async (req, res, next) => {
         as: "routes",
       },
     },
-    // {
-    //   $addFields: {
-    //     passengerCount: {
-    //       $reduce: {
-    //         input: {
-    //           $filter: {
-    //             input: "$routes",
-    //             as: "route",
-    //             cond: {
-    //               $and: [
-    //                 { $eq: ["$$route.currentShift", currentShift] },
-    //                 { $eq: ["$$route.workLocation", workLocation] },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //         initialValue: 0,
-    //         in: { $add: ["$$value", { $size: "$$this.passengers" }] },
-    //       },
-    //     },
-    //   },
-    // },
-    // {
-    //   $match: {
-    //     $expr: { $lt: ["$passengerCount", "$seatingCapacity"] },
-    //   },
-    // },
     {
       $lookup: {
         from: "users",
@@ -470,13 +405,14 @@ exports.createRoute = catchAsync(async (req, res, next) => {
     return next(new AppError(`Invalid or cabEmployeeGroups is empty`, 400));
 
   for (const group of cabEmployeeGroups) {
-    const { cab, passengers } = group;
+    const { cab, passengers, availableCapacity } = group;
     const route = await Route.create({
       cab,
       passengers,
       workLocation,
       currentShift,
       typeOfRoute,
+      availableCapacity,
     });
   }
   res.status(201).json({
@@ -502,7 +438,7 @@ exports.getRoutes = catchAsync(async (req, res, next) => {
       path: "cab",
       populate: { path: "cabDriver", select: "fname lname phone" },
     })
-    .populate({ path: "passengers", select: "fname lname phone" });
+    .populate("passengers");
   if (!routes) {
     return next(new AppError("No routes found...", 404));
   }
@@ -567,4 +503,82 @@ exports.driverRoute = catchAsync(async (req, res, next) => {
   if (!route)
     return next(new AppError(`No route for this driver id:${id}`, 404));
   res.status(200).json({ status: "Success", data: route });
+});
+
+// exports.availableCabs = catchAsync(async (req, res, next) => {
+//   const routes = await Route.find({});
+//   const cabs = await Cab.find({});
+//   const currentDate = new Date();
+//   currentDate.setHours(0, 0, 0, 0);
+//   const old_routes = await Route.aggregate([
+//     {
+//       $match: {
+//         createdAt: { $lt: currentDate },
+//       },
+//     },
+//     {
+//       $group: {
+//         _id: "$cab",
+//       },
+//     },
+//   ]);
+//   const curr_route_cabs_available = routes
+//     .map((route) => {
+//       const routeCreatedAtDate = new Date(route.createdAt);
+//       routeCreatedAtDate.setHours(0, 0, 0, 0);
+//       if (
+//         routeCreatedAtDate.getTime() === currentDate.getTime() &&
+//         route.availableCapacity > 0
+//       ) {
+//         return route.cab.toString();
+//       }
+//       return null;
+//     })
+//     .filter((cab) => cab !== null);
+//   const current_routes = routes
+//     .map((route) => {
+//       const routeCreatedAtDate = new Date(route.createdAt);
+//       routeCreatedAtDate.setHours(0, 0, 0, 0);
+//       if (routeCreatedAtDate.getTime() === currentDate.getTime()) {
+//         return route.cab.toString();
+//       }
+//       return null;
+//     })
+//     .filter((route) => route !== null);
+//   const filterd_cabs = old_routes
+//     .map((cab) => {
+//       const idStr = cab._id.toString();
+//       if (!current_routes.includes(idStr)) return cab._id.toString();
+//       return null;
+//     })
+//     .filter((val) => val !== null);
+//   console.log(filterd_cabs, curr_route_cabs_available);
+//   const availableCabs = [...filterd_cabs, ...curr_route_cabs_available];
+//   console.log(availableCabs);
+//   const totalAvailableCabs =
+//     cabs.length -
+//     (old_routes.length + current_routes.length) -
+//     availableCabs.length;
+//   console.log(totalAvailableCabs);
+//   res.status(200).json({ message: "Cabs Available" });
+// });
+
+exports.availableCabs = catchAsync(async (req, res, next) => {
+  const cabs = await Cab.find({});
+  const routes = await Route.find({});
+
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+
+  const curr_routes_no_capacity = routes.filter((route) => {
+    const routeCreationDate = new Date(route.createdAt);
+    routeCreationDate.setHours(0, 0, 0, 0);
+    return (
+      routeCreationDate.getTime() === currentDate.getTime() &&
+      route.availableCapacity === 0
+    );
+  });
+  const cab_not_available = curr_routes_no_capacity.map((route) => route.cab);
+  const no_of_cabs_available = cabs.length - cab_not_available.length;
+  res.status(200).json({ message: "Available Cabs", no_of_cabs_available });
 });

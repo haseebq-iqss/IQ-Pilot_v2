@@ -49,6 +49,7 @@ const routeSchema = new mongoose.Schema({
   totalDistance: {
     type: Number,
   },
+  availableCapacity: Number,
   createdAt: {
     type: Date,
     default: Date.now(),

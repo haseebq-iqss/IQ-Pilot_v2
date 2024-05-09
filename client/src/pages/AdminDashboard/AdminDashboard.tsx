@@ -70,7 +70,7 @@ function AdminDashboard() {
     },
   });
 
-  console.log(allRoutes)
+  // console.log(allRoutes)
 
   // ALL AVAILABLE CABS
   const getAllCabsQF = async () => {

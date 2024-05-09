@@ -9,6 +9,7 @@ const {
   rosteredPassengers,
   driverRoute,
   createShiftByCentroid,
+  availableCabs,
 } = require("../controller/routeController");
 const { protect, restrictTo } = require("../controller/authController");
 
@@ -21,6 +22,8 @@ router.route("/centroidShift").post(createShiftByCentroid);
 router.route("/pendingPassengers").get(pendingPassengers);
 router.route("/rosteredPassengers").get(rosteredPassengers);
 router.route("/driverRoute/:id").get(driverRoute);
+router.route("/availableCabs").get(availableCabs);
+
 router.route("/").post(createRoute).get(getRoutes);
 router.route("/:id").get(getRoute);
 
