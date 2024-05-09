@@ -24,7 +24,7 @@ const PassengerTab = ({
     id: passenger.id,
     data: {
       type: "Task",
-      task: { passenger },
+      task: passenger,
     },
   });
 

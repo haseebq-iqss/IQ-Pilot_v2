@@ -29,6 +29,7 @@ import {
 } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import PassengerTab from "../../components/ui/PassengerTab.tsx";
+import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 
 function CreateShift() {
   const location = useLocation();
@@ -71,7 +72,6 @@ function CreateShift() {
       try {
         // console.log(data);
         const response = await useAxios.post("routes/", data);
-        console.log(response);
         if (response?.status === 201) {
           navigate("/admin");
         }
@@ -101,7 +101,6 @@ function CreateShift() {
     }
   };
 
-  console.log(rosterData);
   const handleCreateRoute = () => {
     const dataToDeploy: any = {
       cabEmployeeGroups: rosterData,
@@ -110,7 +109,6 @@ function CreateShift() {
       typeOfRoute: routeState?.data?.typeOfRoute,
     };
     mutate(dataToDeploy);
-    console.log(dataToDeploy);
   };
 
   // console.log(passengers);
@@ -163,15 +161,12 @@ function CreateShift() {
     if (isActiveATask && isOverAColumn) {
       setPassengers((passengers) => {
         const activeIndex = getPassengerPos(activeId);
-        console.log(passengers[activeIndex]);
         passengers[activeIndex]._id = String(overId);
         console.log("DROPPING TASK OVER COLUMN", { activeIndex });
         return arrayMove(passengers, activeIndex, activeIndex);
       });
     }
   }
-
-  // console.log(passengers);
 
   function onDragStart(event: DragStartEvent) {
     if (event.active.data.current?.type === "Column") {
@@ -372,7 +367,6 @@ function CreateShift() {
                       (passenger: EmployeeTypes) =>
                         passenger.columnId === shift.id
                     )}
-                    cab={shift?.cab as Cabtypes}
                     setRosterData={setRosterData}
                     // id={index.toString()}
                   />
@@ -384,11 +378,11 @@ function CreateShift() {
             <DragOverlay>
               {activeColumn && (
                 <RosterCard
-                  passengerDetails={passengers.filter(
+                  passengerDetails={activeColumn.passengers!.filter(
                     (passenger: EmployeeTypes) =>
                       passenger.columnId === activeColumn.id
                   )}
-                  cab={activeColumn?.cab as Cabtypes}
+                  // cab={activeColumn?.cab as Cabtypes}
                   setRosterData={setRosterData}
                   // id={activeColumn.id}
                   column={activeColumn}
@@ -397,7 +391,7 @@ function CreateShift() {
               {activeTask && (
                 <PassengerTab
                   // id={activeTask?.id}
-                  passenger={activeTask?.passenger}
+                  passenger={activeTask}
                 />
               )}
             </DragOverlay>,

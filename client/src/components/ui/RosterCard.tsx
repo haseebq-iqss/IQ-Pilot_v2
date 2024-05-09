@@ -20,7 +20,7 @@ import { ShiftTypes } from "../../types/ShiftTypes.ts";
 
 type RosterCardTypes = {
   passengerDetails: EmployeeTypes[];
-  cab: Cabtypes;
+  // cab: Cabtypes;
   setRosterData: React.Dispatch<
     React.SetStateAction<
       {
@@ -35,33 +35,31 @@ type RosterCardTypes = {
 
 const RosterCard = ({
   passengerDetails,
-  cab,
+  // cab,
   column,
   setRosterData,
 }: RosterCardTypes) => {
-  const cabDriverDetails = (cab?.cabDriver)[0];
+  const cabDriverDetails = (column?.cab?.cabDriver)[0];
   const [passengers, setPassengers] = useState(passengerDetails);
+  const cab = column.cab;
 
   useEffect(() => {
-    if (!cab || !passengerDetails) return;
-
     const newData = {
       cab,
       passengers,
     };
-
     setRosterData((prevData) => {
-      const existingDataIndex = prevData.findIndex(
-        (item) => item.cab === cab && item.passengerDetails === passengerDetails
-      );
-
-      if (existingDataIndex !== -1) {
+      if (
+        prevData.some(
+          (item) => item.cab === cab && item.passengers === passengers
+        )
+      ) {
         return prevData;
+      } else {
+        return [...prevData, newData];
       }
-
-      return [...prevData, newData];
     });
-  }, [cab]);
+  }, [cab, passengers, setRosterData, column]);
 
   const tasksIds = useMemo(() => {
     return passengerDetails.map((passenger) => passenger.id);
@@ -78,7 +76,7 @@ const RosterCard = ({
     id: column?.id,
     data: {
       type: "Column",
-      column,
+      column: { ...column, passengers: passengerDetails },
     },
   });
 
@@ -176,7 +174,7 @@ const RosterCard = ({
                     color: "orange",
                   }}
                 />
-                {cab?.cabNumber}
+                {column?.cab?.cabNumber}
               </Typography>
 
               <Typography
@@ -196,7 +194,7 @@ const RosterCard = ({
                     color: "primary.main",
                   }}
                 />
-                {cab?.seatingCapacity}
+                {column?.cab?.seatingCapacity}
               </Typography>
               <Typography
                 sx={{
@@ -215,7 +213,7 @@ const RosterCard = ({
                     color: "green",
                   }}
                 />
-                {cab?.carColor}
+                {column?.cab?.carColor}
               </Typography>
               <Typography
                 sx={{
@@ -234,7 +232,7 @@ const RosterCard = ({
                     color: "black",
                   }}
                 />
-                {cab?.numberPlate}
+                {column?.cab?.numberPlate}
               </Typography>
             </Box>
           </Box>
@@ -244,7 +242,7 @@ const RosterCard = ({
             <span
               style={{
                 color:
-                  passengerDetails?.length !== cab?.seatingCapacity
+                  passengerDetails?.length !== column?.cab?.seatingCapacity
                     ? "crimson"
                     : "#2997FC",
               }}
@@ -281,9 +279,9 @@ const RosterCard = ({
           >
             {passengerDetails?.map((passenger: EmployeeTypes) => (
               <PassengerTab
-                id={passenger._id!}
+                // id={passenger._id!}
                 passenger={passenger}
-                key={passenger._id}
+                key={passenger.id}
               />
             ))}
           </SortableContext>
