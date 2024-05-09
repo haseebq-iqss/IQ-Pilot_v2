@@ -127,8 +127,7 @@ exports.createShift = catchAsync(async (req, res, next) => {
     // console.log(routesForCurrentDate);
     if (routesForCurrentDate.length !== 0)
       return res.status(400).json({
-        message:
-          "Routes already exist for the current date, current shift,work location and type of route. Employees are already assigned for this shift.",
+        message: "All Team Members in Selected Shift are Already Rostered!",
       });
   }
 
