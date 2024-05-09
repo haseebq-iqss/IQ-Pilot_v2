@@ -46,6 +46,14 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
         state: { data: data.data, centralPoint: ref_coords },
       });
     },
+    onError: (err:any) => {
+      console.log()
+      setOpenSnack({
+        open: true,
+        message: err.response.data.message,
+        severity: "warning",
+      });
+    }
   });
   const HandleProceedToCreateShiftPage = () => {
     if (workLocation?.length && currentShift?.length && ref_coords?.length) {

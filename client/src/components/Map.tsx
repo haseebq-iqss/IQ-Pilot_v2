@@ -70,6 +70,7 @@ const MapComponent = ({
   useEffect(() => {
     (async () => {
       const res = await useAxios.get("/routes");
+      console.log(res.data);
       const groupedCoordinates = res.data.data
         ?.map((route: RouteTypes) =>
           route.passengers?.map(
@@ -81,6 +82,7 @@ const MapComponent = ({
           return acc;
         }, []);
 
+      console.log(groupedCoordinates);
       setRoutes(groupedCoordinates);
     })();
   }, []);
@@ -125,6 +127,7 @@ const MapComponent = ({
   return (
     <div style={{ position: "relative", height, width, overflow: "hidden" }}>
       <MapContainer
+        key={"Primary Map"}
         style={{ height: "100%", width: "100%" }}
         center={driverOnFocus?.length ? driverOnFocus : center}
         zoom={zoom}
@@ -244,7 +247,7 @@ const MapComponent = ({
             return (
               <>
                 <Polyline
-                  key={index + activePolylineIndex} // Change the key here
+                  key={index + activePolylineIndex + Math.random() * 100}
                   positions={route}
                   color={
                     activePolylineIndex === null ||
@@ -259,15 +262,16 @@ const MapComponent = ({
                       setActiveEmployees(
                         transformLatLngArray(e.target._latlngs)
                       );
-                      console.log(transformLatLngArray(e.target._latlngs));
+                      // console.log(transformLatLngArray(e.target._latlngs));
                     },
                   }}
                 />
                 {activePolylineIndex === null ||
                   (activePolylineIndex === index &&
-                    route.map((pickupPos:[number, number]) => {
+                    route.map((pickupPos: [number, number]) => {
                       return (
                         <Circle
+                          key={index + Math.random() * 100}
                           center={pickupPos}
                           radius={200}
                           fillOpacity={0.4}
@@ -316,16 +320,40 @@ const MapComponent = ({
         {employees &&
           employees?.length >= 1 &&
           employees.map((employee: EmployeeTypes) => {
-            // const isCoordinatesIncluded = activeEmployees.find(
-            //   (employeeCord: any) =>
-            //     JSON.stringify(employeeCord) ===
-            //     JSON.stringify(employee?.pickUp?.coordinates)
-            // );
+            const isCoordinatesIncluded = activeEmployees.some(
+              (coord: [number, number]) => {
+                const empCoord1 =
+                  String(employee.pickUp?.coordinates[0]).length > 6
+                    ? String(employee.pickUp?.coordinates[0]).slice(0, 6)
+                    : String(employee.pickUp?.coordinates[0]).slice(0, 4);
+                const empCoord2 =
+                  String(employee.pickUp?.coordinates[1]).length > 6
+                    ? String(employee.pickUp?.coordinates[1]).slice(0, 6)
+                    : String(employee.pickUp?.coordinates[1]).slice(0, 4);
 
-            // console.log(isCoordinatesIncluded);
+                const presentCoord1 =
+                  String(coord[0]).length > 6
+                    ? String(coord[0]).slice(0, 6)
+                    : String(coord[0]).slice(0, 4);
+                const presentCoord2 =
+                  String(coord[1]).length > 6
+                    ? String(coord[1]).slice(0, 6)
+                    : String(coord[1]).slice(0, 4);
+                if (
+                  empCoord1 === presentCoord1 &&
+                  empCoord2 === presentCoord2
+                ) {
+                  console.log(empCoord1, presentCoord1);
+                }
+                return (
+                  empCoord1 === presentCoord1 && empCoord2 === presentCoord2
+                );
+              }
+            );
 
-            return (
-              // activePolylineIndex === null && isCoordinatesIncluded && (
+            // console.log(isCoordinatesIncluded)
+
+            return activePolylineIndex === null ? (
               <Marker
                 icon={empIcon}
                 key={employee?._id}
@@ -333,6 +361,7 @@ const MapComponent = ({
               >
                 <Tooltip
                   className="employee-tooltip"
+                  key={employee?._id}
                   direction="top"
                   offset={[0, -40]}
                   permanent
@@ -342,8 +371,27 @@ const MapComponent = ({
                   </span>
                 </Tooltip>
               </Marker>
+            ) : (
+              isCoordinatesIncluded && (
+                <Marker
+                  icon={empIcon}
+                  key={employee?._id}
+                  position={employee?.pickUp?.coordinates as LatLngExpression}
+                >
+                  <Tooltip
+                    key={employee?._id}
+                    className="employee-tooltip"
+                    direction="top"
+                    offset={[0, -40]}
+                    permanent
+                  >
+                    <span>
+                      {employee?.fname! + " " + employee.lname![0] + "."}
+                    </span>
+                  </Tooltip>
+                </Marker>
+              )
             );
-            // );
           })}
 
         {SOS && (
@@ -353,6 +401,7 @@ const MapComponent = ({
             position={SOS?.location as LatLngExpression}
           >
             <Tooltip
+              key={SOS?.name}
               className="employee-tooltip"
               direction="top"
               offset={[0, -40]}

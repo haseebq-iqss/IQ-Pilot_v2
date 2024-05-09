@@ -111,7 +111,7 @@ exports.createShift = catchAsync(async (req, res, next) => {
   ]);
 
   if (closestEmployees.length === 0) {
-    res.status(404).json({
+    return res.status(404).json({
       message: "No Team Members Found in this Selected Shift...",
     });
   }
