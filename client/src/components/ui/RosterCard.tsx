@@ -8,7 +8,7 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import baseURL from "../../utils/baseURL.ts";
 import Cabtypes from "./../../types/CabTypes";
 import EmployeeTypes from "./../../types/EmployeeTypes";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   SortableContext,
   useSortable,
@@ -16,6 +16,7 @@ import {
 } from "@dnd-kit/sortable";
 import PassengerTab from "./PassengerTab.tsx";
 import { CSS } from "@dnd-kit/utilities";
+import { ShiftTypes } from "../../types/ShiftTypes.ts";
 
 type RosterCardTypes = {
   passengerDetails: EmployeeTypes[];
@@ -28,7 +29,8 @@ type RosterCardTypes = {
       }[]
     >
   >;
-  id: string;
+  // id: string;
+  column: ShiftTypes;
 };
 
 const RosterCard = ({
@@ -37,14 +39,15 @@ const RosterCard = ({
   column,
   setRosterData,
 }: RosterCardTypes) => {
-  const cabDriverDetails = (cab?.cabDriver as [EmployeeTypes])[0];
+  const cabDriverDetails = (cab?.cabDriver)[0];
+  const [passengers, setPassengers] = useState(passengerDetails);
 
   useEffect(() => {
     if (!cab || !passengerDetails) return;
 
     const newData = {
       cab,
-      passengerDetails,
+      passengers,
     };
 
     setRosterData((prevData) => {
@@ -58,7 +61,7 @@ const RosterCard = ({
 
       return [...prevData, newData];
     });
-  }, [setRosterData]);
+  }, [cab]);
 
   const tasksIds = useMemo(() => {
     return passengerDetails.map((passenger) => passenger.id);

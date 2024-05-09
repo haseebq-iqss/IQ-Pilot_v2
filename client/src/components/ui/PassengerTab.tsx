@@ -7,10 +7,10 @@ import baseURL from "../../utils/baseURL.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 
 const PassengerTab = ({
-  id,
+  // id,
   passenger,
 }: {
-  id: string;
+  // id: string;
   passenger: EmployeeTypes;
 }) => {
   const {

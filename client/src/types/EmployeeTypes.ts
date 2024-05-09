@@ -1,4 +1,6 @@
 type EmployeeTypes = {
+  columnId: string;
+  id: string;
   _id?: string;
   fname?: string;
   lname?: string;

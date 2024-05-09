@@ -7,7 +7,7 @@ import { ConvertShiftTimeTo12HrFormat } from "../../utils/12HourFormat.ts";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 import Cabtypes from "../../types/CabTypes.ts";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios.ts";
 import {
@@ -25,7 +25,7 @@ import {
 import {
   SortableContext,
   arrayMove,
-  horizontalListSortingStrategy,
+  // horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import PassengerTab from "../../components/ui/PassengerTab.tsx";
@@ -41,26 +41,28 @@ function CreateShift() {
     }[]
   >([]);
 
-  const [activeColumn, setActiveColumn] = useState(null);
-  const [activeTask, setActiveTask] = useState(null);
+  const [activeColumn, setActiveColumn] = useState<ShiftTypes | null>(null);
+  const [activeTask, setActiveTask] = useState<EmployeeTypes | null>(null);
   const [columns, setColumns] = useState(
-    (routeState?.data?.data || []).map((shift, index) => ({
+    (routeState?.data?.data || []).map((shift: ShiftTypes, index: number) => ({
       ...shift,
-      id: shift._id || `${"Roster" + index.toString()}`,
+      id: `${"Roster" + index.toString()}`,
     }))
   );
 
   const [passengers, setPassengers] = useState(() => {
     if (!routeState?.data?.data) return [];
 
-    return columns.flatMap((shift) =>
-      shift.passengers.map((passenger, index) => ({
+    return columns.flatMap((shift: ShiftTypes) =>
+      shift.passengers!.map((passenger, index) => ({
         ...passenger,
         id: passenger._id || index.toString(),
         columnId: shift.id,
       }))
     );
   });
+
+  const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -69,6 +71,7 @@ function CreateShift() {
       try {
         // console.log(data);
         const response = await useAxios.post("routes/", data);
+        console.log(response);
         if (response?.status === 201) {
           navigate("/admin");
         }
@@ -98,6 +101,7 @@ function CreateShift() {
     }
   };
 
+  console.log(rosterData);
   const handleCreateRoute = () => {
     const dataToDeploy: any = {
       cabEmployeeGroups: rosterData,
@@ -106,18 +110,22 @@ function CreateShift() {
       typeOfRoute: routeState?.data?.typeOfRoute,
     };
     mutate(dataToDeploy);
+    console.log(dataToDeploy);
   };
+
+  // console.log(passengers);
+  // console.log(columns);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 10,
+        distance: 30,
       },
     })
   );
 
   const getPassengerPos = (id: UniqueIdentifier) =>
-    passengers.findIndex((passenger) => passenger._id === id);
+    passengers.findIndex((passenger: EmployeeTypes) => passenger._id === id);
 
   function onDragOver(event: DragOverEvent) {
     const { active, over } = event;
@@ -136,14 +144,14 @@ function CreateShift() {
     // // Im dropping a Task over another Task
 
     if (isActiveATask && isOverATask) {
-      setPassengers((passengers) => {
+      setPassengers((passengers: EmployeeTypes[]) => {
         const activeIndex = getPassengerPos(activeId);
         const overIndex = getPassengerPos(overId);
 
         if (
-          passengers[activeIndex].columnId != passengers[overIndex].columnId
+          passengers[activeIndex]?.columnId != passengers[overIndex]?.columnId
         ) {
-          passengers[activeIndex].columnId = passengers[overIndex].columnId;
+          passengers[activeIndex].columnId = passengers[overIndex]?.columnId;
           return arrayMove(passengers, activeIndex, overIndex - 1);
         }
 
@@ -155,6 +163,7 @@ function CreateShift() {
     if (isActiveATask && isOverAColumn) {
       setPassengers((passengers) => {
         const activeIndex = getPassengerPos(activeId);
+        console.log(passengers[activeIndex]);
         passengers[activeIndex]._id = String(overId);
         console.log("DROPPING TASK OVER COLUMN", { activeIndex });
         return arrayMove(passengers, activeIndex, activeIndex);
@@ -193,7 +202,7 @@ function CreateShift() {
 
     if (!isActiveAColumn) return;
 
-    setColumns((columns) => {
+    setColumns((columns: ShiftTypes[]) => {
       const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
 
       const overColumnIndex = columns.findIndex((col) => col.id === overId);
@@ -201,7 +210,6 @@ function CreateShift() {
       return arrayMove(columns, activeColumnIndex, overColumnIndex);
     });
   }
-
   return (
     <Box
       sx={{
@@ -338,6 +346,7 @@ function CreateShift() {
           onDragOver={onDragOver}
           onDragStart={onDragStart}
           onDragEnd={onDragEnd}
+          autoScroll={true}
         >
           <Box
             sx={{
@@ -351,21 +360,21 @@ function CreateShift() {
             }}
           >
             <SortableContext
-              items={columns}
-              strategy={horizontalListSortingStrategy}
+              items={columnsId}
+              // strategy={horizontalListSortingStrategy}
             >
-              {columns.map((shift: ShiftTypes, index: number) => {
+              {columns.map((shift: ShiftTypes) => {
                 return (
                   <RosterCard
                     key={shift?.id}
                     column={shift}
                     passengerDetails={passengers.filter(
-                      (task) => task.columnId === shift.id
+                      (passenger: EmployeeTypes) =>
+                        passenger.columnId === shift.id
                     )}
                     cab={shift?.cab as Cabtypes}
                     setRosterData={setRosterData}
                     // id={index.toString()}
-                    handleCreateRoute={handleCreateRoute}
                   />
                 );
               })}
@@ -376,18 +385,18 @@ function CreateShift() {
               {activeColumn && (
                 <RosterCard
                   passengerDetails={passengers.filter(
-                    (passenger) => passenger.columnId === activeColumn.id
+                    (passenger: EmployeeTypes) =>
+                      passenger.columnId === activeColumn.id
                   )}
-                  cab={activeColumn?.cab}
+                  cab={activeColumn?.cab as Cabtypes}
                   setRosterData={setRosterData}
-                  id={activeColumn.id}
+                  // id={activeColumn.id}
                   column={activeColumn}
-                  handleCreateRoute={handleCreateRoute}
                 />
               )}
               {activeTask && (
                 <PassengerTab
-                  id={activeTask?.id}
+                  // id={activeTask?.id}
                   passenger={activeTask?.passenger}
                 />
               )}
