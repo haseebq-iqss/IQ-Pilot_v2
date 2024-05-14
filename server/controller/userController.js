@@ -96,7 +96,10 @@ const deleteUser = catchAsync(async (req, res, next) => {
     return next(new AppError(`No document found with this id`, 404));
   }
 
-  if (deleted_user.profilePicture) {
+  if (
+    deleted_user.profilePicture &&
+    deleted_user.profilePicture !== "dummy.jpg"
+  ) {
     fs.unlinkSync(
       `./public/images/profileImages/${deleted_user?.profilePicture}`
     );
