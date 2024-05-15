@@ -6,29 +6,28 @@ import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 
 import baseURL from "../../utils/baseURL.ts";
-import Cabtypes from "./../../types/CabTypes";
+
 import EmployeeTypes from "./../../types/EmployeeTypes";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   SortableContext,
-  // useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import PassengerTab from "./PassengerTab.tsx";
-// import { CSS } from "@dnd-kit/utilities";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
+import { useDroppable } from "@dnd-kit/core";
 
 type RosterCardTypes = {
   passengerDetails: EmployeeTypes[];
   // cab: Cabtypes;
-  setRosterData: React.Dispatch<
-    React.SetStateAction<
-      {
-        cab: Cabtypes;
-        passengers: EmployeeTypes[];
-      }[]
-    >
-  >;
+  // setRosterData: React.Dispatch<
+  //   React.SetStateAction<
+  //     {
+  //       cab: Cabtypes;
+  //       passengers: EmployeeTypes[];
+  //     }[]
+  //   >
+  // >;
   // id: string;
   column: ShiftTypes;
 };
@@ -37,9 +36,10 @@ const RosterCard = ({
   passengerDetails,
   // cab,
   column,
-  setRosterData,
 }: RosterCardTypes) => {
-  const cabDriverDetails = (column?.cab?.cabDriver)[0];
+  const cabDriverDetails = Array.isArray(column?.cab?.cabDriver)
+    ? (column?.cab?.cabDriver[0] as EmployeeTypes | undefined)
+    : undefined;
 
   const tasksIds = useMemo(() => {
     return passengerDetails.map((passenger) => passenger.id);
@@ -85,6 +85,13 @@ const RosterCard = ({
   //     ></div>
   //   );
   // }
+  const { setNodeRef } = useDroppable({
+    id: column?.id,
+    data: {
+      type: "Column",
+      column: { ...column, passengers: passengerDetails },
+    },
+  });
   return (
     <>
       <Box
@@ -100,7 +107,7 @@ const RosterCard = ({
           justifyContent: "flex-start",
           gap: "0.5rem",
         }}
-        // ref={setNodeRef}
+        ref={setNodeRef}
         // {...attributes}
         // {...listeners}
         // style={style}

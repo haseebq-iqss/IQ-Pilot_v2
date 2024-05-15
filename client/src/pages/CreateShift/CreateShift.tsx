@@ -7,7 +7,7 @@ import { ConvertShiftTimeTo12HrFormat } from "../../utils/12HourFormat.ts";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 import Cabtypes from "../../types/CabTypes.ts";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios.ts";
 import {
@@ -29,17 +29,37 @@ import {
 } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import PassengerTab from "../../components/ui/PassengerTab.tsx";
+// import ReservedPassengersTab from "../../components/ui/ReservedPassengersTab.tsx";
+import ReserveModal from "../../components/ui/ReserveModal.tsx";
+import ReservedPassengersTab from "../../components/ui/ReservedPassengersTab.tsx";
 
 function CreateShift() {
   const location = useLocation();
   const routeState = location?.state;
-  const [reserve, setReserve] = useState<Array<EmployeeTypes>>([]);
-  const [rosterData, setRosterData] = useState<
+  const [reservedPassengers, setReservedPassengers] = useState<
+    Array<EmployeeTypes>
+  >([
     {
-      cab: Cabtypes;
-      passengers: EmployeeTypes[];
-    }[]
-  >([]);
+      fname: "Virat",
+      lname: "Kholi",
+      email: "virat_kholi@iquasar.com",
+      phone: 99064841312,
+      role: "employee",
+      password: "password12345",
+      pickUp: {
+        type: "Point",
+        coordinates: [34.15207742432826, 74.87595012808126],
+        address: "Pazzalpura, behind Shalimar Garden, Shalimar, Srinagar.",
+      },
+      workLocation: "Zaira Tower",
+      department: "S&S(HR)",
+      id: "Reserved",
+    },
+  ]);
+  const [reserveModal, setReserveModal] = useState(false);
+  const [activeReserve, setActiveReserve] = useState<EmployeeTypes | null>(
+    null
+  );
 
   const [activeColumn, setActiveColumn] = useState<ShiftTypes | null>(null);
   const [activeTask, setActiveTask] = useState<EmployeeTypes | null>(null);
@@ -47,7 +67,7 @@ function CreateShift() {
     (routeState?.data?.data || []).map((shift: ShiftTypes, index: number) => ({
       ...shift,
       id: `${"Roster" + index.toString()}`,
-    }))
+    })) || []
   );
 
   const [passengers, setPassengers] = useState(() => {
@@ -62,14 +82,19 @@ function CreateShift() {
     );
   });
 
-  const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
+  const columnsId = useMemo(
+    () => columns.map((col: ShiftTypes) => col.id),
+    [columns]
+  );
+  const tasksIds = useMemo(() => {
+    return reservedPassengers.map((passenger: EmployeeTypes) => passenger.id);
+  }, [reservedPassengers]);
 
   const qc = useQueryClient();
   const navigate = useNavigate();
   const { mutate } = useMutation({
     mutationFn: async (data) => {
       try {
-        // console.log(data);
         const response = await useAxios.post("routes/", data);
         if (response?.status === 201) {
           navigate("/admin");
@@ -82,8 +107,6 @@ function CreateShift() {
       qc.invalidateQueries({ queryKey: ["all-routes"] });
     },
   });
-
-  // console.log(columns);
 
   const mapCoordinatesToText = (value: string) => {
     switch (value) {
@@ -102,36 +125,34 @@ function CreateShift() {
     }
   };
 
-  const handleCreateRoute = () => {
-    const combinedData = [];
+  const combinedData: {
+    cab: Cabtypes;
+    passengers: EmployeeTypes[];
+    availableCapacity: number;
+  }[] = [];
 
-    columns.forEach((column) => {
-      const columnPassengers = passengers.filter(
-        (passenger) => passenger.columnId === column.id
-      );
-      combinedData.push({
-        cab: column.cab,
-        passengers: columnPassengers,
-        availableCapacity:
-          column?.cab?.seatingCapacity - columnPassengers?.length,
-      });
+  columns.forEach((column: ShiftTypes) => {
+    const columnPassengers = passengers.filter(
+      (passenger: EmployeeTypes) => passenger.columnId === column.id
+    );
+    combinedData.push({
+      cab: column.cab as Cabtypes,
+      passengers: columnPassengers,
+      availableCapacity:
+        column.cab!.seatingCapacity! - columnPassengers?.length,
     });
-
-    // console.log(rosterData);
+  });
+  const handleCreateRoute = () => {
     const dataToDeploy: any = {
       cabEmployeeGroups: combinedData,
       workLocation: routeState?.data?.workLocation,
       currentShift: routeState?.data?.currentShift,
       typeOfRoute: routeState?.data?.typeOfRoute,
-      // availableCapacity :
     };
 
     // console.log(dataToDeploy);
     mutate(dataToDeploy);
   };
-
-  // console.log(passengers);
-  // console.log(columns);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -144,6 +165,7 @@ function CreateShift() {
   const getPassengerPos = (id: UniqueIdentifier) =>
     passengers.findIndex((passenger: EmployeeTypes) => passenger._id === id);
 
+  // console.log(passengers);
   function onDragOver(event: DragOverEvent) {
     const { active, over } = event;
     if (!over) return;
@@ -158,15 +180,19 @@ function CreateShift() {
 
     if (!isActiveATask) return;
 
-    // // Im dropping a Task over another Task
+    const targetColumn = combinedData.find((column) =>
+      column.passengers!.some(
+        (passenger: EmployeeTypes) => passenger._id === overId
+      )
+    );
 
-    if (isActiveATask && isOverATask) {
+    if (isActiveATask && isOverATask && targetColumn?.availableCapacity !== 0) {
       setPassengers((passengers: EmployeeTypes[]) => {
         const activeIndex = getPassengerPos(activeId);
         const overIndex = getPassengerPos(overId);
 
         if (
-          passengers[activeIndex]?.columnId != passengers[overIndex]?.columnId
+          passengers[activeIndex]?.columnId !== passengers[overIndex]?.columnId
         ) {
           passengers[activeIndex].columnId = passengers[overIndex]?.columnId;
           return arrayMove(passengers, activeIndex, overIndex - 1);
@@ -175,21 +201,31 @@ function CreateShift() {
         return arrayMove(passengers, activeIndex, overIndex);
       });
     }
-    // const isOverAColumn = over.data.current?.type === "Column";
-    //   // Im dropping a Task over a column
+
+    // const isOverReserve = over.data.current?.type === "Reserve";
+    // console.log(isOverReserve);
+
+    // console.log(over?.data?.current?.column);
+
+    // // Im dropping a Task over a column
     // if (isActiveATask && isOverAColumn) {
-    //   setPassengers((passengers) => {
-    //     const activeIndex = getPassengerPos(activeId);
-    //     passengers[activeIndex]._id = String(overId);
-    //     console.log("DROPPING TASK OVER COLUMN", { activeIndex });
-    //     return arrayMove(passengers, activeIndex, activeIndex);
-    //   });
+    //   // setPassengers((passengers: EmployeeTypes[]) => {
+    //   //   const activeIndex = getPassengerPos(activeId);
+    //   //   passengers[activeIndex]._id = String(overId);
+    //   //   console.log("DROPPING TASK OVER COLUMN", { activeIndex });
+    //   //   return arrayMove(passengers, activeIndex, activeIndex);
+    //   // });
     // }
   }
 
   function onDragStart(event: DragStartEvent) {
     if (event.active.data.current?.type === "Column") {
       setActiveColumn(event.active.data.current.column);
+      return;
+    }
+    if (event.active.data.current?.type === "ReservedPassenger") {
+      setActiveReserve(event.active.data.current.task);
+      console.log("Reserve");
       return;
     }
 
@@ -202,6 +238,7 @@ function CreateShift() {
   function onDragEnd(event: DragEndEvent) {
     setActiveColumn(null);
     setActiveTask(null);
+    setActiveReserve(null);
 
     const { active, over } = event;
     // if (!over) return;
@@ -225,201 +262,229 @@ function CreateShift() {
     });
   }
 
+  const handleReserveModal = () => {
+    setReserveModal((prevState) => !prevState);
+  };
+
   return (
-    <Box
-      sx={{
-        ...PageFlex,
-        width: "100vw",
-        height: "100vh",
-        flexDirection: "column",
-        gap: "15px",
-        backgroundColor: "white",
-      }}
+    <DndContext
+      onDragOver={onDragOver}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      collisionDetection={closestCorners}
+      sensors={sensors}
     >
       <Box
         sx={{
-          ...RowFlex,
-          width: "100%",
-          height: "10%",
-          px: "25px",
-          pt: "15px",
-          justifyContent: "space-between",
-          alignItems: "center",
+          ...PageFlex,
+          width: "100vw",
+          height: "100vh",
+          flexDirection: "column",
+          gap: "15px",
+          backgroundColor: "white",
         }}
       >
-        <Box sx={{ ...ColFlex, alignItems: "flex-start", width: "60%" }}>
-          <Typography variant="h4" fontWeight={600}>
-            {routeState?.data?.workLocation}
-          </Typography>
-          <Typography variant="h6" fontWeight={600}>
-            {mapCoordinatesToText(routeState?.centralPoint) +
-              "-->" +
-              ConvertShiftTimeTo12HrFormat(routeState?.data?.currentShift)}
-          </Typography>
-        </Box>
-
         <Box
           sx={{
             ...RowFlex,
-            width: "40%",
+            width: "100%",
+            height: "10%",
+            px: "25px",
+            pt: "15px",
+            justifyContent: "space-between",
             alignItems: "center",
-            justifyContent: "flex-end",
-            gap: 7.5,
           }}
         >
+          <Box sx={{ ...ColFlex, alignItems: "flex-start", width: "60%" }}>
+            <Typography variant="h4" fontWeight={600}>
+              {routeState?.data?.workLocation}
+            </Typography>
+            <Typography variant="h6" fontWeight={600}>
+              {mapCoordinatesToText(routeState?.centralPoint) +
+                "-->" +
+                ConvertShiftTimeTo12HrFormat(routeState?.data?.currentShift)}
+            </Typography>
+          </Box>
+
           <Box
             sx={{
-              pl: 2.5,
-              height: "50px",
               ...RowFlex,
-              justifyContent: "space-between",
-              gap: 2.5,
-              backgroundColor: "white",
-              border: "3px solid #2997fc",
-              borderRadius: 1.5,
-              cursor: "pointer",
+              width: "40%",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              gap: 7.5,
             }}
           >
-            <Typography
-              variant="h5"
-              sx={{
-                fontStyle: "italic",
-                fontWeight: "700",
-                color: "primary.main",
-              }}
-            >
-              RESERVE
-            </Typography>
             <Box
               sx={{
-                ...ColFlex,
-                width: "100%",
-                px: 1.75,
-                height: "100%",
-                bgcolor: "primary.main",
+                pl: 2.5,
+                height: "50px",
+                ...RowFlex,
+                justifyContent: "space-between",
+                gap: 2.5,
+                backgroundColor: "white",
+                border: "3px solid #2997fc",
+                borderRadius: 1.5,
+                cursor: "pointer",
+                position: "relative",
               }}
+              onClick={handleReserveModal}
             >
               <Typography
-                sx={{ fontWeight: 700, color: "white", fontStyle: "italic" }}
                 variant="h5"
+                sx={{
+                  fontStyle: "italic",
+                  fontWeight: "700",
+                  color: "primary.main",
+                }}
               >
-                {reserve?.length}
+                RESERVE
               </Typography>
+              <Box
+                sx={{
+                  ...ColFlex,
+                  width: "100%",
+                  px: 1.75,
+                  height: "100%",
+                  bgcolor: "primary.main",
+                }}
+              >
+                <Typography
+                  sx={{ fontWeight: 700, color: "white", fontStyle: "italic" }}
+                  variant="h5"
+                >
+                  {reservedPassengers?.length}
+                </Typography>
+              </Box>
+            </Box>
+            {reserveModal && (
+              <SortableContext items={tasksIds}>
+                <ReserveModal reservedPassengers={reservedPassengers} />
+              </SortableContext>
+            )}
+            <Box
+              sx={{
+                px: 5,
+                height: "50px",
+                bgcolor: "primary.main",
+                ...RowFlex,
+                gap: 2.5,
+                borderRadius: 1.5,
+                cursor: "pointer",
+                "&:hover > img": {
+                  scale: "1.025",
+                  transform: "rotateY(550deg) rotateZ(45deg)",
+                  transition: "all 1s ease",
+                },
+                "&:not(:hover) > img": {
+                  scale: "1",
+                  transform: "rotateY(0deg) rotateZ(0deg)",
+                  transition: "all 1s ease",
+                },
+              }}
+              onClick={handleCreateRoute}
+            >
+              <Typography
+                variant="h5"
+                sx={{ fontStyle: "italic", fontWeight: "700", color: "white" }}
+              >
+                DEPLOY
+              </Typography>
+              <Box
+                component={"img"}
+                src={LogoImage}
+                sx={{ width: "25px", aspectRatio: 1 }}
+              />
             </Box>
           </Box>
-          <Box
-            sx={{
-              px: 5,
-              height: "50px",
-              bgcolor: "primary.main",
-              ...RowFlex,
-              gap: 2.5,
-              borderRadius: 1.5,
-              cursor: "pointer",
-              "&:hover > img": {
-                scale: "1.025",
-                transform: "rotateY(550deg) rotateZ(45deg)",
-                transition: "all 1s ease",
-              },
-              "&:not(:hover) > img": {
-                scale: "1",
-                transform: "rotateY(0deg) rotateZ(0deg)",
-                transition: "all 1s ease",
-              },
-            }}
-            onClick={handleCreateRoute}
+        </Box>
+
+        <Box
+          className="scroll-mod"
+          sx={{
+            ...RowFlex,
+            display: "flex",
+            height: "90%",
+            width: "100vw",
+            overflowX: "scroll",
+            backgroundColor: "rgba(158, 158, 158, 0.1)",
+          }}
+        >
+          <DndContext
+            collisionDetection={closestCorners}
+            sensors={sensors}
+            onDragOver={onDragOver}
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
+            autoScroll={true}
           >
-            <Typography
-              variant="h5"
-              sx={{ fontStyle: "italic", fontWeight: "700", color: "white" }}
-            >
-              DEPLOY
-            </Typography>
             <Box
-              component={"img"}
-              src={LogoImage}
-              sx={{ width: "25px", aspectRatio: 1 }}
-            />
-          </Box>
+              sx={{
+                ...RowFlex,
+                height: "100%",
+                width: "100%",
+                px: 2.5,
+                whiteSpace: "nowrap",
+                gap: "3rem",
+                justifyContent: "flex-start",
+              }}
+            >
+              <SortableContext
+                items={columnsId}
+                // strategy={horizontalListSortingStrategy}
+              >
+                {columns.map((shift: ShiftTypes) => {
+                  return (
+                    <RosterCard
+                      key={shift?.id}
+                      column={shift}
+                      passengerDetails={passengers.filter(
+                        (passenger: EmployeeTypes) =>
+                          passenger.columnId === shift.id
+                      )}
+                      // setRosterData={setRosterData}
+                      // id={index.toString()}
+                    />
+                  );
+                })}
+              </SortableContext>
+            </Box>
+            {createPortal(
+              <DragOverlay>
+                {activeColumn && (
+                  <RosterCard
+                    passengerDetails={activeColumn.passengers!.filter(
+                      (passenger: EmployeeTypes) =>
+                        passenger.columnId === activeColumn.id
+                    )}
+                    // cab={activeColumn?.cab as Cabtypes}
+                    // setRosterData={setRosterData}
+                    // id={activeColumn.id}
+                    column={activeColumn}
+                  />
+                )}
+                {activeTask && (
+                  <PassengerTab
+                    // id={activeTask?.id}
+                    passenger={activeTask}
+                  />
+                )}
+              </DragOverlay>,
+              document.body
+            )}
+          </DndContext>
         </Box>
       </Box>
-
-      <Box
-        className="scroll-mod"
-        sx={{
-          ...RowFlex,
-          display: "flex",
-          height: "90%",
-          width: "100vw",
-          overflowX: "scroll",
-          backgroundColor: "rgba(158, 158, 158, 0.1)",
-        }}
-      >
-        <DndContext
-          collisionDetection={closestCorners}
-          sensors={sensors}
-          onDragOver={onDragOver}
-          onDragStart={onDragStart}
-          onDragEnd={onDragEnd}
-          autoScroll={true}
-        >
-          <Box
-            sx={{
-              ...RowFlex,
-              height: "100%",
-              width: "100%",
-              px: 2.5,
-              whiteSpace: "nowrap",
-              gap: "3rem",
-              justifyContent: "flex-start",
-            }}
-          >
-            <SortableContext
-              items={columnsId}
-              // strategy={horizontalListSortingStrategy}
-            >
-              {columns.map((shift: ShiftTypes) => {
-                return (
-                  <RosterCard
-                    key={shift?.id}
-                    column={shift}
-                    passengerDetails={passengers.filter(
-                      (passenger: EmployeeTypes) =>
-                        passenger.columnId === shift.id
-                    )}
-                    setRosterData={setRosterData}
-                    // id={index.toString()}
-                  />
-                );
-              })}
-            </SortableContext>
-          </Box>
-          {createPortal(
-            <DragOverlay>
-              {activeColumn && (
-                <RosterCard
-                  passengerDetails={activeColumn.passengers!.filter(
-                    (passenger: EmployeeTypes) =>
-                      passenger.columnId === activeColumn.id
-                  )}
-                  // cab={activeColumn?.cab as Cabtypes}
-                  setRosterData={setRosterData}
-                  // id={activeColumn.id}
-                  column={activeColumn}
-                />
-              )}
-              {activeTask && (
-                <PassengerTab
-                  // id={activeTask?.id}
-                  passenger={activeTask}
-                />
-              )}
-            </DragOverlay>,
-            document.body
-          )}
-        </DndContext>
-      </Box>
-    </Box>
+      {createPortal(
+        <DragOverlay>
+          {/* {activeReserve && (
+            <ReserveModal reservedPassengers={reservedPassengers} />
+          )} */}
+          {activeReserve && <ReservedPassengersTab passenger={activeReserve} />}
+        </DragOverlay>,
+        document.body
+      )}
+    </DndContext>
   );
 }
 
