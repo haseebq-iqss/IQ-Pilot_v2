@@ -123,8 +123,9 @@ const getEmployeeCab = catchAsync(async (req, res, next) => {
       break;
     }
   }
-  if (!found_route)
-    return next(new AppError(`No cab assigned for this employee...`, 404));
+  if (!found_route) {
+    return res.status(200).json({ status: "Success", message: "NA" });
+  }
   res.status(200).json({ status: "Success", found_route });
 });
 
