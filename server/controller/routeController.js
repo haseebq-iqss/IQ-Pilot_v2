@@ -8,7 +8,8 @@ const assignCabToEmployees = async (
   employees,
   cabs,
   workLocation,
-  currentShift
+  currentShift,
+  typeOfRoute
 ) => {
   const remainingEmployees = [...employees];
   const groups = [];
@@ -42,7 +43,8 @@ const assignCabToEmployees = async (
     const cabRoutesForShiftAndLocation = cab.routes.filter((route) => {
       return (
         route.currentShift === currentShift &&
-        route.workLocation === workLocation
+        route.workLocation === workLocation &&
+        route.typeOfRoute === typeOfRoute
       );
     });
 
@@ -116,10 +118,9 @@ exports.createShift = catchAsync(async (req, res, next) => {
     });
   }
 
-  const routes = await Route.find({});
+  const routes = await Route.find();
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
-
   if (routes.length > 0) {
     const routesForCurrentDate = routes.filter((route) => {
       const routeCreatedAt = new Date(route.createdAt);
@@ -131,13 +132,11 @@ exports.createShift = catchAsync(async (req, res, next) => {
         route.typeOfRoute === typeOfRoute
       );
     });
-    // console.log(routesForCurrentDate);
     if (routesForCurrentDate.length !== 0)
       return res.status(400).json({
         message: "All Team Members in Selected Shift are Already Rostered!",
       });
   }
-
   const cabs = await Cab.aggregate([
     {
       $lookup: {
@@ -292,6 +291,24 @@ exports.getRoutes = catchAsync(async (req, res, next) => {
     return next(new AppError("No routes found...", 404));
   }
   res.status(200).json({ status: "Success", data: routes });
+});
+
+exports.getCurrentDayRoutes = catchAsync(async (req, res, next) => {
+  const currentDay = new Date();
+  currentDay.setHours(0, 0, 0, 0);
+  const routes = await Route.find({});
+  const curr_day_routes = routes.filter((route) => {
+    const routeCreatedAt = new Date(route.createdAt);
+    routeCreatedAt.setHours(0, 0, 0, 0);
+    return routeCreatedAt.getTime() === currentDay.getTime();
+  });
+  if (curr_day_routes.length === 0)
+    return next(new AppError(`No Routes for the Current Day...`, 404));
+  res.status(200).json({
+    status: "Success",
+    results: curr_day_routes.length,
+    data: curr_day_routes,
+  });
 });
 
 exports.pendingPassengers = catchAsync(async (req, res, next) => {

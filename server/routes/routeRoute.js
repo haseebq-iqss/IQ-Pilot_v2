@@ -9,6 +9,7 @@ const {
   rosteredPassengers,
   driverRoute,
   availableCabs,
+  getCurrentDayRoutes,
 } = require("../controller/routeController");
 const { protect, restrictTo } = require("../controller/authController");
 
@@ -23,6 +24,7 @@ router.route("/driverRoute/:id").get(driverRoute);
 router.route("/availableCabs").get(availableCabs);
 
 router.route("/").post(createRoute).get(getRoutes);
+router.route("/currentDayRoutes").get(getCurrentDayRoutes);
 router.route("/:id").get(getRoute);
 
 module.exports = router;

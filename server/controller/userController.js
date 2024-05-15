@@ -1,5 +1,6 @@
 const fs = require("node:fs");
 const Cab = require("../models/cab");
+const Route = require("../models/route");
 const User = require("../models/user");
 const AppError = require("../utils/appError");
 const { catchAsync } = require("../utils/catchAsync");
@@ -88,6 +89,45 @@ const updateUser = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: "Success", data: updated_user });
 });
 
+const getEmployeeCab = catchAsync(async (req, res, next) => {
+  let found_route;
+  const emp_id = req.params.id;
+  const employee = await User.findById(emp_id);
+  if (!employee)
+    return next(new AppError(`No employee with this id:${emp_id}`, 404));
+
+  const currentDay = new Date();
+  currentDay.setHours(0, 0, 0, 0);
+
+  const routes = await Route.find({
+    workLocation: employee.workLocation,
+    currentShift: employee.currentShift,
+  });
+  const curr_day_routes = routes.filter((route) => {
+    const routeCreatedAt = new Date(route.createdAt);
+    routeCreatedAt.setHours(0, 0, 0, 0);
+    return routeCreatedAt.getTime() === currentDay.getTime();
+  });
+  for (const route of curr_day_routes) {
+    const flag = route.passengers.some(
+      (passenger) => passenger.toString() === emp_id.toString()
+    );
+    if (flag) {
+      // cab = await Cab.findById(route.cab).populate("cabDriver");
+      found_route = await Route.findById(route._id)
+        .populate({
+          path: "cab",
+          populate: { path: "cabDriver" },
+        })
+        .populate("passengers");
+      break;
+    }
+  }
+  if (!found_route)
+    return next(new AppError(`No cab assigned for this employee...`, 404));
+  res.status(200).json({ status: "Success", found_route });
+});
+
 // Admin Action only
 const deleteUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
@@ -120,4 +160,5 @@ module.exports = {
   getDriver,
   updateUser,
   deleteUser,
+  getEmployeeCab,
 };

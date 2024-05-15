@@ -9,6 +9,7 @@ const {
   getDriver,
   updateUser,
   deleteUser,
+  getEmployeeCab,
 } = require("../controller/userController");
 const { protect, restrictTo } = require("../controller/authController");
 
@@ -31,5 +32,9 @@ router
   .get(restrictTo("admin", "driver"), getDriver)
   .patch(restrictTo("admin", "driver"), upload_profile_pic, updateUser)
   .delete(restrictTo("admin"), deleteUser);
+
+router
+  .route("/tm/cab/:id")
+  .get(restrictTo("admin", "employee"), getEmployeeCab);
 
 module.exports = router;
