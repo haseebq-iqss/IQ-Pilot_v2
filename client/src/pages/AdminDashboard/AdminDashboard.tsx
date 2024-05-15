@@ -8,6 +8,7 @@ import MapComponent from "../../components/Map";
 // import baseURL from "../../utils/baseURL";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import EmployeeTypes from "../../types/EmployeeTypes";
+import { useNavigate } from "react-router-dom";
 // import SOSAudio from "../../assets/sounds/emergency.mp3";
 
 // const socket = io(baseURL);
@@ -16,6 +17,7 @@ function AdminDashboard() {
   const [activeDrivers, setActiveDrivers] = useState<EmployeeTypes[]>([]);
   const [SOSEmergency, setSOSEmergency] = useState<any>(null);
   const audioRef = useRef<any>();
+  const navigate = useNavigate();
   // const emergencyAudio = new Audio(SOSAudio);
 
   // function extractLocations(input: any) {
@@ -280,7 +282,12 @@ function AdminDashboard() {
             justifyContent: "space-evenly",
           }}
         >
-          <Box sx={{ ...ColFlex, gap: "5px" }}>
+          <Box
+            sx={{ ...ColFlex, gap: "5px", cursor: "pointer" }}
+            onClick={() => {
+              navigate("assignedRoutes", { state: allRoutes });
+            }}
+          >
             <Typography sx={{ fontWeight: 600 }} variant="h4">
               {allRoutesStatus === "success" ? allRoutes?.length : 10}
             </Typography>
