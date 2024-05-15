@@ -25,6 +25,7 @@ import useAxios from "../../api/useAxios";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import Cabtypes from "../../types/CabTypes";
 import { ConvertShiftTimeTo12HrFormat } from "../../utils/12HourFormat";
+
 // type routeCacheTypes = {
 //   nonActiveroutes: [RouteTypes];
 // };
@@ -107,14 +108,11 @@ function ScheduledRoutes() {
                           gap: "10px",
                         }}
                       >
-                        {/* <Avatar sx={{ width: "30px", height: "30px" }} /> */}
-                        {/* {route.driver?.fName + " " + route.driver?.lName} */}
                         {((route?.cab as Cabtypes)?.cabDriver as EmployeeTypes)
                           ?.fname +
                           " " +
                           ((route?.cab as Cabtypes)?.cabDriver as EmployeeTypes)
                             ?.lname}{" "}
-                        {/* Cut the fName like B. Ahmed */}
                       </Box>
                     </TableCell>
                     <TableCell sx={{ fontWeight: 600 }} align="center">

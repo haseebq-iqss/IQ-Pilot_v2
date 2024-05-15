@@ -32,10 +32,12 @@ import PassengerTab from "../../components/ui/PassengerTab.tsx";
 // import ReservedPassengersTab from "../../components/ui/ReservedPassengersTab.tsx";
 import ReserveModal from "../../components/ui/ReserveModal.tsx";
 import ReservedPassengersTab from "../../components/ui/ReservedPassengersTab.tsx";
+import ScheduledRouteCard from "../../components/ui/ScheduledRouteCard.tsx";
 
-function CreateShift() {
+function AssignedRoutes() {
   const location = useLocation();
   const routeState = location?.state;
+  console.log(routeState);
   const [reservedPassengers, setReservedPassengers] = useState<
     Array<EmployeeTypes>
   >([
@@ -64,7 +66,7 @@ function CreateShift() {
   const [activeColumn, setActiveColumn] = useState<ShiftTypes | null>(null);
   const [activeTask, setActiveTask] = useState<EmployeeTypes | null>(null);
   const [columns, setColumns] = useState(
-    (routeState?.data?.data || []).map((shift: ShiftTypes, index: number) => ({
+    (routeState || []).map((shift: ShiftTypes, index: number) => ({
       ...shift,
       id: `${"Roster" + index.toString()}`,
     })) || []
@@ -295,14 +297,22 @@ function CreateShift() {
             alignItems: "center",
           }}
         >
-          <Box sx={{ ...ColFlex, alignItems: "flex-start", width: "60%" }}>
+          <Box
+            sx={{
+              ...ColFlex,
+              alignItems: "flex-start",
+              width: "60%",
+              gap: 0.5,
+            }}
+          >
             <Typography variant="h4" fontWeight={600}>
-              {routeState?.data?.workLocation}
+              {`Assigned Routes (${routeState.length})`}
             </Typography>
-            <Typography variant="h6" fontWeight={600}>
-              {mapCoordinatesToText(routeState?.centralPoint) +
+            <Typography fontWeight={600} fontSize={19}>
+              {/* {mapCoordinatesToText(routeState?.centralPoint) +
                 "-->" +
-                ConvertShiftTimeTo12HrFormat(routeState?.data?.currentShift)}
+                ConvertShiftTimeTo12HrFormat(routeState?.data?.currentShift)} */}
+              View or change assigned routes here.
             </Typography>
           </Box>
 
@@ -366,35 +376,25 @@ function CreateShift() {
               sx={{
                 px: 5,
                 height: "50px",
-                bgcolor: "primary.main",
+                bgcolor: "text.primary",
                 ...RowFlex,
                 gap: 2.5,
                 borderRadius: 1.5,
                 cursor: "pointer",
-                "&:hover > img": {
-                  scale: "1.025",
-                  transform: "rotateY(550deg) rotateZ(45deg)",
-                  transition: "all 1s ease",
-                },
-                "&:not(:hover) > img": {
-                  scale: "1",
-                  transform: "rotateY(0deg) rotateZ(0deg)",
-                  transition: "all 1s ease",
-                },
               }}
-              onClick={handleCreateRoute}
+              onClick={() => navigate(-1)}
             >
               <Typography
                 variant="h5"
                 sx={{ fontStyle: "italic", fontWeight: "700", color: "white" }}
               >
-                DEPLOY
+                BACK
               </Typography>
-              <Box
+              {/* <Box
                 component={"img"}
                 src={LogoImage}
                 sx={{ width: "25px", aspectRatio: 1 }}
-              />
+              /> */}
             </Box>
           </Box>
         </Box>
@@ -435,16 +435,17 @@ function CreateShift() {
               >
                 {columns.map((shift: ShiftTypes) => {
                   return (
-                    <RosterCard
-                      key={shift?.id}
-                      column={shift}
-                      passengerDetails={passengers.filter(
-                        (passenger: EmployeeTypes) =>
-                          passenger.columnId === shift.id
-                      )}
-                      // setRosterData={setRosterData}
-                      // id={index.toString()}
-                    />
+                    // <RosterCard
+                    //   key={shift?.id}
+                    //   column={shift}
+                    //   passengerDetails={passengers.filter(
+                    //     (passenger: EmployeeTypes) =>
+                    //       passenger.columnId === shift.id
+                    //   )}
+                    //   // setRosterData={setRosterData}
+                    //   // id={index.toString()}
+                    // />
+                    <ScheduledRouteCard scheduledRoutes={shift} />
                   );
                 })}
               </SortableContext>
@@ -488,4 +489,4 @@ function CreateShift() {
   );
 }
 
-export default CreateShift;
+export default AssignedRoutes;

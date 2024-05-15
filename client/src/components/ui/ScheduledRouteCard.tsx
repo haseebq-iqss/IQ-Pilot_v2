@@ -16,9 +16,11 @@ import {
 import PassengerTab from "./PassengerTab.tsx";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import { useDroppable } from "@dnd-kit/core";
+import AssignedPassengers from "./AssignedPassengers.tsx";
+import MapComponent from "../Map.tsx";
 
 type RosterCardTypes = {
-  passengerDetails: EmployeeTypes[];
+  // passengerDetails: EmployeeTypes[];
   // cab: Cabtypes;
   // setRosterData: React.Dispatch<
   //   React.SetStateAction<
@@ -29,21 +31,26 @@ type RosterCardTypes = {
   //   >
   // >;
   // id: string;
-  column: ShiftTypes;
+  // column: ShiftTypes;
+  scheduledRoutes: [];
 };
 
-const RosterCard = ({
-  passengerDetails,
-  // cab,
-  column,
+const ScheduledRouteCard = ({
+  //   passengerDetails,
+  //   // cab,
+  scheduledRoutes,
 }: RosterCardTypes) => {
-  const cabDriverDetails = Array.isArray(column?.cab?.cabDriver)
-    ? (column?.cab?.cabDriver[0] as EmployeeTypes | undefined)
-    : undefined;
+  console.log(scheduledRoutes);
+  // const cabDriverDetails = Array.isArray(scheduledRoutes?.cab?.cabDriver)
+  //   ? (scheduledRoutes?.cab?.cabDriver as EmployeeTypes | undefined)
+  //   : undefined;
 
-  const tasksIds = useMemo(() => {
-    return passengerDetails.map((passenger) => passenger.id);
-  }, [passengerDetails]);
+  const cabDriverDetails = scheduledRoutes?.cab?.cabDriver;
+
+  // console.log(cabDriverDetails);
+  //   const tasksIds = useMemo(() => {
+  //     return passengerDetails.map((passenger) => passenger.id);
+  //   }, [passengerDetails]);
 
   // const {
   //   setNodeRef,
@@ -85,29 +92,30 @@ const RosterCard = ({
   //     ></div>
   //   );
   // }
-  const { setNodeRef } = useDroppable({
-    id: column?.id,
-    data: {
-      type: "Column",
-      column: { ...column, passengers: passengerDetails },
-    },
-  });
+  //   const { setNodeRef } = useDroppable({
+  //     id: column?.id,
+  //     data: {
+  //       type: "Column",
+  //       column: { ...column, passengers: passengerDetails },
+  //     },
+  //   });
   return (
     <>
       <Box
         sx={{
           ...ColFlex,
           width: "27.5vw",
-          height: "90%",
+          height: "95%",
           flexDirection: "column",
-          p: "20px",
+
           borderRadius: "15px",
           backgroundColor: "white",
           transition: "all 1s",
           justifyContent: "flex-start",
           gap: "0.5rem",
+          border: "8px solid #2997FC",
         }}
-        ref={setNodeRef}
+        // ref={setNodeRef}
         // {...attributes}
         // {...listeners}
         // style={style}
@@ -125,6 +133,7 @@ const RosterCard = ({
             gap: "1rem",
             justifyContent: "start",
             width: "100%",
+            p: "15px",
           }}
         >
           <Box>
@@ -161,7 +170,7 @@ const RosterCard = ({
                     color: "orange",
                   }}
                 />
-                {column?.cab?.cabNumber}
+                {scheduledRoutes?.cab?.cabNumber}
               </Typography>
 
               <Typography
@@ -181,7 +190,7 @@ const RosterCard = ({
                     color: "primary.main",
                   }}
                 />
-                {column?.cab?.seatingCapacity}
+                {scheduledRoutes?.cab?.seatingCapacity}
               </Typography>
               <Typography
                 sx={{
@@ -200,7 +209,7 @@ const RosterCard = ({
                     color: "green",
                   }}
                 />
-                {column?.cab?.carColor}
+                {scheduledRoutes?.cab?.carColor}
               </Typography>
               <Typography
                 sx={{
@@ -219,32 +228,54 @@ const RosterCard = ({
                     color: "black",
                   }}
                 />
-                {column?.cab?.numberPlate}
+                {scheduledRoutes?.cab?.numberPlate}
               </Typography>
             </Box>
           </Box>
         </Box>
-        <Box sx={{ ...ColFlex, width: "100%", my: 2, gap: "0.8rem" }}>
-          <Typography fontSize={24} fontWeight={600}>
-            <span
-              style={{
-                color:
-                  passengerDetails?.length !== column?.cab?.seatingCapacity
-                    ? "crimson"
-                    : "#2997FC",
+        <Box
+          sx={{
+            ...ColFlex,
+            width: "100%",
+            // my: 2,
+            gap: "0.8rem",
+            bgcolor: "#2997FC",
+            alignItems: "flex-start",
+          }}
+        >
+          <Box
+            fontSize={20}
+            fontWeight={600}
+            sx={{
+              ...ColFlex,
+              color: "white",
+              alignItems: "flex-start",
+              p: "15px",
+              gap: 1,
+            }}
+            width={"100%"}
+          >
+            <span>{`Passengers(${scheduledRoutes?.passengers.length})`}</span>{" "}
+            <Box
+              sx={{
+                ...RowFlex,
+                flexWrap: "wrap",
+                justifyContent: "flex-start",
+                width: " 100%",
+                gap: 2,
+                alignItems: "flex-start",
               }}
             >
-              {passengerDetails?.length + " " + "out of 6"}
-            </span>{" "}
-            Seats Used
-          </Typography>
-          <hr
-            style={{
-              border: "2px solid #D8D8D8",
-              width: "40%",
-              borderRadius: 100,
-            }}
-          />
+              {scheduledRoutes?.passengers?.map((passenger: EmployeeTypes) => (
+                // <PassengerTab
+                //   // id={passenger._id!}
+                //   passenger={passenger}
+                //   key={passenger.id}
+                // />
+                <AssignedPassengers passenger={passenger} />
+              ))}
+            </Box>
+          </Box>
         </Box>
 
         <Box
@@ -253,25 +284,28 @@ const RosterCard = ({
             ...ColFlex,
             alignItems: "flex-start",
             width: "100%",
-            gap: 1.5,
+            // gap: 1.5,
             justifyContent: "flex-start",
             overflowY: "auto",
-            px: 1.5,
-            py: 1,
+            p: 1,
+            // borderRadius: "10px",
+            // overflow: "hidden",
           }}
         >
-          <SortableContext
-            items={tasksIds}
+          <MapComponent />
+          {/* <SortableContext
+            // items={tasksIds}
             strategy={verticalListSortingStrategy}
-          >
-            {passengerDetails?.map((passenger: EmployeeTypes) => (
-              <PassengerTab
-                // id={passenger._id!}
-                passenger={passenger}
-                key={passenger.id}
-              />
-            ))}
-          </SortableContext>
+          > */}
+          {/* {scheduledRoutes?.passengers?.map((passenger: EmployeeTypes) => (
+            // <PassengerTab
+            //   // id={passenger._id!}
+            //   passenger={passenger}
+            //   key={passenger.id}
+            // />
+            <AssignedPassengers passenger={passenger} />
+          ))} */}
+          {/* </SortableContext> */}
         </Box>
         {/* </DndContext> */}
       </Box>
@@ -279,4 +313,4 @@ const RosterCard = ({
   );
 };
 
-export default RosterCard;
+export default ScheduledRouteCard;
