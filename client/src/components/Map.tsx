@@ -107,7 +107,11 @@ const MapComponent = ({
 
   function MapController() {
     //@ts-ignore
-    const map = useMapEvents({});
+    const map = useMapEvents({
+      keydown: (e) => {
+        FSOnScreen(String(e.originalEvent.code).slice(3,4))
+      }
+    });
     return null;
   }
 
@@ -124,9 +128,57 @@ const MapComponent = ({
     ]);
   }
 
+  function openFullscreen(elId: string) {
+    const root: HTMLElement | null = document.getElementById(elId);
+    if (root) {
+      if (
+        !document.fullscreenElement &&
+        !(document as any).mozFullScreenElement &&
+        !(document as any).webkitFullscreenElement &&
+        !(document as any).msFullscreenElement
+      ) {
+        if (root.requestFullscreen) {
+          root.requestFullscreen();
+        } else if ((root as any).mozRequestFullScreen) {
+          /* Firefox */
+          (root as any).mozRequestFullScreen() ;
+        } else if ((root as any).webkitRequestFullscreen) {
+          /* Chrome, Safari & Opera */
+          (root as any).webkitRequestFullscreen();
+        } else if ((root as any).msRequestFullscreen) {
+          /* IE/Edge */
+          (root as any).msRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if ((document as any).mozCancelFullScreen) {
+          /* Firefox */
+          (document as any).mozCancelFullScreen();
+        } else if ((document as any).webkitExitFullscreen) {
+          /* Chrome, Safari & Opera */
+          (document as any).webkitExitFullscreen();
+        } else if ((document as any).msExitFullscreen) {
+          /* IE/Edge */
+          (document as any).msExitFullscreen();
+        }
+      }
+    }
+  }
+  
+
+  function FSOnScreen(e:string) {
+    if (e === "F") {
+      openFullscreen("map")
+    }
+  }
+  
+  
+
   return (
     <div style={{ position: "relative", height, width, overflow: "hidden" }}>
       <MapContainer
+      id={"map"}
         key={"Primary Map"}
         style={{ height: "100%", width: "100%" }}
         center={driverOnFocus?.length ? driverOnFocus : center}
@@ -147,6 +199,27 @@ const MapComponent = ({
           }}
         >
           {/* TMs and Routes View */}
+          <div
+            onClick={() => openFullscreen("map")}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#2997FC",
+              color: "white",
+              padding: "7.5px 15px",
+              borderRadius: "100px",
+              border: "2.5px solid white",
+              gap: 10,
+
+              // cursor:"grabbing"
+            }}
+          >
+            <h3>
+              Toggle 📺
+            </h3>
+          </div>
+          
           <div
             onClick={() =>
               setMapDataView(
