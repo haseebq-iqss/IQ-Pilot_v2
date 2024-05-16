@@ -129,6 +129,38 @@ const getEmployeeCab = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: "Success", found_route });
 });
 
+const getTMSAssignedCabs = catchAsync(async (req, res, next) => {
+  const currentDay = new Date();
+  currentDay.setHours(0, 0, 0, 0);
+
+  const routes = await Route.aggregate([
+    {
+      $lookup: {
+        from: "cabs",
+        localField: "cab",
+        foreignField: "_id",
+        as: "cabDetails",
+      },
+    },
+  ]);
+
+  const curr_day_routes = routes.filter((route) => {
+    const routeCreatedAt = new Date(route.createdAt);
+    routeCreatedAt.setHours(0, 0, 0, 0);
+    return routeCreatedAt.getTime() === currentDay.getTime();
+  });
+
+  let passenger_cab_details = [];
+  for (const route of curr_day_routes) {
+    const [cab_details] = route.cabDetails;
+    const cab_number = cab_details.cabNumber;
+    route.passengers.forEach((passenger) => {
+      passenger_cab_details.push({ id: passenger, cab_number });
+    });
+  }
+  res.status(200).json({ status: "Message", data: passenger_cab_details });
+});
+
 // Admin Action only
 const deleteUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
@@ -162,4 +194,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getEmployeeCab,
+  getTMSAssignedCabs,
 };
