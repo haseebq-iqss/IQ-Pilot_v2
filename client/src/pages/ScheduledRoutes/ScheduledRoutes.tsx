@@ -24,7 +24,7 @@ import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import Cabtypes from "../../types/CabTypes";
-import { ConvertShiftTimeTo12HrFormat } from "../../utils/12HourFormat";
+import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
 
 // type routeCacheTypes = {
 //   nonActiveroutes: [RouteTypes];
