@@ -10,6 +10,7 @@ const {
   updateUser,
   deleteUser,
   getEmployeeCab,
+  getTMSAssignedCabs,
 } = require("../controller/userController");
 const { protect, restrictTo } = require("../controller/authController");
 
@@ -32,6 +33,8 @@ router
   .get(restrictTo("admin", "driver"), getDriver)
   .patch(restrictTo("admin", "driver"), upload_profile_pic, updateUser)
   .delete(restrictTo("admin"), deleteUser);
+
+router.route("/tms/assignedCabs").get(getTMSAssignedCabs);
 
 router
   .route("/tm/cab/:id")
