@@ -296,7 +296,12 @@ exports.getRoutes = catchAsync(async (req, res, next) => {
 exports.getCurrentDayRoutes = catchAsync(async (req, res, next) => {
   const currentDay = new Date();
   currentDay.setHours(0, 0, 0, 0);
-  const routes = await Route.find({});
+  const routes = await Route.find({})
+    .populate({
+      path: "cab",
+      populate: { path: "cabDriver", select: "fname lname phone" },
+    })
+    .populate("passengers");
   const curr_day_routes = routes.filter((route) => {
     const routeCreatedAt = new Date(route.createdAt);
     routeCreatedAt.setHours(0, 0, 0, 0);
