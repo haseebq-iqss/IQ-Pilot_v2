@@ -1,4 +1,4 @@
-const ConvertTo12HourFormat = (time24: string, mode: string = "pickup"): string => {
+const ConvertShiftTimeTo12HrFormat = (time24: string, mode: string = "pickup"): string => {
   const formatTime = (hour24: number, minute: number): string => {
     let hour12: number;
     let period: string;
@@ -30,4 +30,4 @@ const ConvertTo12HourFormat = (time24: string, mode: string = "pickup"): string 
   }
 };
 
-export default ConvertTo12HourFormat;
+export default ConvertShiftTimeTo12HrFormat;

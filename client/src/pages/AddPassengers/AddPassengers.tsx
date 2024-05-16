@@ -33,10 +33,10 @@ import SelectedEmpsContext from "../../context/SelectedEmpsContext";
 import SnackbarContext from "../../context/SnackbarContext";
 import RouteTypes from "../../types/RouteTypes";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
-import ConvertTo12HourFormat from "../../utils/12HourFormat";
 import { ColFlex, PageFlex, RowFlex } from "../../style_extentions/Flex.ts";
 import baseURL from "../../utils/baseURL";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
+import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat.ts";
 
 // export const GetRMData = (RMData:any) => {
 //   console.log(RMData)
@@ -308,7 +308,7 @@ function AddPassengers() {
               style={{ fontWeight: 600, fontSize: "1.75rem", color: "#212A3B" }}
             >
               {routeState?.shiftTime !== undefined &&
-                ConvertTo12HourFormat(routeState?.shiftTime)}
+                ConvertShiftTimeTo12HrFormat(routeState?.shiftTime)}
             </span>
           </Typography>
         </Box>

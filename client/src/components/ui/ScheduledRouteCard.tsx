@@ -13,7 +13,7 @@ import MapComponent from "../Map.tsx";
 import { useEffect, useState } from "react";
 import RouteTypes from "../../types/RouteTypes.ts";
 import { AccessTime, AirlineSeatReclineNormal } from "@mui/icons-material";
-import ConvertTo12HourFormat from "../../utils/12HourFormat.ts";
+import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat.ts";
 
 type RosterCardTypes = {
   // passengerDetails: EmployeeTypes[];
@@ -221,7 +221,7 @@ const ScheduledRouteCard = ({
                     color: "black",
                   }}
                 />
-                {ConvertTo12HourFormat(scheduledRoutes?.currentShift, scheduledRoutes?.typeOfRoute)}
+                {ConvertShiftTimeTo12HrFormat(scheduledRoutes?.currentShift, scheduledRoutes?.typeOfRoute)}
               </Typography>
             </Box>
           </Box>
