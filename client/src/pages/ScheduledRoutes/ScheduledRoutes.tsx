@@ -48,10 +48,12 @@ function ScheduledRoutes() {
   const { data: routes } = useQuery({
     queryKey: ["all-routes"],
     queryFn: async () => {
-      const response = await useAxios.get("routes/");
+      const response = await useAxios.get("routes/currentDayRoutes");
       return response?.data?.data;
     },
   });
+
+  // console.log(routes)
 
   return (
     <PageContainer
@@ -69,6 +71,7 @@ function ScheduledRoutes() {
             <TableHead>
               <TableRow>
                 <TableCell align="left">Shift time</TableCell>
+                <TableCell align="left">Cab</TableCell>
                 <TableCell align="left">Driver</TableCell>
                 <TableCell align="center">Pickup/Drop</TableCell>
                 <TableCell align="center">Distance</TableCell>
@@ -78,7 +81,7 @@ function ScheduledRoutes() {
             </TableHead>
             <TableBody>
               {routes?.length &&
-                routes?.map((route: any) => (
+                routes?.map((route: any, index:number) => (
                   <TableRow
                     key={route._id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -95,9 +98,12 @@ function ScheduledRoutes() {
                       >
                         <AccessTime />
                         {ConvertShiftTimeTo12HrFormat(
-                          route?.currentShift as string
+                          route?.currentShift as string, route?.typeOfRoute
                         )}
                       </Box>
+                    </TableCell>
+                    <TableCell sx={{fontWeight:600}} align="left">
+                        {routes[index]?.cab?.cabNumber}
                     </TableCell>
                     <TableCell align="center">
                       <Box
