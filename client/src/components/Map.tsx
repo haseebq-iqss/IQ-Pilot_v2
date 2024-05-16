@@ -28,6 +28,8 @@ type MapTypes = {
   center?: LatLngExpression;
   zoom?: number;
   driverOnFocus?: any;
+  mode?: "full-view" | "route-view";
+  activeRoute?: any;
 };
 
 const MapComponent = ({
@@ -39,6 +41,8 @@ const MapComponent = ({
   center = [34.071635, 74.803872],
   zoom = 14,
   driverOnFocus,
+  mode = "full-view",
+  activeRoute = [],
 }: MapTypes) => {
   // const [driversPosition, setDriversPosition] = useState<any>();
 
@@ -70,7 +74,7 @@ const MapComponent = ({
   useEffect(() => {
     (async () => {
       const res = await useAxios.get("/routes");
-      console.log(res.data);
+      // console.log(res.data);
       const groupedCoordinates = res.data.data
         ?.map((route: RouteTypes) =>
           route.passengers?.map(
@@ -82,10 +86,12 @@ const MapComponent = ({
           return acc;
         }, []);
 
-      console.log(groupedCoordinates);
+      // console.log("GCOrd ->>>>>>",groupedCoordinates);
       setRoutes(groupedCoordinates);
     })();
   }, []);
+
+  // console.log("NEW -------> ", activeRoute)
 
   const cabIcon = new Icon({
     iconUrl: "/images/cab-icon.png",
@@ -107,7 +113,11 @@ const MapComponent = ({
 
   function MapController() {
     //@ts-ignore
-    const map = useMapEvents({});
+    const map = useMapEvents({
+      keydown: (e) => {
+        FSOnScreen(String(e.originalEvent.code).slice(3, 4));
+      },
+    });
     return null;
   }
 
@@ -124,10 +134,57 @@ const MapComponent = ({
     ]);
   }
 
+  function openFullscreen(elId: string) {
+    const root: HTMLElement | null = document.getElementById(elId);
+    if (root) {
+      if (
+        !document.fullscreenElement &&
+        !(document as any).mozFullScreenElement &&
+        !(document as any).webkitFullscreenElement &&
+        !(document as any).msFullscreenElement
+      ) {
+        if (root.requestFullscreen) {
+          root.requestFullscreen();
+        } else if ((root as any).mozRequestFullScreen) {
+          /* Firefox */
+          (root as any).mozRequestFullScreen();
+        } else if ((root as any).webkitRequestFullscreen) {
+          /* Chrome, Safari & Opera */
+          (root as any).webkitRequestFullscreen();
+        } else if ((root as any).msRequestFullscreen) {
+          /* IE/Edge */
+          (root as any).msRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if ((document as any).mozCancelFullScreen) {
+          /* Firefox */
+          (document as any).mozCancelFullScreen();
+        } else if ((document as any).webkitExitFullscreen) {
+          /* Chrome, Safari & Opera */
+          (document as any).webkitExitFullscreen();
+        } else if ((document as any).msExitFullscreen) {
+          /* IE/Edge */
+          (document as any).msExitFullscreen();
+        }
+      }
+    }
+  }
+
+  function FSOnScreen(e: string) {
+    if (e === "F") {
+      openFullscreen("map");
+    }
+  }
+
+  // console.log("center -----> ", center);
+
   return (
     <div style={{ position: "relative", height, width, overflow: "hidden" }}>
       <MapContainer
-        key={"Primary Map"}
+        id={"map"}
+        key={"Primary Map" + Math.random()}
         style={{ height: "100%", width: "100%" }}
         center={driverOnFocus?.length ? driverOnFocus : center}
         zoom={zoom}
@@ -148,11 +205,7 @@ const MapComponent = ({
         >
           {/* TMs and Routes View */}
           <div
-            onClick={() =>
-              setMapDataView(
-                mapDataView === "TM-View" ? "Routes-View" : "TM-View"
-              )
-            }
+            onClick={() => openFullscreen("map")}
             style={{
               display: "flex",
               alignItems: "center",
@@ -167,22 +220,47 @@ const MapComponent = ({
               // cursor:"grabbing"
             }}
           >
-            <h3
+            <h3>Expand 📺</h3>
+          </div>
+
+          {mode === "full-view" && (
+            <div
+              onClick={() =>
+                setMapDataView(
+                  mapDataView === "TM-View" ? "Routes-View" : "TM-View"
+                )
+              }
               style={{
-                backgroundColor: "white",
-                borderRadius: 100,
-                padding: 1.5,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#2997FC",
+                color: "white",
+                padding: "7.5px 15px",
+                borderRadius: "100px",
+                border: "2.5px solid white",
+                gap: 10,
+
+                // cursor:"grabbing"
               }}
             >
-              {mapDataView === "Routes-View" ? "📌" : "👨🏻‍💻"}
-            </h3>
-            <h3>
-              {" "}
-              {mapDataView === "Routes-View"
-                ? "Routes View"
-                : "Team Members View"}
-            </h3>
-          </div>
+              <h3
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: 100,
+                  padding: 1.5,
+                }}
+              >
+                {mapDataView === "Routes-View" ? "📌" : "👨🏻‍💻"}
+              </h3>
+              <h3>
+                {" "}
+                {mapDataView === "Routes-View"
+                  ? "Routes View"
+                  : "Team Members View"}
+              </h3>
+            </div>
+          )}
           {/* Reset Routes View */}
           {activePolylineIndex != null && (
             <div
@@ -295,6 +373,15 @@ const MapComponent = ({
               </>
             );
           })}
+
+        {activeRoute?.length && (
+          <Polyline
+            key={Math.random() * 100}
+            positions={activeRoute}
+            color={"blue"}
+            weight={7}
+          />
+        )}
 
         {activeDrivers &&
           activeDrivers?.length &&

@@ -8,16 +8,12 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import baseURL from "../../utils/baseURL.ts";
 
 import EmployeeTypes from "./../../types/EmployeeTypes";
-import { useMemo } from "react";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import PassengerTab from "./PassengerTab.tsx";
-import { ShiftTypes } from "../../types/ShiftTypes.ts";
-import { useDroppable } from "@dnd-kit/core";
 import AssignedPassengers from "./AssignedPassengers.tsx";
 import MapComponent from "../Map.tsx";
+import { useEffect, useState } from "react";
+import RouteTypes from "../../types/RouteTypes.ts";
+import { AccessTime, AirlineSeatReclineNormal } from "@mui/icons-material";
+import ConvertTo12HourFormat from "../../utils/12HourFormat.ts";
 
 type RosterCardTypes = {
   // passengerDetails: EmployeeTypes[];
@@ -40,10 +36,26 @@ const ScheduledRouteCard = ({
   //   // cab,
   scheduledRoutes,
 }: RosterCardTypes) => {
-  console.log(scheduledRoutes);
+  // console.log("SRC --------> ", scheduledRoutes);
   // const cabDriverDetails = Array.isArray(scheduledRoutes?.cab?.cabDriver)
   //   ? (scheduledRoutes?.cab?.cabDriver as EmployeeTypes | undefined)
   //   : undefined;
+
+  const [activeRouteCoords, setactiveRouteCoords] = useState<Array<any>>([]);
+
+  useEffect(() => {
+    const activeRouteCoordinates = (
+      scheduledRoutes as unknown as RouteTypes
+    )?.passengers?.map((employee: any) => employee?.pickUp?.coordinates);
+
+    setactiveRouteCoords(activeRouteCoordinates);
+  }, []);
+
+  const routesCP: any = activeRouteCoords.slice(
+    0,
+    activeRouteCoords.length / 2
+  );
+  const routesCentralPoint: any = routesCP.at(-1);
 
   const cabDriverDetails = scheduledRoutes?.cab?.cabDriver;
 
@@ -104,7 +116,7 @@ const ScheduledRouteCard = ({
       <Box
         sx={{
           ...ColFlex,
-          width: "27.5vw",
+          minWidth: "27.5vw",
           height: "95%",
           flexDirection: "column",
 
@@ -182,7 +194,7 @@ const ScheduledRouteCard = ({
                 }}
                 fontWeight={500}
               >
-                <Groups2Icon
+                <AirlineSeatReclineNormal
                   sx={{
                     width: "20px",
                     height: "20px",
@@ -190,26 +202,7 @@ const ScheduledRouteCard = ({
                     color: "primary.main",
                   }}
                 />
-                {scheduledRoutes?.cab?.seatingCapacity}
-              </Typography>
-              <Typography
-                sx={{
-                  fontSize: "1rem",
-                  display: "flex",
-                  alignItems: "center",
-                  color: "green",
-                }}
-                fontWeight={500}
-              >
-                <FormatColorFillIcon
-                  sx={{
-                    width: "20px",
-                    height: "20px",
-                    mr: "2px",
-                    color: "green",
-                  }}
-                />
-                {scheduledRoutes?.cab?.carColor}
+                {(scheduledRoutes?.typeOfRoute).toUpperCase()}
               </Typography>
               <Typography
                 sx={{
@@ -220,7 +213,7 @@ const ScheduledRouteCard = ({
                 }}
                 fontWeight={500}
               >
-                <DirectionsCarIcon
+                <AccessTime
                   sx={{
                     width: "20px",
                     height: "20px",
@@ -228,7 +221,7 @@ const ScheduledRouteCard = ({
                     color: "black",
                   }}
                 />
-                {scheduledRoutes?.cab?.numberPlate}
+                {ConvertTo12HourFormat(scheduledRoutes?.currentShift, scheduledRoutes?.typeOfRoute)}
               </Typography>
             </Box>
           </Box>
@@ -292,7 +285,12 @@ const ScheduledRouteCard = ({
             // overflow: "hidden",
           }}
         >
-          <MapComponent />
+          <MapComponent
+            mode="route-view"
+            activeRoute={activeRouteCoords}
+            zoom={12}
+            center={routesCentralPoint}
+          />
           {/* <SortableContext
             // items={tasksIds}
             strategy={verticalListSortingStrategy}

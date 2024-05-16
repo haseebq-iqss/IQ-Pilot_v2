@@ -37,7 +37,7 @@ import ScheduledRouteCard from "../../components/ui/ScheduledRouteCard.tsx";
 function AssignedRoutes() {
   const location = useLocation();
   const routeState = location?.state;
-  console.log(routeState);
+  // console.log(routeState);
   const [reservedPassengers, setReservedPassengers] = useState<
     Array<EmployeeTypes>
   >([
@@ -431,6 +431,7 @@ function AssignedRoutes() {
             >
               <SortableContext
                 items={columnsId}
+
                 // strategy={horizontalListSortingStrategy}
               >
                 {columns.map((shift: ShiftTypes) => {

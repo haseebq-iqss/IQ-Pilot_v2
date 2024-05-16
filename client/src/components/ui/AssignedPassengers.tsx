@@ -13,7 +13,7 @@ const AssignedPassengers = ({
   // id: string;
   passenger: EmployeeTypes;
 }) => {
-  console.log(passenger);
+  // console.log(passenger);
   //   const {
   //     setNodeRef,
   //     attributes,
