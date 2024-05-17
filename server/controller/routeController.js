@@ -308,7 +308,7 @@ exports.getCurrentDayRoutes = catchAsync(async (req, res, next) => {
     return routeCreatedAt.getTime() === currentDay.getTime();
   });
   if (curr_day_routes.length === 0)
-    return next(new AppError(`No Routes for the Current Day...`, 404));
+    return next(new AppError(`No Routes for the Current Day...`, 200));
   res.status(200).json({
     status: "Success",
     results: curr_day_routes.length,
