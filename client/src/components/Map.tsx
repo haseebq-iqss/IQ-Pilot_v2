@@ -185,7 +185,7 @@ const MapComponent = ({
     <div style={{ position: "relative", height, width, overflow: "hidden" }}>
       <MapContainer
         id={"map"}
-        key={"Primary Map" + Math.random()}
+        key={activeRoute.length ? "Primary Map" + Math.random() : "Primary Map"}
         style={{ height: "100%", width: "100%" }}
         center={driverOnFocus?.length ? driverOnFocus : center}
         zoom={zoom}
