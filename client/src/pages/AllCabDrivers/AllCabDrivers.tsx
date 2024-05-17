@@ -120,7 +120,7 @@ function AllCabDrivers() {
                         (driver?.cabDriver as EmployeeTypes)?.lname}
                     </Box>
                   </TableCell>
-                  <TableCell align="center">{driver?.cabNumber}</TableCell>
+                  <TableCell sx={{fontWeight:600}} align="center">{driver?.cabNumber}</TableCell>
                   <TableCell align="center">{driver?.numberPlate}</TableCell>
                   <TableCell align="center">
                     {!(driver?.cabDriver as EmployeeTypes)?.isCabCancelled

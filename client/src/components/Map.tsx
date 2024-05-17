@@ -73,7 +73,7 @@ const MapComponent = ({
 
   useEffect(() => {
     (async () => {
-      const res = await useAxios.get("/routes");
+      const res = await useAxios.get("/routes/currentDayRoutes");
       // console.log(res.data);
       const groupedCoordinates = res.data.data
         ?.map((route: RouteTypes) =>

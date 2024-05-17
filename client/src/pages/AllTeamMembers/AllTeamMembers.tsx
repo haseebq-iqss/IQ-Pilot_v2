@@ -81,46 +81,11 @@ function AllTeamMembers() {
   };
 
   useEffect(() => {
-    filteredTeamMembers?.map((emp: EmployeeTypes) => {
-      const id = emp?._id;
-      useAxios
-        .get(`users/tm/cab/${id}`)
-        .then((res) =>
-          setCabNumersArray((prevArray: any) => [
-            ...prevArray,
-            {
-              id,
-              cabNum: res?.data?.found_route
-                ? res?.data?.found_route?.cab?.cabNumber
-                : "na",
-            },
-          ])
-        )
-        .catch((err) => console.log(err));
-    });
-    // console.log(cabNumersArray);
+    useAxios
+      .get("users/tms/assignedCabs")
+      .then((res) => setCabNumersArray(res.data.data))
+      .catch((err) => console.log(err));
   }, []);
-
-  // console.log(cabNumersArray);
-
-  // async (empId) => {
-
-  //   const raw = filteredTeamMembers.map((emp:EmployeeTypes) => {
-  //     console.log(emp?._id)
-  //   })
-
-  //     const res = await useAxios.get(`users/tm/cab/${empId}`);
-  //     const data = res.data;
-  //     if (data?.found_route) {
-  //       setCabNumersArray((prevNumsArray) => [
-  //         ...prevNumsArray,
-  //         data?.found_route.cab.cabNumber,
-  //       ]);
-  //     } else {
-  //       setCabNumersArray((prevNumsArray) => [...prevNumsArray, "NA"]);
-  //     }
-  //   }
-  // }
 
   return (
     <PageContainer
@@ -158,11 +123,7 @@ function AllTeamMembers() {
             </TableHead>
             <TableBody>
               {filteredTeamMembers?.map((employee: EmployeeTypes) => {
-                // GetTMsCab(employee._id);
-                const oj = cabNumersArray?.find((obj) => {
-                  return obj.id === employee?._id;
-                });
-                const result = oj?.cabNum;
+                const empAssignedCab = cabNumersArray?.find((cNum) => employee?._id === cNum?.id);
                 return (
                   <TableRow
                     key={employee._id}
@@ -185,7 +146,7 @@ function AllTeamMembers() {
                       </Box>
                     </TableCell>
                     <TableCell align="center">{employee.email}</TableCell>
-                    <TableCell align="center">{result}</TableCell>
+                    <TableCell sx={{fontWeight: 600, color: empAssignedCab?.cab_number ? "success.main" : "error.main"}} align="center">{empAssignedCab?.cab_number || "na"}</TableCell>
                     <TableCell align="center">
                       {employee.pickUp?.address}
                     </TableCell>
