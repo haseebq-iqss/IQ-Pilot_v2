@@ -12,7 +12,7 @@ import AssignedPassengers from "./AssignedPassengers.tsx";
 import MapComponent from "../Map.tsx";
 import { useEffect, useState } from "react";
 import RouteTypes from "../../types/RouteTypes.ts";
-import { AccessTime, AirlineSeatReclineNormal } from "@mui/icons-material";
+import { AccessTime, AirlineSeatReclineNormal, LocationOn } from "@mui/icons-material";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat.ts";
 
 type RosterCardTypes = {
@@ -154,7 +154,7 @@ const ScheduledRouteCard = ({
           <Box sx={{ ...ColFlex, alignItems: "flex-start" }}>
             <Box>
               <Typography variant="h6" fontWeight={600}>
-                {cabDriverDetails?.fname + " " + cabDriverDetails?.lname}
+                Cab {scheduledRoutes?.cab?.cabNumber} - {cabDriverDetails?.fname + " " + cabDriverDetails?.lname}
               </Typography>
             </Box>
             <Box
@@ -170,19 +170,19 @@ const ScheduledRouteCard = ({
                   fontSize: "1rem",
                   display: "flex",
                   alignItems: "center",
-                  color: "orange",
+                  color: "blue",
                 }}
-                fontWeight={500}
+                fontWeight={600}
               >
-                <TagIcon
+                <LocationOn
                   sx={{
                     width: "20px",
                     height: "20px",
                     mr: "2px",
-                    color: "orange",
+                    color: "blue",
                   }}
                 />
-                {scheduledRoutes?.cab?.cabNumber}
+                {(scheduledRoutes?.workLocation)}
               </Typography>
 
               <Typography
@@ -202,7 +202,7 @@ const ScheduledRouteCard = ({
                     color: "primary.main",
                   }}
                 />
-                {(scheduledRoutes?.typeOfRoute).toUpperCase()}
+                {(scheduledRoutes?.typeOfRoute)[0].toUpperCase() + (scheduledRoutes?.typeOfRoute).slice(1,scheduledRoutes?.typeOfRoute.length)}
               </Typography>
               <Typography
                 sx={{
@@ -287,7 +287,7 @@ const ScheduledRouteCard = ({
         >
           <MapComponent
             mode="route-view"
-            activeRoute={activeRouteCoords}
+            activeRoute={scheduledRoutes?.workLocation === "Rangreth" ? [...activeRouteCoords, [33.996807, 74.79202]] : [...activeRouteCoords, [34.173415, 74.808653]]}
             zoom={12}
             center={routesCentralPoint}
           />

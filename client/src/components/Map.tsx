@@ -51,6 +51,7 @@ const MapComponent = ({
     "TM-View"
   );
   const [routes, setRoutes] = useState<any>();
+  const [rawRouteData, setRawRouteData] = useState<RouteTypes>();
   const [activeEmployees, setActiveEmployees] = useState<any>([]);
 
   const rangreth = [33.996807, 74.79202];
@@ -74,7 +75,7 @@ const MapComponent = ({
   useEffect(() => {
     (async () => {
       const res = await useAxios.get("/routes/currentDayRoutes");
-      // console.log(res.data);
+      setRawRouteData(res.data.data);
       const groupedCoordinates = res.data.data
         ?.map((route: RouteTypes) =>
           route.passengers?.map(
@@ -326,7 +327,7 @@ const MapComponent = ({
               <>
                 <Polyline
                   key={index + activePolylineIndex + Math.random() * 100}
-                  positions={route}
+                  positions={rawRouteData[index].workLocation === "Rangreth" ? [...route, [33.996807, 74.79202]] : [...route, [34.173415, 74.808653]]}
                   color={
                     activePolylineIndex === null ||
                     activePolylineIndex === index
@@ -375,12 +376,24 @@ const MapComponent = ({
           })}
 
         {activeRoute?.length && (
+          <>
           <Polyline
             key={Math.random() * 100}
             positions={activeRoute}
             color={"blue"}
-            weight={7}
-          />
+            weight={3}
+            dashArray={[5]}
+            />
+            {activeRoute.map((empLoc:any) => {
+              return (
+                <Marker
+                icon={empIcon}
+                key={empLoc}
+                position={empLoc as LatLngExpression}
+                />
+              )
+            })}
+            </>
         )}
 
         {activeDrivers &&
