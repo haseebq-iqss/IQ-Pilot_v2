@@ -318,27 +318,25 @@ exports.getCurrentDayRoutes = catchAsync(async (req, res, next) => {
 });
 
 exports.pendingPassengers = catchAsync(async (req, res, next) => {
-  const passengers = await Route.aggregate([
-    {
-      $unwind: "$passengers",
-    },
-    {
-      $group: {
-        _id: "$passengers",
-      },
-    },
-  ]);
+  const routes = await Route.find({});
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
 
-  const passengersIds = passengers.map((passenger) => passenger._id);
+  const current_day_routes = routes.filter((route) => {
+    const routeCreatedAt = new Date(route.createdAt);
+    routeCreatedAt.setHours(0, 0, 0, 0);
+    return routeCreatedAt.getTime() === currentDate.getTime();
+  });
 
-  const pendingPassengers = await User.find({
-    _id: { $nin: passengersIds },
+  const passengerIds = current_day_routes.flatMap((route) => route.passengers);
+  const pending_passengers = await User.find({
+    _id: { $nin: passengerIds },
     role: { $ne: "driver" },
   });
   res.status(200).json({
     status: "Success",
-    results: pendingPassengers.length,
-    data: pendingPassengers,
+    no_pending_passengers: pending_passengers.length,
+    pending_passengers,
   });
 });
 
@@ -354,7 +352,6 @@ exports.rosteredPassengers = catchAsync(async (req, res, next) => {
   });
 
   const passengerIds = current_day_routes.flatMap((route) => route.passengers);
-  console.log(passengerIds);
 
   const rostered_passengers = await User.find({
     _id: { $in: passengerIds },
