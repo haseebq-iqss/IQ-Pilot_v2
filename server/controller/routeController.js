@@ -282,6 +282,7 @@ exports.getRoute = catchAsync(async (req, res, next) => {
 
 exports.getRoutes = catchAsync(async (req, res, next) => {
   const routes = await Route.find({})
+    .sort({ createdAt: -1 })
     .populate({
       path: "cab",
       populate: { path: "cabDriver", select: "fname lname phone" },
@@ -342,27 +343,28 @@ exports.pendingPassengers = catchAsync(async (req, res, next) => {
 });
 
 exports.rosteredPassengers = catchAsync(async (req, res, next) => {
-  const passengers = await Route.aggregate([
-    {
-      $unwind: "$passengers",
-    },
-    {
-      $group: {
-        _id: "$passengers",
-      },
-    },
-  ]);
+  const routes = await Route.find({});
+  const currentDay = new Date();
+  currentDay.setHours(0, 0, 0, 0);
 
-  const passengersIds = passengers.map((passenger) => passenger._id);
+  const current_day_routes = routes.filter((route) => {
+    const routeCreatedAt = new Date(route.createdAt);
+    routeCreatedAt.setHours(0, 0, 0, 0);
+    return routeCreatedAt.getTime() === currentDay.getTime();
+  });
 
-  const rostered = await User.find({
-    _id: { $in: passengersIds },
+  const passengerIds = current_day_routes.flatMap((route) => route.passengers);
+  console.log(passengerIds);
+
+  const rostered_passengers = await User.find({
+    _id: { $in: passengerIds },
     role: { $ne: "driver" },
   });
+
   res.status(200).json({
     status: "Success",
-    results: rostered.length,
-    data: rostered,
+    rostered_passengers,
+    no_of_rostered_passengers: rostered_passengers.length,
   });
 });
 
