@@ -97,7 +97,8 @@ const RosterCard = ({
       <Box
         sx={{
           ...ColFlex,
-          width: "27.5vw",
+          minWidth: "27.5vw",
+          maxWidth: "27.5vw",
           height: "90%",
           flexDirection: "column",
           p: "20px",
@@ -106,6 +107,16 @@ const RosterCard = ({
           transition: "all 1s",
           justifyContent: "flex-start",
           gap: "0.5rem",
+          ":hover" : {
+            minWidth: "30vw",
+            transition: "all 0.3s",
+            // transition:"all 0.3 ease"
+          },
+          ":not(:hover)" : {
+            minWidth: "27.5vw",
+            transition: "all 0.2s",
+            // transition:"all 0.3 ease"
+          }
         }}
         ref={setNodeRef}
         // {...attributes}

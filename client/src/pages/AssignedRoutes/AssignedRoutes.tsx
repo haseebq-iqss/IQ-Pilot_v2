@@ -1,9 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ColFlex, RowFlex, PageFlex } from "../../style_extentions/Flex.ts";
-import LogoImage from "/images/logo.png";
 import RosterCard from "../../components/ui/RosterCard.tsx";
-import { ConvertShiftTimeTo12HrFormat } from "../../utils/12HourFormat.ts";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 import Cabtypes from "../../types/CabTypes.ts";
@@ -49,6 +47,7 @@ function AssignedRoutes() {
       role: "employee",
       password: "password12345",
       pickUp: {
+        // @ts-ignore
         type: "Point",
         coordinates: [34.15207742432826, 74.87595012808126],
         address: "Pazzalpura, behind Shalimar Garden, Shalimar, Srinagar.",
@@ -306,7 +305,9 @@ function AssignedRoutes() {
             }}
           >
             <Typography variant="h4" fontWeight={600}>
-              {`Assigned Routes (${routeState.length})`}
+              {`Assigned Routes (${
+                routeState?.length ? routeState?.length : 0
+              })`}
             </Typography>
             <Typography fontWeight={600} fontSize={19}>
               {/* {mapCoordinatesToText(routeState?.centralPoint) +
@@ -426,7 +427,7 @@ function AssignedRoutes() {
                 px: 2.5,
                 whiteSpace: "nowrap",
                 gap: "3rem",
-                justifyContent: "flex-start",
+                justifyContent: columns.length ? "flex-start" : "center",
               }}
             >
               <SortableContext
@@ -434,21 +435,27 @@ function AssignedRoutes() {
 
                 // strategy={horizontalListSortingStrategy}
               >
-                {columns.map((shift: ShiftTypes) => {
-                  return (
-                    // <RosterCard
-                    //   key={shift?.id}
-                    //   column={shift}
-                    //   passengerDetails={passengers.filter(
-                    //     (passenger: EmployeeTypes) =>
-                    //       passenger.columnId === shift.id
-                    //   )}
-                    //   // setRosterData={setRosterData}
-                    //   // id={index.toString()}
-                    // />
-                    <ScheduledRouteCard scheduledRoutes={shift} />
-                  );
-                })}
+                {columns.length ? (
+                  columns.map((shift: ShiftTypes) => {
+                    return (
+                      // <RosterCard
+                      //   key={shift?.id}
+                      //   column={shift}
+                      //   passengerDetails={passengers.filter(
+                      //     (passenger: EmployeeTypes) =>
+                      //       passenger.columnId === shift.id
+                      //   )}
+                      //   // setRosterData={setRosterData}
+                      //   // id={index.toString()}
+                      // />
+                      <ScheduledRouteCard scheduledRoutes={shift} />
+                    );
+                  })
+                ) : (
+                  <Typography variant="h4" sx={{ fontWeight: 500 }}>
+                    No Routes Assigned Yet 😅
+                  </Typography>
+                )}
               </SortableContext>
             </Box>
             {createPortal(

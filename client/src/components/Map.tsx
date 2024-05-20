@@ -205,6 +205,7 @@ const MapComponent = ({
           }}
         >
           {/* TMs and Routes View */}
+          {mode === "full-view" && (
           <div
             onClick={() => openFullscreen("map")}
             style={{
@@ -223,6 +224,7 @@ const MapComponent = ({
           >
             <h3>Expand 📺</h3>
           </div>
+          )}
 
           {mode === "full-view" && (
             <div
