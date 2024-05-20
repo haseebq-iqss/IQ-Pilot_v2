@@ -327,7 +327,7 @@ const MapComponent = ({
               <>
                 <Polyline
                   key={index + activePolylineIndex + Math.random() * 100}
-                  positions={rawRouteData[index].workLocation === "Rangreth" ? [...route, [33.996807, 74.79202]] : [...route, [34.173415, 74.808653]]}
+                  positions={(rawRouteData as unknown as [RouteTypes])[index].workLocation === "Rangreth" ? [...route, [33.996807, 74.79202]] : [...route, [34.173415, 74.808653]]}
                   color={
                     activePolylineIndex === null ||
                     activePolylineIndex === index

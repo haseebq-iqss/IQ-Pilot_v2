@@ -123,7 +123,7 @@ function AllTeamMembers() {
             </TableHead>
             <TableBody>
               {filteredTeamMembers?.map((employee: EmployeeTypes) => {
-                const empAssignedCab = cabNumersArray?.find((cNum) => employee?._id === cNum?.id);
+                const empAssignedCab:any = cabNumersArray?.find((cNum:any) => employee?._id === cNum?.id);
                 return (
                   <TableRow
                     key={employee._id}

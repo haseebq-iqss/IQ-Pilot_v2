@@ -43,7 +43,14 @@ function AllCabDrivers() {
   });
 
   const filteredCabDrivers = cabDetails?.filter((cab: Cabtypes) => {
-    return (cab?.cabDriver as EmployeeTypes)?.fname?.toLowerCase()?.includes(searchtext) || (cab?.cabDriver as EmployeeTypes)?.lname?.toLowerCase()?.includes(searchtext) ;
+    return (
+      (cab?.cabDriver as EmployeeTypes)?.fname
+        ?.toLowerCase()
+        ?.includes(searchtext) ||
+      (cab?.cabDriver as EmployeeTypes)?.lname
+        ?.toLowerCase()
+        ?.includes(searchtext)
+    );
   });
 
   // const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -51,7 +58,7 @@ function AllCabDrivers() {
     null
   );
 
-  const handleMenuOpen = (driver: Cabtypes) => {
+  const handleMenuOpen = (driver: any) => {
     setSelectedDriver(driver === selectedDriver ? null : driver);
   };
 
@@ -120,7 +127,9 @@ function AllCabDrivers() {
                         (driver?.cabDriver as EmployeeTypes)?.lname}
                     </Box>
                   </TableCell>
-                  <TableCell sx={{fontWeight:600}} align="center">{driver?.cabNumber}</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }} align="center">
+                    {driver?.cabNumber}
+                  </TableCell>
                   <TableCell align="center">{driver?.numberPlate}</TableCell>
                   <TableCell align="center">
                     {!(driver?.cabDriver as EmployeeTypes)?.isCabCancelled
