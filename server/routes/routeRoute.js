@@ -14,17 +14,21 @@ const {
 const { protect, restrictTo } = require("../controller/authController");
 
 router.use(protect);
-router.use(restrictTo("admin"));
+// router.use(restrictTo("admin"));
 
 router.route("/shifts").post(createShift);
 
-router.route("/pendingPassengers").get(pendingPassengers);
-router.route("/rosteredPassengers").get(rosteredPassengers);
-router.route("/driverRoute/:id").get(driverRoute);
-router.route("/availableCabs").get(availableCabs);
+router.route("/pendingPassengers").get(restrictTo("admin"), pendingPassengers);
+router
+  .route("/rosteredPassengers")
+  .get(restrictTo("admin"), rosteredPassengers);
+router
+  .route("/driverRoute/:id")
+  .get(restrictTo("admin", "driver"), driverRoute);
+router.route("/availableCabs").get(restrictTo("admin"), availableCabs);
 
-router.route("/").post(createRoute).get(getRoutes);
-router.route("/currentDayRoutes").get(getCurrentDayRoutes);
-router.route("/:id").get(getRoute);
+router.route("/").post(restrictTo("admin"), createRoute).get(getRoutes);
+router.route("/currentDayRoutes").get(restrictTo("admin"), getCurrentDayRoutes);
+router.route("/:id").get(restrictTo("admin"), getRoute);
 
 module.exports = router;
