@@ -61,7 +61,7 @@ function AdminDashboard() {
 
   // ALL ASSIGNED ROUTES
   const getAllAssignedRoutesQF = () => {
-    return useAxios.get("routes");
+    return useAxios.get("routes/currentDayRoutes");
   };
 
   const { data: allRoutes, status: allRoutesStatus } = useQuery({
@@ -96,7 +96,8 @@ function AdminDashboard() {
       queryFn: getRosteredPassengersQF,
       queryKey: ["All Rostered Passengers"],
       select: (data) => {
-        return data.data.data;
+        console.log(data.data)
+        return data.data;
       },
     });
 
@@ -110,7 +111,7 @@ function AdminDashboard() {
       queryFn: getPendingPassengersQF,
       queryKey: ["All Pending Passengers"],
       select: (data) => {
-        return data.data.data;
+        return data.data;
       },
     }
   );
@@ -289,7 +290,9 @@ function AdminDashboard() {
             }}
           >
             <Typography sx={{ fontWeight: 600 }} variant="h4">
-              {allRoutesStatus === "success" ? allRoutes?.length : 10}
+              {allRoutesStatus === "success" && allRoutes?.length > 0
+                ? allRoutes?.length
+                : 0}
             </Typography>
             <Typography
               sx={{
@@ -327,7 +330,7 @@ function AdminDashboard() {
           <Box sx={{ ...ColFlex, gap: "5px" }}>
             <Typography sx={{ fontWeight: 600 }} variant="h4">
               {rosteredPassengersStatus === "success"
-                ? rosteredPassengers?.length
+                ? rosteredPassengers?.rostered_passengers?.length
                 : 40}
             </Typography>
             <Typography
@@ -347,7 +350,7 @@ function AdminDashboard() {
           <Box sx={{ ...ColFlex, gap: "5px" }}>
             <Typography sx={{ fontWeight: 600 }} variant="h4">
               {pendingPassengersStatus === "success"
-                ? pendingPassengers?.length
+                ? pendingPassengers?.pending_passengers?.length
                 : 6}
             </Typography>
             <Typography

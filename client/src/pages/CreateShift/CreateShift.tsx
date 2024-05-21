@@ -36,7 +36,7 @@ import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat.ts";
 function CreateShift() {
   const location = useLocation();
   const routeState = location?.state;
-  const [reservedPassengers, setReservedPassengers] = useState<
+  const [reservedPassengers, _setReservedPassengers] = useState<
     Array<EmployeeTypes>
   >([
     {
@@ -47,6 +47,7 @@ function CreateShift() {
       role: "employee",
       password: "password12345",
       pickUp: {
+        // @ts-ignore
         type: "Point",
         coordinates: [34.15207742432826, 74.87595012808126],
         address: "Pazzalpura, behind Shalimar Garden, Shalimar, Srinagar.",

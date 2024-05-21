@@ -1,10 +1,5 @@
 import { Avatar, Box, Typography } from "@mui/material";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex.ts";
-import TagIcon from "@mui/icons-material/Tag";
-import Groups2Icon from "@mui/icons-material/Groups2";
-import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
-import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
-
 import baseURL from "../../utils/baseURL.ts";
 
 import EmployeeTypes from "./../../types/EmployeeTypes";
@@ -14,6 +9,7 @@ import { useEffect, useState } from "react";
 import RouteTypes from "../../types/RouteTypes.ts";
 import { AccessTime, AirlineSeatReclineNormal, LocationOn } from "@mui/icons-material";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat.ts";
+import { ShiftTypes } from "../../types/ShiftTypes.ts";
 
 type RosterCardTypes = {
   // passengerDetails: EmployeeTypes[];
@@ -28,7 +24,7 @@ type RosterCardTypes = {
   // >;
   // id: string;
   // column: ShiftTypes;
-  scheduledRoutes: [];
+  scheduledRoutes: ShiftTypes;
 };
 
 const ScheduledRouteCard = ({
@@ -44,7 +40,7 @@ const ScheduledRouteCard = ({
   const [activeRouteCoords, setactiveRouteCoords] = useState<Array<any>>([]);
 
   useEffect(() => {
-    const activeRouteCoordinates = (
+    const activeRouteCoordinates:any = (
       scheduledRoutes as unknown as RouteTypes
     )?.passengers?.map((employee: any) => employee?.pickUp?.coordinates);
 
@@ -57,7 +53,7 @@ const ScheduledRouteCard = ({
   );
   const routesCentralPoint: any = routesCP.at(-1);
 
-  const cabDriverDetails = scheduledRoutes?.cab?.cabDriver;
+  const cabDriverDetails = scheduledRoutes?.cab?.cabDriver as EmployeeTypes;
 
   // console.log(cabDriverDetails);
   //   const tasksIds = useMemo(() => {
@@ -117,15 +113,29 @@ const ScheduledRouteCard = ({
         sx={{
           ...ColFlex,
           minWidth: "27.5vw",
+          maxWidth: "35vw",
           height: "95%",
           flexDirection: "column",
-
+          
           borderRadius: "15px",
           backgroundColor: "white",
-          transition: "all 1s",
+          // transition: "all 0.4s",
           justifyContent: "flex-start",
           gap: "0.5rem",
           border: "8px solid #2997FC",
+          
+          ":hover" : {
+            transition: "all 0.4s",
+            transform: "scale(1.025)",
+            // minWidth: "35.5vw",
+            // transition:"all 0.3 ease"
+          },
+          ":not(:hover)" : {
+            transition: "all 0.2s",
+            transform: "scale(1)",
+            // minWidth: "27.5vw",
+            // transition:"all 0.3 ease"
+          }
         }}
         // ref={setNodeRef}
         // {...attributes}
@@ -202,7 +212,7 @@ const ScheduledRouteCard = ({
                     color: "primary.main",
                   }}
                 />
-                {(scheduledRoutes?.typeOfRoute)[0].toUpperCase() + (scheduledRoutes?.typeOfRoute).slice(1,scheduledRoutes?.typeOfRoute.length)}
+                {scheduledRoutes?.typeOfRoute && (scheduledRoutes?.typeOfRoute)[0].toUpperCase() + (scheduledRoutes?.typeOfRoute).slice(1,scheduledRoutes?.typeOfRoute.length)}
               </Typography>
               <Typography
                 sx={{
@@ -221,7 +231,7 @@ const ScheduledRouteCard = ({
                     color: "black",
                   }}
                 />
-                {ConvertShiftTimeTo12HrFormat(scheduledRoutes?.currentShift, scheduledRoutes?.typeOfRoute)}
+                {ConvertShiftTimeTo12HrFormat(scheduledRoutes?.currentShift as string , scheduledRoutes?.typeOfRoute)}
               </Typography>
             </Box>
           </Box>
@@ -248,7 +258,7 @@ const ScheduledRouteCard = ({
             }}
             width={"100%"}
           >
-            <span>{`Passengers(${scheduledRoutes?.passengers.length})`}</span>{" "}
+            <span>{`Passengers(${scheduledRoutes?.passengers && scheduledRoutes?.passengers.length})`}</span>{" "}
             <Box
               sx={{
                 ...RowFlex,

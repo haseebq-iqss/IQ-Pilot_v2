@@ -25,6 +25,7 @@ import useAxios from "../../api/useAxios";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import Cabtypes from "../../types/CabTypes";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
+import FormatDateString from "../../utils/DateFormatter";
 
 // type routeCacheTypes = {
 //   nonActiveroutes: [RouteTypes];
@@ -48,7 +49,7 @@ function ScheduledRoutes() {
   const { data: routes } = useQuery({
     queryKey: ["all-routes"],
     queryFn: async () => {
-      const response = await useAxios.get("routes/currentDayRoutes");
+      const response = await useAxios.get("routes");
       return response?.data?.data;
     },
   });
@@ -74,7 +75,7 @@ function ScheduledRoutes() {
                 <TableCell align="left">Cab</TableCell>
                 <TableCell align="left">Driver</TableCell>
                 <TableCell align="center">Pickup/Drop</TableCell>
-                <TableCell align="center">Distance</TableCell>
+                <TableCell align="center">Assigned Date</TableCell>
                 <TableCell align="center">Status</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
@@ -126,7 +127,8 @@ function ScheduledRoutes() {
                         route.typeOfRoute?.slice(1, 99)}
                     </TableCell>
                     <TableCell align="center">
-                      {route.totalDistance || "Not Calculated"}
+                      {/* {route.totalDistance || "Not Calculated"} */}
+                      {FormatDateString(route.createdAt)}
                     </TableCell>
                     <TableCell align="center">
                       {route.routeStatus === "notStarted"
