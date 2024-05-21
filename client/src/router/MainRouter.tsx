@@ -15,6 +15,8 @@ import { AddTeamMembers } from "../components/ui/AddTeamMembers";
 import CreateShift from "../pages/CreateShift/CreateShift";
 import ScheduledRoutes from "../pages/ScheduledRoutes/ScheduledRoutes";
 import AssignedRoutes from "../pages/AssignedRoutes/AssignedRoutes";
+import DriverDashboard from "../pages/DriverDashboard/DriverDashboard";
+import DriverLayout from "../layouts/DriverLayout";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -123,6 +125,20 @@ function MainRouter() {
                 </SlideInOut>
               }
             />
+          </>
+        )}
+        {userData?.role === "driver" && (
+          <>
+            <Route path="/driver" element={<DriverLayout />}>
+              <Route
+                index
+                element={
+                  <SlideInOut>
+                    <DriverDashboard />
+                  </SlideInOut>
+                }
+              />
+            </Route>
           </>
         )}
       </Routes>
