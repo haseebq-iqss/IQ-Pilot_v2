@@ -367,7 +367,8 @@ exports.rosteredPassengers = catchAsync(async (req, res, next) => {
 
 exports.driverRoute = catchAsync(async (req, res, next) => {
   const id = req.params.id;
-  const route = await Route.find({ cab: id })
+  const { _id: cId } = await Cab.findOne({ cabDriver: id });
+  const route = await Route.find({ cab: cId })
     .populate({ path: "cab", populate: { path: "cabDriver" } })
     .populate("passengers");
   if (!route)
