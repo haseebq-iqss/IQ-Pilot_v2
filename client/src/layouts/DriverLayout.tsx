@@ -25,12 +25,6 @@ function DriverLayout() {
   const [openModal, setOpenModal] = useState<boolean>(false);
   // const [currPos, setCurrPos] = useState<Array<number>>([]);
 
-  // function Logout() {
-  //   document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  //   setUserData?.(undefined);
-  //   navigate("/");
-  // }
-
   function Logout() {
     useAxios
       .post("auth/logout", {})
@@ -45,7 +39,6 @@ function DriverLayout() {
           severity: "error",
         })
       );
-    // });
   }
 
   //   const SendEmergencyAlert = () => {
