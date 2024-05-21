@@ -336,7 +336,8 @@ const MapComponent = ({
                       ? generateDistinctColors(10)[index]
                       : "transparent"
                   }
-                  weight={10}
+                  dashArray={activePolylineIndex === index ? "15" : "none"}
+                  weight={8}
                   eventHandlers={{
                     click: (e) => {
                       handleSetActivePolyline(index);

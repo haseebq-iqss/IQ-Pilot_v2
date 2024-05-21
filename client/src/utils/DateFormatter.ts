@@ -30,11 +30,4 @@ function formatDateString(dateString: string) {
     return `${dayName}, ${dayWithSuffix} of ${monthName}`;
 }
 
-// Example usage
-const formattedDate1 = formatDateString(new Date().toISOString());
-console.log(formattedDate1); // Output: "Today"
-
-const formattedDate2 = formatDateString('2024-05-17T11:09:41.584Z');
-console.log(formattedDate2); // Output: "Fri, 17th of May"
-
 export default formatDateString;
