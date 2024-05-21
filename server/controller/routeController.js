@@ -366,14 +366,32 @@ exports.rosteredPassengers = catchAsync(async (req, res, next) => {
 });
 
 exports.driverRoute = catchAsync(async (req, res, next) => {
-  const id = req.params.id;
-  const { _id: cId } = await Cab.findOne({ cabDriver: id });
-  const route = await Route.find({ cab: cId })
-    .populate({ path: "cab", populate: { path: "cabDriver" } })
-    .populate("passengers");
-  if (!route)
-    return next(new AppError(`No route for this driver id:${id}`, 404));
-  res.status(200).json({ status: "Success", data: route });
+  const driver_id = req.params.id;
+  const currentDay = new Date();
+  currentDay.setHours(0, 0, 0, 0);
+
+  const cab = await Cab.find({ cabDriver: driver_id });
+
+  if (cab.length === 0)
+    return next(new AppError(`No cab with this driver id: ${driver_id}`, 404));
+  const [{ _id: cab_id }] = cab;
+  // const [{ _id: cab_id }] = await Cab.find({ cabDriver: driver_id });
+
+  const pickArr = [];
+  const dropArr = [];
+  const curr_day_routes = await Route.find({
+    cab: cab_id,
+    createdAt: { $gte: currentDay },
+  })
+    .populate("passengers")
+    .populate({ path: "cab", populate: { path: "cabDriver" } });
+
+  curr_day_routes.forEach((route) => {
+    if (route.typeOfRoute === "pickup") pickArr.push(route);
+    else if (route.typeOfRoute === "drop") dropArr.push(route);
+  });
+
+  res.status(200).json({ status: "Success", data: { pickArr, dropArr } });
 });
 
 exports.availableCabs = catchAsync(async (req, res, next) => {
