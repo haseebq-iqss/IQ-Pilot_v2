@@ -26,9 +26,10 @@ function Index() {
   const { mutate: loginUser, status } = useMutation({
     mutationFn: loginMF,
     onSuccess: (data) => {
+      // console.log(data)
       setOpenSnack({
         open: true,
-        message: data.data.message,
+        message: "Welcome back",
         severity: "success",
       });
       const user: EmployeeTypes = data.data.user;
