@@ -1,19 +1,28 @@
-function CalculateArrivalTimes(shiftTime: string, estimatedTime: number, numberOfPassengers: number, pickupPassengerNumber: number): string {
-    // Convert shiftTime to minutes
-    const [shiftHours, shiftMinutes] = shiftTime.split(':').map(Number);
-    const shiftTimeInMinutes: number = shiftHours * 60 + shiftMinutes;
-
-    // Calculate pickup time for the given passenger
-    const timePerPassenger: number = estimatedTime / numberOfPassengers;
-    const pickupTimeInMinutes: number = shiftTimeInMinutes - timePerPassenger * (numberOfPassengers - pickupPassengerNumber);
-    // Add 10 minutes to pickup time
-    const adjustedPickupTimeInMinutes: number = pickupTimeInMinutes - 10;
-    // Convert pickup time to HH:mm format
-    const pickupHours: number = Math.floor(adjustedPickupTimeInMinutes / 60);
-    const pickupMinutes: number = adjustedPickupTimeInMinutes % 60;
-    const pickupTime: string = `${pickupHours.toString().padStart(2, '0')}:${pickupMinutes.toString().padStart(2, '0')}`;
-
-    return pickupTime;
+export default function GetArrivalTime(time: string, index: number): string {
+    // Splitting the time string to extract hours and minutes
+    const [hours, minutes] = time.split(':').map(Number);
+    
+    // Subtracting minutes
+    const totalMinutes = hours * 60 + minutes - (10 * index);
+    
+    // Calculating hours and minutes after subtraction
+    let newHours = Math.floor(totalMinutes / 60);
+    const newMinutes = totalMinutes % 60;
+    
+    // Converting 24-hour format to 12-hour format
+    let period = 'AM';
+    if (newHours >= 12) {
+        period = 'PM';
+        if (newHours > 12) {
+            newHours -= 12;
+        }
+    }
+    if (newHours === 0) {
+        newHours = 12;
+    }
+    
+    // Formatting the result
+    const newTime = `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')} ${period}`;
+    
+    return newTime;
 }
-
-export default CalculateArrivalTimes;

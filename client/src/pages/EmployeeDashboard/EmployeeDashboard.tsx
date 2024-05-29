@@ -26,13 +26,14 @@ import SnackbarContext from "../../context/SnackbarContext";
 import UserDataContext from "../../context/UserDataContext";
 import RouteTypes from "../../types/RouteTypes";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
-import ConvertTo12HourFormat from "../../utils/12HourFormat";
 import baseURL from "../../utils/baseURL";
-import CalculateArrivalTimes from "./../../utils/ReturnPickupTime";
 import { UserContextTypes } from "../../types/UserContextTypes";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import { PageFlex, ColFlex, RowFlex } from "./../../style_extentions/Flex";
 import Cabtypes from "../../types/CabTypes";
+import GetArrivalTime from "../../utils/ReturnPickupTime";
+import GetOfficeCoordinates from "../../utils/OfficeCoordinates";
+import EmployeeTypes from './../../types/EmployeeTypes';
 
 // const socket = io(baseURL);
 
@@ -41,6 +42,7 @@ function EmployeeDashboard() {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [driversLocation, setDriversLocation] = useState<any>();
   const [passengerPickupNumber] = useState<number>();
+  const [myIndexInCab, setMyIndexInCab] = useState<number>(0);
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
@@ -58,7 +60,7 @@ function EmployeeDashboard() {
   //   setUserData?.(undefined);
   //   navigate("/");
   // }
-  
+
   function Logout() {
     useAxios
       .post("auth/logout", {})
@@ -121,16 +123,21 @@ function EmployeeDashboard() {
   // }, [socket]);
 
   const getEmployeeRoute = () => {
-    return useAxios.get(`route/employeeRoute/${userData?._id}`);
+    return useAxios.get(`users/tm/cab/${userData?._id}`);
   };
 
   const { data: routeData } = useQuery({
     queryFn: getEmployeeRoute,
     queryKey: ["Route Attendance"],
     select: (data: any) => {
-      return data.data.routes[0] as RouteTypes;
+      if (data.data?.found_route) {
+        return data.data.found_route as RouteTypes;
+      }
+      return undefined;
     },
   });
+
+  // console.log(routeData)
 
   const cancelCabMF = () => {
     return useAxios.patch(`users/cancel-cab`);
@@ -159,19 +166,25 @@ function EmployeeDashboard() {
   // console.log(routeData);
   useEffect(() => {
     const passengers = routeData?.passengers;
+    console.log(passengers)
 
     if (passengers) {
       const passengersLatLons: string[] = passengers.map(
-        (passenger: any) => passenger.pickup
+        (passenger: any) => passenger.pickUp.coordinates
       );
       // console.log(passengersLatLons);
-      setSelectedEmps(passengersLatLons);
+      // passengers?.workLocation
+      setSelectedEmps([...passengersLatLons, GetOfficeCoordinates((passengers[0] as any)?.workLocation)]);
 
       // const numberInList = passengers?.filter((passenger, index) => {
       //   passenger?._id === userData?._id && setPassengerPickupNumber(index + 1);
       // });
       // console.log(numberInList);
     }
+    const myIndex = routeData?.passengers?.findIndex((emp: any) => {
+      return emp._id?.toString() === userData?._id?.toString();
+    });
+    setMyIndexInCab(myIndex as number);
   }, [routeData]);
 
   return (
@@ -386,18 +399,22 @@ function EmployeeDashboard() {
             py: "5px",
           }}
         >
-          {routeData ? (
+          {routeData !== undefined ? (
             routeData?.typeOfRoute == "pickup" ? (
               <Typography sx={{ color: "white", fontWeight: 500 }} variant="h4">
                 Arrival -{" "}
                 <span style={{ fontWeight: 600 }}>
-                  {ConvertTo12HourFormat(
+                  {/* {ConvertTo12HourFormat(
                     CalculateArrivalTimes(
                       routeData?.shiftTime as string,
                       routeData?.estimatedTime as number,
                       routeData?.passengers?.length as number,
                       passengerPickupNumber ? passengerPickupNumber : 1
                     )
+                  )} */}
+                  {GetArrivalTime(
+                    routeData?.currentShift?.split("-")[0] as string,
+                    myIndexInCab
                   )}
                 </span>
               </Typography>
@@ -405,7 +422,7 @@ function EmployeeDashboard() {
               <Typography sx={{ color: "white", fontWeight: 500 }} variant="h5">
                 Onboarding at - {"  "}
                 <span style={{ fontWeight: 600 }}>
-                  {ConvertTo12HourFormat(routeData?.shiftTime as string)}
+                  {/* {ConvertTo12HourFormat(routeData?.shiftTime as string)} */}
                 </span>
               </Typography>
             )
@@ -427,12 +444,14 @@ function EmployeeDashboard() {
           >
             <Box sx={{ ...ColFlex, alignItems: "flex-start" }}>
               <Typography variant="h6">
-                {/* {routeData?.driver?.fname + " " + routeData?.driver?.lname} */}
+                {(routeData?.cab as any)?.cabDriver?.fname +
+                  " " +
+                  (routeData?.cab as any)?.cabDriver?.lname}
               </Typography>
               <Typography variant="body2">
                 CAB NUMBER -{" "}
                 <span style={{ fontWeight: 600 }}>
-                  Driver X{/* {routeData?.driver?.cabDetails?.cabNumber} */}
+                  {(routeData?.cab as any)?.cabNumber}
                 </span>
               </Typography>
             </Box>

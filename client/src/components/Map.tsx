@@ -17,6 +17,8 @@ import RoutingMachine from "../utils/RoutingMachine";
 import useAxios from "../api/useAxios";
 import RouteTypes from "../types/RouteTypes";
 import EmployeeTypes from "./../types/EmployeeTypes";
+import { UserContextTypes } from "../types/UserContextTypes";
+import UserDataContext from "../context/UserDataContext";
 
 type MapTypes = {
   width?: string;
@@ -46,10 +48,13 @@ const MapComponent = ({
 }: MapTypes) => {
   // const [driversPosition, setDriversPosition] = useState<any>();
 
+  const { userData }: UserContextTypes = useContext(UserDataContext);
+
   const { selectedEmps } = useContext(SelectedEmpsContext);
   const [mapDataView, setMapDataView] = useState<"TM-View" | "Routes-View">(
     "TM-View"
   );
+  // console.log(selectedEmps)
   const [routes, setRoutes] = useState<any>();
   const [rawRouteData, setRawRouteData] = useState<RouteTypes>();
   const [activeEmployees, setActiveEmployees] = useState<any>([]);
@@ -73,23 +78,25 @@ const MapComponent = ({
   };
 
   useEffect(() => {
-    (async () => {
-      const res = await useAxios.get("/routes/currentDayRoutes");
-      setRawRouteData(res.data.data);
-      const groupedCoordinates = res.data.data
-        ?.map((route: RouteTypes) =>
-          route.passengers?.map(
-            (employee: any) => employee?.pickUp?.coordinates
+    if (userData?.role === "admin") {
+      (async () => {
+        const res = await useAxios.get("/routes/currentDayRoutes");
+        setRawRouteData(res.data.data);
+        const groupedCoordinates = res.data.data
+          ?.map((route: RouteTypes) =>
+            route.passengers?.map(
+              (employee: any) => employee?.pickUp?.coordinates
+            )
           )
-        )
-        .reduce((acc: any, coordinatesArray: any) => {
-          acc.push(coordinatesArray);
-          return acc;
-        }, []);
+          .reduce((acc: any, coordinatesArray: any) => {
+            acc.push(coordinatesArray);
+            return acc;
+          }, []);
 
-      // console.log("GCOrd ->>>>>>",groupedCoordinates);
-      setRoutes(groupedCoordinates);
-    })();
+        // console.log("GCOrd ->>>>>>",groupedCoordinates);
+        setRoutes(groupedCoordinates);
+      })();
+    }
   }, []);
 
   // console.log("NEW -------> ", activeRoute)
@@ -206,24 +213,24 @@ const MapComponent = ({
         >
           {/* TMs and Routes View */}
           {mode === "full-view" && (
-          <div
-            onClick={() => openFullscreen("map")}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "#2997FC",
-              color: "white",
-              padding: "7.5px 15px",
-              borderRadius: "100px",
-              border: "2.5px solid white",
-              gap: 10,
+            <div
+              onClick={() => openFullscreen("map")}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#2997FC",
+                color: "white",
+                padding: "7.5px 15px",
+                borderRadius: "100px",
+                border: "2.5px solid white",
+                gap: 10,
 
-              // cursor:"grabbing"
-            }}
-          >
-            <h3>Expand 📺</h3>
-          </div>
+                // cursor:"grabbing"
+              }}
+            >
+              <h3>Expand 📺</h3>
+            </div>
           )}
 
           {mode === "full-view" && (
@@ -329,7 +336,12 @@ const MapComponent = ({
               <>
                 <Polyline
                   key={index + activePolylineIndex + Math.random() * 100}
-                  positions={(rawRouteData as unknown as [RouteTypes])[index].workLocation === "Rangreth" ? [...route, [33.996807, 74.79202]] : [...route, [34.173415, 74.808653]]}
+                  positions={
+                    (rawRouteData as unknown as [RouteTypes])[index]
+                      .workLocation === "Rangreth"
+                      ? [...route, [33.996807, 74.79202]]
+                      : [...route, [34.173415, 74.808653]]
+                  }
                   color={
                     activePolylineIndex === null ||
                     activePolylineIndex === index
@@ -380,23 +392,23 @@ const MapComponent = ({
 
         {activeRoute?.length && (
           <>
-          <Polyline
-            key={Math.random() * 100}
-            positions={activeRoute}
-            color={"blue"}
-            weight={3}
-            dashArray={[5]}
+            <Polyline
+              key={Math.random() * 100}
+              positions={activeRoute}
+              color={"blue"}
+              weight={3}
+              dashArray={[5]}
             />
-            {activeRoute.map((empLoc:any) => {
+            {activeRoute.map((empLoc: any) => {
               return (
                 <Marker
-                icon={empIcon}
-                key={empLoc}
-                position={empLoc as LatLngExpression}
+                  icon={empIcon}
+                  key={empLoc}
+                  position={empLoc as LatLngExpression}
                 />
-              )
+              );
             })}
-            </>
+          </>
         )}
 
         {activeDrivers &&
