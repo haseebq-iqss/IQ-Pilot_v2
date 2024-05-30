@@ -55,7 +55,7 @@ function DriverDashboard() {
   //   console.log(Object.values(DriverRoutes))
 
   const updateRouteStatus = (route: RouteTypes) => {
-    return useAxios.patch(`route/${route?._id}`, { routeStatus: "inProgress" });
+    return useAxios.patch(`routes/${route?._id}`, { routeStatus: "inProgress" });
   };
 
   const { mutate: UpdateRoute } = useMutation({
@@ -67,7 +67,7 @@ function DriverDashboard() {
         message: `Route was started!`,
         severity: "info",
       });
-      const route = data.data?.route;
+      const route = data.data?.updated_route;
       navigate("startRoute", { state: route });
       console.log(route);
     },

@@ -28,7 +28,6 @@ import RouteTypes from "../../types/RouteTypes";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 import baseURL from "../../utils/baseURL";
 import { UserContextTypes } from "../../types/UserContextTypes";
-import EmployeeTypes from "../../types/EmployeeTypes";
 import { PageFlex, ColFlex, RowFlex } from "./../../style_extentions/Flex";
 import Cabtypes from "../../types/CabTypes";
 import GetArrivalTime from "../../utils/ReturnPickupTime";
@@ -41,7 +40,7 @@ function EmployeeDashboard() {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [driversLocation, setDriversLocation] = useState<any>();
-  const [passengerPickupNumber] = useState<number>();
+  // const [passengerPickupNumber] = useState<number>();
   const [myIndexInCab, setMyIndexInCab] = useState<number>(0);
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);

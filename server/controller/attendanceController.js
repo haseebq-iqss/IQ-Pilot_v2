@@ -55,3 +55,9 @@ exports.deleteAttendance = catchAsync(async function (req, res, next) {
   }
   res.status(200).json({ message: "Success", remove });
 });
+
+exports.getAttendanceByRoute = catchAsync(async (req, res, next) => {
+  const route_id = req.params.id;
+  const route_attendance = await Attendance.find({ ofRoute: route_id }).populate("ofEmployee");
+  res.status(200).json({ status: "Success", route_attendance });
+});

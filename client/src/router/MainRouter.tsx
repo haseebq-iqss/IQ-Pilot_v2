@@ -18,6 +18,8 @@ import AssignedRoutes from "../pages/AssignedRoutes/AssignedRoutes";
 import DriverDashboard from "../pages/DriverDashboard/DriverDashboard";
 import DriverLayout from "../layouts/DriverLayout";
 import EmployeeDashboard from "../pages/EmployeeDashboard/EmployeeDashboard";
+import StartRoute from "../pages/StartRoute/StartRoute";
+import RouteCompleted from "../pages/RouteCompleted/RouteCompleted";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -136,6 +138,22 @@ function MainRouter() {
                 element={
                   <SlideInOut>
                     <DriverDashboard />
+                  </SlideInOut>
+                }
+              />
+              <Route
+                path="startRoute"
+                element={
+                  <SlideInOut>
+                    <StartRoute />
+                  </SlideInOut>
+                }
+              />
+              <Route
+                path="routeCompleted"
+                element={
+                  <SlideInOut>
+                    <RouteCompleted />
                   </SlideInOut>
                 }
               />

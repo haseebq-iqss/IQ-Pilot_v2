@@ -275,7 +275,7 @@ exports.updateRoute = catchAsync(async (req, res, next) => {
   const updated_route = await Route.findByIdAndUpdate(id, update_body, {
     runValidators: true,
     new: true,
-  });
+  }).populate("passengers").populate("cab");
   if (!updated_route)
     return next(new AppError(`Route with this id: ${id} is not found`, 404));
 

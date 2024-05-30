@@ -5,24 +5,27 @@ const { updateLeaveStatus } = require("../utils/cronJob");
 const { catchAsync } = require("../utils/catchAsync");
 
 const router = express.Router();
+
+
+router.use(protect);
+router.use(restrictTo("admin", "driver"))
+
 router.post(
   "/",
-  protect,
-  restrictTo("admin"),
   attendanceController.createAttendance
 );
 
 router.get(
   "/",
-  protect,
-  restrictTo("admin"),
   attendanceController.getAllAttendances
 );
 
 router
   .route("/:id")
-  .get(protect, restrictTo("admin"), attendanceController.getAttendanceById)
-  .put(protect, restrictTo("admin"), attendanceController.updateAttendance)
-  .delete(protect, restrictTo("admin"), attendanceController.deleteAttendance);
+  .get(attendanceController.getAttendanceById)
+  .put(attendanceController.updateAttendance)
+  .delete(attendanceController.deleteAttendance);
+
+router.get("/route-attendance/:id", attendanceController.getAttendanceByRoute)
 
 module.exports = router;

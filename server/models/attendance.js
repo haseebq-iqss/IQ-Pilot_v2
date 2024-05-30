@@ -4,7 +4,7 @@ const attendanceSchema = new mongoose.Schema(
   {
     ofEmployee: {
       type: mongoose.Schema.ObjectId,
-      ref: "employee",
+      ref: "User",
       required: true,
     },
     ofRoute: {
