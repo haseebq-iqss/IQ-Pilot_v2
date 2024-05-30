@@ -275,7 +275,9 @@ exports.updateRoute = catchAsync(async (req, res, next) => {
   const updated_route = await Route.findByIdAndUpdate(id, update_body, {
     runValidators: true,
     new: true,
-  }).populate("passengers").populate("cab");
+  })
+    .populate("passengers")
+    .populate("cab");
   if (!updated_route)
     return next(new AppError(`Route with this id: ${id} is not found`, 404));
 
@@ -319,7 +321,10 @@ exports.getCurrentDayRoutes = catchAsync(async (req, res, next) => {
   const curr_day_routes = routes.filter((route) => {
     const routeCreatedAt = new Date(route.createdAt);
     routeCreatedAt.setHours(0, 0, 0, 0);
-    return routeCreatedAt.getTime() === currentDay.getTime();
+    return (
+      routeCreatedAt.getTime() === currentDay.getTime() &&
+      route.routeStatus !== "completed"
+    );
   });
   if (curr_day_routes.length === 0)
     return next(new AppError(`No Routes for the Current Day...`, 200));

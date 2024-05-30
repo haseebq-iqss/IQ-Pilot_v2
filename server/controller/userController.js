@@ -150,7 +150,10 @@ const getTMSAssignedCabs = catchAsync(async (req, res, next) => {
   const curr_day_routes = routes.filter((route) => {
     const routeCreatedAt = new Date(route.createdAt);
     routeCreatedAt.setHours(0, 0, 0, 0);
-    return routeCreatedAt.getTime() === currentDay.getTime();
+    return (
+      routeCreatedAt.getTime() === currentDay.getTime() &&
+      route.routeStatus !== "completed"
+    );
   });
 
   let passenger_cab_details = [];
