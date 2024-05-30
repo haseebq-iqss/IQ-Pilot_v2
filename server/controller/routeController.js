@@ -269,6 +269,19 @@ exports.createRoute = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.updateRoute = catchAsync(async (req, res, next) => {
+  const update_body = req.body;
+  const id = req.params.id;
+  const updated_route = await Route.findByIdAndUpdate(id, update_body, {
+    runValidators: true,
+    new: true,
+  });
+  if (!updated_route)
+    return next(new AppError(`Route with this id: ${id} is not found`, 404));
+
+  res.status(201).json({ status: "Success", updated_route });
+});
+
 exports.getRoute = catchAsync(async (req, res, next) => {
   const route = await Route.findById(req.params.id).populate({
     path: "cab",

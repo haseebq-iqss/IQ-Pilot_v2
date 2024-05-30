@@ -10,6 +10,7 @@ const {
   driverRoute,
   availableCabs,
   getCurrentDayRoutes,
+  updateRoute,
 } = require("../controller/routeController");
 const { protect, restrictTo } = require("../controller/authController");
 
@@ -29,6 +30,9 @@ router.route("/availableCabs").get(restrictTo("admin"), availableCabs);
 
 router.route("/").post(restrictTo("admin"), createRoute).get(getRoutes);
 router.route("/currentDayRoutes").get(restrictTo("admin"), getCurrentDayRoutes);
-router.route("/:id").get(restrictTo("admin"), getRoute);
+router
+  .route("/:id")
+  .get(restrictTo("admin", "driver"), getRoute)
+  .patch(updateRoute);
 
 module.exports = router;
