@@ -142,7 +142,7 @@ exports.createShift = catchAsync(async (req, res, next) => {
   if (closestEmployees.length === 0)
     return next(
       new AppError(
-        `No employees found as of now for this shift:${currentShift} and workLocation:${workLocation}`,
+        `No employees found as of now for this shift: ${currentShift} and workLocation: ${workLocation}`,
         404
       )
     );
@@ -162,7 +162,7 @@ exports.createShift = catchAsync(async (req, res, next) => {
     if (check_active_routes)
       return next(
         new AppError(
-          `Team Members for this shift:${currentShift} and work-loction:${workLocation} are already rostered!`,
+          `Team Members for this shift: ${currentShift} and work-loction: ${workLocation} are already rostered!`,
           400
         )
       );
@@ -218,6 +218,9 @@ exports.createShift = catchAsync(async (req, res, next) => {
     message: "Success",
     data: groups,
     results: groups.length,
+    workLocation,
+    currentShift,
+    typeOfRoute,
   });
 });
 
@@ -360,8 +363,8 @@ exports.rosteredPassengers = catchAsync(async (req, res, next) => {
 });
 
 exports.driverRoute = catchAsync(async (req, res, next) => {
-  // const pick_up_arr = [];
-  // const drop_off_arr = [];
+  const pickArr = [];
+  const dropArr = [];
 
   const id = req.params.id;
   const cab = await Cab.findOne({ cabDriver: id });
@@ -386,10 +389,10 @@ exports.driverRoute = catchAsync(async (req, res, next) => {
       new AppError(`No active routes assigned to this cab: ${cab_id}`, 404)
     );
 
-  // active_routes.forEach((route) => {
-  //   if (route.typeOfRoute === "pickup") pick_up_arr.push(route);
-  //   else if (route.typeOfRoute === "drop") drop_off_arr.push(route);
-  // });
+  active_routes.forEach((route) => {
+    if (route.typeOfRoute === "pickup") pickArr.push(route);
+    else if (route.typeOfRoute === "drop") dropArr.push(route);
+  });
 
-  res.status(200).json({ status: "Success", driver_routes: active_routes });
+  res.status(200).json({ status: "Success", data: { pickArr, dropArr } });
 });
