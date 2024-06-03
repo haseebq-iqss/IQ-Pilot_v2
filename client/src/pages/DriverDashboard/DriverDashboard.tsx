@@ -102,6 +102,7 @@ function DriverDashboard() {
       >
         {routesStatus === "success" ? (
           <Typography
+          component={"div"}
             variant="h5"
             sx={{ fontWeight: 500, ...RowFlex, gap: "10px" }}
           >
