@@ -17,7 +17,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 /* Hide Leaflet zoom control */
 .leaflet-control-zoom {
   display: none !important;
@@ -55,13 +54,13 @@ body {
 
 .start-tooltip {
   background-color: transparent;
-  border:none;
+  border: none;
   box-shadow: none;
 }
 
 .end-tooltip {
   background-color: transparent;
-  border:none;
+  border: none;
   box-shadow: none;
 }
 
@@ -72,7 +71,7 @@ body {
 }
 
 .scroll-mod::-webkit-scrollbar-thumb {
-  background: #2997FC;
+  background: white;
   /* Color of the scrollbar thumb */
   border-radius: 5px;
   /* Radius of the scrollbar thumb */
@@ -80,7 +79,7 @@ body {
 }
 
 .scroll-mod::-webkit-scrollbar-track {
-  background: white;
+  background: #2997fc;
   /* Background color of the scrollbar track */
   border-radius: 1000px;
   /* Radius of the scrollbar track */
@@ -93,7 +92,7 @@ body {
 }
 
 .child-scroll::-webkit-scrollbar-thumb {
-  background: white;
+  background: #2997fc;
   /* Color of the scrollbar thumb */
   border-radius: 500px;
   /* Radius of the scrollbar thumb */
@@ -101,7 +100,7 @@ body {
 }
 
 .child-scroll::-webkit-scrollbar-track {
-  background: #2997FC;
+  background: white;
   /* Background color of the scrollbar track */
   border-radius: 100px;
   /* Radius of the scrollbar track */

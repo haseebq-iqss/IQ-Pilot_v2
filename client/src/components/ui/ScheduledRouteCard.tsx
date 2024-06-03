@@ -1,51 +1,36 @@
 import { Avatar, Box, Typography } from "@mui/material";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex.ts";
 import baseURL from "../../utils/baseURL.ts";
-
 import EmployeeTypes from "./../../types/EmployeeTypes";
 import AssignedPassengers from "./AssignedPassengers.tsx";
 import MapComponent from "../Map.tsx";
 import { useEffect, useState } from "react";
-import RouteTypes from "../../types/RouteTypes.ts";
-import { AccessTime, AirlineSeatReclineNormal, LocationOn } from "@mui/icons-material";
+import {
+  AccessTime,
+  AirlineSeatReclineNormal,
+  LocationOn,
+} from "@mui/icons-material";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat.ts";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 
 type RosterCardTypes = {
-  // passengerDetails: EmployeeTypes[];
-  // cab: Cabtypes;
-  // setRosterData: React.Dispatch<
-  //   React.SetStateAction<
-  //     {
-  //       cab: Cabtypes;
-  //       passengers: EmployeeTypes[];
-  //     }[]
-  //   >
-  // >;
-  // id: string;
-  // column: ShiftTypes;
+  passengerDetails: EmployeeTypes[];
   scheduledRoutes: ShiftTypes;
 };
 
 const ScheduledRouteCard = ({
-  //   passengerDetails,
+  passengerDetails,
   //   // cab,
   scheduledRoutes,
 }: RosterCardTypes) => {
-  // console.log("SRC --------> ", scheduledRoutes);
-  // const cabDriverDetails = Array.isArray(scheduledRoutes?.cab?.cabDriver)
-  //   ? (scheduledRoutes?.cab?.cabDriver as EmployeeTypes | undefined)
-  //   : undefined;
-
   const [activeRouteCoords, setactiveRouteCoords] = useState<Array<any>>([]);
-
   useEffect(() => {
-    const activeRouteCoordinates:any = (
-      scheduledRoutes as unknown as RouteTypes
-    )?.passengers?.map((employee: any) => employee?.pickUp?.coordinates);
+    const activeRouteCoordinates: any = passengerDetails?.map(
+      (employee: EmployeeTypes) => employee?.pickUp?.coordinates
+    );
 
     setactiveRouteCoords(activeRouteCoordinates);
-  }, []);
+  }, [passengerDetails]);
 
   const routesCP: any = activeRouteCoords.slice(
     0,
@@ -55,58 +40,6 @@ const ScheduledRouteCard = ({
 
   const cabDriverDetails = scheduledRoutes?.cab?.cabDriver as EmployeeTypes;
 
-  // console.log(cabDriverDetails);
-  //   const tasksIds = useMemo(() => {
-  //     return passengerDetails.map((passenger) => passenger.id);
-  //   }, [passengerDetails]);
-
-  // const {
-  //   setNodeRef,
-  //   attributes,
-  //   listeners,
-  //   transform,
-  //   transition,
-  //   isDragging,
-  // } = useSortable({
-  //   id: column?.id,
-  //   data: {
-  //     type: "Column",
-  //     column: { ...column, passengers: passengerDetails },
-  //   },
-  // });
-
-  // const style = {
-  //   transition,
-  //   transform: CSS.Transform.toString(transform),
-  // };
-  // if (isDragging) {
-  //   return (
-  //     <div
-  //       ref={setNodeRef}
-  //       style={{
-  //         ...style,
-  //         backgroundColor: "grey",
-  //         opacity: 0.4,
-  //         borderWidth: "2px",
-  //         borderColor: "#D946EF",
-  //         borderStyle: "solid",
-  //         width: "27.5vw",
-  //         height: "90rem",
-  //         maxHeight: "90%",
-  //         borderRadius: "0.375rem",
-  //         display: "flex",
-  //         flexDirection: "column",
-  //       }}
-  //     ></div>
-  //   );
-  // }
-  //   const { setNodeRef } = useDroppable({
-  //     id: column?.id,
-  //     data: {
-  //       type: "Column",
-  //       column: { ...column, passengers: passengerDetails },
-  //     },
-  //   });
   return (
     <>
       <Box
@@ -116,26 +49,26 @@ const ScheduledRouteCard = ({
           maxWidth: "35vw",
           height: "95%",
           flexDirection: "column",
-          
+
           borderRadius: "15px",
           backgroundColor: "white",
           // transition: "all 0.4s",
           justifyContent: "flex-start",
           gap: "0.5rem",
           border: "8px solid #2997FC",
-          
-          ":hover" : {
+
+          ":hover": {
             transition: "all 0.4s",
             transform: "scale(1.025)",
             // minWidth: "35.5vw",
             // transition:"all 0.3 ease"
           },
-          ":not(:hover)" : {
+          ":not(:hover)": {
             transition: "all 0.2s",
             transform: "scale(1)",
             // minWidth: "27.5vw",
             // transition:"all 0.3 ease"
-          }
+          },
         }}
         // ref={setNodeRef}
         // {...attributes}
@@ -164,7 +97,8 @@ const ScheduledRouteCard = ({
           <Box sx={{ ...ColFlex, alignItems: "flex-start" }}>
             <Box>
               <Typography variant="h6" fontWeight={600}>
-                Cab {scheduledRoutes?.cab?.cabNumber} - {cabDriverDetails?.fname + " " + cabDriverDetails?.lname}
+                Cab {scheduledRoutes?.cab?.cabNumber} -{" "}
+                {cabDriverDetails?.fname + " " + cabDriverDetails?.lname}
               </Typography>
             </Box>
             <Box
@@ -192,7 +126,7 @@ const ScheduledRouteCard = ({
                     color: "blue",
                   }}
                 />
-                {(scheduledRoutes?.workLocation)}
+                {scheduledRoutes?.workLocation}
               </Typography>
 
               <Typography
@@ -212,7 +146,12 @@ const ScheduledRouteCard = ({
                     color: "primary.main",
                   }}
                 />
-                {scheduledRoutes?.typeOfRoute && (scheduledRoutes?.typeOfRoute)[0].toUpperCase() + (scheduledRoutes?.typeOfRoute).slice(1,scheduledRoutes?.typeOfRoute.length)}
+                {scheduledRoutes?.typeOfRoute &&
+                  scheduledRoutes!.typeOfRoute[0].toUpperCase() +
+                    scheduledRoutes!.typeOfRoute.slice(
+                      1,
+                      scheduledRoutes!.typeOfRoute.length
+                    )}
               </Typography>
               <Typography
                 sx={{
@@ -231,7 +170,10 @@ const ScheduledRouteCard = ({
                     color: "black",
                   }}
                 />
-                {ConvertShiftTimeTo12HrFormat(scheduledRoutes?.currentShift as string , scheduledRoutes?.typeOfRoute)}
+                {ConvertShiftTimeTo12HrFormat(
+                  scheduledRoutes?.currentShift as string,
+                  scheduledRoutes?.typeOfRoute
+                )}
               </Typography>
             </Box>
           </Box>
@@ -258,7 +200,9 @@ const ScheduledRouteCard = ({
             }}
             width={"100%"}
           >
-            <span>{`Passengers(${scheduledRoutes?.passengers && scheduledRoutes?.passengers.length})`}</span>{" "}
+            <span>{`Passengers(${
+              scheduledRoutes?.passengers && scheduledRoutes?.passengers.length
+            })`}</span>{" "}
             <Box
               sx={{
                 ...RowFlex,
@@ -269,13 +213,8 @@ const ScheduledRouteCard = ({
                 alignItems: "flex-start",
               }}
             >
-              {scheduledRoutes?.passengers?.map((passenger: EmployeeTypes) => (
-                // <PassengerTab
-                //   // id={passenger._id!}
-                //   passenger={passenger}
-                //   key={passenger.id}
-                // />
-                <AssignedPassengers passenger={passenger} />
+              {passengerDetails?.map((passenger: EmployeeTypes) => (
+                <AssignedPassengers passenger={passenger} key={passenger.id} />
               ))}
             </Box>
           </Box>
@@ -287,35 +226,22 @@ const ScheduledRouteCard = ({
             ...ColFlex,
             alignItems: "flex-start",
             width: "100%",
-            // gap: 1.5,
             justifyContent: "flex-start",
             overflowY: "auto",
             p: 1,
-            // borderRadius: "10px",
-            // overflow: "hidden",
           }}
         >
           <MapComponent
             mode="route-view"
-            activeRoute={scheduledRoutes?.workLocation === "Rangreth" ? [...activeRouteCoords, [33.996807, 74.79202]] : [...activeRouteCoords, [34.173415, 74.808653]]}
+            activeRoute={
+              scheduledRoutes?.workLocation === "Rangreth"
+                ? [...activeRouteCoords, [33.996807, 74.79202]]
+                : [...activeRouteCoords, [34.173415, 74.808653]]
+            }
             zoom={12}
             center={routesCentralPoint}
           />
-          {/* <SortableContext
-            // items={tasksIds}
-            strategy={verticalListSortingStrategy}
-          > */}
-          {/* {scheduledRoutes?.passengers?.map((passenger: EmployeeTypes) => (
-            // <PassengerTab
-            //   // id={passenger._id!}
-            //   passenger={passenger}
-            //   key={passenger.id}
-            // />
-            <AssignedPassengers passenger={passenger} />
-          ))} */}
-          {/* </SortableContext> */}
         </Box>
-        {/* </DndContext> */}
       </Box>
     </>
   );

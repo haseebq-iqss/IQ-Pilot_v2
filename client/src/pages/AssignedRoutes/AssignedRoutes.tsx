@@ -1,13 +1,10 @@
 import { Box, Typography } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ColFlex, RowFlex, PageFlex } from "../../style_extentions/Flex.ts";
-import RosterCard from "../../components/ui/RosterCard.tsx";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 import Cabtypes from "../../types/CabTypes.ts";
 import { useMemo, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import useAxios from "../../api/useAxios.ts";
 import {
   DndContext,
   DragEndEvent,
@@ -26,11 +23,9 @@ import {
   // horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
-import PassengerTab from "../../components/ui/PassengerTab.tsx";
-// import ReservedPassengersTab from "../../components/ui/ReservedPassengersTab.tsx";
-import ReserveModal from "../../components/ui/ReserveModal.tsx";
 import ReservedPassengersTab from "../../components/ui/ReservedPassengersTab.tsx";
 import ScheduledRouteCard from "../../components/ui/ScheduledRouteCard.tsx";
+import AssignedPassengers from "../../components/ui/AssignedPassengers.tsx";
 
 function AssignedRoutes() {
   const location = useLocation();
@@ -72,7 +67,7 @@ function AssignedRoutes() {
   );
 
   const [passengers, setPassengers] = useState(() => {
-    if (!routeState?.data?.data) return [];
+    // if (!routeState?.data?.data) return [];
 
     return columns.flatMap((shift: ShiftTypes) =>
       shift.passengers!.map((passenger, index) => ({
@@ -87,44 +82,8 @@ function AssignedRoutes() {
     () => columns.map((col: ShiftTypes) => col.id),
     [columns]
   );
-  const tasksIds = useMemo(() => {
-    return reservedPassengers.map((passenger: EmployeeTypes) => passenger.id);
-  }, [reservedPassengers]);
 
-  const qc = useQueryClient();
   const navigate = useNavigate();
-  const { mutate } = useMutation({
-    mutationFn: async (data) => {
-      try {
-        const response = await useAxios.post("routes/", data);
-        if (response?.status === 201) {
-          navigate("/admin");
-        }
-      } catch (error) {
-        console.error("Error creating route:", error);
-      }
-    },
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["all-routes"] });
-    },
-  });
-
-  const mapCoordinatesToText = (value: string) => {
-    switch (value) {
-      case "[34.07918418861709, 74.76795882716988]":
-        return "Bemina Area";
-      case "[34.07884610905441, 74.77249651656975]":
-        return "Lal Bazar Area";
-      case "[34.084051032954854, 74.79703437982327]":
-        return "Karanagar Area";
-      case "[34.01011349472341, 74.79879001141188]":
-        return "Rangreth Area";
-      case "[34.13990801842636, 74.80077605668806]":
-        return "Soura Area";
-      default:
-        return "Unknown Area";
-    }
-  };
 
   const combinedData: {
     cab: Cabtypes;
@@ -143,17 +102,6 @@ function AssignedRoutes() {
         column.cab!.seatingCapacity! - columnPassengers?.length,
     });
   });
-  const handleCreateRoute = () => {
-    const dataToDeploy: any = {
-      cabEmployeeGroups: combinedData,
-      workLocation: routeState?.data?.workLocation,
-      currentShift: routeState?.data?.currentShift,
-      typeOfRoute: routeState?.data?.typeOfRoute,
-    };
-
-    // console.log(dataToDeploy);
-    mutate(dataToDeploy);
-  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -368,11 +316,6 @@ function AssignedRoutes() {
                 </Typography>
               </Box>
             </Box>
-            {reserveModal && (
-              <SortableContext items={tasksIds}>
-                <ReserveModal reservedPassengers={reservedPassengers} />
-              </SortableContext>
-            )}
             <Box
               sx={{
                 px: 5,
@@ -391,11 +334,6 @@ function AssignedRoutes() {
               >
                 BACK
               </Typography>
-              {/* <Box
-                component={"img"}
-                src={LogoImage}
-                sx={{ width: "25px", aspectRatio: 1 }}
-              /> */}
             </Box>
           </Box>
         </Box>
@@ -430,25 +368,18 @@ function AssignedRoutes() {
                 justifyContent: columns.length ? "flex-start" : "center",
               }}
             >
-              <SortableContext
-                items={columnsId}
-
-                // strategy={horizontalListSortingStrategy}
-              >
+              <SortableContext items={columnsId}>
                 {columns.length ? (
                   columns.map((shift: ShiftTypes) => {
                     return (
-                      // <RosterCard
-                      //   key={shift?.id}
-                      //   column={shift}
-                      //   passengerDetails={passengers.filter(
-                      //     (passenger: EmployeeTypes) =>
-                      //       passenger.columnId === shift.id
-                      //   )}
-                      //   // setRosterData={setRosterData}
-                      //   // id={index.toString()}
-                      // />
-                      <ScheduledRouteCard scheduledRoutes={shift} />
+                      <ScheduledRouteCard
+                        scheduledRoutes={shift}
+                        key={shift?.id}
+                        passengerDetails={passengers?.filter(
+                          (passenger: EmployeeTypes) =>
+                            passenger.columnId === shift.id
+                        )}
+                      />
                     );
                   })
                 ) : (
@@ -461,23 +392,15 @@ function AssignedRoutes() {
             {createPortal(
               <DragOverlay>
                 {activeColumn && (
-                  <RosterCard
+                  <ScheduledRouteCard
                     passengerDetails={activeColumn.passengers!.filter(
                       (passenger: EmployeeTypes) =>
                         passenger.columnId === activeColumn.id
                     )}
-                    // cab={activeColumn?.cab as Cabtypes}
-                    // setRosterData={setRosterData}
-                    // id={activeColumn.id}
-                    column={activeColumn}
+                    scheduledRoutes={activeColumn}
                   />
                 )}
-                {activeTask && (
-                  <PassengerTab
-                    // id={activeTask?.id}
-                    passenger={activeTask}
-                  />
-                )}
+                {activeTask && <AssignedPassengers passenger={activeTask} />}
               </DragOverlay>,
               document.body
             )}
@@ -486,9 +409,6 @@ function AssignedRoutes() {
       </Box>
       {createPortal(
         <DragOverlay>
-          {/* {activeReserve && (
-            <ReserveModal reservedPassengers={reservedPassengers} />
-          )} */}
           {activeReserve && <ReservedPassengersTab passenger={activeReserve} />}
         </DragOverlay>,
         document.body

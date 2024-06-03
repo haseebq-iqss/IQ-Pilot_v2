@@ -23,8 +23,8 @@ const ReservedPassengersTab = ({
   } = useSortable({
     id: passenger.id,
     data: {
-      type: "ReservedPassenger",
-      task: passenger,
+      type: "Reserved-Task",
+      reservedTask: passenger,
     },
   });
 
