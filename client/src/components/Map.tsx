@@ -19,6 +19,8 @@ import RouteTypes from "../types/RouteTypes";
 import EmployeeTypes from "./../types/EmployeeTypes";
 import { UserContextTypes } from "../types/UserContextTypes";
 import UserDataContext from "../context/UserDataContext";
+import baseURL from "../utils/baseURL";
+import { Close } from "@mui/icons-material";
 
 type MapTypes = {
   width?: string;
@@ -58,6 +60,8 @@ const MapComponent = ({
   const [routes, setRoutes] = useState<any>();
   const [rawRouteData, setRawRouteData] = useState<RouteTypes>();
   const [activeEmployees, setActiveEmployees] = useState<any>([]);
+  const [cardOpen, setCardOpen] = useState<boolean>(false);
+  const [empCard, setEmpCard] = useState<EmployeeTypes>();
 
   const rangreth = [33.996807, 74.79202];
   const zaira = [34.173415, 74.808653];
@@ -303,6 +307,31 @@ const MapComponent = ({
           )}
         </div>
 
+        {/* Team Member Card */}
+        {cardOpen && (<div style={{
+            position: "absolute",
+            bottom: 10,
+            right: 10,
+            zIndex: 999,
+            width:"35%",
+            display: "flex",
+            justifyContent:"space-between",
+            backgroundColor:'white',
+            padding:"15px",
+            // gap:"25px",
+            borderRadius:"10px"
+        }}>
+          <div style={{display:"flex", gap:"10px"}}>
+          <img style={{width:"100px", aspectRatio:1, objectFit:"cover", borderRadius:"10px"}} src={baseURL + empCard?.profilePicture} alt="" />
+          <div>
+            <h2>{empCard?.fname + " " + empCard?.lname}</h2>
+            <h3>Department : {empCard?.department}</h3>
+            <h4>{empCard?.pickUp?.address}</h4>
+          </div>
+          </div>
+          <Close onClick={() => setCardOpen(false)} />
+        </div>)}
+
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">Haseeb Qureshi</a>'
@@ -470,6 +499,10 @@ const MapComponent = ({
 
             return activePolylineIndex === null ? (
               <Marker
+                eventHandlers={{
+                  click: () => {setEmpCard(employee); setCardOpen(true)},
+                  //  mouseover: () => console.log(employee?.fname)
+                }}
                 icon={empIcon}
                 key={employee?._id}
                 position={employee?.pickUp?.coordinates as LatLngExpression}

@@ -68,6 +68,7 @@ function AdminDashboard() {
     queryFn: getAllAssignedRoutesQF,
     queryKey: ["All Assigned Routes"],
     select: (data) => {
+      console.log(data)
       return data.data.data;
     },
   });

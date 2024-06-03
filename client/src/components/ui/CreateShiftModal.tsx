@@ -42,6 +42,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
     mutationFn: createShiftMF,
     onSuccess: (data: any) => {
       // console.log(data);
+      console.log(data)
       navigate("createShift", {
         state: { data: data.data, centralPoint: ref_coords },
       });

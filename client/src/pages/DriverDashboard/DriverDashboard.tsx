@@ -118,7 +118,7 @@ function DriverDashboard() {
               fontWeight={600}
             >
               {/* <Route/> */}
-              {DriverRoutes?.pickArr.length + DriverRoutes?.dropArr.length}{" "}
+              {DriverRoutes?.pickArr ? (DriverRoutes?.pickArr.length + DriverRoutes?.dropArr.length) : 0}{" "}
               Routes
             </Typography>{" "}
           </Typography>
