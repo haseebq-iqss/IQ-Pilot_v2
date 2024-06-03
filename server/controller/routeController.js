@@ -327,9 +327,9 @@ exports.pendingPassengers = catchAsync(async (req, res, next) => {
     })
     .populate("passengers");
   const active_routes = await activeRoutesFun(all_routes);
-  if (active_routes.length === 0) {
-    return next(new AppError(`No Active Routes as of now...`, 404));
-  }
+  // if (active_routes.length === 0) {
+  //   return next(new AppError(`No Active Routes as of now...`, 404));
+  // }
 
   const passengerIds = active_routes.flatMap((route) => route.passengers);
   const pending_passengers = await User.find({
@@ -351,9 +351,9 @@ exports.rosteredPassengers = catchAsync(async (req, res, next) => {
     })
     .populate("passengers");
   const active_routes = await activeRoutesFun(all_routes);
-  if (active_routes.length === 0) {
-    return next(new AppError(`No Active Routes as of now...`, 404));
-  }
+  // if (active_routes.length === 0) {
+  //   return next(new AppError(`No Active Routes as of now...`, 404));
+  // }
 
   const passengerIds = active_routes.flatMap((route) => route.passengers);
 
