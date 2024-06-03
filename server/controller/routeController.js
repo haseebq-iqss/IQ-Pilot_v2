@@ -360,8 +360,8 @@ exports.rosteredPassengers = catchAsync(async (req, res, next) => {
 });
 
 exports.driverRoute = catchAsync(async (req, res, next) => {
-  const pick_up_arr = [];
-  const drop_off_arr = [];
+  // const pick_up_arr = [];
+  // const drop_off_arr = [];
 
   const id = req.params.id;
   const cab = await Cab.findOne({ cabDriver: id });
@@ -386,12 +386,10 @@ exports.driverRoute = catchAsync(async (req, res, next) => {
       new AppError(`No active routes assigned to this cab: ${cab_id}`, 404)
     );
 
-  active_routes.forEach((route) => {
-    if (route.typeOfRoute === "pickup") pick_up_arr.push(route);
-    else if (route.typeOfRoute === "drop") drop_off_arr.push(route);
-  });
+  // active_routes.forEach((route) => {
+  //   if (route.typeOfRoute === "pickup") pick_up_arr.push(route);
+  //   else if (route.typeOfRoute === "drop") drop_off_arr.push(route);
+  // });
 
-  res
-    .status(200)
-    .json({ status: "Success", data: { pick_up_arr, drop_off_arr } });
+  res.status(200).json({ status: "Success", driver_routes: active_routes });
 });
