@@ -29,6 +29,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
   const [workLocation, setworkLocation] = useState("");
   const [currentShift, setcurrentShift] = useState("");
   const [ref_coords, setref_coords] = useState<any>();
+  const [activeDays, setActiveDays] = useState<number>(1);
 
   const navigate = useNavigate();
 
@@ -42,26 +43,27 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
     mutationFn: createShiftMF,
     onSuccess: (data: any) => {
       // console.log(data);
-      console.log(data)
+      console.log(data);
       navigate("createShift", {
         state: { data: data.data, centralPoint: ref_coords },
       });
     },
-    onError: (err:any) => {
-      console.log()
+    onError: (err: any) => {
+      console.log();
       setOpenSnack({
         open: true,
         message: err.response.data.message,
         severity: "warning",
       });
-    }
+    },
   });
   const HandleProceedToCreateShiftPage = () => {
     if (workLocation?.length && currentShift?.length && ref_coords?.length) {
-      const shiftData: ShiftTypes = {
+      const shiftData: any = {
         typeOfRoute,
         workLocation,
         currentShift,
+        daysRouteIsActive: activeDays,
         ref_coords: eval(ref_coords),
       };
       createShiftMutation(shiftData);
@@ -183,6 +185,24 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
                 <MenuItem value={"[34.13990801842636, 74.80077605668806]"}>
                   Soura Area
                 </MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ width: "50%" }}>
+              <InputLabel id="pickup-or-drop-label">Active for Days</InputLabel>
+              <Select
+                labelId="active-time"
+                id="active-time"
+                value={activeDays}
+                label="Active For Days"
+                onChange={(e: any) => setActiveDays(e.target.value)}
+              >
+                <MenuItem value="1">1</MenuItem>
+                <MenuItem value="2">2</MenuItem>
+                <MenuItem value="3">3</MenuItem>
+                <MenuItem value="4">4</MenuItem>
+                <MenuItem value="5">5</MenuItem>
+                <MenuItem value="6">6</MenuItem>
+                <MenuItem value="7">7</MenuItem>
               </Select>
             </FormControl>
           </Box>

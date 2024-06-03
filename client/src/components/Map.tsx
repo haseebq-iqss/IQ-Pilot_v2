@@ -327,6 +327,7 @@ const MapComponent = ({
             <h2>{empCard?.fname + " " + empCard?.lname}</h2>
             <h3>Department : {empCard?.department}</h3>
             <h4>{empCard?.pickUp?.address}</h4>
+            <h4>Phone: {empCard?.phone}</h4>
           </div>
           </div>
           <Close onClick={() => setCardOpen(false)} />
@@ -522,9 +523,14 @@ const MapComponent = ({
             ) : (
               isCoordinatesIncluded && (
                 <Marker
+                eventHandlers={{
+                  click: () => {setEmpCard(employee); setCardOpen(true)},
+                  //  mouseover: () => console.log(employee?.fname)
+                }}
                   icon={empIcon}
                   key={employee?._id}
                   position={employee?.pickUp?.coordinates as LatLngExpression}
+                  
                 >
                   <Tooltip
                     key={employee?._id}
