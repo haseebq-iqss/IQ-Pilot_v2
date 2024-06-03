@@ -89,81 +89,6 @@ const updateUser = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: "Success", data: updated_user });
 });
 
-const getEmployeeCab = catchAsync(async (req, res, next) => {
-  let found_route;
-  const emp_id = req.params.id;
-  const employee = await User.findById(emp_id);
-  if (!employee)
-    return next(new AppError(`No employee with this id:${emp_id}`, 404));
-
-  const currentDay = new Date();
-  currentDay.setHours(0, 0, 0, 0);
-
-  const routes = await Route.find({
-    workLocation: employee.workLocation,
-    currentShift: employee.currentShift,
-  });
-  const curr_day_routes = routes.filter((route) => {
-    const routeCreatedAt = new Date(route.createdAt);
-    routeCreatedAt.setHours(0, 0, 0, 0);
-    return (
-      routeCreatedAt.getTime() === currentDay.getTime() &&
-      route.routeStatus !== "completed"
-    );
-  });
-  for (const route of curr_day_routes) {
-    const flag = route.passengers.some(
-      (passenger) => passenger.toString() === emp_id.toString()
-    );
-    if (flag) {
-      // cab = await Cab.findById(route.cab).populate("cabDriver");
-      found_route = await Route.findById(route._id)
-        .populate({
-          path: "cab",
-          populate: { path: "cabDriver" },
-        })
-        .populate("passengers");
-      break;
-    }
-  }
-  if (!found_route) {
-    return res.status(200).json({ status: "Success", message: "NA" });
-  }
-  res.status(200).json({ status: "Success", found_route });
-});
-
-const getTMSAssignedCabs = catchAsync(async (req, res, next) => {
-  const currentDay = new Date();
-  currentDay.setHours(0, 0, 0, 0);
-
-  const routes = await Route.aggregate([
-    {
-      $lookup: {
-        from: "cabs",
-        localField: "cab",
-        foreignField: "_id",
-        as: "cabDetails",
-      },
-    },
-  ]);
-
-  const curr_day_routes = routes.filter((route) => {
-    const routeCreatedAt = new Date(route.createdAt);
-    routeCreatedAt.setHours(0, 0, 0, 0);
-    return routeCreatedAt.getTime() === currentDay.getTime();
-  });
-
-  let passenger_cab_details = [];
-  for (const route of curr_day_routes) {
-    const [cab_details] = route.cabDetails;
-    const cab_number = cab_details.cabNumber;
-    route.passengers.forEach((passenger) => {
-      passenger_cab_details.push({ id: passenger, cab_number });
-    });
-  }
-  res.status(200).json({ status: "Message", data: passenger_cab_details });
-});
-
 // Admin Action only
 const deleteUser = catchAsync(async (req, res, next) => {
   const id = req.params.id;
@@ -196,6 +121,4 @@ module.exports = {
   getDriver,
   updateUser,
   deleteUser,
-  getEmployeeCab,
-  getTMSAssignedCabs,
 };
