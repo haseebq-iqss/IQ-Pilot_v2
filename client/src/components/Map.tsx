@@ -80,7 +80,7 @@ const MapComponent = ({
   useEffect(() => {
     if (userData?.role === "admin") {
       (async () => {
-        const res = await useAxios.get("/routes/currentDayRoutes");
+        const res = await useAxios.get("/routes/activeRoutes");
         setRawRouteData(res.data.data);
         const groupedCoordinates = res.data.data
           ?.map((route: RouteTypes) =>

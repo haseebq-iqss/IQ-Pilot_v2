@@ -8,7 +8,6 @@ const {
   pendingPassengers,
   rosteredPassengers,
   driverRoute,
-  availableCabs,
   updateRoute,
   getActiveRoutes,
 } = require("../controller/routeController");
@@ -26,7 +25,6 @@ router
 router
   .route("/driverRoute/:id")
   .get(restrictTo("admin", "driver"), driverRoute);
-router.route("/availableCabs").get(restrictTo("admin"), availableCabs);
 
 router.route("/").post(restrictTo("admin"), createRoute).get(getRoutes);
 router.route("/activeRoutes").get(restrictTo("admin"), getActiveRoutes);

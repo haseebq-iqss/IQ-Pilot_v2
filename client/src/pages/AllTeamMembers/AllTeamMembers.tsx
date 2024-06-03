@@ -82,7 +82,7 @@ function AllTeamMembers() {
 
   useEffect(() => {
     useAxios
-      .get("users/tms/assignedCabs")
+      .get("cabs/tms/assignedCabs")
       .then((res) => setCabNumersArray(res.data.data))
       .catch((err) => console.log(err));
   }, []);

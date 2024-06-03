@@ -395,26 +395,3 @@ exports.driverRoute = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ status: "Success", data: { pick_up_arr, drop_off_arr } });
 });
-
-exports.availableCabs = catchAsync(async (req, res, next) => {
-  const all_routes = await Route.find({});
-  const cabs = await Cab.find({});
-
-  const active_routes = await activeRoutesFun(all_routes);
-
-  const active_routes_no_capacity = active_routes.filter(
-    (route) => route.availableCapacity === 0
-  );
-  const cabs_not_available = active_routes_no_capacity.map((route) =>
-    route.cab.toString()
-  );
-  const no_of_cabs_available = cabs.filter(
-    (cab) => !cabs_not_available.includes(cab._id.toString())
-  );
-
-  res.status(200).json({
-    status: "Success",
-    results: no_of_cabs_available.length,
-    no_of_cabs_available,
-  });
-});

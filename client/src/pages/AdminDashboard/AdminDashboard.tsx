@@ -61,7 +61,7 @@ function AdminDashboard() {
 
   // ALL ASSIGNED ROUTES
   const getAllAssignedRoutesQF = () => {
-    return useAxios.get("routes/currentDayRoutes");
+    return useAxios.get("routes/activeRoutes");
   };
 
   const { data: allRoutes, status: allRoutesStatus } = useQuery({
@@ -76,8 +76,8 @@ function AdminDashboard() {
 
   // ALL AVAILABLE CABS
   const getAllCabsQF = async () => {
-    const response = await useAxios.get("routes/availableCabs");
-    // console.log(response);
+    const response = await useAxios.get("cabs/availableCabs");
+    console.log(response);
     return response.data?.no_of_cabs_available;
   };
 
@@ -96,7 +96,7 @@ function AdminDashboard() {
       queryFn: getRosteredPassengersQF,
       queryKey: ["All Rostered Passengers"],
       select: (data) => {
-        console.log(data.data)
+        console.log(data.data);
         return data.data;
       },
     });
@@ -311,7 +311,7 @@ function AdminDashboard() {
           </Box>
           <Box sx={{ ...ColFlex, gap: "5px" }}>
             <Typography sx={{ fontWeight: 600 }} variant="h4">
-              {allCabStatus === "success" ? allCabs : 0}
+              {allCabStatus === "success" ? allCabs?.length : 0}
             </Typography>
             <Typography
               sx={{

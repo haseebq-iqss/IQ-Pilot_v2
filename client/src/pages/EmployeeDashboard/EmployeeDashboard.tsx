@@ -122,7 +122,7 @@ function EmployeeDashboard() {
   // }, [socket]);
 
   const getEmployeeRoute = () => {
-    return useAxios.get(`users/tm/cab/${userData?._id}`);
+    return useAxios.get(`cabs/tm/cab/${userData?._id}`);
   };
 
   const { data: routeData } = useQuery({
