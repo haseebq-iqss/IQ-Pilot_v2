@@ -113,7 +113,13 @@ const assignCabToEmployees = async (
 };
 
 exports.createShift = catchAsync(async (req, res, next) => {
-  const { workLocation, currentShift, typeOfRoute, ref_coords } = req.body;
+  const {
+    workLocation,
+    currentShift,
+    typeOfRoute,
+    ref_coords,
+    daysRouteIsActive,
+  } = req.body;
   const PROXIMITY_THRESHOLD = 8;
   const present_day = new Date();
   present_day.setHours(0, 0, 0, 0);
@@ -221,6 +227,7 @@ exports.createShift = catchAsync(async (req, res, next) => {
     workLocation,
     currentShift,
     typeOfRoute,
+    daysRouteIsActive,
   });
 });
 
