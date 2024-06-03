@@ -46,7 +46,10 @@ const routeSchema = new mongoose.Schema({
       description: String,
     },
   ],
-  daysRouteIsActive: Number,
+  daysRouteIsActive: {
+    type: Number,
+    default: 1,
+  },
   totalDistance: {
     type: Number,
   },
