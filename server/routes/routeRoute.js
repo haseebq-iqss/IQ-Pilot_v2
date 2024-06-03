@@ -9,8 +9,8 @@ const {
   rosteredPassengers,
   driverRoute,
   availableCabs,
-  getCurrentDayRoutes,
   updateRoute,
+  getActiveRoutes,
 } = require("../controller/routeController");
 const { protect, restrictTo } = require("../controller/authController");
 
@@ -29,7 +29,7 @@ router
 router.route("/availableCabs").get(restrictTo("admin"), availableCabs);
 
 router.route("/").post(restrictTo("admin"), createRoute).get(getRoutes);
-router.route("/currentDayRoutes").get(restrictTo("admin"), getCurrentDayRoutes);
+router.route("/activeRoutes").get(restrictTo("admin"), getActiveRoutes);
 router
   .route("/:id")
   .get(restrictTo("admin", "driver"), getRoute)
