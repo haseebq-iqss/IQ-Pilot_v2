@@ -22,8 +22,8 @@ app.use(function (req, res, next) {
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:5173"],
     exposedHeaders: "Set-Cookie",
+    origin: ["http://localhost:5173"],
   })
 );
 
