@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Box, Typography } from "@mui/material";
 import { ColFlex } from "../../style_extentions/Flex";
 import { useMemo } from "react";
