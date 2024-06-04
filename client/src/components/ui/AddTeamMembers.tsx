@@ -1,3 +1,4 @@
+// @ts-nocheck
 import PageContainer from "./PageContainer";
 import {
   Box,

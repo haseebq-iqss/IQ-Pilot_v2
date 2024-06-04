@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Box, Typography } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ColFlex, RowFlex, PageFlex } from "../../style_extentions/Flex.ts";

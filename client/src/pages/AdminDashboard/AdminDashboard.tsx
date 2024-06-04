@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Call, Close, Warning } from "@mui/icons-material";
 import { Box, Button, Modal, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";

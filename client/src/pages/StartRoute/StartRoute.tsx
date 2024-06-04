@@ -25,7 +25,6 @@ import { UserContextTypes } from "../../types/UserContextTypes";
 import GetOfficeCoordinates from "../../utils/OfficeCoordinates";
 import AttendanceTypes from "../../types/AttendanceTypes";
 import { ColFlex, RowFlex } from "./../../style_extentions/Flex";
-import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
 import useTimer from "../../hooks/useTimer";
 
 type modalPropTypes = {

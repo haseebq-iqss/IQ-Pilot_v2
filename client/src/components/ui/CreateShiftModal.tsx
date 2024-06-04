@@ -13,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 import useAxios from "../../api/useAxios";
 import SnackbarContext from "../../context/SnackbarContext";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex";
-import { ShiftTypes } from "../../types/ShiftTypes";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 import GlobalModal from "./Modal";
 
