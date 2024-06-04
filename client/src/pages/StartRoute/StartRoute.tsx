@@ -26,6 +26,7 @@ import GetOfficeCoordinates from "../../utils/OfficeCoordinates";
 import AttendanceTypes from "../../types/AttendanceTypes";
 import { ColFlex, RowFlex } from "./../../style_extentions/Flex";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
+import useTimer from "../../hooks/useTimer";
 
 type modalPropTypes = {
   openModal: boolean;
@@ -42,6 +43,12 @@ function StartRoute() {
 
   const [myLocation, setMyLocation] = useState<Array<number>>([]);
 
+  const [startTimer, getElapsedTime] = useTimer()
+
+  useEffect(() => {
+    startTimer()
+  }, [])
+
   // useEffect(() => {
   //   if (myLocation.length == 2) {
   //     const driverData = {
@@ -54,6 +61,99 @@ function StartRoute() {
   //     socket.emit("live-drivers", driverData);
   //   }
   // }, [socket, myLocation]);
+
+  type LatLon = [number, number];
+
+  function TrackRoute(): () => string {
+    let route: LatLon[] = []; // Array to store latlon coordinates
+    let totalDistance = 0; // Total distance covered
+  
+    // Function to calculate distance between two points using Haversine formula
+    function calculateDistance(latlon1: LatLon, latlon2: LatLon): number {
+      const [lat1, lon1] = latlon1;
+      const [lat2, lon2] = latlon2;
+      const earthRadius = 6371; // Radius of the Earth in kilometers
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = earthRadius * c;
+      return distance; // Distance in kilometers
+    }
+  
+    // Function to save route array to local storage
+    function saveToLocalStorage() {
+      localStorage.setItem('route', JSON.stringify(route));
+    }
+  
+    // Function to retrieve route array from local storage
+    function retrieveFromLocalStorage() {
+      const storedRoute = localStorage.getItem('route');
+      if (storedRoute) {
+        route = JSON.parse(storedRoute);
+      }
+    }
+  
+    // Call function to retrieve route array from local storage
+    retrieveFromLocalStorage();
+  
+    // Function to check if a latlon is similar to the last one
+    function isSimilarToLastLatLon(latlon: LatLon): boolean {
+      if (route.length === 0) return false;
+      const lastLatLon = route[route.length - 1];
+      const [lastLat, lastLon] = lastLatLon;
+      const [newLat, newLon] = latlon;
+      const threshold = 0.0001; // Adjust this threshold as needed
+      return Math.abs(newLat - lastLat) < threshold && Math.abs(newLon - lastLon) < threshold;
+    }
+  
+    // Function to get geolocation and push it to array every 3 seconds
+    function getLocationAndStore() {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const newLatLon: LatLon = [lat, lon];
+          
+          // Check if new coordinate is similar to the last one
+          if (!isSimilarToLastLatLon(newLatLon)) {
+            // Check if new coordinate is different from the last one
+            if (route.length > 0) {
+              const lastLatLon = route[route.length - 1];
+              const distance = calculateDistance(lastLatLon, newLatLon);
+              totalDistance += distance;
+            }
+            
+            // Push new coordinate to array
+            route.push(newLatLon);
+            
+            // Save array to local storage
+            saveToLocalStorage();
+          }
+          
+          // Repeat every 3 seconds
+          setTimeout(getLocationAndStore, 3000);
+        },
+        error => {
+          console.error('Error getting geolocation:', error);
+        }
+      );
+    }
+  
+    // Start tracking route
+    getLocationAndStore();
+  
+    // Function to get total distance covered
+    function getTotalDistance(): string {
+      return totalDistance.toFixed(2); // Return total distance rounded to 2 decimal places
+    }
+  
+    return getTotalDistance;
+  }
+    
+  
 
   useEffect(() => {
     if (userData?.role === "driver") {
@@ -84,8 +184,9 @@ function StartRoute() {
     }
   }, []);
 
-  const rangreth = [33.996807, 74.79202];
-  const zaira = [34.1639168, 74.8158976];
+  const tracker = TrackRoute()
+  const distTravelled = tracker()
+  console.log("Distance Travelled -> ", parseFloat(distTravelled) * 0.621371)
 
   const { setSelectedEmps } = useContext(SelectedEmpsContext);
 
@@ -387,18 +488,12 @@ function StartRoute() {
         }}
       >
         <Typography variant="h4" fontWeight={600}>
-          {/* {ConvertShiftTimeTo12HrFormat(route?.shiftTime as string).slice(0, -3)} */}
-          <span style={{ fontSize: "1rem" }}>
-            {/* {ConvertShiftTimeTo12HrFormat(route?.shiftTime as string).slice(-2)} */}
-          </span>
-        </Typography>
-        <Typography variant="h4" fontWeight={600}>
-          {route?.totalDistance}
+          {parseFloat(distTravelled) * 0.621371}
           <span style={{ fontSize: "1rem" }}>kms</span>
         </Typography>
         <Typography variant="h4" fontWeight={600}>
-          {route?.estimatedTime}
-          <span style={{ fontSize: "1rem" }}>mins</span>
+          {getElapsedTime()}
+          <span style={{ fontSize: "1rem" }}>{getElapsedTime() < 60 ? "mins": "hr"}</span>
         </Typography>
       </Box>
       {/* MAP */}
