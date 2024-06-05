@@ -101,9 +101,10 @@ exports.getEmployeeCab = catchAsync(async (req, res, next) => {
 });
 
 exports.getTMSAssignedCabs = catchAsync(async (req, res, next) => {
-  const routes = await Route.find({})
-    .populate({ path: "cab", populate: "cabDriver" })
-    .populate("passengers");
+  const routes = await Route.find({}).populate({
+    path: "cab",
+    populate: "cabDriver",
+  });
   if (routes.length === 0) return next(new AppError(`No routes found...`, 404));
 
   const active_routes = await activeRoutesFun(routes);
@@ -120,13 +121,9 @@ exports.getTMSAssignedCabs = catchAsync(async (req, res, next) => {
   for (const route of not_completed_active_routes) {
     const cab_details = route.cab;
     const cab_number = cab_details.cabNumber;
-    const group = {
-      cab_driver: cab_details.cabDriver,
-      number_plate: cab_details.numberPlate,
-      cab_number,
-      passengers: [...route.passengers],
-    };
-    passenger_details.push(group);
+    route.passengers.forEach((passenger) => {
+      passenger_details.push({ cab_number, id: passenger });
+    });
   }
 
   res.status(200).json({ status: "Success", data: passenger_details });
