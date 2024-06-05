@@ -157,9 +157,16 @@ function StartRoute() {
   };
 
   const updateRouteStatus = () => {
+    // alert(
+    //   `${getElapsedTime()?.toFixed(3), calculatedDistance?.toFixed(3),routePathArray}`,
+    // )
+    // alert(routePathArray)
     return useAxios.patch(`routes/${route?._id}`, {
       routeStatus: "completed",
-      fuelConsumed: ((route?.totalDistance as number) / 15).toFixed(2),
+      estimatedTime: getElapsedTime()?.toFixed(3),
+      totalDistance: calculatedDistance?.toFixed(3),
+      cabPath: routePathArray,
+      // fuelConsumed: ((route?.totalDistance as number) / 15).toFixed(2),
     });
   };
 
@@ -167,6 +174,12 @@ function StartRoute() {
     mutationFn: updateRouteStatus,
     onSuccess: (data) => {
       console.log(data.data);
+      console.log({
+        routeStatus: "completed",
+        estimatedTime: getElapsedTime()?.toFixed(3),
+        totalDistance: calculatedDistance?.toFixed(3),
+        cabPath: routePathArray,
+      });
       setOpenSnack({
         open: true,
         message: `Route successfully completed!`,
@@ -177,6 +190,12 @@ function StartRoute() {
   });
 
   function HandleCompleteRoute() {
+    console.log({
+      estimatedTime: getElapsedTime(),
+      totalDistance: calculatedDistance,
+      cabPath: routePathArray,
+    });
+    // alert(`time: ${getElapsedTime()}, dist: ${(calculatedDistance)?.toFixed(3)}, cabPath:${routePathArray}`)
     UpdateRoute();
   }
 
@@ -240,26 +259,6 @@ function StartRoute() {
   const [routePathArray, setRoutePathArray] = useState<Array<Array<number>>>(
     []
   );
-  // const RequestGeolocationPermissionAndSavePosition = () => {
-  //   navigator.geolocation.watchPosition((pos) => {
-  //     setRoutePathArray((prevPath) => [
-  //       ...prevPath,
-  //       [pos.coords.latitude, pos.coords.longitude],
-  //     ]);
-  //   });
-  // };
-
-  // const RequestGeolocationPermissionAndReturnCoordinates = () => {
-  //   navigator.geolocation.watchPosition((pos) => {
-  //     setExtractedCoords([pos.coords.latitude, pos.coords.longitude]);
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     RequestGeolocationPermissionAndSavePosition();
-  //   }, 3000);
-  // }, []);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -307,14 +306,13 @@ function StartRoute() {
     let totalDistance = 0;
 
     for (let i = 0; i < coords.length - 1; i++) {
-      if(haversineDistance(coords[i], coords[i + 1]) > 0.002) {
+      if (haversineDistance(coords[i], coords[i + 1]) > 0.002) {
         totalDistance += haversineDistance(coords[i], coords[i + 1]);
       }
     }
 
     return totalDistance;
   };
-  
 
   useEffect(() => {
     setCalculatedDistance(sumDistances(routePathArray));

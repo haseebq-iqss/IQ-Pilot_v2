@@ -20,6 +20,8 @@ function RouteCompleted() {
   const navigate = useNavigate();
   const route = location.state as RouteTypes;
 
+  console.log(route);
+
   const getAllDriverRoutes = () => {
     return useAxios.get(`attendances/route-attendance/${route?._id}`);
   };
@@ -82,7 +84,7 @@ function RouteCompleted() {
         </Box>
         <Box sx={{ ...ColFlex }}>
           <Typography variant="h4" fontWeight={600}>
-            {/* {route?.fuelConsumed} */}
+            {(((route?.totalDistance as number) / 15) * 100).toFixed(1)}l
           </Typography>
           <Typography
             sx={{ color: "text.secondary" }}
@@ -134,7 +136,8 @@ function RouteCompleted() {
         <Box sx={{ ...ColFlex, width: "100%", gap: "15px" }}>
           {attendanceData?.length &&
             attendanceData.map((attendance: any) => {
-              const employee = attendance?.ofEmployee as unknown as EmployeeTypes
+              const employee =
+                attendance?.ofEmployee as unknown as EmployeeTypes;
               return (
                 // Passenger
                 <Box
@@ -158,9 +161,7 @@ function RouteCompleted() {
                     />
                     <Box>
                       <Typography variant="body1">
-                        {employee?.fname +
-                          " " +
-                          employee?.lname}
+                        {employee?.fname + " " + employee?.lname}
                       </Typography>
                       <Typography
                         sx={{
