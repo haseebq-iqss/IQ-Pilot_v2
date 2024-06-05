@@ -84,7 +84,7 @@ function RouteCompleted() {
         </Box>
         <Box sx={{ ...ColFlex }}>
           <Typography variant="h4" fontWeight={600}>
-            {(((route?.totalDistance as number) / 15) * 100).toFixed(1)}l
+            {((route?.totalDistance as number) / 15).toFixed(1)}l
           </Typography>
           <Typography
             sx={{ color: "text.secondary" }}
