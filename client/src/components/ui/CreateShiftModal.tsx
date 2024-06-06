@@ -2,8 +2,10 @@ import RouteIcon from "@mui/icons-material/Route";
 import {
   Box,
   Button,
+  CircularProgress,
   FormControl,
   InputLabel,
+  LinearProgress,
   MenuItem,
   Select,
 } from "@mui/material";
@@ -29,6 +31,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
   const [currentShift, setcurrentShift] = useState("");
   const [ref_coords, setref_coords] = useState<any>();
   const [activeDays, setActiveDays] = useState<number>(1);
+  const [artificialDelay, setArtificialDelay] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -48,7 +51,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
       });
     },
     onError: (err: any) => {
-      console.log();
+      setArtificialDelay(!artificialDelay)
       setOpenSnack({
         open: true,
         message: err.response.data.message,
@@ -58,14 +61,18 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
   });
   const HandleProceedToCreateShiftPage = () => {
     if (workLocation?.length && currentShift?.length && ref_coords?.length) {
-      const shiftData: any = {
-        typeOfRoute,
-        workLocation,
-        currentShift,
-        daysRouteIsActive: activeDays,
-        ref_coords: eval(ref_coords),
-      };
-      createShiftMutation(shiftData);
+      setArtificialDelay(!artificialDelay);
+      setTimeout(() => {
+        setArtificialDelay(!artificialDelay);
+        const shiftData: any = {
+          typeOfRoute,
+          workLocation,
+          currentShift,
+          daysRouteIsActive: activeDays,
+          ref_coords: eval(ref_coords),
+        };
+        createShiftMutation(shiftData);
+      }, 2000);
     } else {
       setOpenSnack({
         open: true,
@@ -82,6 +89,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
       openModal={openModal}
       setOpenModal={setOpenModal}
     >
+      <LinearProgress sx={{ width: artificialDelay ? "100%" : "0%", backgroundColor:"white", height:5 }} />
       <Box sx={{ ...RowFlex, width: "100%", height: "100%", padding: "1rem" }}>
         {/* LS */}
         <Box
@@ -215,13 +223,22 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               marginTop: 2.5,
               py: 1.5,
             }}
-            onClick={HandleProceedToCreateShiftPage}
+            onClick={!artificialDelay ? HandleProceedToCreateShiftPage : () => {}}
             color="primary"
             disabled={status === "pending"}
             variant="contained"
-            endIcon={<RouteIcon />}
+            endIcon={
+              artificialDelay ? (
+                <CircularProgress
+                  size={"1rem"}
+                  sx={{ ml: 2.5, color: "white" }}
+                />
+              ) : (
+                <RouteIcon />
+              )
+            }
           >
-            Request a Shift
+            {artificialDelay ? "Generating Shift" : "Request a Shift"}
           </Button>
         </Box>
         {/* RS */}
