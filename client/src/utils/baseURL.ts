@@ -1,6 +1,4 @@
-const baseURL = "http://localhost:3000/";
-// const baseURL = "https://iqserver.vercel.app/";
-// const baseURL = "https://iqserver.onrender.com/";
-// const baseURL = "https://iq-pilot.onrender.com/";
+// const baseURL = "http://localhost:3000/";
+const baseURL = "https://iqv2-be.onrender.com/";
 
 export default baseURL;

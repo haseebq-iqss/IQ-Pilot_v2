@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Call, Close, Warning } from "@mui/icons-material";
 import { Box, Button, Modal, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
@@ -68,7 +69,6 @@ function AdminDashboard() {
     queryFn: getAllAssignedRoutesQF,
     queryKey: ["All Assigned Routes"],
     select: (data) => {
-      console.log(data)
       return data.data.data;
     },
   });
@@ -78,7 +78,6 @@ function AdminDashboard() {
   // ALL AVAILABLE CABS
   const getAllCabsQF = async () => {
     const response = await useAxios.get("cabs/availableCabs");
-    console.log(response);
     return response.data?.no_of_cabs_available;
   };
 
@@ -97,7 +96,6 @@ function AdminDashboard() {
       queryFn: getRosteredPassengersQF,
       queryKey: ["All Rostered Passengers"],
       select: (data) => {
-        console.log(data.data);
         return data.data;
       },
     });

@@ -45,8 +45,8 @@ const ScheduledRouteCard = ({
       <Box
         sx={{
           ...ColFlex,
-          minWidth: "27.5vw",
-          maxWidth: "35vw",
+          minWidth: "30.5vw",
+          maxWidth: "30vw",
           height: "95%",
           flexDirection: "column",
 
@@ -55,33 +55,21 @@ const ScheduledRouteCard = ({
           // transition: "all 0.4s",
           justifyContent: "flex-start",
           gap: "0.5rem",
-          border: "8px solid #2997FC",
+          border:
+            scheduledRoutes?.typeOfRoute === "pickup"
+              ? "8px solid #2997FC"
+              : "8px solid #144B7E  ",
 
           ":hover": {
             transition: "all 0.4s",
             transform: "scale(1.025)",
-            // minWidth: "35.5vw",
-            // transition:"all 0.3 ease"
           },
           ":not(:hover)": {
             transition: "all 0.2s",
             transform: "scale(1)",
-            // minWidth: "27.5vw",
-            // transition:"all 0.3 ease"
           },
         }}
-        // ref={setNodeRef}
-        // {...attributes}
-        // {...listeners}
-        // style={style}
       >
-        {/* <DndContext
-          onDragEnd={handleDragEnd}
-          // onDragStart={() => setIsDragging(true)}
-          collisionDetection={closestCorners}
-          // onDragOver={onDragOver}
-          sensors={sensors}
-        > */}
         <Box
           sx={{
             ...RowFlex,
@@ -106,12 +94,12 @@ const ScheduledRouteCard = ({
                 ...RowFlex,
                 justifyContent: "space-between",
                 width: "100%",
-                gap: 2.5,
+                gap: 2,
               }}
             >
               <Typography
                 sx={{
-                  fontSize: "1rem",
+                  fontSize: "0.9rem",
                   display: "flex",
                   alignItems: "center",
                   color: "blue",
@@ -120,8 +108,8 @@ const ScheduledRouteCard = ({
               >
                 <LocationOn
                   sx={{
-                    width: "20px",
-                    height: "20px",
+                    width: "17px",
+                    height: "17px",
                     mr: "2px",
                     color: "blue",
                   }}
@@ -131,19 +119,25 @@ const ScheduledRouteCard = ({
 
               <Typography
                 sx={{
-                  fontSize: "1rem",
+                  fontSize: "0.9rem",
                   display: "flex",
                   alignItems: "center",
-                  color: "primary.main",
+                  color:
+                    scheduledRoutes?.typeOfRoute === "pickup"
+                      ? "primary.main"
+                      : "orange",
                 }}
                 fontWeight={500}
               >
                 <AirlineSeatReclineNormal
                   sx={{
-                    width: "20px",
-                    height: "20px",
+                    width: "17px",
+                    height: "17px",
                     mr: "2px",
-                    color: "primary.main",
+                    color:
+                      scheduledRoutes?.typeOfRoute === "pickup"
+                        ? "primary.main"
+                        : "orange",
                   }}
                 />
                 {scheduledRoutes?.typeOfRoute &&
@@ -155,7 +149,7 @@ const ScheduledRouteCard = ({
               </Typography>
               <Typography
                 sx={{
-                  fontSize: "1rem",
+                  fontSize: "0.9rem",
                   display: "flex",
                   alignItems: "center",
                   color: "black",
@@ -164,8 +158,8 @@ const ScheduledRouteCard = ({
               >
                 <AccessTime
                   sx={{
-                    width: "20px",
-                    height: "20px",
+                    width: "17px",
+                    height: "17px",
                     mr: "2px",
                     color: "black",
                   }}
@@ -174,6 +168,25 @@ const ScheduledRouteCard = ({
                   scheduledRoutes?.currentShift as string,
                   scheduledRoutes?.typeOfRoute
                 )}
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: "0.9rem",
+                  display: "flex",
+                  alignItems: "center",
+                  color: "black",
+                }}
+                fontWeight={500}
+              >
+                <AccessTime
+                  sx={{
+                    width: "17px",
+                    height: "17px",
+                    mr: "2px",
+                    color: "black",
+                  }}
+                />
+                {scheduledRoutes?.daysRouteIsActive}
               </Typography>
             </Box>
           </Box>
@@ -184,7 +197,8 @@ const ScheduledRouteCard = ({
             width: "100%",
             // my: 2,
             gap: "0.8rem",
-            bgcolor: "#2997FC",
+            bgcolor:
+              scheduledRoutes?.typeOfRoute === "pickup" ? "#2997FC" : "#144B7E",
             alignItems: "flex-start",
           }}
         >
@@ -201,7 +215,8 @@ const ScheduledRouteCard = ({
             width={"100%"}
           >
             <span>{`Passengers(${
-              scheduledRoutes?.passengers && scheduledRoutes?.passengers.length
+              // scheduledRoutes?.passengers && scheduledRoutes?.passengers.length
+              passengerDetails?.length
             })`}</span>{" "}
             <Box
               sx={{

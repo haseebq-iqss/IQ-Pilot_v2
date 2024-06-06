@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Call, Close, Done, Hail, Route } from "@mui/icons-material";
 import {
   Avatar,
@@ -25,7 +26,7 @@ import { UserContextTypes } from "../../types/UserContextTypes";
 import GetOfficeCoordinates from "../../utils/OfficeCoordinates";
 import AttendanceTypes from "../../types/AttendanceTypes";
 import { ColFlex, RowFlex } from "./../../style_extentions/Flex";
-import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
+import useTimer from "../../hooks/useTimer";
 
 type modalPropTypes = {
   openModal: boolean;
@@ -41,6 +42,12 @@ function StartRoute() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
 
   const [myLocation, setMyLocation] = useState<Array<number>>([]);
+
+  const [startTimer, getElapsedTime] = useTimer();
+
+  useEffect(() => {
+    startTimer();
+  }, []);
 
   // useEffect(() => {
   //   if (myLocation.length == 2) {
@@ -83,9 +90,6 @@ function StartRoute() {
       return () => navigator.geolocation.clearWatch(watchId);
     }
   }, []);
-
-  const rangreth = [33.996807, 74.79202];
-  const zaira = [34.1639168, 74.8158976];
 
   const { setSelectedEmps } = useContext(SelectedEmpsContext);
 
@@ -153,9 +157,16 @@ function StartRoute() {
   };
 
   const updateRouteStatus = () => {
+    // alert(
+    //   `${getElapsedTime()?.toFixed(3), calculatedDistance?.toFixed(3),routePathArray}`,
+    // )
+    // alert(routePathArray)
     return useAxios.patch(`routes/${route?._id}`, {
       routeStatus: "completed",
-      fuelConsumed: ((route?.totalDistance as number) / 15).toFixed(2),
+      estimatedTime: getElapsedTime()?.toFixed(3),
+      totalDistance: calculatedDistance?.toFixed(3),
+      cabPath: routePathArray,
+      // fuelConsumed: ((route?.totalDistance as number) / 15).toFixed(2),
     });
   };
 
@@ -163,6 +174,12 @@ function StartRoute() {
     mutationFn: updateRouteStatus,
     onSuccess: (data) => {
       console.log(data.data);
+      console.log({
+        routeStatus: "completed",
+        estimatedTime: getElapsedTime()?.toFixed(3),
+        totalDistance: calculatedDistance?.toFixed(3),
+        cabPath: routePathArray,
+      });
       setOpenSnack({
         open: true,
         message: `Route successfully completed!`,
@@ -173,6 +190,12 @@ function StartRoute() {
   });
 
   function HandleCompleteRoute() {
+    console.log({
+      estimatedTime: getElapsedTime(),
+      totalDistance: calculatedDistance,
+      cabPath: routePathArray,
+    });
+    // alert(`time: ${getElapsedTime()}, dist: ${(calculatedDistance)?.toFixed(3)}, cabPath:${routePathArray}`)
     UpdateRoute();
   }
 
@@ -231,7 +254,70 @@ function StartRoute() {
     markAttendance(attendanceData);
   }
 
-  //   console.log(route);
+  const [calculatedDistance, setCalculatedDistance] = useState<number>();
+  const [extractedCoords, setExtractedCoords] = useState<Array<number>>();
+  const [routePathArray, setRoutePathArray] = useState<Array<Array<number>>>(
+    []
+  );
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        // setExtractedCoords([pos.coords.latitude, pos.coords.longitude]);
+        setRoutePathArray((prevPoints) => [
+          ...prevPoints,
+          [pos.coords.latitude, pos.coords.longitude],
+        ]);
+      });
+    }, 3000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [getElapsedTime()]);
+
+  type Coordinates = [number, number];
+
+  const toRadians = (degrees: number): number => {
+    return degrees * (Math.PI / 180);
+  };
+
+  const haversineDistance = (
+    coord1: Coordinates,
+    coord2: Coordinates
+  ): number => {
+    const [lat1, lon1] = coord1;
+    const [lat2, lon2] = coord2;
+
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(lat1)) *
+        Math.cos(toRadians(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distance in kilometers
+  };
+
+  const sumDistances = (coords: Array<any>): number => {
+    let totalDistance = 0;
+
+    for (let i = 0; i < coords.length - 1; i++) {
+      if (haversineDistance(coords[i], coords[i + 1]) > 0.002) {
+        totalDistance += haversineDistance(coords[i], coords[i + 1]);
+      }
+    }
+
+    return totalDistance;
+  };
+
+  useEffect(() => {
+    setCalculatedDistance(sumDistances(routePathArray));
+  }, [routePathArray]);
+
   return (
     <Box
       sx={{
@@ -387,22 +473,20 @@ function StartRoute() {
         }}
       >
         <Typography variant="h4" fontWeight={600}>
-          {/* {ConvertShiftTimeTo12HrFormat(route?.shiftTime as string).slice(0, -3)} */}
-          <span style={{ fontSize: "1rem" }}>
-            {/* {ConvertShiftTimeTo12HrFormat(route?.shiftTime as string).slice(-2)} */}
-          </span>
-        </Typography>
-        <Typography variant="h4" fontWeight={600}>
-          {route?.totalDistance}
+          {/* {parseFloat(distTravelled) * 0.621371} */}
+          {calculatedDistance?.toFixed(3)}
           <span style={{ fontSize: "1rem" }}>kms</span>
         </Typography>
         <Typography variant="h4" fontWeight={600}>
-          {route?.estimatedTime}
-          <span style={{ fontSize: "1rem" }}>mins</span>
+          {getElapsedTime()}
+          <span style={{ fontSize: "1rem" }}>
+            {getElapsedTime() < 60 ? "mins" : "hr"}
+          </span>
         </Typography>
       </Box>
       {/* MAP */}
       <MapComponent
+        routePathArray={routePathArray as []}
         mode="route-view"
         height="50vh"
         employees={route?.passengers as [EmployeeTypes]}

@@ -34,6 +34,7 @@ type MapTypes = {
   driverOnFocus?: any;
   mode?: "full-view" | "route-view";
   activeRoute?: any;
+  routePathArray?: [];
 };
 
 const MapComponent = ({
@@ -47,6 +48,7 @@ const MapComponent = ({
   driverOnFocus,
   mode = "full-view",
   activeRoute = [],
+  routePathArray = [],
 }: MapTypes) => {
   // const [driversPosition, setDriversPosition] = useState<any>();
 
@@ -308,30 +310,43 @@ const MapComponent = ({
         </div>
 
         {/* Team Member Card */}
-        {cardOpen && (<div style={{
-            position: "absolute",
-            bottom: 10,
-            right: 10,
-            zIndex: 999,
-            width:"35%",
-            display: "flex",
-            justifyContent:"space-between",
-            backgroundColor:'white',
-            padding:"15px",
-            // gap:"25px",
-            borderRadius:"10px"
-        }}>
-          <div style={{display:"flex", gap:"10px"}}>
-          <img style={{width:"100px", aspectRatio:1, objectFit:"cover", borderRadius:"10px"}} src={baseURL + empCard?.profilePicture} alt="" />
-          <div>
-            <h2>{empCard?.fname + " " + empCard?.lname}</h2>
-            <h3>Department : {empCard?.department}</h3>
-            <h4>{empCard?.pickUp?.address}</h4>
-            <h4>Phone: {empCard?.phone}</h4>
+        {cardOpen && (
+          <div
+            style={{
+              position: "absolute",
+              bottom: 10,
+              right: 10,
+              zIndex: 999,
+              width: "35%",
+              display: "flex",
+              justifyContent: "space-between",
+              backgroundColor: "white",
+              padding: "15px",
+              // gap:"25px",
+              borderRadius: "10px",
+            }}
+          >
+            <div style={{ display: "flex", gap: "10px" }}>
+              <img
+                style={{
+                  width: "100px",
+                  aspectRatio: 1,
+                  objectFit: "cover",
+                  borderRadius: "10px",
+                }}
+                src={baseURL + empCard?.profilePicture}
+                alt=""
+              />
+              <div>
+                <h2>{empCard?.fname + " " + empCard?.lname}</h2>
+                <h3>Department : {empCard?.department}</h3>
+                <h4>{empCard?.pickUp?.address}</h4>
+                <h4>Phone: {empCard?.phone}</h4>
+              </div>
+            </div>
+            <Close onClick={() => setCardOpen(false)} />
           </div>
-          </div>
-          <Close onClick={() => setCardOpen(false)} />
-        </div>)}
+        )}
 
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -420,6 +435,16 @@ const MapComponent = ({
             );
           })}
 
+        {routePathArray.length && (
+          <Polyline
+            key={Math.random() * 100}
+            positions={routePathArray}
+            color={"blue"}
+            weight={5}
+            // dashArray={[5]}
+          />
+        )}
+
         {activeRoute?.length && (
           <>
             <Polyline
@@ -501,7 +526,10 @@ const MapComponent = ({
             return activePolylineIndex === null ? (
               <Marker
                 eventHandlers={{
-                  click: () => {setEmpCard(employee); setCardOpen(true)},
+                  click: () => {
+                    setEmpCard(employee);
+                    setCardOpen(true);
+                  },
                   //  mouseover: () => console.log(employee?.fname)
                 }}
                 icon={empIcon}
@@ -523,14 +551,16 @@ const MapComponent = ({
             ) : (
               isCoordinatesIncluded && (
                 <Marker
-                eventHandlers={{
-                  click: () => {setEmpCard(employee); setCardOpen(true)},
-                  //  mouseover: () => console.log(employee?.fname)
-                }}
+                  eventHandlers={{
+                    click: () => {
+                      setEmpCard(employee);
+                      setCardOpen(true);
+                    },
+                    //  mouseover: () => console.log(employee?.fname)
+                  }}
                   icon={empIcon}
                   key={employee?._id}
                   position={employee?.pickUp?.coordinates as LatLngExpression}
-                  
                 >
                   <Tooltip
                     key={employee?._id}

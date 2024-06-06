@@ -12,12 +12,21 @@ const attendanceRouter = require("./routes/attendanceRoutes");
 const app = express();
 
 // Middlewares
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "https://ipvt.vercel.app");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    exposedHeaders: "Set-Cookie",
+    origin: ["http://localhost:5173", "https://6zkcx3p4-5173.inc1.devtunnels.ms", "https://ipvt.vercel.app"],
   })
 );
+
 app.use(cookieParser());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
