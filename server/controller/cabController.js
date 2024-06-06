@@ -130,24 +130,58 @@ exports.getTMSAssignedCabs = catchAsync(async (req, res, next) => {
 });
 
 exports.availableCabs = catchAsync(async (req, res, next) => {
-  const all_routes = await Route.find({});
-  const cabs = await Cab.find({});
+  const allRoutes = await Route.find({});
+  const allCabs = await Cab.find({}).populate("cabDriver");
 
-  const active_routes = await activeRoutesFun(all_routes);
+  const activeRoutes = await activeRoutesFun(allRoutes);
 
-  const active_routes_no_capacity = active_routes.filter(
+  const activeRoutesNoCapacity = activeRoutes.filter(
     (route) => route.availableCapacity === 0
   );
-  const cabs_not_available = active_routes_no_capacity.map((route) =>
+
+  const assignedCabsWithCapacity = await Promise.all(
+    activeRoutes.map(async (route) => {
+      if (route.availableCapacity > 0) {
+        const cab = await Cab.findById(route.cab).populate("cabDriver");
+        return {
+          cab_driver: cab.cabDriver,
+          capacity: route.availableCapacity,
+          passengers: [...route.passengers],
+        };
+      }
+      return null;
+    })
+  );
+
+  const availableAssignedCabs = assignedCabsWithCapacity.filter(
+    (val) => val !== null
+  );
+
+  const cabsNotAvailable = activeRoutesNoCapacity.map((route) =>
     route.cab.toString()
   );
-  const no_of_cabs_available = cabs.filter(
-    (cab) => !cabs_not_available.includes(cab._id.toString())
+
+  const noOfCabsAvailable = allCabs.filter(
+    (cab) =>
+      !cabsNotAvailable.includes(cab._id.toString()) &&
+      !availableAssignedCabs.some((assignedCab) => {
+        return (
+          assignedCab.cab_driver._id.toString() === cab.cabDriver._id.toString()
+        );
+      })
   );
+
+  const cabsAvailable = noOfCabsAvailable.map((cab) => {
+    return {
+      cab_driver: cab.cabDriver,
+      capacity: cab.seatingCapacity,
+      passengers: [],
+    };
+  });
 
   res.status(200).json({
     status: "Success",
-    results: no_of_cabs_available.length,
-    no_of_cabs_available,
+    results: [...cabsAvailable, ...availableAssignedCabs].length,
+    data: [...cabsAvailable, ...availableAssignedCabs],
   });
 });
