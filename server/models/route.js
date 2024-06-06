@@ -34,20 +34,8 @@ const routeSchema = new mongoose.Schema({
   estimatedTime: {
     type: Number,
   },
-  // cabPath: [
-  //   {
-  //     type: {
-  //       type: String,
-  //       default: "Point",
-  //       enum: ["Point"],
-  //     },
-  //     // LonLat
-  //     coordinates: [Number],
-  //     description: String,
-  //   },
-  // ],
   cabPath: {
-    type: [Number],
+    type: [[Number, Number]],
     default: [],
   },
   daysRouteIsActive: {

@@ -105,3 +105,39 @@ body {
   border-radius: 100px;
   /* Radius of the scrollbar track */
 }
+
+.logo-animation {
+  animation: plane-rolling-anim 7.5s alternate infinite;
+}
+
+.fade-in {
+  animation: fade-in-anim 0.75s ease-in-out;
+}
+
+@keyframes plane-rolling-anim {
+  0% {
+    transform: translateX(-500px) translateY(500px) rotateZ(90deg);
+    transition: all 1s ease;
+  }
+  50% {
+    transform: translateX(500px) translateY(-500px) rotateZ(90deg);
+    transition: all 1s ease;
+  }
+  /* 60% {
+    transform:  translateX(500px) translateY(-500px) rotateZ(-90deg);
+    transition: all 1s ease;
+  }
+  100% {
+    transform:  translateX(-500px) translateY(500px) rotateZ(-90deg);
+    transition: all 1s ease;
+  } */
+}
+
+@keyframes fade-in-anim {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
