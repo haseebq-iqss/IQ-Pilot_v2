@@ -173,7 +173,7 @@ function StartRoute() {
   const { mutate: UpdateRoute, status: UpdateRouteStatus } = useMutation({
     mutationFn: updateRouteStatus,
     onSuccess: (data) => {
-      console.log(data.data);
+      localStorage.removeItem("CurrentRoute")
       console.log({
         routeStatus: "completed",
         estimatedTime: getElapsedTime()?.toFixed(3),
@@ -188,6 +188,12 @@ function StartRoute() {
       navigate("/driver/routeCompleted", { state: data.data?.updated_route });
     },
   });
+
+  window.onpopstate = (event) => {
+    alert("You are Abandoning this route! Please continue this route from the Homepage.");
+    // console.log(currentLocation, location.state)
+    // navigate("/admin/createShift", {state: location.state})
+};
 
   function HandleCompleteRoute() {
     console.log({
@@ -223,8 +229,15 @@ function StartRoute() {
   });
 
   useEffect(() => {
-    console.log(markedPassengersArray);
-  }, [markedPassengersArray]);
+    // console.log(markedPassengersArray);
+    // Pull RoutePath if exits already in LS
+    const lastRoutePath = localStorage.getItem("CurrentRoute")
+    if(lastRoutePath?.length) {
+      console.log("Previous Path exists")
+      console.log(JSON.parse(lastRoutePath))
+      setRoutePathArray(JSON.parse(lastRoutePath))
+    }
+  }, []);
 
   const isAttendanceMarked = (pid: string) => {
     let isMarked: any =
@@ -268,7 +281,10 @@ function StartRoute() {
           ...prevPoints,
           [pos.coords.latitude, pos.coords.longitude],
         ]);
+        localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray))
       });
+
+
     }, 3000);
 
     // Cleanup interval on component unmount

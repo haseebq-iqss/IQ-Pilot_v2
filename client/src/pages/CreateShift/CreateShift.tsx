@@ -1,13 +1,13 @@
 // @ts-nocheck
 import { Box, Typography } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useBlocker, useLocation, useNavigate } from "react-router-dom";
 import { ColFlex, RowFlex, PageFlex } from "../../style_extentions/Flex.ts";
 import LogoImage from "/images/logo.png";
 import RosterCard from "../../components/ui/RosterCard.tsx";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 import Cabtypes from "../../types/CabTypes.ts";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios.ts";
 import {
@@ -28,12 +28,18 @@ import PassengerTab from "../../components/ui/PassengerTab.tsx";
 import ReserveModal from "../../components/ui/ReserveModal.tsx";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat.ts";
 import ReservedPassengersTab from "../../components/ui/ReservedPassengersTab.tsx";
+import Loading from "../../components/ui/Loading.tsx";
+import SnackbarContext from "../../context/SnackbarContext.ts";
+import { SnackBarContextTypes } from "../../types/SnackbarTypes.ts";
 
 function CreateShift() {
   const location = useLocation();
   const routeState = location?.state;
 
+  const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
+
   const [activeColumn, setActiveColumn] = useState<ShiftTypes | null>(null);
+  const [isLoaderEnabled, setIsLoaderEnabled] = useState<boolean>(false);
 
   const [activeTask, setActiveTask] = useState<EmployeeTypes | null>(null);
 
@@ -51,6 +57,15 @@ function CreateShift() {
       passengers: [],
     },
   ]);
+  
+  const currentLocation = window.location.pathname;
+
+  window.onpopstate = (event) => {
+    alert("Data will be lost !");
+    // console.log(currentLocation, location.state)
+    // navigate("/admin/createShift", {state: location.state})
+};
+
 
   const [reservedPassengers, setReservedPassengers] = useState(() => {
     return reservedColumn.flatMap((column) => column.passengers) || [];
@@ -133,7 +148,22 @@ function CreateShift() {
       currentShift: routeState?.data?.currentShift,
       typeOfRoute: routeState?.data?.typeOfRoute,
     };
-    mutate(dataToDeploy);
+    setIsLoaderEnabled(true);
+    showLoader();
+    setTimeout(() => {
+      mutate(dataToDeploy);
+    }, 1500);
+  };
+
+  const showLoader = () => {
+    setTimeout(() => {
+      setIsLoaderEnabled(false);
+      setOpenSnack({
+        open: true,
+        message: "Shift Generation was Successful 🎉",
+        severity: "success",
+      });
+    }, 3000);
   };
 
   const sensors = useSensors(
@@ -362,6 +392,7 @@ function CreateShift() {
     }
   };
 
+
   return (
     <DndContext
       onDragOver={onDragOver}
@@ -370,6 +401,7 @@ function CreateShift() {
       collisionDetection={closestCorners}
       sensors={sensors}
     >
+      {isLoaderEnabled && <Loading />}
       <Box
         sx={{
           ...PageFlex,
@@ -411,7 +443,7 @@ function CreateShift() {
               gap: 7.5,
             }}
           >
-            <Box
+            {/* <Box
               sx={{
                 pl: 2.5,
                 height: "50px",
@@ -451,7 +483,7 @@ function CreateShift() {
                   0
                 </Typography>
               </Box>
-            </Box>
+            </Box> */}
             <Box
               sx={{
                 px: 5,

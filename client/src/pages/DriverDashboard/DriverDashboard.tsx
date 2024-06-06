@@ -202,7 +202,7 @@ function DriverDashboard() {
                         sx={{ borderRadius: "10px" }}
                         endIcon={<Flag />}
                       >
-                        Start Route
+                        {route?.routeStatus === "inProgress" ? "Continue Route" : "Start Route"}
                       </Button>
                     </Box>
                     <Divider sx={{ width: "100%" }} />
@@ -370,7 +370,7 @@ function DriverDashboard() {
                         sx={{ borderRadius: "10px" }}
                         endIcon={<Flag />}
                       >
-                        Start Route
+                        {route?.routeStatus === "inProgress" ? "Continue Route" : "Start Route"}
                       </Button>
                     </Box>
                     <Divider sx={{ width: "100%" }} />
