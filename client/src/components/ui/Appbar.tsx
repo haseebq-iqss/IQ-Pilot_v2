@@ -65,7 +65,7 @@ function Appbar() {
   };
 
   function HandleProceedToAddPassengers() {
-    if (selectedDriver && routeType && office) {
+    if (currentShift && selectedDriver && routeType && office) {
       const routeStateData = {
         driver: selectedDriver,
         currentShift,

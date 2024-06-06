@@ -26,25 +26,29 @@ import EmployeeTypes from "../../types/EmployeeTypes";
 import Cabtypes from "../../types/CabTypes";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
 import FormatDateString from "../../utils/DateFormatter";
+import { useNavigate } from "react-router-dom";
 
 // type routeCacheTypes = {
 //   nonActiveroutes: [RouteTypes];
 // };
 
 function ScheduledRoutes() {
-  //   const cachedRoutes: routeCacheTypes = useCachedData("All Assigned Routes");
-
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [openMenu, setOpenMenu] = useState<boolean>(false);
+  const [menuIndex, setMenuIndex] = useState<number | null>(null);
 
-  const handleMenuOpen = (e: any) => {
-    setAnchorEl(e.currentTarget);
-    setOpenMenu(!openMenu);
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    index: number
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setMenuIndex(index);
   };
 
-  //   const routes = cachedRoutes?.nonActiveroutes;
-
-  //   console.log(cachedRoutes?.nonActiveroutes);
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuIndex(null);
+  };
 
   const { data: routes } = useQuery({
     queryKey: ["all-routes"],
@@ -53,8 +57,6 @@ function ScheduledRoutes() {
       return response?.data?.data;
     },
   });
-
-  // console.log(routes)
 
   return (
     <PageContainer
@@ -82,7 +84,7 @@ function ScheduledRoutes() {
             </TableHead>
             <TableBody>
               {routes?.length &&
-                routes?.map((route: any, index:number) => (
+                routes?.map((route: any, index: number) => (
                   <TableRow
                     key={route._id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -99,12 +101,13 @@ function ScheduledRoutes() {
                       >
                         <AccessTime />
                         {ConvertShiftTimeTo12HrFormat(
-                          route?.currentShift as string, route?.typeOfRoute
+                          route?.currentShift as string,
+                          route?.typeOfRoute
                         )}
                       </Box>
                     </TableCell>
-                    <TableCell sx={{fontWeight:600}} align="left">
-                        {routes[index]?.cab?.cabNumber}
+                    <TableCell sx={{ fontWeight: 600 }} align="left">
+                      {routes[index]?.cab?.cabNumber}
                     </TableCell>
                     <TableCell align="center">
                       <Box
@@ -130,7 +133,18 @@ function ScheduledRoutes() {
                       {/* {route.totalDistance || "Not Calculated"} */}
                       {FormatDateString(route.createdAt)}
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell
+                      sx={{
+                        color:
+                          route.routeStatus === "completed"
+                            ? "success.main"
+                            : route.routeStatus === "inProgress"
+                            ? "primary.main"
+                            : "inherit",
+                        fontWeight: 600,
+                      }}
+                      align="center"
+                    >
                       {route.routeStatus === "notStarted"
                         ? "Not Started"
                         : route.routeStatus === "inProgress"
@@ -140,13 +154,14 @@ function ScheduledRoutes() {
                     <TableCell align="center">
                       <MoreHoriz
                         sx={{ cursor: "pointer" }}
-                        onClick={handleMenuOpen}
+                        onClick={(e: any) => handleMenuOpen(e, index)}
                       />
                       <Menu
+                        key={route?._id}
                         elevation={1}
                         anchorEl={anchorEl}
-                        open={openMenu}
-                        onClose={() => setOpenMenu(!openMenu)}
+                        open={menuIndex === index}
+                        onClose={handleMenuClose}
                         MenuListProps={{
                           "aria-labelledby": "basic-button",
                         }}
@@ -159,6 +174,9 @@ function ScheduledRoutes() {
                             justifyContent: "flex-start",
                             gap: "10px",
                           }}
+                          onClick={() =>
+                            navigate(`/admin/viewRoute/${route?._id}`, {state: route})
+                          }
                         >
                           <Visibility sx={{}} />
                           View Route
