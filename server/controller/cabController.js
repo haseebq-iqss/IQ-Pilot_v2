@@ -146,6 +146,10 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
         return {
           cab_driver: cab.cabDriver,
           capacity: route.availableCapacity,
+          cab_number: cab.cabNumber,
+          number_plate: cab.numberPlate,
+          color: cab.carColor,
+          model: cab.carModel,
           passengers: [...route.passengers],
         };
       }
