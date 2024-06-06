@@ -174,6 +174,10 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
   const cabsAvailable = noOfCabsAvailable.map((cab) => {
     return {
       cab_driver: cab.cabDriver,
+      cab_number: cab.cabNumber,
+      number_plate: cab.numberPlate,
+      color: cab.carColor,
+      model: cab.carModel,
       capacity: cab.seatingCapacity,
       passengers: [],
     };
