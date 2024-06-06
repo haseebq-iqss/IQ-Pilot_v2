@@ -78,7 +78,7 @@ function AdminDashboard() {
   // ALL AVAILABLE CABS
   const getAllCabsQF = async () => {
     const response = await useAxios.get("cabs/availableCabs");
-    return response.data?.no_of_cabs_available;
+    return response.data?.data;
   };
 
   const { data: allCabs, status: allCabStatus } = useQuery({

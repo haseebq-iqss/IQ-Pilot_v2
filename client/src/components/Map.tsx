@@ -35,6 +35,7 @@ type MapTypes = {
   mode?: "full-view" | "route-view";
   activeRoute?: any;
   routePathArray?: [];
+  highlightedEmployees?: [];
 };
 
 const MapComponent = ({
@@ -49,6 +50,7 @@ const MapComponent = ({
   mode = "full-view",
   activeRoute = [],
   routePathArray = [],
+  highlightedEmployees = []
 }: MapTypes) => {
   // const [driversPosition, setDriversPosition] = useState<any>();
 
@@ -360,6 +362,21 @@ const MapComponent = ({
         {/* <Marker icon={officeIcon} position={[34.0837559, 74.8229426]} /> */}
 
         <MapController />
+
+        {highlightedEmployees.length && (
+          highlightedEmployees.map((emp:EmployeeTypes, index: number) => {
+            return (
+              <Circle
+              key={index}
+              center={emp?.pickUp?.coordinates as LatLngExpression}
+              radius={750}
+              fillOpacity={0.25}
+              color={"red"}
+              stroke={true}
+            />
+            )
+          })
+        )}
 
         {driverOnFocus?.length && (
           <Marker icon={cabIcon} position={driverOnFocus as LatLngExpression}>

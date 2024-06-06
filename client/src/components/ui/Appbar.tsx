@@ -12,22 +12,16 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  TextField,
-  Typography,
 } from "@mui/material";
-import { DateCalendar, MobileTimePicker } from "@mui/x-date-pickers";
 import { useQuery } from "@tanstack/react-query";
-import dayjs from "dayjs";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 import EmployeeTypes from "../../types/EmployeeTypes";
-import DateDifference from "../../utils/DateDifference";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import GlobalModal from "./Modal";
 import useAxios from "../../api/useAxios";
-import Cabtypes from "../../types/CabTypes";
 import { CreateShiftModal } from "./CreateShiftModal";
 
 function Appbar() {
@@ -39,8 +33,6 @@ function Appbar() {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [openShiftModal, setShiftOpenModal] = useState<boolean>(false);
 
-  const [selectedTime, setSelectedTime] = useState<string>();
-  const [selectedDate, setSelectedDate] = useState<any>(dayjs());
   const [selectedDriver, setSelectedDriver] = useState<any>({});
   const [routeType, setRouteType] = useState<"pickup" | "drop">("pickup");
   const [office, setOffice] = useState("");
@@ -50,20 +42,14 @@ function Appbar() {
   const { data: cabs } = useQuery({
     queryKey: ["all-drivers"],
     queryFn: async () => {
-      const response = await useAxios.get("/cabs");
-      return response?.data?.data;
+      const response = await useAxios.get("/cabs/availableCabs");
+      // console.log(response.data.data)
+      return response?.data.data;
     },
   });
 
-  const todaysDate = new Date();
-
-  const handleTimeChange = (newTime: any) => {
-    if (newTime) {
-      const newDate = newTime;
-      setSelectedTime(String(newDate?.$H) + ":" + String(newDate?.$m));
-      console.log(String(newDate?.$H) + ":" + String(newDate?.$m));
-    }
-  };
+  const [currentShift, setcurrentShift] = useState("");
+  const [activeDays, setActiveDays] = useState<number>(1);
 
   const handlePickupOrDropChange = (event: any) => {
     setRouteType(event.target.value);
@@ -74,15 +60,16 @@ function Appbar() {
   };
 
   const handleSelectDriver = (event: any) => {
+    console.log(event.target.value);
     setSelectedDriver(event.target.value);
   };
 
   function HandleProceedToAddPassengers() {
-    if (selectedTime && selectedDriver && routeType && office) {
+    if (selectedDriver && routeType && office) {
       const routeStateData = {
         driver: selectedDriver,
-        shiftTime: selectedTime,
-        shiftDate: selectedDate?.$d,
+        currentShift,
+        daysRouteIsActive: activeDays,
         typeOfRoute: routeType,
         office,
       };
@@ -120,12 +107,12 @@ function Appbar() {
         openModal={openModal}
         setOpenModal={setOpenModal}
       >
-        <Box sx={{ ...RowFlex, width: "100%", height: "100%" }}>
+        <Box sx={{ ...RowFlex, width: "100%", height: "100%", p: 3 }}>
           {/* LS */}
           <Box
             sx={{
               ...ColFlex,
-              width: "60%",
+              width: "100%",
               justifyContent: "space-between",
               alignItems: "flex-start",
               height: "100%",
@@ -141,30 +128,45 @@ function Appbar() {
                 gap: "15px",
               }}
             >
-              <Box sx={{ ...ColFlex, alignItems: "flex-start", width: "30%" }}>
-                <Typography sx={{}} variant="caption" fontWeight={500}>
-                  Shift Time
-                </Typography>
-                <MobileTimePicker
-                  // label="Select Time"
-                  // value={selectedTime}
-                  onChange={handleTimeChange}
-                />
-              </Box>
-
-              <Box sx={{ ...ColFlex, alignItems: "flex-start", width: "70%" }}>
-                <Typography sx={{}} variant="caption" fontWeight={500}>
-                  Shift Date
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={
-                    selectedDate
-                      ? DateDifference(selectedDate)
-                      : DateDifference(todaysDate)
-                  }
-                />
-              </Box>
+              <FormControl sx={{ width: "50%" }}>
+                <InputLabel id="shift-currentShift-label">
+                  Current Shift
+                </InputLabel>
+                <Select
+                  labelId="shift-currentShift-label"
+                  id="shift-currentShift-label"
+                  value={currentShift}
+                  label="Shift currentShift"
+                  onChange={(e) => setcurrentShift(e.target.value)}
+                >
+                  <MenuItem value="14:00-20:30">02.00PM - 08.30PM</MenuItem>
+                  <MenuItem value="14:00-18:00">02:00PM - 06:00PM</MenuItem>
+                  <MenuItem value="14:00-23:00">02.00PM - 11.00PM</MenuItem>
+                  <MenuItem value="16:00-20:30">04.00PM - 08.30PM</MenuItem>
+                  <MenuItem value="16:00-01:00">04.00PM - 01.00AM</MenuItem>
+                  <MenuItem value="12:30-20:30">12:30PM - 08:30PM</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl sx={{ width: "50%" }}>
+                <InputLabel id="pickup-or-drop-label">
+                  Active for Days
+                </InputLabel>
+                <Select
+                  labelId="active-time"
+                  id="active-time"
+                  value={activeDays}
+                  label="Active For Days"
+                  onChange={(e: any) => setActiveDays(e.target.value)}
+                >
+                  <MenuItem value="1">1</MenuItem>
+                  <MenuItem value="2">2</MenuItem>
+                  <MenuItem value="3">3</MenuItem>
+                  <MenuItem value="4">4</MenuItem>
+                  <MenuItem value="5">5</MenuItem>
+                  <MenuItem value="6">6</MenuItem>
+                  <MenuItem value="7">7</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
             <Box
               sx={{
@@ -221,13 +223,18 @@ function Appbar() {
                   label="Pickup or Drop"
                   onChange={handleSelectDriver}
                 >
+                  {/* {console.log(cabs)} */}
                   {cabs?.length ? (
-                    cabs?.map((driver: Cabtypes) => {
+                    cabs?.map((driver: any) => {
+                      // console.log(driver)
                       return (
-                        <MenuItem key={driver?._id} value={driver as any}>
-                          {(driver?.cabDriver as EmployeeTypes)?.fname +
+                        <MenuItem
+                          key={driver?.cab_driver?._id}
+                          value={driver as any}
+                        >
+                          {(driver?.cab_driver as EmployeeTypes)?.fname +
                             " " +
-                            (driver?.cabDriver as EmployeeTypes)?.lname}
+                            (driver?.cab_driver as EmployeeTypes)?.lname}
                         </MenuItem>
                       );
                     })
@@ -254,12 +261,6 @@ function Appbar() {
             </Button>
           </Box>
           {/* RS */}
-          <Box sx={{ ...RowFlex, width: "40%" }}>
-            <DateCalendar
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e)}
-            />
-          </Box>
         </Box>
       </GlobalModal>
       <Notifications

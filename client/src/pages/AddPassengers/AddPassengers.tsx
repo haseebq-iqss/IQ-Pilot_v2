@@ -56,12 +56,14 @@ function AddPassengers() {
   const zaira = [34.17342209237591, 74.80831111718207];
 
   const routeState = location?.state;
+  console.log(routeState)
 
   const { data: employees } = useQuery({
     queryKey: ["all-employees"],
     queryFn: async () => {
       const response = await useAxios.get("/routes/pendingPassengers");
-      return response.data.data;
+      console.log(response)
+      return response.data.pending_passengers;
     },
   });
 
@@ -90,10 +92,11 @@ function AddPassengers() {
   };
 
   const handleAddPassengersToCab = (newPassenger: EmployeeTypes) => {
+    console.log(newPassenger)
     // Check if the newPassenger is already present in selectedPassengers
     setPreviewMode(false);
     if (
-      selectedPassengers?.length < (routeState?.driver as any)?.seatingCapacity
+      selectedPassengers?.length < (routeState?.driver as any)?.capacity
     ) {
       // const isAlreadyAdded = selectedPassengers.some(
       //   (passenger) => passenger._id === newPassenger._id
@@ -307,8 +310,8 @@ function AddPassengers() {
             <span
               style={{ fontWeight: 600, fontSize: "1.75rem", color: "#212A3B" }}
             >
-              {routeState?.shiftTime !== undefined &&
-                ConvertShiftTimeTo12HrFormat(routeState?.shiftTime)}
+              {routeState?.currentShift !== undefined &&
+                ConvertShiftTimeTo12HrFormat(routeState?.currentShift, routeState?.typoOfRoute)}
             </span>
           </Typography>
         </Box>
@@ -483,7 +486,9 @@ function AddPassengers() {
         }}
       >
         <MapComponent
-          employees={selectedPassengers as [EmployeeTypes]}
+        mode="route-view"
+        highlightedEmployees={selectedPassengers as []}
+          employees={filterEmployees as [EmployeeTypes]}
           height="100%"
         />
         {/* ESTIMATED TIME & DISTANCE */}
@@ -556,7 +561,7 @@ function AddPassengers() {
         >
           <Typography variant="h6" fontWeight={600}>
             Capacity {selectedPassengers?.length || 0} of{" "}
-            {(routeState?.driver as any)?.seatingCapacity}
+            {(routeState?.driver as any)?.capacity}
           </Typography>
           {/* DRIVER */}
           <Box
@@ -575,16 +580,16 @@ function AddPassengers() {
             >
               <Avatar
                 sx={{ width: "30px", height: "30px" }}
-                src={baseURL + routeState?.driver?.profilePicture}
+                src={baseURL + routeState?.driver?.cab_driver?.profilePicture}
               />
               <Box>
                 <Typography variant="body1" fontWeight={600}>
                   {"Cab " +
-                    routeState?.driver.cabNumber +
+                    routeState?.driver?.cab_number +
                     " - " +
-                    routeState?.driver?.cabDriver?.fname +
+                    routeState?.driver?.cab_driver?.fname +
                     " " +
-                    routeState?.driver.cabDriver?.lname}
+                    routeState?.driver.cab_driver?.lname}
                 </Typography>
                 <Typography
                   sx={{

@@ -8,5 +8,6 @@ export type ShiftTypes = {
   currentShift?: string;
   ref_coords?: [number];
   passengers?: EmployeeTypes[];
+  daysRouteIsActive?: number
   cab?: Cabtypes;
 };
