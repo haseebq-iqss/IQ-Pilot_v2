@@ -1,4 +1,4 @@
-function TimeNow() {
+function TodayFullDateString() {
   function getDaySuffix(day: number) {
     if (day > 3 && day < 21) return "th";
 
@@ -46,4 +46,4 @@ function TimeNow() {
   return `${day}, ${date}${getDaySuffix(date)} of ${month} - ${year}`;
 }
 
-export default TimeNow;
+export default TodayFullDateString;

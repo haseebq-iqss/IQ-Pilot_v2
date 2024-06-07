@@ -10,7 +10,7 @@ import MapComponent from "../../components/Map";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import { useNavigate } from "react-router-dom";
-import TimeNow from "../../utils/DayNow";
+import TodayFullDateString from "../../utils/TodayFullDateString";
 // import SOSAudio from "../../assets/sounds/emergency.mp3";
 
 // const socket = io(baseURL);
@@ -265,7 +265,8 @@ function AdminDashboard() {
               Today's Plan
             </Typography>
             <Typography color={"GrayText"} variant="body1">
-              It’s <span style={{ fontWeight: 600 }}>{TimeNow()}</span>
+              It’s{" "}
+              <span style={{ fontWeight: 600 }}>{TodayFullDateString()}</span>
             </Typography>
           </Box>
         </Box>

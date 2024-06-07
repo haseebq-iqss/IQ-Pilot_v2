@@ -321,6 +321,7 @@ exports.updateRoute = catchAsync(async (req, res, next) => {
 
 exports.deleteRoute = catchAsync(async (req, res, next) => {
   const id = req.params.id;
+  console.log(id);
   const deleted_route = await Route.findByIdAndDelete(id);
   if (!deleted_route)
     return next(new AppError(`No route found for this id: ${id}`, 404));

@@ -17,16 +17,18 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import PageContainer from "../../components/ui/PageContainer";
 import { RowFlex } from "../../style_extentions/Flex";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import Cabtypes from "../../types/CabTypes";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
 import FormatDateString from "../../utils/DateFormatter";
 import { useNavigate } from "react-router-dom";
+import { SnackBarContextTypes } from "../../types/SnackbarTypes";
+import SnackbarContext from "../../context/SnackbarContext";
 
 // type routeCacheTypes = {
 //   nonActiveroutes: [RouteTypes];
@@ -36,6 +38,8 @@ function ScheduledRoutes() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
+
+  const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
   const handleMenuOpen = (
     event: React.MouseEvent<HTMLElement>,
@@ -50,13 +54,28 @@ function ScheduledRoutes() {
     setMenuIndex(null);
   };
 
-  const { data: routes } = useQuery({
+  const { data: routes, refetch } = useQuery({
     queryKey: ["all-routes"],
     queryFn: async () => {
       const response = await useAxios.get("routes");
       return response?.data?.data;
     },
   });
+
+  const handlerDeleteRoute = async (route_id: string) => {
+    try {
+      await useAxios.delete(`/routes/${route_id}`);
+      handleMenuClose();
+      setOpenSnack({
+        open: true,
+        message: "Route was deleted!",
+        severity: "info",
+      });
+      refetch();
+    } catch (error) {
+      console.error("Error deleting document: ", error);
+    }
+  };
 
   return (
     <PageContainer
@@ -175,7 +194,9 @@ function ScheduledRoutes() {
                             gap: "10px",
                           }}
                           onClick={() =>
-                            navigate(`/admin/viewRoute/${route?._id}`, {state: route})
+                            navigate(`/admin/viewRoute/${route?._id}`, {
+                              state: route,
+                            })
                           }
                         >
                           <Visibility sx={{}} />
@@ -203,6 +224,7 @@ function ScheduledRoutes() {
                             justifyContent: "flex-start",
                             gap: "10px",
                           }}
+                          onClick={() => handlerDeleteRoute(route?._id)}
                         >
                           <DeleteForever sx={{}} />
                           Delete Route
