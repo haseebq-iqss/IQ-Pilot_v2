@@ -5,6 +5,8 @@ import {
   Box,
   Button,
   ButtonBase,
+  CircularProgress,
+  LinearProgress,
   Modal,
   Typography,
 } from "@mui/material";
@@ -27,6 +29,7 @@ import GetOfficeCoordinates from "../../utils/OfficeCoordinates";
 import AttendanceTypes from "../../types/AttendanceTypes";
 import { ColFlex, RowFlex } from "./../../style_extentions/Flex";
 import useTimer from "../../hooks/useTimer";
+import useLocalStorage from "../../hooks/useLocalStorage";
 
 type modalPropTypes = {
   openModal: boolean;
@@ -39,15 +42,30 @@ function StartRoute() {
   const location = useLocation();
   const route: RouteTypes = location.state;
 
+  const { setItem, getItem, deleteItem, clearLs } = useLocalStorage<string>();
+
   const { userData }: UserContextTypes = useContext(UserDataContext);
 
   const [myLocation, setMyLocation] = useState<Array<number>>([]);
 
   const [startTimer, getElapsedTime] = useTimer();
+  const [actionUpdater, setActionUpdater] = useState<number>(0);
+  setInterval(() => {
+    setActionUpdater((prevActionNumber: number) => prevActionNumber + 1);
+  }, 3000);
+
+  const savedElapsedTime = localStorage.getItem("elapsedTime");
+  useEffect(() => {
+    startTimer(
+      savedElapsedTime != undefined && savedElapsedTime > 0 && savedElapsedTime
+    );
+  }, []);
 
   useEffect(() => {
-    startTimer();
-  }, []);
+    if (getElapsedTime() > savedElapsedTime && UpdateRouteStatus != "success") {
+      localStorage.setItem("elapsedTime", getElapsedTime());
+    }
+  }, [actionUpdater]);
 
   // useEffect(() => {
   //   if (myLocation.length == 2) {
@@ -157,10 +175,6 @@ function StartRoute() {
   };
 
   const updateRouteStatus = () => {
-    // alert(
-    //   `${getElapsedTime()?.toFixed(3), calculatedDistance?.toFixed(3),routePathArray}`,
-    // )
-    // alert(routePathArray)
     return useAxios.patch(`routes/${route?._id}`, {
       routeStatus: "completed",
       estimatedTime: getElapsedTime()?.toFixed(3),
@@ -173,7 +187,9 @@ function StartRoute() {
   const { mutate: UpdateRoute, status: UpdateRouteStatus } = useMutation({
     mutationFn: updateRouteStatus,
     onSuccess: (data) => {
-      localStorage.removeItem("CurrentRoute")
+      deleteItem("CurrentRoute");
+      deleteItem("elapsedTime");
+      deleteItem("markedPassengers");
       console.log({
         routeStatus: "completed",
         estimatedTime: getElapsedTime()?.toFixed(3),
@@ -190,10 +206,13 @@ function StartRoute() {
   });
 
   window.onpopstate = (event) => {
-    alert("You are Abandoning this route! Please continue this route from the Homepage.");
+    alert(
+      "You are Abandoning this route! Please continue this route from the Homepage."
+    );
     // console.log(currentLocation, location.state)
     // navigate("/admin/createShift", {state: location.state})
-};
+  };
+  const [artificialDelay, setArtificialDelay] = useState<boolean>(false);
 
   function HandleCompleteRoute() {
     console.log({
@@ -202,8 +221,29 @@ function StartRoute() {
       cabPath: routePathArray,
     });
     // alert(`time: ${getElapsedTime()}, dist: ${(calculatedDistance)?.toFixed(3)}, cabPath:${routePathArray}`)
-    UpdateRoute();
+    if (route?.passengers?.length <= markedPassengersArray.length) {
+      setArtificialDelay(true);
+      setTimeout(() => {
+        UpdateRoute();
+      }, 2000);
+    } else {
+      console.log(markedPassengersArray);
+      setOpenSnack({
+        open: true,
+        message: "Please mark all passengers first!",
+      });
+    }
   }
+
+  useEffect(() => {
+    const storedMarkedPassengersArray =
+      localStorage.getItem("markedPassengers");
+    if (storedMarkedPassengersArray?.length) {
+      setMarkedPassengersArray(JSON.parse(storedMarkedPassengersArray));
+      console.log(storedMarkedPassengersArray);
+      console.log(markedPassengersArray);
+    }
+  }, []);
 
   const { mutate: markAttendance } = useMutation({
     mutationFn: markAttendanceMF,
@@ -229,13 +269,24 @@ function StartRoute() {
   });
 
   useEffect(() => {
+    const storedMarkedPassengersArray =
+      localStorage.getItem("markedPassengers");
+    if (markedPassengersArray?.length) {
+      localStorage.setItem(
+        "markedPassengers",
+        JSON.stringify(markedPassengersArray)
+      );
+    }
+  }, [markedPassengersArray]);
+
+  useEffect(() => {
     // console.log(markedPassengersArray);
     // Pull RoutePath if exits already in LS
-    const lastRoutePath = localStorage.getItem("CurrentRoute")
-    if(lastRoutePath?.length) {
-      console.log("Previous Path exists")
-      console.log(JSON.parse(lastRoutePath))
-      setRoutePathArray(JSON.parse(lastRoutePath))
+    const lastRoutePath = localStorage.getItem("CurrentRoute");
+    if (lastRoutePath?.length) {
+      console.log("Previous Path exists");
+      console.log(JSON.parse(lastRoutePath));
+      setRoutePathArray(JSON.parse(lastRoutePath));
     }
   }, []);
 
@@ -281,10 +332,10 @@ function StartRoute() {
           ...prevPoints,
           [pos.coords.latitude, pos.coords.longitude],
         ]);
-        localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray))
+        if (UpdateRouteStatus != "success") {
+          localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray));
+        }
       });
-
-
     }, 3000);
 
     // Cleanup interval on component unmount
@@ -478,6 +529,14 @@ function StartRoute() {
       </Modal>
 
       {/* ROUTE STATS */}
+      <LinearProgress
+        sx={{
+          width: artificialDelay ? "100%" : "0%",
+          backgroundColor: "white",
+          height: 5,
+        }}
+      />
+
       <Box
         sx={{
           ...RowFlex,
@@ -524,9 +583,17 @@ function StartRoute() {
       >
         <Button
           disabled={UpdateRouteStatus === "pending"}
-          onClick={HandleCompleteRoute}
+          onClick={!artificialDelay ? HandleCompleteRoute : () => {}}
           sx={{ width: "75%", borderRadius: "100px" }}
           variant="contained"
+          endIcon={
+            artificialDelay && (
+              <CircularProgress
+                size={"1rem"}
+                sx={{ ml: 2.5, color: "white" }}
+              />
+            )
+          }
         >
           Mark as Completed
         </Button>
