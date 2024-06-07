@@ -319,6 +319,15 @@ exports.updateRoute = catchAsync(async (req, res, next) => {
   res.status(201).json({ status: "Success", updated_route });
 });
 
+exports.deleteRoute = catchAsync(async (req, res, next) => {
+  const id = req.params.id;
+  const deleted_route = await Route.findByIdAndDelete(id);
+  if (!deleted_route)
+    return next(new AppError(`No route found for this id: ${id}`, 404));
+
+  res.status(200).json({ status: "Success", data: deleted_route });
+});
+
 exports.pendingPassengers = catchAsync(async (req, res, next) => {
   const all_routes = await Route.find({})
     .populate({

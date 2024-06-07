@@ -9,6 +9,7 @@ const {
   rosteredPassengers,
   driverRoute,
   updateRoute,
+  deleteRoute,
   getActiveRoutes,
 } = require("../controller/routeController");
 const { protect, restrictTo } = require("../controller/authController");
@@ -31,6 +32,7 @@ router.route("/activeRoutes").get(restrictTo("admin"), getActiveRoutes);
 router
   .route("/:id")
   .get(restrictTo("admin", "driver"), getRoute)
-  .patch(updateRoute);
+  .patch(restrictTo("admin", "driver"), updateRoute)
+  .delete(restrictTo("admin", "driver"), deleteRoute);
 
 module.exports = router;
