@@ -21,6 +21,7 @@ import { UserContextTypes } from "../types/UserContextTypes";
 import UserDataContext from "../context/UserDataContext";
 import baseURL from "../utils/baseURL";
 import { Close } from "@mui/icons-material";
+import MapCenterUpdater from "./MapCenterUpdater";
 
 type MapTypes = {
   width?: string;
@@ -50,7 +51,7 @@ const MapComponent = ({
   mode = "full-view",
   activeRoute = [],
   routePathArray = [],
-  highlightedEmployees = []
+  highlightedEmployees = [],
 }: MapTypes) => {
   // const [driversPosition, setDriversPosition] = useState<any>();
 
@@ -195,6 +196,7 @@ const MapComponent = ({
   }
 
   // console.log("center -----> ", center);
+  // console.log(driverOnFocus)
 
   return (
     <div style={{ position: "relative", height, width, overflow: "hidden" }}>
@@ -202,9 +204,12 @@ const MapComponent = ({
         id={"map"}
         key={activeRoute.length ? "Primary Map" + Math.random() : "Primary Map"}
         style={{ height: "100%", width: "100%" }}
-        center={driverOnFocus?.length ? driverOnFocus : center}
+        center={center}
         zoom={zoom}
       >
+        <MapCenterUpdater
+          center={driverOnFocus?.length ? driverOnFocus : center}
+        />
         {/* OPTIONS BAR */}
         <div
           style={{
@@ -363,20 +368,19 @@ const MapComponent = ({
 
         <MapController />
 
-        {highlightedEmployees.length && (
-          highlightedEmployees.map((emp:EmployeeTypes, index: number) => {
+        {highlightedEmployees.length &&
+          highlightedEmployees.map((emp: EmployeeTypes, index: number) => {
             return (
               <Circle
-              key={index}
-              center={emp?.pickUp?.coordinates as LatLngExpression}
-              radius={750}
-              fillOpacity={0.25}
-              color={"red"}
-              stroke={true}
-            />
-            )
-          })
-        )}
+                key={index}
+                center={emp?.pickUp?.coordinates as LatLngExpression}
+                radius={750}
+                fillOpacity={0.25}
+                color={"red"}
+                stroke={true}
+              />
+            );
+          })}
 
         {driverOnFocus?.length && (
           <Marker icon={cabIcon} position={driverOnFocus as LatLngExpression}>
