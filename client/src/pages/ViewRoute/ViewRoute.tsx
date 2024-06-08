@@ -7,21 +7,50 @@ import {
   Groups2,
   FormatColorFill,
   DirectionsCar,
+  Close,
 } from "@mui/icons-material";
-import { Typography, Avatar, Box, ButtonBase } from "@mui/material";
+import { Typography, Avatar, Box } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import MapComponent from "../../components/Map";
 import { PageFlex, ColFlex, RowFlex } from "../../style_extentions/Flex";
-import Convert24To12HourFormat from "../../utils/24HourTo12HourFormat";
 import RouteTypes from "../../types/RouteTypes";
 import baseURL from "../../utils/baseURL";
 import Cabtypes from "./../../types/CabTypes";
 import EmployeeTypes from "../../types/EmployeeTypes";
+import useAxios from "../../api/useAxios";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
 
 function ViewRoute() {
   const location = useLocation();
   const routeState: RouteTypes = location.state;
   console.log(routeState);
+
+  const getAllDriverRoutes = () => {
+    return useAxios.get(`attendances/route-attendance/${routeState?._id}`);
+  };
+
+  const { data: attendanceData } = useQuery({
+    queryFn: getAllDriverRoutes,
+    queryKey: ["Route Attendance"],
+    select: (data: any) => {
+      return data.data.route_attendance as Array<EmployeeTypes>;
+    },
+  });
+
+  const [numberOfPresentPassengers, setNumberOfPresentPassengers] =
+    useState<number>(0);
+
+  useEffect(() => {
+    if (attendanceData?.length) {
+      const getPresentPassengers: any = attendanceData?.filter(
+        (attendance: any) => attendance.isPresent === true
+      );
+      setNumberOfPresentPassengers(() => getPresentPassengers?.length);
+    }
+  }, [attendanceData]);
+
   return (
     <Box
       sx={{
@@ -57,9 +86,24 @@ function ViewRoute() {
             alignItems: "flex-start",
             p: "15px",
             borderRadius: "15px",
-            gap: 1,
+            gap: 1.5,
           }}
         >
+          {/* L1-R1 */}
+          <Typography
+            sx={{ fontWeight: 600, fontSize: "2rem", color: "#212A3B" }}
+            variant="body2"
+            fontWeight={600}
+            color={"GrayText"}
+          >
+            {ConvertShiftTimeTo12HrFormat(
+              routeState?.currentShift as string,
+              routeState?.typeOfRoute
+            ) +
+              " - " +
+              routeState?.typeOfRoute?.toUpperCase()}
+          </Typography>
+          {/* L1 R2 */}
           <Box
             sx={{ ...RowFlex, width: "100%", justifyContent: "space-between" }}
           >
@@ -91,14 +135,6 @@ function ViewRoute() {
               </Typography>
             </Box>
           </Box>
-          <Typography
-            sx={{ fontWeight: 600, fontSize: "2rem", color: "#212A3B" }}
-            variant="body2"
-            fontWeight={600}
-            color={"GrayText"}
-          >
-            {Convert24To12HourFormat(routeState?.currentShift as string)}
-          </Typography>
         </Box>
         {/* L-2 */}
         <Box
@@ -115,12 +151,16 @@ function ViewRoute() {
           }}
         >
           <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-            Passengers (5 out of {routeState?.passengers?.length} present)
+            Passengers ({numberOfPresentPassengers} out of{" "}
+            {attendanceData?.length} are Present)
           </Typography>
-          {routeState?.passengers?.map((employee: any) => {
+          {attendanceData?.map((attendance: any) => {
             // console.log(employee);
             return (
-              <Box key={employee?._id} sx={{ ...RowFlex, width: "100%" }}>
+              <Box
+                key={attendance?.ofEmployee?._id}
+                sx={{ ...RowFlex, width: "100%" }}
+              >
                 <Box
                   sx={{
                     ...RowFlex,
@@ -131,11 +171,13 @@ function ViewRoute() {
                 >
                   <Avatar
                     sx={{ width: "40px", height: "40px" }}
-                    src={baseURL + employee?.profilePicture}
+                    src={baseURL + attendance?.ofEmployee?.profilePicture}
                   />
                   <Box>
                     <Typography sx={{ fontSize: "1.25rem", fontWeight: 500 }}>
-                      {employee.fname + " " + employee.lname}
+                      {attendance.ofEmployee?.fname +
+                        " " +
+                        attendance.ofEmployee?.lname}
                     </Typography>
                     <Typography
                       sx={{
@@ -152,12 +194,12 @@ function ViewRoute() {
                           color: "secondary.main",
                         }}
                       />
-                      {employee?.pickUp?.address}
+                      {attendance?.ofEmployee?.pickUp?.address}
                     </Typography>
                   </Box>
                 </Box>
                 <Box sx={{ ...RowFlex, width: "20%" }}>
-                  <ButtonBase sx={{ borderRadius: "100px" }}>
+                  {attendance?.isPresent ? (
                     <DoneAll
                       sx={{
                         backgroundColor: "primary.main",
@@ -168,7 +210,18 @@ function ViewRoute() {
                         color: "white",
                       }}
                     />
-                  </ButtonBase>
+                  ) : (
+                    <Close
+                      sx={{
+                        backgroundColor: "error.main",
+                        borderRadius: "100px",
+                        p: 0.5,
+                        width: "40px",
+                        height: "40px",
+                        color: "white",
+                      }}
+                    />
+                  )}
                 </Box>
               </Box>
             );

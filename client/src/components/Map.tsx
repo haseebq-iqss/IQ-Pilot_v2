@@ -317,7 +317,7 @@ const MapComponent = ({
         </div>
 
         {/* Team Member Card */}
-        {cardOpen && (
+        {mode === "full-view" && cardOpen && (
           <div
             style={{
               position: "absolute",

@@ -561,6 +561,7 @@ function StartRoute() {
       </Box>
       {/* MAP */}
       <MapComponent
+        mode="route-view"
         zoom={14}
         routePathArray={routePathArray as []}
         mode="route-view"
