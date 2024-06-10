@@ -22,17 +22,17 @@ router.route("/").post(restrictTo("admin"), createRoute).get(getRoutes);
 router.route("/shifts").post(createShift);
 router.route("/totalDistanceMonth").get(totalDistanceMonth);
 
-router
-  .route("/:id")
-  .get(restrictTo("admin", "driver"), getRoute)
-  .patch(restrictTo("admin", "driver"), updateRoute)
-  .delete(restrictTo("admin", "driver"), deleteRoute);
-
 router.route("/activeRoutes").get(restrictTo("admin"), getActiveRoutes);
 router.route("/pendingPassengers").get(restrictTo("admin"), pendingPassengers);
 router
   .route("/rosteredPassengers")
   .get(restrictTo("admin"), rosteredPassengers);
+
+router
+  .route("/:id")
+  .get(restrictTo("admin", "driver"), getRoute)
+  .patch(restrictTo("admin", "driver"), updateRoute)
+  .delete(restrictTo("admin", "driver"), deleteRoute);
 
 router
   .route("/driverRoute/:id")

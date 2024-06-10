@@ -292,6 +292,7 @@ exports.getRoutes = catchAsync(async (req, res, next) => {
 });
 
 exports.getActiveRoutes = catchAsync(async (req, res, next) => {
+  console.log("asdasd");
   const all_routes = await Route.find({})
     .populate({
       path: "cab",
