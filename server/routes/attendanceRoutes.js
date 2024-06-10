@@ -6,19 +6,12 @@ const { catchAsync } = require("../utils/catchAsync");
 
 const router = express.Router();
 
-
 router.use(protect);
-router.use(restrictTo("admin", "driver"))
+router.use(restrictTo("admin", "driver"));
 
-router.post(
-  "/",
-  attendanceController.createAttendance
-);
-
-router.get(
-  "/",
-  attendanceController.getAllAttendances
-);
+router.post("/", attendanceController.createAttendance);
+router.get("/", attendanceController.getAllAttendances);
+router.get("/shrinkageMonth", attendanceController.getMonthShrinkage);
 
 router
   .route("/:id")
@@ -26,6 +19,6 @@ router
   .put(attendanceController.updateAttendance)
   .delete(attendanceController.deleteAttendance);
 
-router.get("/route-attendance/:id", attendanceController.getAttendanceByRoute)
+router.get("/route-attendance/:id", attendanceController.getAttendanceByRoute);
 
 module.exports = router;
