@@ -22,6 +22,7 @@ import StartRoute from "../pages/StartRoute/StartRoute";
 import RouteCompleted from "../pages/RouteCompleted/RouteCompleted";
 import ViewRoute from "../pages/ViewRoute/ViewRoute";
 import DriverProfile from "../pages/DriverProfilePage/DriverProfilePage";
+import AdminStatistics from "../pages/AdminStatistics/AdminStatistics";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -102,8 +103,17 @@ function MainRouter() {
                   </SlideInOut>
                 }
               />
+                          <Route
+              path="adminStatistics"
+              element={
+                <SlideInOut>
+                  <AdminStatistics />
+                </SlideInOut>
+              }
+            />
             </Route>
 
+{/* STANDALONE ROUTES */}
             <Route
               path="admin/addPassengers"
               element={
@@ -139,7 +149,7 @@ function MainRouter() {
               }
             />
             <Route
-              path="admin/driver-profile/:id"
+              path="admin/driverProfile/:id"
               element={
                 <SlideInOut>
                   <DriverProfile />

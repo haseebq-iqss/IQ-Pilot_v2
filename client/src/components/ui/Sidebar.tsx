@@ -1,4 +1,10 @@
-import { Dashboard, Hail, LocalTaxi, Route } from "@mui/icons-material";
+import {
+  Dashboard,
+  Hail,
+  LocalTaxi,
+  QueryStats,
+  Route,
+} from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -106,6 +112,12 @@ function Sidebar() {
           link="/admin"
           startIcon={<Dashboard />}
           // isActive={true}
+        />
+        <SideBarButton
+          text="Admin Statistics"
+          startIcon={<QueryStats />}
+          link="adminStatistics"
+          // isActive={false}
         />
         <SideBarButton
           text="Scheduled Routes"

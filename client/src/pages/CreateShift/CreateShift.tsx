@@ -57,15 +57,16 @@ function CreateShift() {
       passengers: [],
     },
   ]);
-  
+
   const currentLocation = window.location.pathname;
 
-  window.onpopstate = (event) => {
-    alert("Data will be lost !");
-    // console.log(currentLocation, location.state)
-    // navigate("/admin/createShift", {state: location.state})
-};
-
+  // useEffect(() => {
+    // if (window.location.pathname.includes("createShift")) {
+    //   window.onpopstate = (event) => {
+    //     alert("Data will be lost !");
+    //   };
+    // }
+  // }, []);
 
   const [reservedPassengers, setReservedPassengers] = useState(() => {
     return reservedColumn.flatMap((column) => column.passengers) || [];
@@ -391,7 +392,6 @@ function CreateShift() {
       }
     }
   };
-
 
   return (
     <DndContext

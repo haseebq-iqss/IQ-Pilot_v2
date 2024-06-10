@@ -68,7 +68,7 @@ function AllCabDrivers() {
   };
 
   const handleDriverProfilePage = (driverID: string) => {
-    navigate(`/admin/driver-profile/${driverID}`);
+    navigate(`/admin/driverProfile/${driverID}`);
   };
 
   const handleDeleteEmployee = (employeeId: string) => {

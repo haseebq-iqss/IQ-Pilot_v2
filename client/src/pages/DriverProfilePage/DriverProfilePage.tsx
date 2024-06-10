@@ -1,12 +1,4 @@
-import {
-  Avatar,
-  Typography,
-  Grid,
-  List,
-  Container,
-  Divider,
-  Box,
-} from "@mui/material";
+import { Typography, List, Divider, Box } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
 import { useParams } from "react-router-dom";
@@ -21,6 +13,7 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 
 const DriverProfile = () => {
   const { id } = useParams();
+  
   const { data: driverDetails } = useQuery({
     queryKey: ["driver-details"],
     queryFn: async () => {
@@ -29,18 +22,26 @@ const DriverProfile = () => {
     },
   });
 
-  console.log(driverDetails);
+  const { data: driverRoutes } = useQuery({
+    queryKey: ["driver-routes"],
+    queryFn: async () => {
+      const response = await useAxios.get(`routes/driverRoutesMonth/${id}`);
+      return response?.data?.data;
+    },
+  });
+
+  console.log(driverRoutes);
 
   return (
-    <Box sx={{ maxWidth: "1250px", margin: "0 auto" }}>
-      <Box sx={{ py: 5, px: 10 }}>
+    <Box sx={{ maxWidth: "100%", p: 2.5 }}>
+      <Box sx={{}}>
         <Box
           sx={{
             bgcolor: "primary.main",
             borderRadius: 2,
             ...RowFlex,
             gap: 5,
-            p: 4,
+            p: 2.5,
             justifyContent: "start",
           }}
         >
@@ -222,6 +223,12 @@ const DriverProfile = () => {
           </Typography>
           <Typography variant="body1" sx={{ ...ColFlex }}>
             <span style={{ fontWeight: 500, fontSize: 20 }}>Total Routes</span>
+            <span style={{ fontSize: 38, fontWeight: 600 }}>
+              {driverDetails?.seatingCapacity}
+            </span>
+          </Typography>
+          <Typography variant="body1" sx={{ ...ColFlex }}>
+            <span style={{ fontWeight: 500, fontSize: 20 }}>Time Spent</span>
             <span style={{ fontSize: 38, fontWeight: 600 }}>
               {driverDetails?.seatingCapacity}
             </span>
