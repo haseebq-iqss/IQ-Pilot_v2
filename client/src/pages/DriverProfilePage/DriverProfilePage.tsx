@@ -10,10 +10,15 @@ import Groups2Icon from "@mui/icons-material/Groups2";
 import TagIcon from "@mui/icons-material/Tag";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
+import EmployeeTypes from "../../types/EmployeeTypes";
+import { useEffect, useState } from "react";
+import RouteTypes from "../../types/RouteTypes";
 
 const DriverProfile = () => {
   const { id } = useParams();
-  
+
+  const [allDriverRoutes, setAllDriverRoutes] = useState<any>();
+
   const { data: driverDetails } = useQuery({
     queryKey: ["driver-details"],
     queryFn: async () => {
@@ -25,12 +30,36 @@ const DriverProfile = () => {
   const { data: driverRoutes } = useQuery({
     queryKey: ["driver-routes"],
     queryFn: async () => {
-      const response = await useAxios.get(`routes/driverRoutesMonth/${id}`);
-      return response?.data?.data;
+      const response = await useAxios.get(
+        `routes/driverRoutesMonth/${
+          (driverDetails?.cabDriver as EmployeeTypes)?._id
+        }`
+      );
+      const { dropArr, pickArr }: any = response?.data?.data;
+      setAllDriverRoutes([...dropArr, ...pickArr]);
+
+      return [...dropArr, ...pickArr];
     },
+    enabled: !!driverDetails,
   });
 
-  console.log(driverRoutes);
+  const [totalDistance, setTotalDistance] = useState<number>(0);
+  const [totalTimeSpent, setTotalTimeSpent] = useState<number>(0);
+
+  useEffect(() => {
+    if (driverRoutes) {
+      driverRoutes?.map((route: RouteTypes) => {
+        setTotalDistance((prevDist: number) =>
+          route?.totalDistance ? prevDist + route?.totalDistance! : prevDist
+        );
+        setTotalTimeSpent((prevTime: number) =>
+          route?.estimatedTime ? prevTime + route?.estimatedTime! : prevTime
+        );
+      });
+    }
+  }, [driverRoutes]);
+
+  console.log(totalDistance);
 
   return (
     <Box sx={{ maxWidth: "100%", p: 2.5 }}>
@@ -212,25 +241,27 @@ const DriverProfile = () => {
               Total Amount (INR)
             </span>
             <span style={{ fontSize: 38, fontWeight: 600 }}>
-              &#8377; 2300.00
+              {((totalDistance / 15) * 100).toFixed(0)}
             </span>
           </Typography>
           <Typography variant="body1" sx={{ ...ColFlex }}>
             <span style={{ fontWeight: 500, fontSize: 20 }}>
               Kilometers Traveled
             </span>
-            <span style={{ fontSize: 38, fontWeight: 600 }}>23</span>
+            <span style={{ fontSize: 38, fontWeight: 600 }}>
+              {totalDistance.toFixed(2)}km
+            </span>
           </Typography>
           <Typography variant="body1" sx={{ ...ColFlex }}>
             <span style={{ fontWeight: 500, fontSize: 20 }}>Total Routes</span>
             <span style={{ fontSize: 38, fontWeight: 600 }}>
-              {driverDetails?.seatingCapacity}
+              {allDriverRoutes?.length}
             </span>
           </Typography>
           <Typography variant="body1" sx={{ ...ColFlex }}>
             <span style={{ fontWeight: 500, fontSize: 20 }}>Time Spent</span>
             <span style={{ fontSize: 38, fontWeight: 600 }}>
-              {driverDetails?.seatingCapacity}
+              {totalTimeSpent.toFixed(0)}mins
             </span>
           </Typography>
         </Box>

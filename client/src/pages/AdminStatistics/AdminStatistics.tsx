@@ -36,10 +36,6 @@ import { useNavigate } from "react-router-dom";
 function AdminStatistics() {
   const navigate = useNavigate();
 
-  const [selectedDriver, setSelectedDriver] = useState<EmployeeTypes | null>(
-    null
-  );
-
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
 
