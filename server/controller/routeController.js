@@ -32,6 +32,13 @@ const activeRoutesFun = async (all_routes) => {
   return active_routes;
 };
 
+const setMonthTimeLine = () => {
+  const now = new Date();
+  const firstDayMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const firstDayNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  return [firstDayMonth, firstDayNextMonth];
+};
+
 const assignCabToEmployees = async (
   workLocation,
   currentShift,
@@ -415,9 +422,7 @@ exports.driverRoute = catchAsync(async (req, res, next) => {
 });
 
 exports.totalDistanceMonth = catchAsync(async (req, res, next) => {
-  const now = new Date();
-  const firstDayMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const firstDayNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const [firstDayMonth, firstDayNextMonth] = setMonthTimeLine();
 
   const routes = await Route.find({
     createdAt: {
@@ -433,4 +438,40 @@ exports.totalDistanceMonth = catchAsync(async (req, res, next) => {
   res
     .status(200)
     .json({ status: "Success", data: Number(total_distance.toFixed(2)) });
+});
+
+exports.driverRoutesForMonth = catchAsync(async (req, res, next) => {
+  const [firstDayMonth, firstDayNextMonth] = setMonthTimeLine();
+
+  const pickArr = [];
+  const dropArr = [];
+
+  const id = req.params.id;
+  const cab = await Cab.findOne({
+    cabDriver: id,
+  });
+  if (!cab)
+    return next(new AppError(`No cab found with this driver id: ${id}`, 404));
+
+  const { _id: cab_id } = cab;
+
+  const cab_all_routes = await Route.find({
+    cab: cab_id,
+    createdAt: { $gte: firstDayMonth, $lt: firstDayNextMonth },
+  })
+    .populate({
+      path: "cab",
+      populate: "cabDriver",
+    })
+    .populate("passengers");
+
+  if (cab_all_routes.length === 0)
+    return next(new AppError(`No routes assigned to this cab: ${cab_id}`, 404));
+
+  cab_all_routes.forEach((route) => {
+    if (route.typeOfRoute === "pickup") pickArr.push(route);
+    else if (route.typeOfRoute === "drop") dropArr.push(route);
+  });
+
+  res.status(200).json({ status: "Success", data: { pickArr, dropArr } });
 });
