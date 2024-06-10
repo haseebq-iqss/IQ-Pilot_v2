@@ -56,13 +56,13 @@ function AddPassengers() {
   const zaira = [34.17342209237591, 74.80831111718207];
 
   const routeState = location?.state;
-  console.log(routeState)
+  console.log(routeState);
 
   const { data: employees } = useQuery({
     queryKey: ["all-employees"],
     queryFn: async () => {
       const response = await useAxios.get("/routes/pendingPassengers");
-      console.log(response)
+      console.log(response);
       return response.data.pending_passengers;
     },
   });
@@ -92,12 +92,10 @@ function AddPassengers() {
   };
 
   const handleAddPassengersToCab = (newPassenger: EmployeeTypes) => {
-    console.log(newPassenger)
+    console.log(newPassenger);
     // Check if the newPassenger is already present in selectedPassengers
     setPreviewMode(false);
-    if (
-      selectedPassengers?.length < (routeState?.driver as any)?.capacity
-    ) {
+    if (selectedPassengers?.length < (routeState?.driver as any)?.capacity) {
       // const isAlreadyAdded = selectedPassengers.some(
       //   (passenger) => passenger._id === newPassenger._id
       // );
@@ -223,10 +221,6 @@ function AddPassengers() {
   }
 
   useEffect(() => {
-    // console.log(distNtime);
-  }, [distNtime]);
-
-  useEffect(() => {
     setSelectedEmps([]);
   }, [selectedPassengers]);
 
@@ -311,7 +305,10 @@ function AddPassengers() {
               style={{ fontWeight: 600, fontSize: "1.75rem", color: "#212A3B" }}
             >
               {routeState?.currentShift !== undefined &&
-                ConvertShiftTimeTo12HrFormat(routeState?.currentShift, routeState?.typoOfRoute)}
+                ConvertShiftTimeTo12HrFormat(
+                  routeState?.currentShift,
+                  routeState?.typoOfRoute
+                )}
             </span>
           </Typography>
         </Box>
@@ -486,9 +483,18 @@ function AddPassengers() {
         }}
       >
         <MapComponent
-        mode="route-view"
-        highlightedEmployees={selectedPassengers as []}
-          employees={filterEmployees as [EmployeeTypes]}
+          center={
+            (selectedPassengers?.length ?
+              selectedPassengers[selectedPassengers?.length - 1].pickUp
+                ?.coordinates : [34.071635, 74.803872]) as [number, number]
+          }
+          mode="route-view"
+          highlightedEmployees={selectedPassengers as []}
+          employees={
+            previewMode
+              ? (selectedPassengers as [EmployeeTypes])
+              : (filterEmployees as [EmployeeTypes])
+          }
           height="100%"
         />
         {/* ESTIMATED TIME & DISTANCE */}

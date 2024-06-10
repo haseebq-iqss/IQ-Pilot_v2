@@ -374,7 +374,7 @@ const MapComponent = ({
               <Circle
                 key={index}
                 center={emp?.pickUp?.coordinates as LatLngExpression}
-                radius={750}
+                radius={250}
                 fillOpacity={0.25}
                 color={"red"}
                 stroke={true}
