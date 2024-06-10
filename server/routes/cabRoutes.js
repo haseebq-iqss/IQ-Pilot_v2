@@ -9,6 +9,7 @@ const {
   getEmployeeCab,
   getTMSAssignedCabs,
   availableCabs,
+  getCabByID,
 } = require("../controller/cabController");
 
 const router = express.Router();
@@ -18,10 +19,11 @@ router.use(protect);
 router
   .route("/")
   .get(restrictTo("admin"), getAllCabs)
-  .post(restrictTo("admin"), createCab)
+  .post(restrictTo("admin"), createCab);
 router.route("/availableCabs").get(restrictTo("admin"), availableCabs);
 router
   .route("/:id")
+  .get(restrictTo("admin"), getCabByID)
   .get(restrictTo("admin"), getCabByDriver)
   .patch(restrictTo("admin"), updateCab)
   .delete(restrictTo("admin"), deleteCab);

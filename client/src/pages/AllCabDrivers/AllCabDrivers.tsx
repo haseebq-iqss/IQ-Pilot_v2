@@ -24,9 +24,10 @@ import PageContainer from "../../components/ui/PageContainer";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import baseURL from "../../utils/baseURL";
 import { RowFlex } from "../../style_extentions/Flex";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
 import Cabtypes from "../../types/CabTypes";
+import { useNavigate } from "react-router-dom";
 
 // type driverTypes = {
 //   drivers: [EmployeeTypes];
@@ -34,6 +35,9 @@ import Cabtypes from "../../types/CabTypes";
 
 function AllCabDrivers() {
   const [searchtext, setSearchText] = useState("");
+  const qc = useQueryClient();
+
+  const navigate = useNavigate();
   const { data: cabDetails } = useQuery({
     queryKey: ["all-cabs"],
     queryFn: async () => {
@@ -59,9 +63,26 @@ function AllCabDrivers() {
   );
 
   const handleMenuOpen = (driver: any) => {
+    // setAnchorEl(e.currentTarget);
     setSelectedDriver(driver === selectedDriver ? null : driver);
   };
 
+  const handleDriverProfilePage = (driverID: string) => {
+    navigate(`/admin/driver-profile/${driverID}`);
+  };
+
+  const handleDeleteEmployee = (employeeId: string) => {
+    deleteEmpMf(employeeId);
+  };
+  const { mutate: deleteEmpMf } = useMutation({
+    mutationKey: ["delete-driver"],
+    mutationFn: async (driverID: string) => {
+      await useAxios.delete(`/users/driver/${driverID}`);
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["all-teamMembers"] });
+    },
+  });
   return (
     <PageContainer
       headerText={`All Cab Drivers (${cabDetails?.length || 0})`}
@@ -136,7 +157,7 @@ function AllCabDrivers() {
                       ? "Active"
                       : "Suspended"}
                   </TableCell>
-                  <TableCell align="center">
+                  <TableCell align="center" sx={{ position: "relative" }}>
                     <MoreHoriz
                       sx={{ cursor: "pointer" }}
                       onClick={() => handleMenuOpen(driver)}
@@ -146,11 +167,12 @@ function AllCabDrivers() {
                         style={{
                           position: "absolute",
                           borderRadius: "10px",
-                          right: "8rem",
+                          right: "3rem",
                           boxShadow:
                             "rgba(0, 0, 0, 0.2) 0px 2px 1px -1px, rgba(0, 0, 0, 0.14) 0px 1px 1px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px 0px",
                           padding: "8px 0px",
                           backgroundColor: "white",
+                          zIndex: 1,
                         }}
                       >
                         <MenuItem
@@ -160,6 +182,9 @@ function AllCabDrivers() {
                             fontWeight: 600,
                             justifyContent: "flex-start",
                             gap: "10px",
+                          }}
+                          onClick={() => {
+                            handleDriverProfilePage(driver?._id as string);
                           }}
                         >
                           <VisibilityIcon sx={{}} />
@@ -187,9 +212,12 @@ function AllCabDrivers() {
                             justifyContent: "flex-start",
                             gap: "10px",
                           }}
+                          onClick={() =>
+                            handleDeleteEmployee(driver._id as string)
+                          }
                         >
                           <DeleteForever sx={{}} />
-                          Remove Driver
+                          Remove Employee
                         </MenuItem>
                       </div>
                     )}

@@ -57,6 +57,7 @@ const getTM = catchAsync(async (req, res, next) => {
 const getDriver = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const driver = await User.findById(id);
+  console.log(driver);
   if (!driver) {
     return next(new AppError(`No document found with this id`, 404));
   }

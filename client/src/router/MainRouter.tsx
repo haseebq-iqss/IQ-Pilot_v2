@@ -21,6 +21,7 @@ import EmployeeDashboard from "../pages/EmployeeDashboard/EmployeeDashboard";
 import StartRoute from "../pages/StartRoute/StartRoute";
 import RouteCompleted from "../pages/RouteCompleted/RouteCompleted";
 import ViewRoute from "../pages/ViewRoute/ViewRoute";
+import DriverProfile from "../pages/DriverProfilePage/DriverProfilePage";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -134,6 +135,14 @@ function MainRouter() {
               element={
                 <SlideInOut>
                   <ViewRoute />
+                </SlideInOut>
+              }
+            />
+            <Route
+              path="admin/driver-profile/:id"
+              element={
+                <SlideInOut>
+                  <DriverProfile />
                 </SlideInOut>
               }
             />
