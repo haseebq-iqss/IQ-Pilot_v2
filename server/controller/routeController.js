@@ -413,3 +413,24 @@ exports.driverRoute = catchAsync(async (req, res, next) => {
 
   res.status(200).json({ status: "Success", data: { pickArr, dropArr } });
 });
+
+exports.totalDistanceMonth = catchAsync(async (req, res, next) => {
+  const now = new Date();
+  const firstDayMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const firstDayNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+  const routes = await Route.find({
+    createdAt: {
+      $gte: firstDayMonth,
+      $lt: firstDayNextMonth,
+    },
+  });
+
+  const total_distance = routes.reduce(
+    (acc, route) => (route.totalDistance ? acc + route.totalDistance : acc),
+    0
+  );
+  res
+    .status(200)
+    .json({ status: "Success", data: Number(total_distance.toFixed(2)) });
+});

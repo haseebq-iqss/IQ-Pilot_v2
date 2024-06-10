@@ -58,6 +58,33 @@ exports.deleteAttendance = catchAsync(async function (req, res, next) {
 
 exports.getAttendanceByRoute = catchAsync(async (req, res, next) => {
   const route_id = req.params.id;
-  const route_attendance = await Attendance.find({ ofRoute: route_id }).populate("ofEmployee");
+  const route_attendance = await Attendance.find({
+    ofRoute: route_id,
+  }).populate("ofEmployee");
   res.status(200).json({ status: "Success", route_attendance });
+});
+
+exports.getMonthShrinkage = catchAsync(async (req, res, next) => {
+  const now = new Date();
+  const firstDayMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const firstDayNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+  const attendances = await Attendance.find({
+    createdAt: {
+      $gte: firstDayMonth,
+      $lte: firstDayNextMonth,
+    },
+  });
+
+  const no_absentees_for_month = attendances.reduce(
+    (acc, attendance) => (attendance.isPresent ? acc : acc + 1),
+    0
+  );
+  console.log(no_absentees_for_month);
+
+  const shrinkage_percentage = attendances.length
+    ? Number(((no_absentees_for_month / attendances.length) * 100).toFixed(1))
+    : 0;
+
+  res.status(200).json({ status: "Success", data: shrinkage_percentage });
 });

@@ -11,6 +11,7 @@ const {
   updateRoute,
   deleteRoute,
   getActiveRoutes,
+  totalDistanceMonth,
 } = require("../controller/routeController");
 const { protect, restrictTo } = require("../controller/authController");
 
@@ -18,6 +19,7 @@ router.use(protect);
 // router.use(restrictTo("admin"));
 
 router.route("/shifts").post(createShift);
+router.route("/totalDistanceMonth").get(totalDistanceMonth);
 
 router.route("/pendingPassengers").get(restrictTo("admin"), pendingPassengers);
 router
