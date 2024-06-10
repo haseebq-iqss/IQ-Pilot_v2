@@ -80,7 +80,6 @@ exports.getMonthShrinkage = catchAsync(async (req, res, next) => {
     (acc, attendance) => (attendance.isPresent ? acc : acc + 1),
     0
   );
-  console.log(no_absentees_for_month);
 
   const shrinkage_percentage = attendances.length
     ? Number(((no_absentees_for_month / attendances.length) * 100).toFixed(1))
