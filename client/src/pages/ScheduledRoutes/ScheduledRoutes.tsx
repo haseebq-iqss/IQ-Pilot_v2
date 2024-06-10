@@ -25,10 +25,10 @@ import useAxios from "../../api/useAxios";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import Cabtypes from "../../types/CabTypes";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
-import FormatDateString from "../../utils/DateFormatter";
 import { useNavigate } from "react-router-dom";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 import SnackbarContext from "../../context/SnackbarContext";
+import DaysTillActive from "../../utils/DaysTillActive";
 
 // type routeCacheTypes = {
 //   nonActiveroutes: [RouteTypes];
@@ -96,7 +96,7 @@ function ScheduledRoutes() {
                 <TableCell align="left">Cab</TableCell>
                 <TableCell align="left">Driver</TableCell>
                 <TableCell align="center">Pickup/Drop</TableCell>
-                <TableCell align="center">Assigned Date</TableCell>
+                <TableCell align="center">Date</TableCell>
                 <TableCell align="center">Status</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
@@ -148,9 +148,9 @@ function ScheduledRoutes() {
                       {(route.typeOfRoute?.charAt(0).toUpperCase() as string) +
                         route.typeOfRoute?.slice(1, 99)}
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell sx={{ fontWeight: 600 }} align="center">
                       {/* {route.totalDistance || "Not Calculated"} */}
-                      {FormatDateString(route.createdAt)}
+                      {DaysTillActive(route.createdAt, route.daysRouteIsActive)}
                     </TableCell>
                     <TableCell
                       sx={{

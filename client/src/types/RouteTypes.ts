@@ -12,6 +12,7 @@ type RouteTypes = {
   estimatedTime?: number;
   cabPath?: Array<Array<number>>; /// cabPath = [ [32.123123, 75.342423], [32.123123, 75.342423], [32.123123, 75.342423],][32.123123, 75.342423],
   routeStatus: routeStatusTypes;
+  daysRouteIsActive?: number;
   totalDistance?: number;
   currentShift?: string;
   workLocation?: string;

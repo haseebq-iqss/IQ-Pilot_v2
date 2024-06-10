@@ -8,6 +8,11 @@ import {
   FormatColorFill,
   DirectionsCar,
   Close,
+  NotListedLocation,
+  PeopleAlt,
+  Error,
+  AccessTime,
+  DateRange,
 } from "@mui/icons-material";
 import { Typography, Avatar, Box } from "@mui/material";
 import { useLocation } from "react-router-dom";
@@ -21,18 +26,19 @@ import useAxios from "../../api/useAxios";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
+import DaysTillActive from "../../utils/DaysTillActive";
 
 function ViewRoute() {
   const location = useLocation();
   const routeState: RouteTypes = location.state;
   console.log(routeState);
 
-  const getAllDriverRoutes = () => {
+  const getAllRouteAttendances = () => {
     return useAxios.get(`attendances/route-attendance/${routeState?._id}`);
   };
 
   const { data: attendanceData } = useQuery({
-    queryFn: getAllDriverRoutes,
+    queryFn: getAllRouteAttendances,
     queryKey: ["Route Attendance"],
     select: (data: any) => {
       return data.data.route_attendance as Array<EmployeeTypes>;
@@ -90,33 +96,21 @@ function ViewRoute() {
           }}
         >
           {/* L1-R1 */}
-          <Typography
-            sx={{ fontWeight: 600, fontSize: "2rem", color: "#212A3B" }}
-            variant="body2"
-            fontWeight={600}
-            color={"GrayText"}
-          >
-            {ConvertShiftTimeTo12HrFormat(
-              routeState?.currentShift as string,
-              routeState?.typeOfRoute
-            ) +
-              " - " +
-              routeState?.typeOfRoute?.toUpperCase()}
-          </Typography>
-          {/* L1 R2 */}
           <Box
             sx={{ ...RowFlex, width: "100%", justifyContent: "space-between" }}
           >
-            <Box
-              sx={{ width: "100px", aspectRatio: 2.6863 }}
-              component={"img"}
-              src={
-                routeState?.typeOfRoute === "pickup"
-                  ? "/images/pickup-dark.png"
-                  : "/images/drop-dark.png"
-              }
-            />
-
+            <Typography
+              sx={{ fontWeight: 600, fontSize: "1.75rem", color: "#212A3B", ...RowFlex }}
+              variant="body2"
+              fontWeight={600}
+              color={"GrayText"}
+            >
+              <AccessTime sx={{fontSize:"2rem", mr:1}}/>
+              {ConvertShiftTimeTo12HrFormat(
+                routeState?.currentShift as string,
+                routeState?.typeOfRoute
+              )}
+            </Typography>
             <Box
               sx={{
                 padding: "5px 15px",
@@ -134,6 +128,33 @@ function ViewRoute() {
                 {routeState?.routeStatus?.toUpperCase()}
               </Typography>
             </Box>
+
+          </Box>
+          {/* L1 R2 */}
+          <Box
+            sx={{ ...RowFlex, width: "100%", justifyContent: "space-between" }}
+          >
+            <Box
+              sx={{ width: "100px", aspectRatio: 2.6863 }}
+              component={"img"}
+              src={
+                routeState?.typeOfRoute === "pickup"
+                  ? "/images/pickup-dark.png"
+                  : "/images/drop-dark.png"
+              }
+            />
+            <Typography
+              sx={{ fontWeight: 600, fontSize: "1.75rem", color: "#212A3B", ...RowFlex }}
+              variant="body2"
+              fontWeight={600}
+              color={"GrayText"}
+            >
+              <DateRange sx={{fontSize:"2rem", mr:1}}/>
+              {DaysTillActive(
+                routeState?.createdAt as any,
+                routeState?.daysRouteIsActive as any
+              )}
+            </Typography>
           </Box>
         </Box>
         {/* L-2 */}
@@ -150,82 +171,155 @@ function ViewRoute() {
             gap: 1,
           }}
         >
-          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-            Passengers ({numberOfPresentPassengers} out of{" "}
-            {attendanceData?.length} are Present)
-          </Typography>
-          {attendanceData?.map((attendance: any) => {
-            // console.log(employee);
-            return (
-              <Box
-                key={attendance?.ofEmployee?._id}
-                sx={{ ...RowFlex, width: "100%" }}
-              >
-                <Box
-                  sx={{
-                    ...RowFlex,
-                    width: "80%",
-                    justifyContent: "flex-start",
-                    gap: "20px",
-                  }}
-                >
-                  <Avatar
-                    sx={{ width: "40px", height: "40px" }}
-                    src={baseURL + attendance?.ofEmployee?.profilePicture}
-                  />
-                  <Box>
-                    <Typography sx={{ fontSize: "1.25rem", fontWeight: 500 }}>
-                      {attendance.ofEmployee?.fname +
-                        " " +
-                        attendance.ofEmployee?.lname}
-                    </Typography>
-                    <Typography
+          {attendanceData?.length ? (
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+              Passengers ({numberOfPresentPassengers} out of{" "}
+              {attendanceData?.length} are Present)
+            </Typography>
+          ) : (
+            <Box sx={{...ColFlex, justifyContent:'flex-start', alignItems:"flex-start"}}>
+            <Typography variant="h5" sx={{ fontWeight: 600, ...RowFlex, width:"100%", justifyContent:"flex-start" }}>
+              <PeopleAlt sx={{mr:1}}/>{routeState?.passengers?.length} Passengers
+            </Typography>
+            <Typography variant="body1" sx={{color:"warning.main", fontWeight:500, mb: 1, ...RowFlex, width:"100%", justifyContent:"flex-end" }}>
+              <Error sx={{mr:1, color:"warning.main", p:0.25}}/>Route Not Started Yet!
+            </Typography>
+            </Box>
+          )}
+          {attendanceData?.length
+            ? attendanceData?.map((attendance: any) => {
+                // console.log(employee);
+                return (
+                  <Box
+                    key={attendance?.ofEmployee?._id}
+                    sx={{ ...RowFlex, width: "100%" }}
+                  >
+                    <Box
                       sx={{
-                        fontSize: "0.8rem",
-                        display: "flex",
-                        alignItems: "center",
+                        ...RowFlex,
+                        width: "80%",
+                        justifyContent: "flex-start",
+                        gap: "20px",
                       }}
                     >
-                      <Route
-                        sx={{
-                          width: "15px",
-                          height: "15px",
-                          mr: "5px",
-                          color: "secondary.main",
-                        }}
+                      <Avatar
+                        sx={{ width: "40px", height: "40px" }}
+                        src={baseURL + attendance?.ofEmployee?.profilePicture}
                       />
-                      {attendance?.ofEmployee?.pickUp?.address}
-                    </Typography>
+                      <Box>
+                        <Typography
+                          sx={{ fontSize: "1.25rem", fontWeight: 500 }}
+                        >
+                          {attendance.ofEmployee?.fname +
+                            " " +
+                            attendance.ofEmployee?.lname}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: "0.8rem",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Route
+                            sx={{
+                              width: "15px",
+                              height: "15px",
+                              mr: "5px",
+                              color: "secondary.main",
+                            }}
+                          />
+                          {attendance?.ofEmployee?.pickUp?.address}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Box sx={{ ...RowFlex, width: "20%" }}>
+                      {attendance?.isPresent ? (
+                        <DoneAll
+                          sx={{
+                            backgroundColor: "primary.main",
+                            borderRadius: "100px",
+                            p: 0.5,
+                            width: "40px",
+                            height: "40px",
+                            color: "white",
+                          }}
+                        />
+                      ) : (
+                        <Close
+                          sx={{
+                            backgroundColor: "error.main",
+                            borderRadius: "100px",
+                            p: 0.5,
+                            width: "40px",
+                            height: "40px",
+                            color: "white",
+                          }}
+                        />
+                      )}
+                    </Box>
                   </Box>
-                </Box>
-                <Box sx={{ ...RowFlex, width: "20%" }}>
-                  {attendance?.isPresent ? (
-                    <DoneAll
+                );
+              })
+            : routeState?.passengers?.map((employee: any) => {
+                // console.log(employee);
+                return (
+                  <Box
+                    key={employee?._id}
+                    sx={{ ...RowFlex, width: "100%" }}
+                  >
+                    <Box
                       sx={{
-                        backgroundColor: "primary.main",
-                        borderRadius: "100px",
-                        p: 0.5,
-                        width: "40px",
-                        height: "40px",
-                        color: "white",
+                        ...RowFlex,
+                        width: "80%",
+                        justifyContent: "flex-start",
+                        gap: "20px",
                       }}
-                    />
-                  ) : (
-                    <Close
-                      sx={{
-                        backgroundColor: "error.main",
-                        borderRadius: "100px",
-                        p: 0.5,
-                        width: "40px",
-                        height: "40px",
-                        color: "white",
-                      }}
-                    />
-                  )}
-                </Box>
-              </Box>
-            );
-          })}
+                    >
+                      <Avatar
+                        sx={{ width: "40px", height: "40px" }}
+                        src={baseURL + employee.profilePicture}
+                      />
+                      <Box>
+                        <Typography
+                          sx={{ fontSize: "1.25rem", fontWeight: 500 }}
+                        >
+                          {employee.fname +
+                            " " +
+                            employee.lname}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: "0.8rem",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Route
+                            sx={{
+                              width: "15px",
+                              height: "15px",
+                              mr: "5px",
+                              color: "secondary.main",
+                            }}
+                          />
+                          {employee.pickUp?.address}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Box sx={{ ...RowFlex, width: "20%" }}>
+                      <NotListedLocation                           sx={{
+                            backgroundColor: "info.main",
+                            borderRadius: "100px",
+                            p: 0.5,
+                            width: "40px",
+                            height: "40px",
+                            color: "white",
+                          }} />
+                    </Box>
+                  </Box>
+                );
+              })}
         </Box>
       </Box>
       {/* RS */}
