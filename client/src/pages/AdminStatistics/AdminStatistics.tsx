@@ -400,7 +400,7 @@ function AdminStatistics() {
                                   justifyContent: "flex-start",
                                   gap: "10px",
                                 }}
-                                onClick={() => console.log(driver?._id)}
+                                onClick={() => navigate(`/admin/driverProfile/${driver?._id}`)}
                               >
                                 <Visibility sx={{}} />
                                 View Details

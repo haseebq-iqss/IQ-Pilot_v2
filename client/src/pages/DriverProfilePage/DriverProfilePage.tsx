@@ -12,7 +12,6 @@ import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import { useEffect, useState } from "react";
-import RouteTypes from "../../types/RouteTypes";
 
 const DriverProfile = () => {
   const { id } = useParams();
@@ -48,18 +47,22 @@ const DriverProfile = () => {
 
   useEffect(() => {
     if (driverRoutes) {
-      driverRoutes?.map((route: RouteTypes) => {
-        setTotalDistance((prevDist: number) =>
-          route?.totalDistance ? prevDist + route?.totalDistance! : prevDist
-        );
-        setTotalTimeSpent((prevTime: number) =>
-          route?.estimatedTime ? prevTime + route?.estimatedTime! : prevTime
-        );
-      });
+      // Compute the totals
+      const totalDistance = driverRoutes.reduce((acc, route) => {
+        return acc + (route.totalDistance || 0);
+      }, 0);
+  
+      const totalTimeSpent = driverRoutes.reduce((acc, route) => {
+        return acc + (route.estimatedTime || 0);
+      }, 0);
+  
+      // Set the totals
+      setTotalDistance(totalDistance);
+      setTotalTimeSpent(totalTimeSpent);
     }
   }, [driverRoutes]);
 
-  console.log(totalDistance);
+  // console.log(totalDistance);
 
   return (
     <Box sx={{ maxWidth: "100%", p: 2.5 }}>
