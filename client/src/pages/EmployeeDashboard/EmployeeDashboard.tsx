@@ -19,7 +19,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import { io } from "socket.io-client";
+import { io } from "socket.io-client";
 import useAxios from "../../api/useAxios";
 import MapComponent from "../../components/Map";
 import SelectedEmpsContext from "../../context/SelectedEmpsContext";
@@ -33,9 +33,9 @@ import { PageFlex, ColFlex, RowFlex } from "./../../style_extentions/Flex";
 import Cabtypes from "../../types/CabTypes";
 import GetArrivalTime from "../../utils/ReturnPickupTime";
 import GetOfficeCoordinates from "../../utils/OfficeCoordinates";
-import EmployeeTypes from './../../types/EmployeeTypes';
+import EmployeeTypes from "./../../types/EmployeeTypes";
 
-// const socket = io(baseURL);
+const socket = io(baseURL);
 
 function EmployeeDashboard() {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
@@ -77,50 +77,25 @@ function EmployeeDashboard() {
       );
   }
 
-  // const SendEmergencyAlert = () => {
-  //   let sosData;
-  //   navigator.geolocation.getCurrentPosition((pos) => {
-  //     sosData = {
-  //       sosFrom: userData?.fName + " " + userData?.lName,
-  //       phone: userData?.phone,
-  //       location: [pos.coords.latitude, pos.coords.longitude],
-  //     };
-  //     socket.emit("SOS", sosData);
-  //     setOpenModal(!openModal);
-  //     setOpenSnack({
-  //       open: true,
-  //       message:
-  //         "Emergency SOS was sent. Admin will get in touch with you shortly.",
-  //       severity: "info",
-  //     });
-  //     // console.log(sosData);
-  //   });
-  // };
-
-  const extractDriverData = (rawData: any) => {
-    const mapTest = new Map(rawData);
-    // console.log(mapTest)
-
-    const mapValues = Array.from(mapTest.values());
-    setDriversLocation(mapValues);
-
-    // console.log(mapValues);
-    // const dName = routeData?.driver?.fName[0] + ". " + routeData?.driver?.lName;
-    // const myDriver = mapValues.find((driver: any) => { console.log(driver.name === dName); driver.name == dName});
-    // if (myDriver) {
-    // setDriversLocation([myDriver]);
-    // console.log('myDriver -> ', myDriver)
-    // console.log('allDrivers --> ', mapValues)
-    // }
+  const SendEmergencyAlert = () => {
+    let sosData;
+    navigator.geolocation.getCurrentPosition((pos) => {
+      sosData = {
+        sosFrom: userData?.fname + " " + userData?.lname,
+        phone: userData?.phone,
+        location: [pos.coords.latitude, pos.coords.longitude],
+      };
+      socket.emit("SOS", sosData);
+      setOpenModal(!openModal);
+      setOpenSnack({
+        open: true,
+        message:
+          "Emergency SOS was sent. Admin will get in touch with you shortly.",
+        severity: "info",
+      });
+      // console.log(sosData);
+    });
   };
-
-  // useEffect(() => {
-  //   socket.on("live-drivers", (data) => {
-  //     // console.log("Live Drivers ------->  ", data);
-  //     // const locations = data;
-  //     extractDriverData(data);
-  //   });
-  // }, [socket]);
 
   const getEmployeeRoute = () => {
     return useAxios.get(`cabs/tm/cab/${userData?._id}`);
@@ -166,7 +141,7 @@ function EmployeeDashboard() {
   // console.log(routeData);
   useEffect(() => {
     const passengers = routeData?.passengers;
-    console.log(passengers)
+    console.log(passengers);
 
     if (passengers) {
       const passengersLatLons: string[] = passengers.map(
@@ -174,7 +149,10 @@ function EmployeeDashboard() {
       );
       // console.log(passengersLatLons);
       // passengers?.workLocation
-      setSelectedEmps([...passengersLatLons, GetOfficeCoordinates((passengers[0] as any)?.workLocation)]);
+      setSelectedEmps([
+        ...passengersLatLons,
+        GetOfficeCoordinates((passengers[0] as any)?.workLocation),
+      ]);
 
       // const numberInList = passengers?.filter((passenger, index) => {
       //   passenger?._id === userData?._id && setPassengerPickupNumber(index + 1);
@@ -186,6 +164,37 @@ function EmployeeDashboard() {
     });
     setMyIndexInCab(myIndex as number);
   }, [routeData]);
+
+  const extractDriverData = (rawData: any) => {
+    const mapTest = new Map(rawData);
+    console.log(routeData)
+
+    const mapValues = Array.from(mapTest.values());
+    if (routeData) {
+      const formattedDriverName =
+        (routeData?.cab as any)?.cabDriver?.fname[0] +
+        ". " +
+        (routeData?.cab as any)?.cabDriver?.lname;
+      // console.log(route);
+      const myDriver = mapValues?.filter(
+        ({ name, location }) => name === formattedDriverName
+      );
+      console.log(formattedDriverName);
+      console.log(myDriver);
+      setDriversLocation(myDriver);
+    }
+    // else {
+    //   setDriversLocation(mapValues)
+    // }
+  };
+
+  useEffect(() => {
+    socket.on("live-drivers", (data) => {
+      // console.log("Live Drivers ------->  ", data);
+      // const locations = data;
+      extractDriverData(data);
+    });
+  }, [socket, routeData]);
 
   return (
     <Box sx={{ ...PageFlex, height: "100vh" }}>
@@ -352,7 +361,7 @@ function EmployeeDashboard() {
               The admin will be alerted instantly!
             </Typography>
             <Button
-              // onClick={() => SendEmergencyAlert()}
+              onClick={() => SendEmergencyAlert()}
               sx={{
                 backgroundColor: "error.main",
                 color: "background.default",

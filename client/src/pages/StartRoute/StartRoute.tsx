@@ -14,7 +14,7 @@ import { useMutation } from "@tanstack/react-query";
 import { LatLngExpression } from "leaflet";
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-// import { io } from "socket.io-client";
+import { io } from "socket.io-client";
 import useAxios from "../../api/useAxios";
 import MapComponent from "../../components/Map";
 import SelectedEmpsContext from "../../context/SelectedEmpsContext";
@@ -36,13 +36,13 @@ type modalPropTypes = {
   currentPassenger?: EmployeeTypes;
 };
 
-// const socket = io(baseURL);
+const socket = io(baseURL);
 
 function StartRoute() {
   const location = useLocation();
   const route: RouteTypes = location.state;
 
-  const { setItem, getItem, deleteItem, clearLs } = useLocalStorage<string>();
+  const { setItem, getItem, deleteItem, clearLs } = useLocalStorage<String>();
 
   const { userData }: UserContextTypes = useContext(UserDataContext);
 
@@ -67,18 +67,19 @@ function StartRoute() {
     }
   }, [actionUpdater]);
 
-  // useEffect(() => {
-  //   if (myLocation.length == 2) {
-  //     const driverData = {
-  //       name: userData?.fname[0] + ". " + userData?.lname,
-  //       location: myLocation,
-  //     };
+  useEffect(() => {
+    if (myLocation.length == 2) {
+      console.log(myLocation)
+      const driverData = {
+        name: userData?.fname[0] + ". " + userData?.lname,
+        location: myLocation,
+      };
 
-  //     console.log(myLocation);
+      console.log(myLocation);
 
-  //     socket.emit("live-drivers", driverData);
-  //   }
-  // }, [socket, myLocation]);
+      socket.emit("live-drivers", driverData);
+    }
+  }, [socket, myLocation]);
 
   useEffect(() => {
     if (userData?.role === "driver") {
