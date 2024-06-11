@@ -152,10 +152,10 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
       if (route.availableCapacity > 0) {
         const cab = await Cab.findById(route.cab).populate("cabDriver");
         return {
-          cab_driver: cab.cabDriver,
+          cabDriver: cab.cabDriver,
           capacity: route.availableCapacity,
-          cab_number: cab.cabNumber,
-          number_plate: cab.numberPlate,
+          cabNumber: cab.cabNumber,
+          numberPlate: cab.numberPlate,
           color: cab.carColor,
           model: cab.carModel,
           passengers: [...route.passengers],
