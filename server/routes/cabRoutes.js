@@ -24,10 +24,10 @@ router.route("/availableCabs").get(restrictTo("admin"), availableCabs);
 router
   .route("/:id")
   .get(restrictTo("admin"), getCabByID)
-  .get(restrictTo("admin"), getCabByDriver)
   .patch(restrictTo("admin"), updateCab)
   .delete(restrictTo("admin"), deleteCab);
 
+router.route("/driver/:id").get(restrictTo("admin"), getCabByDriver)
 router
   .route("/tm/cab/:id")
   .get(restrictTo("admin", "employee"), getEmployeeCab);
