@@ -126,6 +126,8 @@ const cancelCab = catchAsync(async (req, res, next) => {
       new AppError(`User document with this id:${id} not found!`, 404)
     );
   user.isCabCancelled = !user.isCabCancelled;
+  await user.save();
+
   res.status(200).json({ status: "Success", data: user });
 });
 
