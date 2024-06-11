@@ -58,7 +58,8 @@ export const EditDetails = () => {
   type CabDriverType = EmployeeTypes & Cabtypes;
   const editCabDriver = (cabDriverData: CabDriverType) => {
     // console.log(cabDriverData);
-    return useAxios.patch(`/cabs/${id}`, cabDriverData);
+
+    return useAxios.patch(`/users/driver/${id}`, cabDriverData);
   };
 
   const { data: editTMDetails } = useQuery({
@@ -115,7 +116,7 @@ export const EditDetails = () => {
     });
   }, [editTMDetails, editDriverData]);
 
-  const { mutate: AddCabDriver } = useMutation({
+  const { mutate: EditCabDriver } = useMutation({
     mutationFn: editCabDriver,
     onSuccess: (data) => {
       setOpenSnack({
@@ -179,8 +180,7 @@ export const EditDetails = () => {
         }
       }
     }
-    // console.log(cabDriverData);
-    AddCabDriver(formData as CabDriverType);
+    EditCabDriver(formData as CabDriverType);
   }
   const handleFullName: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { name, value } = e.target;
@@ -209,7 +209,6 @@ export const EditDetails = () => {
         address: currentTarget.address.value as string,
       },
     };
-    console.log(teamMemberData);
 
     const formData = new FormData();
 
@@ -235,6 +234,7 @@ export const EditDetails = () => {
         }
       }
     }
+    console.log(teamMemberData);
     AddTeamMember(formData);
   }
 
@@ -418,7 +418,7 @@ export const EditDetails = () => {
                 }}
               >
                 <TextField
-                  required={driverPath}
+                  //   required={driverPath}
                   fullWidth
                   name="cabNumber"
                   label="cab number"
@@ -440,7 +440,7 @@ export const EditDetails = () => {
                 }}
               >
                 <TextField
-                  required={driverPath}
+                  //   required={driverPath}
                   fullWidth
                   name="carColor"
                   label="cab color"
@@ -451,7 +451,7 @@ export const EditDetails = () => {
                   onChange={(e) => setInitialData({ carColor: e.target.value })}
                 />
                 <TextField
-                  required={driverPath}
+                  //   required={driverPath}
                   fullWidth
                   name="seatingCapacity"
                   label="seating capacity"
@@ -473,7 +473,7 @@ export const EditDetails = () => {
                 }}
               >
                 <TextField
-                  required={driverPath}
+                  //   required={driverPath}
                   fullWidth
                   name="numberPlate"
                   label="number plate"
@@ -486,7 +486,7 @@ export const EditDetails = () => {
                   }
                 />
                 <TextField
-                  required={driverPath}
+                  //   required={driverPath}
                   fullWidth
                   name="carModel"
                   label="model"
