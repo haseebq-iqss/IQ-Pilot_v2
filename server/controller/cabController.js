@@ -152,6 +152,7 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
       if (route.availableCapacity > 0) {
         const cab = await Cab.findById(route.cab).populate("cabDriver");
         return {
+          _id: cab._id,
           cabDriver: cab.cabDriver,
           seatingCapacity: route.availableCapacity,
           cabNumber: cab.cabNumber,
@@ -185,6 +186,7 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
 
   const cabsAvailable = noOfCabsAvailable.map((cab) => {
     return {
+      _id: cab._id,
       cabDriver: cab.cabDriver,
       cabNumber: cab.cabNumber,
       numberPlate: cab.numberPlate,
