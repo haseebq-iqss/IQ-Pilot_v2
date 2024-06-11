@@ -199,6 +199,11 @@ function AllCabDrivers() {
                             justifyContent: "flex-start",
                             gap: "10px",
                           }}
+                          onClick={() =>
+                            navigate(
+                              `/admin/editDetails/${driver?.cabDriver?._id}`
+                            )
+                          }
                         >
                           <EditLocation sx={{}} />
                           Edit Details

@@ -11,8 +11,8 @@ import {
   Typography,
 } from "@mui/material";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { FormEvent, useContext, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { FormEvent, useContext, useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useAxios from "../../api/useAxios";
 import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
@@ -21,15 +21,29 @@ import EmployeeTypes from "../../types/EmployeeTypes";
 import Cabtypes from "../../types/CabTypes";
 
 export const EditDetails = () => {
+  const navigate = useNavigate();
   const [department, setDepartment] = useState("");
   const [workLocation, setWorkLocation] = useState("");
   const [fullName, setFullName] = useState({
     firstName: "",
     lastName: "",
   });
+  const [initialData, setInitialData] = useState({
+    fname: "",
+    lname: "",
+    email: "",
+    phone: "",
+    address: "",
+    coordinates: "",
+    seatingCapacity: "",
+    cabNumber: "",
+    numberPlate: "",
+    carModel: "",
+    carColor: "",
+  });
+
   const location = useLocation();
   const { id } = useParams();
-  const driverPath = location.pathname.includes("/admin/addCabDrivers");
   const handleWorkLocation = (event: any) => {
     setWorkLocation(event.target.value);
   };
@@ -37,14 +51,14 @@ export const EditDetails = () => {
     setDepartment(event.target.value);
   };
 
-  const addTMMF = (teamMemberData: any) => {
-    return useAxios.post("auth/signup", teamMemberData);
+  const editTMMF = (teamMemberData: any) => {
+    return useAxios.patch(`/users/tm/${id}`, teamMemberData);
   };
 
   type CabDriverType = EmployeeTypes & Cabtypes;
-  const addCabDriver = (cabDriverData: CabDriverType) => {
+  const editCabDriver = (cabDriverData: CabDriverType) => {
     // console.log(cabDriverData);
-    return useAxios.post("auth/signup", cabDriverData);
+    return useAxios.patch(`/cabs/${id}`, cabDriverData);
   };
 
   const { data: editTMDetails } = useQuery({
@@ -54,16 +68,26 @@ export const EditDetails = () => {
       return response?.data?.data;
     },
   });
-  console.log(editTMDetails);
+
+  const { data: editDriverData } = useQuery({
+    queryKey: ["Driver-data"],
+    queryFn: async () => {
+      const response = await useAxios.get(`/cabs/driver/${id}`);
+      return response?.data?.data[0];
+    },
+  });
+  const driverPath = editDriverData?.cabDriver?.role === "driver";
+
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
   const { mutate: AddTeamMember } = useMutation({
-    mutationFn: addTMMF,
+    mutationFn: editTMMF,
     onSuccess: (data) => {
       setOpenSnack({
         open: true,
         message: data.data.message,
         severity: "success",
       });
+      navigate(-1);
     },
     onError: (err: any) => {
       setOpenSnack({
@@ -73,9 +97,26 @@ export const EditDetails = () => {
       });
     },
   });
+  useEffect(() => {
+    setInitialData((prev) => {
+      return {
+        fname: editTMDetails?.fname,
+        lname: editTMDetails?.lname,
+        email: editTMDetails?.email,
+        phone: editTMDetails?.phone,
+        address: editTMDetails?.pickUp?.address,
+        coordinates: editTMDetails?.pickUp?.coordinates,
+        seatingCapacity: editDriverData?.seatingCapacity,
+        cabNumber: editDriverData?.cabNumber,
+        numberPlate: editDriverData?.numberPlate,
+        carModel: editDriverData?.carModel,
+        carColor: editDriverData?.carColor,
+      };
+    });
+  }, [editTMDetails, editDriverData]);
 
   const { mutate: AddCabDriver } = useMutation({
-    mutationFn: addCabDriver,
+    mutationFn: editCabDriver,
     onSuccess: (data) => {
       setOpenSnack({
         open: true,
@@ -116,15 +157,12 @@ export const EditDetails = () => {
       lname: currentTarget.lastName.value,
       email: currentTarget.email.value,
       phone: currentTarget.phone.value,
-      address: currentTarget.address.value,
       profilePicture: currentTarget.profilePicture.files?.[0] as File,
-      password: currentTarget.password.value,
       seatingCapacity: parseInt(currentTarget.seatingCapacity.value, 10),
       cabNumber: currentTarget.cabNumber.value,
       numberPlate: currentTarget.numberPlate.value,
       carModel: currentTarget.carModel.value,
       carColor: currentTarget.carColor.value,
-      role: "driver",
     };
 
     const formData = new FormData();
@@ -141,7 +179,7 @@ export const EditDetails = () => {
         }
       }
     }
-    // console.log(formData);
+    // console.log(cabDriverData);
     AddCabDriver(formData as CabDriverType);
   }
   const handleFullName: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -170,11 +208,8 @@ export const EditDetails = () => {
         ],
         address: currentTarget.address.value as string,
       },
-      password: currentTarget.password.value,
-      workLocation: workLocation,
-      department: department,
-      role: "employee",
     };
+    console.log(teamMemberData);
 
     const formData = new FormData();
 
@@ -200,12 +235,16 @@ export const EditDetails = () => {
         }
       }
     }
-
     AddTeamMember(formData);
   }
 
   return (
-    <PageContainer headerText={"Edit Details"} parentStyles={{}}>
+    <PageContainer
+      headerText={`Edit Details Of ${
+        editTMDetails?.fname + " " + editTMDetails?.lname
+      }`}
+      parentStyles={{}}
+    >
       <Box
         sx={{
           display: "flex",
@@ -226,11 +265,7 @@ export const EditDetails = () => {
             // py: "5%",
             // my: "2.5%",
           }}
-          onSubmit={
-            location.pathname.includes("/admin/addCabDrivers")
-              ? HandleCabDriver
-              : HandleAddTM
-          }
+          onSubmit={driverPath ? HandleCabDriver : HandleAddTM}
         >
           {/* HEADER */}
           <Box
@@ -242,26 +277,27 @@ export const EditDetails = () => {
             }}
           >
             <TextField
-              required
+              // required
               fullWidth
               name="firstName"
               label="first name"
               type="text"
-              value={editTMDetails?.fname}
+              value={initialData.fname}
+              defaultValue={editTMDetails?.fname}
               placeholder="Enter your first name"
               InputLabelProps={{ shrink: true }}
-              onChange={handleFullName}
+              onChange={(e) => setInitialData({ fname: e.target.value })}
             />
             <TextField
-              required
+              //   required
               fullWidth
               name="lastName"
               label="last name"
               type="text"
               placeholder="Enter your last name"
               InputLabelProps={{ shrink: true }}
-              onChange={handleFullName}
-              value={editTMDetails?.lname}
+              value={initialData.lname}
+              onChange={(e) => setInitialData({ lname: e.target.value })}
             />
           </Box>
           <Box
@@ -273,47 +309,28 @@ export const EditDetails = () => {
             }}
           >
             <TextField
-              required
+              //   required
               fullWidth
               name="email"
               label="email"
               type="email"
               placeholder="Enter your email"
               InputLabelProps={{ shrink: true }}
-              value={editTMDetails?.email}
+              value={initialData.email}
+              onChange={(e) => setInitialData({ email: e.target.value })}
             />
             <TextField
-              required
+              //   required
               fullWidth
               name="phone"
               label="phone"
               type="number"
               placeholder="Enter your phone number"
               InputLabelProps={{ shrink: true }}
-              value={editTMDetails?.phone}
+              value={initialData.phone}
+              onChange={(e) => setInitialData({ phone: e.target.value })}
             />
           </Box>{" "}
-          {driverPath && (
-            <Box
-              sx={{
-                ...RowFlex,
-                width: "100%",
-                justifyContent: "space-between",
-                gap: "15px",
-              }}
-            >
-              <TextField
-                required
-                fullWidth
-                name="address"
-                label="address"
-                type="text"
-                placeholder="Enter your address"
-                InputLabelProps={{ shrink: true }}
-                value={editTMDetails?.pickUp?.address}
-              />
-            </Box>
-          )}
           <Box
             sx={{
               ...RowFlex,
@@ -324,45 +341,70 @@ export const EditDetails = () => {
           >
             {!driverPath && (
               <TextField
-                required
+                // required
                 fullWidth
                 name="address"
                 label="address"
                 type="text"
                 placeholder="Enter your address"
                 InputLabelProps={{ shrink: true }}
-                value={editTMDetails?.pickUp?.address}
+                value={initialData.address}
+                onChange={(e) => setInitialData({ address: e.target.value })}
               />
             )}
             <Box
-              full
               sx={{
                 ...RowFlex,
                 width: "100%",
-                justifyContent: "end",
+                justifyContent: "space-between",
                 gap: "15px",
               }}
             >
-              <Button
-                variant="contained"
-                component="label"
-                sx={{
-                  width: "100%",
-                  height: "3.4rem",
-                  bgcolor: "#9329FC",
-                  color: "white",
-                  p: "0",
-                }}
-              >
-                + ADD PROFILE PICTURE
-                <input
-                  type="file"
-                  accept="image/png, image/gif, image/jpeg"
-                  hidden
-                  name="profilePicture"
+              {!driverPath && (
+                <TextField
+                  //   required
+                  fullWidth
+                  name="coordinates"
+                  label="Coordinates"
+                  type="string"
+                  placeholder="Coordinates"
+                  InputLabelProps={{ shrink: true }}
+                  value={initialData?.coordinates}
+                  onChange={(e) =>
+                    setInitialData({ coordinates: e.target.value })
+                  }
                 />
-              </Button>
+              )}
             </Box>
+          </Box>
+          <Box
+            full
+            sx={{
+              ...RowFlex,
+              width: "100%",
+              justifyContent: "end",
+              gap: "15px",
+            }}
+          >
+            <Button
+              variant="contained"
+              component="label"
+              sx={{
+                width: "50%",
+                height: "3.4rem",
+                bgcolor: "#9329FC",
+                color: "white",
+                p: "0",
+              }}
+            >
+              + ADD PROFILE PICTURE
+              <input
+                type="file"
+                accept="image/png, image/gif, image/jpeg"
+                hidden
+                name="profilePicture"
+              />
+            </Button>
           </Box>
           {driverPath && (
             <>
@@ -383,6 +425,10 @@ export const EditDetails = () => {
                   type="cab number"
                   placeholder="Cab Number"
                   InputLabelProps={{ shrink: true }}
+                  value={initialData.cabNumber}
+                  onChange={(e) =>
+                    setInitialData({ cabNumber: e.target.value })
+                  }
                 />
               </Box>
               <Box
@@ -401,6 +447,8 @@ export const EditDetails = () => {
                   type="cab color"
                   placeholder="Cab Color"
                   InputLabelProps={{ shrink: true }}
+                  value={initialData.carColor}
+                  onChange={(e) => setInitialData({ carColor: e.target.value })}
                 />
                 <TextField
                   required={driverPath}
@@ -410,6 +458,10 @@ export const EditDetails = () => {
                   type="number"
                   placeholder="Seating Capacity"
                   InputLabelProps={{ shrink: true }}
+                  value={initialData.seatingCapacity}
+                  onChange={(e) =>
+                    setInitialData({ seatingCapacity: e.target.value })
+                  }
                 />
               </Box>
               <Box
@@ -428,6 +480,10 @@ export const EditDetails = () => {
                   type="text"
                   placeholder="Number plate"
                   InputLabelProps={{ shrink: true }}
+                  value={initialData.numberPlate}
+                  onChange={(e) =>
+                    setInitialData({ numberPlate: e.target.value })
+                  }
                 />
                 <TextField
                   required={driverPath}
@@ -437,6 +493,8 @@ export const EditDetails = () => {
                   type="text"
                   placeholder="Cab Model"
                   InputLabelProps={{ shrink: true }}
+                  value={initialData.carModel}
+                  onChange={(e) => setInitialData({ carModel: e.target.value })}
                 />
               </Box>
             </>
@@ -461,9 +519,7 @@ export const EditDetails = () => {
               color="primary"
               variant="contained"
             >
-              {`Confirm and Add ${
-                fullName.firstName + " " + fullName.lastName
-              }`}
+              {"Confirm and Edit "}
             </Button>
           </Box>
         </Box>
