@@ -33,6 +33,8 @@ router
   .patch(restrictTo("admin", "driver"), upload_profile_pic, updateUser)
   .delete(restrictTo("admin"), deleteUser);
 
-router.route("/cancel-cab/:id", cancelCab);
+router
+  .route("/cancel-cab/:id")
+  .patch(restrictTo("admin", "employee"), cancelCab);
 
 module.exports = router;
