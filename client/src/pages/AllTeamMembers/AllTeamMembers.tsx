@@ -29,9 +29,11 @@ import baseURL from "../../utils/baseURL";
 import { RowFlex } from "../../style_extentions/Flex";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
+import { useNavigate } from "react-router-dom";
 
 function AllTeamMembers() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [searchtext, setSearchText] = useState("");
   const [cabNumersArray, setCabNumersArray] = useState<Array<string>>([]);
 
@@ -124,7 +126,9 @@ function AllTeamMembers() {
             </TableHead>
             <TableBody>
               {filteredTeamMembers?.map((employee: EmployeeTypes) => {
-                const empAssignedCab:any = cabNumersArray?.find((cNum:any) => employee?._id === cNum?.id);
+                const empAssignedCab: any = cabNumersArray?.find(
+                  (cNum: any) => employee?._id === cNum?.id
+                );
                 return (
                   <TableRow
                     key={employee._id}
@@ -147,7 +151,17 @@ function AllTeamMembers() {
                       </Box>
                     </TableCell>
                     <TableCell align="center">{employee.email}</TableCell>
-                    <TableCell sx={{fontWeight: 600, color: empAssignedCab?.cab_number ? "success.main" : "error.main"}} align="center">{empAssignedCab?.cab_number || "na"}</TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: 600,
+                        color: empAssignedCab?.cab_number
+                          ? "success.main"
+                          : "error.main",
+                      }}
+                      align="center"
+                    >
+                      {empAssignedCab?.cab_number || "na"}
+                    </TableCell>
                     <TableCell align="center">
                       {employee.pickUp?.address}
                     </TableCell>
@@ -192,6 +206,9 @@ function AllTeamMembers() {
                               justifyContent: "flex-start",
                               gap: "10px",
                             }}
+                            onClick={() =>
+                              navigate(`/admin/editDetails/${employee?._id}`)
+                            }
                           >
                             <EditLocation sx={{}} />
                             Edit Details

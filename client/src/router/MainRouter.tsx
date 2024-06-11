@@ -23,6 +23,7 @@ import RouteCompleted from "../pages/RouteCompleted/RouteCompleted";
 import ViewRoute from "../pages/ViewRoute/ViewRoute";
 import DriverProfile from "../pages/DriverProfilePage/DriverProfilePage";
 import AdminStatistics from "../pages/AdminStatistics/AdminStatistics";
+import { EditDetails } from "../components/ui/EditDetails";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -96,6 +97,14 @@ function MainRouter() {
                 }
               />
               <Route
+                path="editDetails/:id"
+                element={
+                  <SlideInOut>
+                    <EditDetails />
+                  </SlideInOut>
+                }
+              />
+              <Route
                 path="addCabDrivers"
                 element={
                   <SlideInOut>
@@ -103,17 +112,17 @@ function MainRouter() {
                   </SlideInOut>
                 }
               />
-                          <Route
-              path="adminStatistics"
-              element={
-                <SlideInOut>
-                  <AdminStatistics />
-                </SlideInOut>
-              }
-            />
+              <Route
+                path="adminStatistics"
+                element={
+                  <SlideInOut>
+                    <AdminStatistics />
+                  </SlideInOut>
+                }
+              />
             </Route>
 
-{/* STANDALONE ROUTES */}
+            {/* STANDALONE ROUTES */}
             <Route
               path="admin/addPassengers"
               element={

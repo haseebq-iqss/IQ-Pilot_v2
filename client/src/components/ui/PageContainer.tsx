@@ -76,7 +76,8 @@ function PageContainer({
             }}
             variant="contained"
             startIcon={
-              !location.pathname.includes("/admin/addTeamMembers") ? (
+              !location.pathname.includes("/admin/addTeamMembers") &&
+              !location.pathname.includes("/admin/addCabDrivers") ? (
                 <AddCircleOutline />
               ) : (
                 <ChevronLeftIcon />
@@ -94,7 +95,8 @@ function PageContainer({
               location.pathname.includes("/admin/allTeamMembers")
                 ? "Add Team Member"
                 : location.pathname.includes("/admin/addTeamMembers") ||
-                  location.pathname.includes("/admin/addCabDrivers")
+                  location.pathname.includes("/admin/addCabDrivers") ||
+                  location.pathname.includes("/admin/editDetails")
                 ? "Go Back"
                 : " Add Cab Driver"
             }`}
