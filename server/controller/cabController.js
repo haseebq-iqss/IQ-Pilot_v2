@@ -153,11 +153,11 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
         const cab = await Cab.findById(route.cab).populate("cabDriver");
         return {
           cabDriver: cab.cabDriver,
-          capacity: route.availableCapacity,
+          seatingCapacity: route.availableCapacity,
           cabNumber: cab.cabNumber,
           numberPlate: cab.numberPlate,
-          color: cab.carColor,
-          model: cab.carModel,
+          carColor: cab.carColor,
+          carModel: cab.carModel,
           passengers: [...route.passengers],
         };
       }
@@ -185,12 +185,12 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
 
   const cabsAvailable = noOfCabsAvailable.map((cab) => {
     return {
-      cab_driver: cab.cabDriver,
-      cab_number: cab.cabNumber,
-      number_plate: cab.numberPlate,
-      color: cab.carColor,
-      model: cab.carModel,
-      capacity: cab.seatingCapacity,
+      cabDriver: cab.cabDriver,
+      cabNumber: cab.cabNumber,
+      numberPlate: cab.numberPlate,
+      carColor: cab.carColor,
+      carModel: cab.carModel,
+      seatingCapacity: cab.seatingCapacity,
       passengers: [],
     };
   });
