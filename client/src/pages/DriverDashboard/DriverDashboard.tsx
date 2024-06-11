@@ -253,10 +253,10 @@ function DriverDashboard() {
                                   </Typography>
                                 </Box>
                               </Box>
-                              {!passenger?.cancelCab ? (
+                              {!passenger?.isCabCancelled ? (
                                 <ButtonBase
                                   component={"a"}
-                                  href={`tel:${passenger?.phone}`}
+                                  href={`tel:${passenger?.phone}`} 
                                   // onClick={() => handleRemovePassengersFromCab(employee)}
                                   sx={{
                                     ...RowFlex,
