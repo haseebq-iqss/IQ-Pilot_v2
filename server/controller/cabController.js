@@ -178,7 +178,7 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
       !cabsNotAvailable.includes(cab._id.toString()) &&
       !availableAssignedCabs.some((assignedCab) => {
         return (
-          assignedCab.cab_driver._id.toString() === cab.cabDriver._id.toString()
+          assignedCab.cabDriver._id.toString() === cab.cabDriver._id.toString()
         );
       })
   );
