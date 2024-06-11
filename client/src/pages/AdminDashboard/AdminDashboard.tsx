@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { Call, Close, Warning } from "@mui/icons-material";
 import { Box, Button, Modal, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-// import { io } from "socket.io-client";
+import { io } from "socket.io-client";
 import useAxios from "../../api/useAxios";
 import MapComponent from "../../components/Map";
 // import baseURL from "../../utils/baseURL";
@@ -11,9 +10,10 @@ import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import { useNavigate } from "react-router-dom";
 import TodayFullDateString from "../../utils/TodayFullDateString";
+import baseURL from "../../utils/baseURL";
 // import SOSAudio from "../../assets/sounds/emergency.mp3";
 
-// const socket = io(baseURL);
+const socket = io(baseURL);
 
 function AdminDashboard() {
   const [activeDrivers, setActiveDrivers] = useState<EmployeeTypes[]>([]);
@@ -32,34 +32,34 @@ function AdminDashboard() {
   //   // return locations;
   // }
 
-  // const extractDriverData = (rawData: any) => {
-  //   const mapTest = new Map(rawData);
-  //   // console.log(mapTest)
+  const extractDriverData = (rawData: any) => {
+    const mapTest = new Map(rawData);
+    // console.log(mapTest)
 
-  //   const mapValues = Array.from(mapTest.values());
+    const mapValues = Array.from(mapTest.values());
 
-  //   console.log(mapValues);
-  //   setActiveDrivers(mapValues);
-  // };
+    console.log(mapValues);
+    setActiveDrivers(mapValues as any);
+  };
 
-  // useEffect(() => {
-  //   socket.on("SOS", (data) => {
-  //     console.log("SOS ------->  ", data);
-  //     setSOSEmergency(data);
-  //     // if (audioRef.current) {
-  //     // audioRef.current?.play();
-  //     // emergencyAudio?.play();
-  //     // }
-  //   });
-  // }, [socket]);
+  useEffect(() => {
+    socket.on("SOS", (data) => {
+      console.log("SOS ------->  ", data);
+      setSOSEmergency(data);
+      // if (audioRef.current) {
+      // audioRef.current?.play();
+      // emergencyAudio?.play();
+      // }
+    });
+  }, [socket]);
 
-  // useEffect(() => {
-  //   socket.on("live-drivers", (data) => {
-  //     console.log("Live Drivers ------->  ", data);
-  //     const locations = data;
-  //     extractDriverData(locations);
-  //   });
-  // }, [socket]);
+  useEffect(() => {
+    socket.on("live-drivers", (data) => {
+      console.log("Live Drivers ------->  ", data);
+      const locations = data;
+      extractDriverData(locations);
+    });
+  }, [socket]);
 
   // ALL ASSIGNED ROUTES
   const getAllAssignedRoutesQF = () => {
@@ -209,12 +209,12 @@ function AdminDashboard() {
               }}
             >
               <MapComponent
+              mode="route-view"
                 width="100%"
                 height="30vh"
                 SOS={SOSEmergency}
                 zoom={13}
                 center={SOSEmergency?.location}
-                employees={allEmployees}
               />
             </Box>
 

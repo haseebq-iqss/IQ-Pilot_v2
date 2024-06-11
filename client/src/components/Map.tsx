@@ -207,9 +207,9 @@ const MapComponent = ({
         center={center}
         zoom={zoom}
       >
-        <MapCenterUpdater
+        {driverOnFocus?.length && <MapCenterUpdater
           center={driverOnFocus?.length ? driverOnFocus : center}
-        />
+        />}
         {/* OPTIONS BAR */}
         <div
           style={{
@@ -489,12 +489,12 @@ const MapComponent = ({
 
         {activeDrivers &&
           activeDrivers?.length &&
-          activeDrivers?.map((drivers) => {
+          activeDrivers?.map((drivers:any) => {
             return (
               <Marker
                 icon={cabIcon}
                 key={drivers?.fname}
-                position={drivers?.pickUp?.coordinates as LatLngExpression}
+                position={(drivers?.pickUp ? drivers?.pickUp?.coordinates : drivers?.location) as LatLngExpression}
               >
                 <Tooltip
                   className="driver-tooltip"
@@ -502,7 +502,7 @@ const MapComponent = ({
                   offset={[0, -40]}
                   permanent
                 >
-                  <span>{drivers.fname}</span>
+                  <span>{drivers.fname ? drivers.fname : drivers.name}</span>
                 </Tooltip>
               </Marker>
             );
@@ -598,7 +598,6 @@ const MapComponent = ({
               )
             );
           })}
-
         {SOS && (
           <Marker
             icon={empIcon}

@@ -2,7 +2,7 @@ import { Close, Person, Settings, Warning } from "@mui/icons-material";
 import { Avatar, Box, Button, Drawer, Modal, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-// import { io } from "socket.io-client";
+import { io } from "socket.io-client";
 import UserDataContext from "../context/UserDataContext";
 import baseURL from "../utils/baseURL";
 import useAxios from "../api/useAxios";
@@ -11,7 +11,7 @@ import { SnackBarContextTypes } from "../types/SnackbarTypes";
 import { UserContextTypes } from "../types/UserContextTypes";
 import { PageFlex, ColFlex, RowFlex } from "./../style_extentions/Flex";
 
-// const socket = io(baseURL);
+const socket = io(baseURL);
 
 function DriverLayout() {
   const { userData, setUserData }: UserContextTypes =
@@ -41,25 +41,25 @@ function DriverLayout() {
       );
   }
 
-  //   const SendEmergencyAlert = () => {
-  //     let sosData;
-  //     navigator.geolocation.getCurrentPosition((pos) => {
-  //       sosData = {
-  //         sosFrom: userData?.fName + " " + userData?.lName,
-  //         phone: userData?.phone,
-  //         location: [pos.coords.latitude, pos.coords.longitude],
-  //       };
-  //       socket.emit("SOS", sosData);
-  //       setOpenDrawer(!openDrawer);
-  //       setOpenSnack({
-  //         open: true,
-  //         message:
-  //           "Emergency SOS was sent. Admin will get in touch with you shortly.",
-  //         severity: "info",
-  //       });
-  //       // console.log(sosData);
-  //     });
-  //   };
+    const SendEmergencyAlert = () => {
+      let sosData;
+      navigator.geolocation.getCurrentPosition((pos) => {
+        sosData = {
+          sosFrom: userData?.fname + " " + userData?.lname,
+          phone: userData?.phone,
+          location: [pos.coords.latitude, pos.coords.longitude],
+        };
+        socket.emit("SOS", sosData);
+        setOpenDrawer(!openDrawer);
+        setOpenSnack({
+          open: true,
+          message:
+            "Emergency SOS was sent. Admin will get in touch with you shortly.",
+          severity: "info",
+        });
+        // console.log(sosData);
+      });
+    };
 
   return (
     <Box sx={{ ...PageFlex, height: "100vh" }}>
@@ -238,7 +238,7 @@ function DriverLayout() {
                 The admin will be alerted instantly!
               </Typography>
               <Button
-                // onClick={() => SendEmergencyAlert()}
+                onClick={() => SendEmergencyAlert()}
                 sx={{
                   backgroundColor: "error.main",
                   color: "background.default",
