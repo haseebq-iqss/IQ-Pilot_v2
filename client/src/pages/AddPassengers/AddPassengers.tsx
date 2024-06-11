@@ -31,12 +31,13 @@ import MapComponent from "../../components/Map";
 import { RMDataPromise } from "../../utils/RoutingMachine.ts";
 import SelectedEmpsContext from "../../context/SelectedEmpsContext";
 import SnackbarContext from "../../context/SnackbarContext";
-import RouteTypes from "../../types/RouteTypes";
+
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 import { ColFlex, PageFlex, RowFlex } from "../../style_extentions/Flex.ts";
 import baseURL from "../../utils/baseURL";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat.ts";
+import Cabtypes from "../../types/CabTypes.ts";
 
 // export const GetRMData = (RMData:any) => {
 //   console.log(RMData)
@@ -62,7 +63,6 @@ function AddPassengers() {
     queryKey: ["all-employees"],
     queryFn: async () => {
       const response = await useAxios.get("/routes/pendingPassengers");
-      console.log(response);
       return response.data.pending_passengers;
     },
   });
@@ -92,10 +92,11 @@ function AddPassengers() {
   };
 
   const handleAddPassengersToCab = (newPassenger: EmployeeTypes) => {
-    console.log(newPassenger);
     // Check if the newPassenger is already present in selectedPassengers
     setPreviewMode(false);
-    if (selectedPassengers?.length < (routeState?.driver as any)?.capacity) {
+    if (
+      selectedPassengers?.length < (routeState?.driver as any)?.seatingCapacity
+    ) {
       // const isAlreadyAdded = selectedPassengers.some(
       //   (passenger) => passenger._id === newPassenger._id
       // );
@@ -130,24 +131,8 @@ function AddPassengers() {
     setFilteredEmployees(employees);
   }, [employees]);
 
-  // useEffect(() => {
-  //   if (department) {
-  //     const filteredEmp = employees?.filter(
-  //       (employee: EmployeeTypes) =>
-  //         employee.department?.toLowerCase() === department.toLowerCase()
-  //     );
-  //     setFilteredEmployees(filteredEmp || []);
-  //   } else {
-  //     setFilteredEmployees([]);
-  //   }
-  // }, [department, employees]);
-
   const handleChangeDepartment = (e: any) => {
     setDepartment(e.target.value);
-    // if (department) {
-    // } else {
-    //   setFilteredEmployees([]);
-    // }
   };
 
   useEffect(() => {
@@ -179,7 +164,7 @@ function AddPassengers() {
   };
 
   const createRouteMF = (routeData: any) => {
-    return useAxios.post("route", routeData);
+    return useAxios.post("/routes", routeData);
   };
 
   const { mutate, status } = useMutation({
@@ -244,15 +229,34 @@ function AddPassengers() {
     // RMDataPromise.then((res: any) => {
     //   setDistNtime(res);
 
-    const routeData: RouteTypes = {
-      ...routeState,
-      passengers: passengersIds as any,
-      driver: driverId as any,
+    const combinedData: {
+      cab: Cabtypes;
+      passengers: EmployeeTypes[];
+      availableCapacity: number;
+    }[] = [];
+
+    combinedData.push({
+      cab: routeState?.driver,
+      passengers: selectedPassengers,
+    });
+    // columns.forEach((column: ShiftTypes) => {
+    //   const columnPassengers = passengers.filter(
+    //     (passenger: EmployeeTypes) => passenger.columnId === column.id
+    //   );
+    // });
+
+    const routeData = {
+      // ...routeState,
+      cabEmployeeGroups: combinedData,
       estimatedTime: distNtime?.totalMinutes,
       totalDistance: distNtime?.distanceInKilometers,
+      workLocation: routeState?.office,
+      currentShift: routeState?.currentShift,
+      typeOfRoute: routeState?.typeOfRoute,
+      daysRouteIsActive: routeState?.daysRouteIsActive,
     };
 
-    console.log(routeData);
+    // console.log(routeData);
     mutate(routeData);
     // });
   }
@@ -484,9 +488,10 @@ function AddPassengers() {
       >
         <MapComponent
           center={
-            (selectedPassengers?.length ?
-              selectedPassengers[selectedPassengers?.length - 1].pickUp
-                ?.coordinates : [34.071635, 74.803872]) as [number, number]
+            (selectedPassengers?.length
+              ? selectedPassengers[selectedPassengers?.length - 1].pickUp
+                  ?.coordinates
+              : [34.071635, 74.803872]) as [number, number]
           }
           mode="route-view"
           highlightedEmployees={selectedPassengers as []}
@@ -586,16 +591,16 @@ function AddPassengers() {
             >
               <Avatar
                 sx={{ width: "30px", height: "30px" }}
-                src={baseURL + routeState?.driver?.cab_driver?.profilePicture}
+                src={baseURL + routeState?.driver?.cabDriver?.profilePicture}
               />
               <Box>
                 <Typography variant="body1" fontWeight={600}>
                   {"Cab " +
-                    routeState?.driver?.cab_number +
+                    routeState?.driver?.cabNumber +
                     " - " +
-                    routeState?.driver?.cab_driver?.fname +
+                    routeState?.driver?.cabDriver?.fname +
                     " " +
-                    routeState?.driver.cab_driver?.lname}
+                    routeState?.driver.cabDriver?.lname}
                 </Typography>
                 <Typography
                   sx={{

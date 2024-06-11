@@ -469,13 +469,13 @@ function AssignedRoutes() {
         </Box>
 
         <Box
-          className="scroll-mod"
+          // className="scroll-mod"
           sx={{
             ...RowFlex,
             display: "flex",
             height: "90%",
             width: "100vw",
-            overflowX: "scroll",
+            overflowX: "hidden",
             backgroundColor: "rgba(158, 158, 158, 0.1)",
           }}
         >
