@@ -53,13 +53,9 @@ function EmployeeDashboard() {
 
   const navigate = useNavigate();
 
-  const qc = useQueryClient();
+  const [isCabCancelled, setIsCabCancelled] = useState<boolean>(userData?.isCabCancelled)
 
-  // function Logout() {
-  //   document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  //   setUserData?.(undefined);
-  //   navigate("/");
-  // }
+  const qc = useQueryClient();
 
   function Logout() {
     useAxios
@@ -115,21 +111,21 @@ function EmployeeDashboard() {
   // console.log(routeData)
 
   const cancelCabMF = () => {
-    return useAxios.patch(`users/cancel-cab`);
+    return useAxios.patch(`users/cancel-cab/${userData?._id}`);
   };
 
-  const { mutate: cancelCab } = useMutation({
+  const { mutate: cancelCab, status: cabCancelStatus, data: cabCancelData } = useMutation({
     mutationFn: cancelCabMF,
     onSuccess: (data) => {
       qc.invalidateQueries("Route Attendance" as never);
-      // console.log(data.data.newUser);
-      setUserData?.(data.data.newUser as EmployeeTypes);
+      setIsCabCancelled(!isCabCancelled)
+      console.log(data.data)
       setOpenSnack({
         open: true,
-        message: data.data.newUser.cancelCab
+        message: data.data.cancelCab
           ? "Cab service cancelled!"
           : "Cab service resumed",
-        severity: data.data.newUser.cancelCab ? "warning" : "success",
+        severity: data.data.cancelCab ? "warning" : "success",
       });
     },
   });
@@ -138,10 +134,10 @@ function EmployeeDashboard() {
     cancelCab();
   }
 
-  // console.log(routeData);
+  console.log(cabCancelData);
   useEffect(() => {
     const passengers = routeData?.passengers;
-    console.log(passengers);
+    // console.log(passengers);
 
     if (passengers) {
       const passengersLatLons: string[] = passengers.map(
@@ -167,7 +163,7 @@ function EmployeeDashboard() {
 
   const extractDriverData = (rawData: any) => {
     const mapTest = new Map(rawData);
-    console.log(routeData)
+    // console.log(routeData)
 
     const mapValues = Array.from(mapTest.values());
     if (routeData) {
@@ -514,7 +510,7 @@ function EmployeeDashboard() {
             <Button
               onClick={HandleCancelCab}
               sx={{
-                backgroundColor: userData?.isCabCancelled
+                backgroundColor: isCabCancelled
                   ? "info.main"
                   : "error.main",
                 borderRadius: "10px",
@@ -523,9 +519,9 @@ function EmployeeDashboard() {
                 width: "60%",
               }}
               variant="contained"
-              startIcon={<Close />}
+              startIcon={!isCabCancelled ? <Close /> : <ArrowRight/>}
             >
-              {userData?.isCabCancelled ? "RESUME CAB" : "CANCEL CAB"}
+              {isCabCancelled ? "RESUME CAB" : "CANCEL CAB"}
             </Button>
             <Button
               href={`tel:${"00000000"}`}

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Call, Close, Done, Hail, Route } from "@mui/icons-material";
+import { Call, Close, Done, Hail, Route, WrongLocation } from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -69,7 +69,7 @@ function StartRoute() {
 
   useEffect(() => {
     if (myLocation.length == 2) {
-      console.log(myLocation)
+      console.log(myLocation);
       const driverData = {
         name: userData?.fname[0] + ". " + userData?.lname,
         location: myLocation,
@@ -249,8 +249,8 @@ function StartRoute() {
   const { mutate: markAttendance } = useMutation({
     mutationFn: markAttendanceMF,
     onSuccess(data) {
-      console.log(data.data);
-      console.log(data.data.attendance);
+      // console.log(data.data);
+      // console.log(data.data.attendance);
       setModalProps({
         openModal: false,
       });
@@ -663,7 +663,7 @@ function StartRoute() {
                         borderRadius: "100px",
                       }}
                     >
-                      <Hail
+                      {!passenger?.isCabCancelled ? <Hail
                         sx={{
                           backgroundColor: "background.default",
                           borderRadius: "100px",
@@ -672,7 +672,16 @@ function StartRoute() {
                           height: "35px",
                           color: "text.primary",
                         }}
-                      />
+                      /> : <WrongLocation
+                      sx={{
+                        backgroundColor: "error.main",
+                        borderRadius: "100px",
+                        p: 1,
+                        width: "35px",
+                        height: "35px",
+                        color: "white",
+                      }}
+                    />}
                     </ButtonBase>
                   )}
                 </Box>
