@@ -52,6 +52,10 @@ const userSchema = new mongoose.Schema(
     profilePicture: String,
     department: String,
     pickUp: pickupSchema,
+    isCabCancelled: {
+      type: Boolean,
+      default: false,
+    },
     currentShift: {
       type: String,
     },

@@ -114,6 +114,21 @@ const deleteUser = catchAsync(async (req, res, next) => {
   res.status(204).json({ status: "Success", message: "User deleted!" });
 });
 
+// Cancel Cab
+// const cancelCab = catchAsync(async (req, res, next) => {
+//   const id = req.params.id;
+// });
+const cancelCab = catchAsync(async (req, res, next) => {
+  const id = req.params.id;
+  const user = await User.findById(id);
+  if (!user)
+    return next(
+      new AppError(`User document with this id:${id} not found!`, 404)
+    );
+  user.isCabCancelled = !user.isCabCancelled;
+  res.status(200).json({ status: "Success", data: user });
+});
+
 module.exports = {
   getAllUsers,
   getAllTMS,
@@ -122,4 +137,5 @@ module.exports = {
   getDriver,
   updateUser,
   deleteUser,
+  cancelCab,
 };
