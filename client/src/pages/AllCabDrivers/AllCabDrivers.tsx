@@ -10,6 +10,7 @@ import {
   Box,
   Divider,
   IconButton,
+  Menu,
   MenuItem,
   Table,
   TableBody,
@@ -58,14 +59,20 @@ function AllCabDrivers() {
     );
   });
 
-  // const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedDriver, setSelectedDriver] = useState<EmployeeTypes | null>(
-    null
-  );
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuIndex, setMenuIndex] = useState<number | null>(null);
 
-  const handleMenuOpen = (driver: any) => {
-    // setAnchorEl(e.currentTarget);
-    setSelectedDriver(driver === selectedDriver ? null : driver);
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    index: number
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setMenuIndex(index);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuIndex(null);
   };
 
   const handleDriverProfilePage = (driverID: string) => {
@@ -123,7 +130,7 @@ function AllCabDrivers() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredCabDrivers?.map((driver: Cabtypes) => (
+              {filteredCabDrivers?.map((driver: Cabtypes, index: number) => (
                 <TableRow
                   key={driver._id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -161,72 +168,68 @@ function AllCabDrivers() {
                   <TableCell align="center" sx={{ position: "relative" }}>
                     <MoreHoriz
                       sx={{ cursor: "pointer" }}
-                      onClick={() => handleMenuOpen(driver)}
+                      onClick={(e) => handleMenuOpen(e, index)}
                     />
-                    {selectedDriver === driver && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          borderRadius: "10px",
-                          right: "3rem",
-                          boxShadow:
-                            "rgba(0, 0, 0, 0.2) 0px 2px 1px -1px, rgba(0, 0, 0, 0.14) 0px 1px 1px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px 0px",
-                          padding: "8px 0px",
-                          backgroundColor: "white",
-                          zIndex: 1,
+                    <Menu
+                      key={driver?._id}
+                      elevation={1}
+                      anchorEl={anchorEl}
+                      open={menuIndex === index}
+                      onClose={handleMenuClose}
+                      MenuListProps={{
+                        "aria-labelledby": "basic-button",
+                      }}
+                    >
+                      <MenuItem
+                        sx={{
+                          ...RowFlex,
+                          color: "info.main",
+                          fontWeight: 600,
+                          justifyContent: "flex-start",
+                          gap: "10px",
+                        }}
+                        onClick={() => {
+                          handleDriverProfilePage(driver?._id as string);
                         }}
                       >
-                        <MenuItem
-                          sx={{
-                            ...RowFlex,
-                            color: "info.main",
-                            fontWeight: 600,
-                            justifyContent: "flex-start",
-                            gap: "10px",
-                          }}
-                          onClick={() => {
-                            handleDriverProfilePage(driver?._id as string);
-                          }}
-                        >
-                          <VisibilityIcon sx={{}} />
-                          View Details
-                        </MenuItem>
-                        <Divider />
-                        <MenuItem
-                          sx={{
-                            ...RowFlex,
-                            color: "warning.main",
-                            fontWeight: 600,
-                            justifyContent: "flex-start",
-                            gap: "10px",
-                          }}
-                          onClick={() =>
-                            navigate(
-                              `/admin/editDetails/${driver?.cabDriver?._id}`
-                            )
-                          }
-                        >
-                          <EditLocation sx={{}} />
-                          Edit Details
-                        </MenuItem>
-                        <Divider />
-                        <MenuItem
-                          sx={{
-                            ...RowFlex,
-                            color: "error.main",
-                            fontWeight: 600,
-                            justifyContent: "flex-start",
-                            gap: "10px",
-                          }}
-                          onClick={() =>
-                            handleDeleteEmployee(driver._id as string)
-                          }
-                        >
-                          <DeleteForever sx={{}} />
-                          Remove Employee
-                        </MenuItem>
-                      </div>
-                    )}
+                        <VisibilityIcon sx={{}} />
+                        View Details
+                      </MenuItem>
+                      <Divider />
+                      <MenuItem
+                        sx={{
+                          ...RowFlex,
+                          color: "warning.main",
+                          fontWeight: 600,
+                          justifyContent: "flex-start",
+                          gap: "10px",
+                        }}
+                        onClick={() =>
+                          navigate(
+                            `/admin/editDetails/${driver?.cabDriver?._id}`
+                          )
+                        }
+                      >
+                        <EditLocation sx={{}} />
+                        Edit Details
+                      </MenuItem>
+                      <Divider />
+                      <MenuItem
+                        sx={{
+                          ...RowFlex,
+                          color: "error.main",
+                          fontWeight: 600,
+                          justifyContent: "flex-start",
+                          gap: "10px",
+                        }}
+                        onClick={() =>
+                          handleDeleteEmployee(driver._id as string)
+                        }
+                      >
+                        <DeleteForever sx={{}} />
+                        Remove Employee
+                      </MenuItem>
+                    </Menu>
                   </TableCell>
                 </TableRow>
               ))}

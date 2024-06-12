@@ -295,16 +295,19 @@ function AdminStatistics() {
                       (cab?.cabDriver as EmployeeTypes)?.profilePicture
                     })`,
                     backgroundSize: "cover",
+                    backgroundPosition:"center center",
+                    backgroundRepeat:"no-repeat",
+                    backgroundOrigin:"center",
                     ":hover": {
-                      border: "2px solid white",
-                      backgroundSize: "110%",
+                      border: "10px solid white",
+                      // backgroundSize: "110%",
                       transition: "all 0.3s",
                       // transition:"all 0.3 ease"
-                    },
-                    ":not(:hover)": {
-                      border: "0px",
-                      backgroundSize: "100%",
-                      transition: "all 0.2s",
+                      },
+                      ":not(:hover)": {
+                      border: "0px solid white",
+                      // backgroundSize: "cover",
+                      transition: "all 0.15s",
                       // transition:"all 0.3 ease"
                     },
                   }}
@@ -414,6 +417,11 @@ function AdminStatistics() {
                                   justifyContent: "flex-start",
                                   gap: "10px",
                                 }}
+                                onClick={() =>
+                                  navigate(
+                                    `/admin/editDetails/${(driver?.cabDriver as EmployeeTypes)?._id}`
+                                  )
+                                }
                               >
                                 <EditLocation sx={{}} />
                                 Edit Details

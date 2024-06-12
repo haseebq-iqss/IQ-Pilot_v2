@@ -121,9 +121,10 @@ export const EditDetails = () => {
     onSuccess: (data) => {
       setOpenSnack({
         open: true,
-        message: data.data.message,
+        message: "Profile updated successfully!",
         severity: "success",
       });
+      navigate(-1);
     },
     onError: (err: any) => {
       setOpenSnack({

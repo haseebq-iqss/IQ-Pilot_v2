@@ -40,7 +40,7 @@ const createUploadMiddleware = (destination, ...filterBy) => {
   const upload = multer({
     storage: createMulterStorage(destination),
     fileFilter: multerFilter(filterBy),
-    limits: { fileSize: 1024 * 1024 },
+    limits: { fileSize: 5 * 1024 * 1024 },
   });
   return upload;
 };
