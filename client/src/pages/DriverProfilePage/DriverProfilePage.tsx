@@ -1,22 +1,51 @@
-import { Typography, List, Divider, Box } from "@mui/material";
+import {
+  Typography,
+  List,
+  Divider,
+  Box,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  MenuItem,
+  Menu,
+} from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import baseURL from "../../utils/baseURL";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import { Call } from "@mui/icons-material";
+import {
+  AccessTime,
+  AirportShuttle,
+  Call,
+  Close,
+  DeleteForever,
+  DoneAll,
+  EditLocation,
+  MoreHoriz,
+  Visibility,
+} from "@mui/icons-material";
 import Groups2Icon from "@mui/icons-material/Groups2";
 import TagIcon from "@mui/icons-material/Tag";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import { useEffect, useState } from "react";
+import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
+import formatDateString from "../../utils/DateFormatter";
 
 const DriverProfile = () => {
   const { id } = useParams();
 
+  const navigate = useNavigate();
+
   const [allDriverRoutes, setAllDriverRoutes] = useState<any>();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuIndex, setMenuIndex] = useState<number | null>(null);
 
   const { data: driverDetails } = useQuery({
     queryKey: ["driver-details"],
@@ -51,11 +80,11 @@ const DriverProfile = () => {
       const totalDistance = driverRoutes.reduce((acc, route) => {
         return acc + (route.totalDistance || 0);
       }, 0);
-  
+
       const totalTimeSpent = driverRoutes.reduce((acc, route) => {
         return acc + (route.estimatedTime || 0);
       }, 0);
-  
+
       // Set the totals
       setTotalDistance(totalDistance);
       setTotalTimeSpent(totalTimeSpent);
@@ -63,6 +92,21 @@ const DriverProfile = () => {
   }, [driverRoutes]);
 
   // console.log(totalDistance);
+
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    index: number
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setMenuIndex(index);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuIndex(null);
+  };
+
+  console.log(driverRoutes);
 
   return (
     <Box sx={{ maxWidth: "100%", p: 2.5 }}>
@@ -243,8 +287,9 @@ const DriverProfile = () => {
             <span style={{ fontWeight: 500, fontSize: 20 }}>
               Total Amount (INR)
             </span>
+
             <span style={{ fontSize: 38, fontWeight: 600 }}>
-              {((totalDistance / 15) * 100).toFixed(0)}
+              <span>&#8377;</span> {((totalDistance / 15) * 100).toFixed(0)}
             </span>
           </Typography>
           <Typography variant="body1" sx={{ ...ColFlex }}>
@@ -268,28 +313,145 @@ const DriverProfile = () => {
             </span>
           </Typography>
         </Box>
-        <Typography
-          variant="h6"
-          component="h2"
-          sx={{ mt: 2, fontWeight: "bold" }}
-        >
-          Assigned Routes
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
-        <List
-          sx={{
-            maxHeight: 200,
-            overflow: "auto",
-            bgcolor: "#f9f9f9",
-            borderRadius: 1,
-          }}
-        >
-          {/* {driverData.assignedRoutes.map((route, index) => (
-              <ListItem key={index} divider>
-                <ListItemText primary={route} />
-              </ListItem>
-            ))} */}
-        </List>
+        <Box sx={{ px: 10, bgcolor: "#eeeeee", py: 4, borderRadius: 2 }}>
+          <Typography
+            variant="h6"
+            component="h2"
+            sx={{ mt: 2, fontWeight: "bold" }}
+          >
+            Assigned Routes
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <TableContainer sx={{}}>
+            <Table sx={{ minWidth: 650 }} aria-label="routes table">
+              <TableHead>
+                <TableRow>
+                  <TableCell align="left">Shift time</TableCell>
+                  <TableCell align="center">Pickup/Drop</TableCell>
+                  <TableCell align="center">Distance</TableCell>
+                  <TableCell align="center">Cost Of Travel</TableCell>
+                  <TableCell align="center">Date</TableCell>
+                  <TableCell align="center">Status</TableCell>
+                  <TableCell align="center">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {driverRoutes?.length &&
+                  driverRoutes?.map((route: any, index: number) => (
+                    <TableRow
+                      key={route._id}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "flex-start",
+                            alignItems: "center",
+                            gap: "10px",
+                            fontWeight: 600,
+                          }}
+                        >
+                          <AccessTime />
+                          {ConvertShiftTimeTo12HrFormat(
+                            route?.currentShift as string,
+                            route?.typeOfRoute
+                          )}
+                        </Box>
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600 }} align="center">
+                        {(route.typeOfRoute
+                          ?.charAt(0)
+                          .toUpperCase() as string) +
+                          route.typeOfRoute?.slice(1, 99)}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600 }} align="center">
+                        {route.totalDistance
+                          ? route.totalDistance + " Km"
+                          : "Not Calculated"}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600 }} align="center">
+                        {route.totalDistance
+                          ? (route.totalDistance / 15) * 100
+                          : "Not Calculated"}
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            gap: "10px",
+                            fontWeight: 600,
+                          }}
+                        >
+                          <AccessTime />
+                          {formatDateString(route?.createdAt)}
+                        </Box>
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600 }} align="center">
+                        {route?.routeStatus === "completed" ? (
+                          <DoneAll />
+                        ) : route.routeStatus === "inProgress" ? (
+                          <AirportShuttle />
+                        ) : (
+                          <Close />
+                        )}
+                      </TableCell>
+                      <TableCell align="center">
+                        <MoreHoriz
+                          sx={{ cursor: "pointer" }}
+                          onClick={(e: any) => handleMenuOpen(e, index)}
+                        />
+                        <Menu
+                          key={route?._id}
+                          elevation={1}
+                          anchorEl={anchorEl}
+                          open={menuIndex === index}
+                          onClose={handleMenuClose}
+                          MenuListProps={{
+                            "aria-labelledby": "basic-button",
+                          }}
+                        >
+                          <MenuItem
+                            sx={{
+                              ...RowFlex,
+                              color: "info.main",
+                              fontWeight: 600,
+                              justifyContent: "flex-start",
+                              gap: "10px",
+                            }}
+                            onClick={() =>
+                              navigate(`/admin/viewRoute/${route?._id}`, {
+                                state: route,
+                              })
+                            }
+                          >
+                            <Visibility sx={{}} />
+                            View Route
+                          </MenuItem>
+                          <Divider />
+                          <MenuItem
+                            sx={{
+                              ...RowFlex,
+                              color: "warning.main",
+                              fontWeight: 600,
+                              justifyContent: "flex-start",
+                              gap: "10px",
+                            }}
+                          >
+                            <EditLocation sx={{}} />
+                            Edit Route
+                          </MenuItem>
+                          <Divider />
+                        </Menu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       </Box>
     </Box>
   );
