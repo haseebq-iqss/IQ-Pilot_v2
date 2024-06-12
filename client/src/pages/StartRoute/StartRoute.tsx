@@ -333,15 +333,16 @@ function StartRoute() {
           ...prevPoints,
           [pos.coords.latitude, pos.coords.longitude],
         ]);
-        if (UpdateRouteStatus != "success") {
-          localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray));
-        }
+        // if (UpdateRouteStatus != "success") {
+        //   localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray));
+        // }
       });
     }, 3000);
+    
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
-  }, [myLocation]);
+  }, [getElapsedTime()]);
 
   type Coordinates = [number, number];
 
