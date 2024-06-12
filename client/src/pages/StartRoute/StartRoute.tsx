@@ -83,10 +83,10 @@ function StartRoute() {
 
   useEffect(() => {
     if (userData?.role === "driver") {
-      navigator.geolocation.getCurrentPosition(() => {
-        // setDriversPosition([pos.coords.latitude, pos.coords.longitude]);
-        console.log("Permission granted");
-      });
+      // navigator.geolocation.getCurrentPosition(() => {
+      //   // setDriversPosition([pos.coords.latitude, pos.coords.longitude]);
+      //   console.log("Permission granted");
+      // });
 
       // MAKE AN ERROR ALERT IF THE PERMISSION WAS REJECTED!
 
@@ -327,18 +327,17 @@ function StartRoute() {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      navigator.geolocation.getCurrentPosition((pos) => {
+      navigator.geolocation.watchPosition((pos) => {
         // setExtractedCoords([pos.coords.latitude, pos.coords.longitude]);
         setRoutePathArray((prevPoints) => [
           ...prevPoints,
           [pos.coords.latitude, pos.coords.longitude],
         ]);
-        // if (UpdateRouteStatus != "success") {
-        //   localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray));
-        // }
+        if (UpdateRouteStatus != "success") {
+          localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray));
+        }
       });
     }, 3000);
-    
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
@@ -370,6 +369,7 @@ function StartRoute() {
 
     return R * c; // Distance in kilometers
   };
+  
 
   const sumDistances = (coords: Array<any>): number => {
     let totalDistance = 0;
