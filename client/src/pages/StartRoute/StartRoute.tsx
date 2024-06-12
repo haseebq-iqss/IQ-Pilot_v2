@@ -341,7 +341,7 @@ function StartRoute() {
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
-  }, [getElapsedTime()]);
+  }, [myLocation]);
 
   type Coordinates = [number, number];
 
