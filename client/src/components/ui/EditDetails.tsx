@@ -181,6 +181,7 @@ export const EditDetails = () => {
         }
       }
     }
+    console.log("hi");
     EditCabDriver(formData as CabDriverType);
   }
   const handleFullName: React.ChangeEventHandler<HTMLInputElement> = (e) => {
