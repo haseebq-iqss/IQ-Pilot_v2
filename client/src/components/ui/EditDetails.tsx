@@ -35,11 +35,6 @@ export const EditDetails = () => {
     phone: "",
     address: "",
     coordinates: "",
-    seatingCapacity: "",
-    cabNumber: "",
-    numberPlate: "",
-    carModel: "",
-    carColor: "",
   });
 
   const location = useLocation();
@@ -69,6 +64,7 @@ export const EditDetails = () => {
       return response?.data?.data;
     },
   });
+  const employeePath = editTMDetails?.role === "employee";
 
   const { data: editDriverData } = useQuery({
     queryKey: ["Driver-data"],
@@ -76,7 +72,9 @@ export const EditDetails = () => {
       const response = await useAxios.get(`/cabs/driver/${id}`);
       return response?.data?.data[0];
     },
+    enabled: !employeePath,
   });
+
   const driverPath = editDriverData?.cabDriver?.role === "driver";
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
@@ -107,11 +105,6 @@ export const EditDetails = () => {
         phone: editTMDetails?.phone,
         address: editTMDetails?.pickUp?.address,
         coordinates: editTMDetails?.pickUp?.coordinates,
-        seatingCapacity: editDriverData?.seatingCapacity,
-        cabNumber: editDriverData?.cabNumber,
-        numberPlate: editDriverData?.numberPlate,
-        carModel: editDriverData?.carModel,
-        carColor: editDriverData?.carColor,
       };
     });
   }, [editTMDetails, editDriverData]);
@@ -160,11 +153,6 @@ export const EditDetails = () => {
       email: currentTarget.email.value,
       phone: currentTarget.phone.value,
       profilePicture: currentTarget.profilePicture.files?.[0] as File,
-      seatingCapacity: parseInt(currentTarget.seatingCapacity.value, 10),
-      cabNumber: currentTarget.cabNumber.value,
-      numberPlate: currentTarget.numberPlate.value,
-      carModel: currentTarget.carModel.value,
-      carColor: currentTarget.carColor.value,
     };
 
     const formData = new FormData();
@@ -181,6 +169,7 @@ export const EditDetails = () => {
         }
       }
     }
+    console.log("hi");
     EditCabDriver(formData as CabDriverType);
   }
   const handleFullName: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -235,10 +224,8 @@ export const EditDetails = () => {
         }
       }
     }
-    console.log(teamMemberData);
     AddTeamMember(formData);
   }
-
   return (
     <PageContainer
       headerText={`Edit Details Of ${
@@ -340,7 +327,7 @@ export const EditDetails = () => {
               gap: "15px",
             }}
           >
-            {!driverPath && (
+            {employeePath && (
               <TextField
                 // required
                 fullWidth
@@ -361,7 +348,7 @@ export const EditDetails = () => {
                 gap: "15px",
               }}
             >
-              {!driverPath && (
+              {employeePath && (
                 <TextField
                   //   required
                   fullWidth
@@ -407,7 +394,7 @@ export const EditDetails = () => {
               />
             </Button>
           </Box>
-          {driverPath && (
+          {/* {driverPath && (
             <>
               <Typography variant="h5">Cab Details</Typography>
               <Box
@@ -499,7 +486,7 @@ export const EditDetails = () => {
                 />
               </Box>
             </>
-          )}
+          )} */}
           <Box
             sx={{
               width: "100%",

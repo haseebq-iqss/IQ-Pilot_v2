@@ -59,14 +59,19 @@ function AllTeamMembers() {
   );
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedTeamMember, setSelectedTeamMember] =
-    useState<EmployeeTypes | null>(null);
+  const [menuIndex, setMenuIndex] = useState<number | null>(null);
 
-  const handleMenuOpen = (e: any, teamMember: EmployeeTypes) => {
-    setAnchorEl(e.currentTarget);
-    setSelectedTeamMember(
-      teamMember === selectedTeamMember ? null : teamMember
-    );
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    index: number
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setMenuIndex(index);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuIndex(null);
   };
 
   const { mutate: deleteEmpMf } = useMutation({
@@ -125,64 +130,63 @@ function AllTeamMembers() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredTeamMembers?.map((employee: EmployeeTypes) => {
-                const empAssignedCab: any = cabNumersArray?.find(
-                  (cNum: any) => employee?._id === cNum?.id
-                );
-                return (
-                  <TableRow
-                    key={employee._id}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "flex-start",
-                          alignItems: "center",
-                          gap: "10px",
-                        }}
-                      >
-                        <Avatar
-                          src={baseURL + employee?.profilePicture}
-                          sx={{ width: "30px", height: "30px" }}
-                        />
-                        {employee.fname + " " + employee.lname}
-                      </Box>
-                    </TableCell>
-                    <TableCell align="center">{employee.email}</TableCell>
-                    <TableCell
-                      sx={{
-                        fontWeight: 600,
-                        color: empAssignedCab?.cab_number
-                          ? "success.main"
-                          : "error.main",
-                      }}
-                      align="center"
+              {filteredTeamMembers?.map(
+                (employee: EmployeeTypes, index: number) => {
+                  const empAssignedCab: any = cabNumersArray?.find(
+                    (cNum: any) => employee?._id === cNum?.id
+                  );
+                  return (
+                    <TableRow
+                      key={employee._id}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      {empAssignedCab?.cab_number || "na"}
-                    </TableCell>
-                    <TableCell align="center">
-                      {employee.pickUp?.address}
-                    </TableCell>
-                    <TableCell align="center">
-                      {!employee.isCabCancelled ? "Active" : "On Leave"}
-                    </TableCell>
-                    <TableCell align="center" sx={{ position: "relative" }}>
-                      <MoreHoriz
-                        sx={{ cursor: "pointer" }}
-                        onClick={(e) => handleMenuOpen(e, employee)}
-                      />
-                      {selectedTeamMember === employee && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            borderRadius: "10px",
-                            right: "3rem",
-                            boxShadow:
-                              "rgba(0, 0, 0, 0.2) 0px 2px 1px -1px, rgba(0, 0, 0, 0.14) 0px 1px 1px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px 0px",
-                            padding: "8px 0px",
-                            backgroundColor: "white",
+                      <TableCell component="th" scope="row">
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "flex-start",
+                            alignItems: "center",
+                            gap: "10px",
+                          }}
+                        >
+                          <Avatar
+                            src={baseURL + employee?.profilePicture}
+                            sx={{ width: "30px", height: "30px" }}
+                          />
+                          {employee.fname + " " + employee.lname}
+                        </Box>
+                      </TableCell>
+                      <TableCell align="center">{employee.email}</TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: 600,
+                          color: empAssignedCab?.cab_number
+                            ? "success.main"
+                            : "error.main",
+                        }}
+                        align="center"
+                      >
+                        {empAssignedCab?.cab_number || "na"}
+                      </TableCell>
+                      <TableCell align="center">
+                        {employee.pickUp?.address}
+                      </TableCell>
+                      <TableCell align="center">
+                        {!employee.isCabCancelled ? "Active" : "On Leave"}
+                      </TableCell>
+                      <TableCell align="center" sx={{ position: "relative" }}>
+                        <MoreHoriz
+                          sx={{ cursor: "pointer" }}
+                          onClick={(e) => handleMenuOpen(e, index)}
+                        />
+                        <Menu
+                          key={employee?._id}
+                          elevation={1}
+                          anchorEl={anchorEl}
+                          open={menuIndex === index}
+                          onClose={handleMenuClose}
+                          MenuListProps={{
+                            "aria-labelledby": "basic-button",
                           }}
                         >
                           <MenuItem
@@ -229,12 +233,12 @@ function AllTeamMembers() {
                             <DeleteForever sx={{}} />
                             Remove Employee
                           </MenuItem>
-                        </div>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                        </Menu>
+                      </TableCell>
+                    </TableRow>
+                  );
+                }
+              )}
             </TableBody>
           </Table>
         </TableContainer>
