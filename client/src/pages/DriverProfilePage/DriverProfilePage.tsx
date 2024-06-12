@@ -1,6 +1,5 @@
 import {
   Typography,
-  List,
   Divider,
   Box,
   TableContainer,
@@ -23,7 +22,6 @@ import {
   AirportShuttle,
   Call,
   Close,
-  DeleteForever,
   DoneAll,
   EditLocation,
   MoreHoriz,
