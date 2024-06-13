@@ -414,8 +414,10 @@ exports.driverRoute = catchAsync(async (req, res, next) => {
     );
 
   active_routes.forEach((route) => {
-    if (route.typeOfRoute === "pickup") pickArr.push(route);
-    else if (route.typeOfRoute === "drop") dropArr.push(route);
+    if (route.typeOfRoute === "pickup" && route.routeStatus !== "completed")
+      pickArr.push(route);
+    else if (route.typeOfRoute === "drop" && route.routeStatus !== "completed")
+      dropArr.push(route);
   });
 
   res.status(200).json({ status: "Success", data: { pickArr, dropArr } });
