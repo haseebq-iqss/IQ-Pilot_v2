@@ -1,5 +1,12 @@
 // @ts-nocheck
-import { Call, Close, Done, Hail, Route, WrongLocation } from "@mui/icons-material";
+import {
+  Call,
+  Close,
+  Done,
+  Hail,
+  Route,
+  WrongLocation,
+} from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -83,10 +90,10 @@ function StartRoute() {
 
   useEffect(() => {
     if (userData?.role === "driver") {
-      navigator.geolocation.getCurrentPosition(() => {
-        // setDriversPosition([pos.coords.latitude, pos.coords.longitude]);
-        console.log("Permission granted");
-      });
+      // navigator.geolocation.getCurrentPosition(() => {
+      //   // setDriversPosition([pos.coords.latitude, pos.coords.longitude]);
+      //   console.log("Permission granted");
+      // });
 
       // MAKE AN ERROR ALERT IF THE PERMISSION WAS REJECTED!
 
@@ -226,7 +233,7 @@ function StartRoute() {
       setArtificialDelay(true);
       setTimeout(() => {
         UpdateRoute();
-      }, 2000);
+      }, 1000);
     } else {
       console.log(markedPassengersArray);
       setOpenSnack({
@@ -325,22 +332,55 @@ function StartRoute() {
     []
   );
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        // setExtractedCoords([pos.coords.latitude, pos.coords.longitude]);
-        setRoutePathArray((prevPoints) => [
-          ...prevPoints,
-          [pos.coords.latitude, pos.coords.longitude],
-        ]);
-        if (UpdateRouteStatus != "success") {
-          localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray));
-        }
-      });
-    }, 3000);
+  // ORIGINAL
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     navigator.geolocation.watchPosition((pos) => {
+  //       // setExtractedCoords([pos.coords.latitude, pos.coords.longitude]);
+  //       setRoutePathArray((prevPoints) => [
+  //         ...prevPoints,
+  //         [pos.coords.latitude, pos.coords.longitude],
+  //       ]);
+  //       if (UpdateRouteStatus != "success") {
+  //         localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray));
+  //       }
+  //       return null
+  //     });
+  //   }, 3000);
 
-    // Cleanup interval on component unmount
-    return () => clearInterval(intervalId);
+  //   // Cleanup interval on component unmount
+  //   return () => clearInterval(intervalId);
+  // }, [getElapsedTime()]);
+
+  // T2
+  // useEffect(() => {
+  //   if (myLocation?.length > 1) {
+  //     setRoutePathArray((prevPoints) => {
+  //       const newRoutePathArray = [...prevPoints, myLocation];
+  //       if (UpdateRouteStatus !== "success") {
+  //         localStorage.setItem(
+  //           "CurrentRoute",
+  //           JSON.stringify(newRoutePathArray)
+  //         );
+  //       }
+  //       console.log(myLocation);
+  //       return newRoutePathArray;
+  //     });
+  //   }
+  //   //   return () => clearInterval(intervalId);
+  // }, [myLocation]);
+
+  useEffect(() => {
+    const locAtCurrMoment = navigator.geolocation.getCurrentPosition((pos) => {
+      setRoutePathArray((prevPoints) => [
+        ...prevPoints,
+        [pos.coords.latitude, pos.coords.longitude],
+      ]);
+      if (UpdateRouteStatus !== "success") {
+        localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray));
+      }
+      console.log(myLocation);
+    });
   }, [getElapsedTime()]);
 
   type Coordinates = [number, number];
@@ -551,7 +591,9 @@ function StartRoute() {
         <Typography variant="h4" fontWeight={600}>
           {/* {parseFloat(distTravelled) * 0.621371} */}
           {calculatedDistance?.toFixed(3)}
-          <span style={{ fontSize: "1rem" }}>kms</span>
+          <span style={{ fontSize: "1rem" }}>
+            kms
+          </span>
         </Typography>
         <Typography variant="h4" fontWeight={600}>
           {getElapsedTime()}
@@ -663,25 +705,29 @@ function StartRoute() {
                         borderRadius: "100px",
                       }}
                     >
-                      {!passenger?.isCabCancelled ? <Hail
-                        sx={{
-                          backgroundColor: "background.default",
-                          borderRadius: "100px",
-                          p: 1,
-                          width: "35px",
-                          height: "35px",
-                          color: "text.primary",
-                        }}
-                      /> : <WrongLocation
-                      sx={{
-                        backgroundColor: "error.main",
-                        borderRadius: "100px",
-                        p: 1,
-                        width: "35px",
-                        height: "35px",
-                        color: "white",
-                      }}
-                    />}
+                      {!passenger?.isCabCancelled ? (
+                        <Hail
+                          sx={{
+                            backgroundColor: "background.default",
+                            borderRadius: "100px",
+                            p: 1,
+                            width: "35px",
+                            height: "35px",
+                            color: "text.primary",
+                          }}
+                        />
+                      ) : (
+                        <WrongLocation
+                          sx={{
+                            backgroundColor: "error.main",
+                            borderRadius: "100px",
+                            p: 1,
+                            width: "35px",
+                            height: "35px",
+                            color: "white",
+                          }}
+                        />
+                      )}
                     </ButtonBase>
                   )}
                 </Box>

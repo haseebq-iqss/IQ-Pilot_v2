@@ -311,7 +311,7 @@ const DriverProfile = () => {
             </span>
           </Typography>
         </Box>
-        <Box sx={{ px: 10, bgcolor: "#eeeeee", py: 4, borderRadius: 2 }}>
+        <Box sx={{ px: 10, bgcolor: "#eeeeee", py: 4, borderRadius: 2, marginTop:5 }}>
           <Typography
             variant="h6"
             component="h2"
@@ -370,7 +370,7 @@ const DriverProfile = () => {
                       </TableCell>
                       <TableCell sx={{ fontWeight: 600 }} align="center">
                         {route.totalDistance
-                          ? (route.totalDistance / 15) * 100
+                          ? "₹ " + ((route.totalDistance / 15) * 100).toFixed(0) 
                           : "Not Calculated"}
                       </TableCell>
                       <TableCell component="th" scope="row">
