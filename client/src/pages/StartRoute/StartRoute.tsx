@@ -332,6 +332,7 @@ function StartRoute() {
     []
   );
 
+  // ORIGINAL
   // useEffect(() => {
   //   const intervalId = setInterval(() => {
   //     navigator.geolocation.watchPosition((pos) => {
@@ -351,21 +352,36 @@ function StartRoute() {
   //   return () => clearInterval(intervalId);
   // }, [getElapsedTime()]);
 
+  // T2
+  // useEffect(() => {
+  //   if (myLocation?.length > 1) {
+  //     setRoutePathArray((prevPoints) => {
+  //       const newRoutePathArray = [...prevPoints, myLocation];
+  //       if (UpdateRouteStatus !== "success") {
+  //         localStorage.setItem(
+  //           "CurrentRoute",
+  //           JSON.stringify(newRoutePathArray)
+  //         );
+  //       }
+  //       console.log(myLocation);
+  //       return newRoutePathArray;
+  //     });
+  //   }
+  //   //   return () => clearInterval(intervalId);
+  // }, [myLocation]);
+
   useEffect(() => {
-    if (myLocation?.length > 1) {
-      setRoutePathArray((prevPoints) => {
-        const newRoutePathArray = [...prevPoints, myLocation];
-        if (UpdateRouteStatus !== "success") {
-          localStorage.setItem(
-            "CurrentRoute",
-            JSON.stringify(newRoutePathArray)
-          );
-        }
-        console.log(myLocation);
-        return newRoutePathArray;
-      });
-    }
-  }, [myLocation]);
+    const locAtCurrMoment = navigator.geolocation.getCurrentPosition((pos) => {
+      setRoutePathArray((prevPoints) => [
+        ...prevPoints,
+        [pos.coords.latitude, pos.coords.longitude],
+      ]);
+      if (UpdateRouteStatus !== "success") {
+        localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray));
+      }
+      console.log(myLocation);
+    });
+  }, [getElapsedTime()]);
 
   type Coordinates = [number, number];
 
