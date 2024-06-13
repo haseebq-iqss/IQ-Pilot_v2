@@ -233,7 +233,7 @@ function StartRoute() {
       setArtificialDelay(true);
       setTimeout(() => {
         UpdateRoute();
-      }, 2000);
+      }, 1000);
     } else {
       console.log(markedPassengersArray);
       setOpenSnack({
@@ -592,7 +592,7 @@ function StartRoute() {
           {/* {parseFloat(distTravelled) * 0.621371} */}
           {calculatedDistance?.toFixed(3)}
           <span style={{ fontSize: "1rem" }}>
-            kms ({routePathArray?.length})
+            kms
           </span>
         </Typography>
         <Typography variant="h4" fontWeight={600}>
