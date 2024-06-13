@@ -1,5 +1,12 @@
 // @ts-nocheck
-import { Call, Close, Done, Hail, Route, WrongLocation } from "@mui/icons-material";
+import {
+  Call,
+  Close,
+  Done,
+  Hail,
+  Route,
+  WrongLocation,
+} from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -325,23 +332,40 @@ function StartRoute() {
     []
   );
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      navigator.geolocation.watchPosition((pos) => {
-        // setExtractedCoords([pos.coords.latitude, pos.coords.longitude]);
-        setRoutePathArray((prevPoints) => [
-          ...prevPoints,
-          [pos.coords.latitude, pos.coords.longitude],
-        ]);
-        if (UpdateRouteStatus != "success") {
-          localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray));
-        }
-      });
-    }, 3000);
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     navigator.geolocation.watchPosition((pos) => {
+  //       // setExtractedCoords([pos.coords.latitude, pos.coords.longitude]);
+  //       setRoutePathArray((prevPoints) => [
+  //         ...prevPoints,
+  //         [pos.coords.latitude, pos.coords.longitude],
+  //       ]);
+  //       if (UpdateRouteStatus != "success") {
+  //         localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray));
+  //       }
+  //       return null
+  //     });
+  //   }, 3000);
 
-    // Cleanup interval on component unmount
-    return () => clearInterval(intervalId);
-  }, [getElapsedTime()]);
+  //   // Cleanup interval on component unmount
+  //   return () => clearInterval(intervalId);
+  // }, [getElapsedTime()]);
+
+  useEffect(() => {
+    if (myLocation?.length > 1) {
+      setRoutePathArray((prevPoints) => {
+        const newRoutePathArray = [...prevPoints, myLocation];
+        if (UpdateRouteStatus !== "success") {
+          localStorage.setItem(
+            "CurrentRoute",
+            JSON.stringify(newRoutePathArray)
+          );
+        }
+        console.log(myLocation);
+        return newRoutePathArray;
+      });
+    }
+  }, [myLocation]);
 
   type Coordinates = [number, number];
 
@@ -369,7 +393,6 @@ function StartRoute() {
 
     return R * c; // Distance in kilometers
   };
-  
 
   const sumDistances = (coords: Array<any>): number => {
     let totalDistance = 0;
@@ -552,7 +575,9 @@ function StartRoute() {
         <Typography variant="h4" fontWeight={600}>
           {/* {parseFloat(distTravelled) * 0.621371} */}
           {calculatedDistance?.toFixed(3)}
-          <span style={{ fontSize: "1rem" }}>kms</span>
+          <span style={{ fontSize: "1rem" }}>
+            kms ({routePathArray?.length})
+          </span>
         </Typography>
         <Typography variant="h4" fontWeight={600}>
           {getElapsedTime()}
@@ -664,25 +689,29 @@ function StartRoute() {
                         borderRadius: "100px",
                       }}
                     >
-                      {!passenger?.isCabCancelled ? <Hail
-                        sx={{
-                          backgroundColor: "background.default",
-                          borderRadius: "100px",
-                          p: 1,
-                          width: "35px",
-                          height: "35px",
-                          color: "text.primary",
-                        }}
-                      /> : <WrongLocation
-                      sx={{
-                        backgroundColor: "error.main",
-                        borderRadius: "100px",
-                        p: 1,
-                        width: "35px",
-                        height: "35px",
-                        color: "white",
-                      }}
-                    />}
+                      {!passenger?.isCabCancelled ? (
+                        <Hail
+                          sx={{
+                            backgroundColor: "background.default",
+                            borderRadius: "100px",
+                            p: 1,
+                            width: "35px",
+                            height: "35px",
+                            color: "text.primary",
+                          }}
+                        />
+                      ) : (
+                        <WrongLocation
+                          sx={{
+                            backgroundColor: "error.main",
+                            borderRadius: "100px",
+                            p: 1,
+                            width: "35px",
+                            height: "35px",
+                            color: "white",
+                          }}
+                        />
+                      )}
                     </ButtonBase>
                   )}
                 </Box>
