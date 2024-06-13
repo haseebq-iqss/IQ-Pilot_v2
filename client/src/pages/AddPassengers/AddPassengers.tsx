@@ -573,7 +573,7 @@ function AddPassengers() {
         >
           <Typography variant="h6" fontWeight={600}>
             Capacity {selectedPassengers?.length || 0} of{" "}
-            {(routeState?.driver as any)?.capacity}
+            {(routeState?.driver as any)?.seatingCapacity}
           </Typography>
           {/* DRIVER */}
           <Box

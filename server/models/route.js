@@ -49,8 +49,12 @@ const routeSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
+    index:true,
   },
 });
+
+// Create geospatial index
+routeSchema.index({ cabPath: '2dsphere' });
 
 const Route = mongoose.model("route", routeSchema);
 module.exports = Route;
