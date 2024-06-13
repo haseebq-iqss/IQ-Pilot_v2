@@ -37,6 +37,7 @@ const routeSchema = new mongoose.Schema({
   cabPath: {
     type: [[Number, Number]],
     default: [],
+    select: false,
   },
   daysRouteIsActive: {
     type: Number,

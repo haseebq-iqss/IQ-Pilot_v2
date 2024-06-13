@@ -1,5 +1,5 @@
 // @ts-nocheck
-import PageContainer from "./PageContainer";
+import PageContainer from "../../components/ui/PageContainer";
 import {
   Box,
   Button,

@@ -269,9 +269,11 @@ exports.createRoute = catchAsync(async (req, res, next) => {
 });
 
 exports.getRoute = catchAsync(async (req, res, next) => {
-  const route = await Route.findById(req.params.id).populate({
-    path: "cab passengers",
-  });
+  const route = await Route.findById(req.params.id)
+    .populate({
+      path: "cab passengers",
+    })
+    .select("+cabPath");
   if (!route)
     return next(new AppError(`No route document with this id found...`, 404));
   res.status(200).json({ status: "Success", data: route });

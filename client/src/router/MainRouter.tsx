@@ -23,7 +23,7 @@ import RouteCompleted from "../pages/RouteCompleted/RouteCompleted";
 import ViewRoute from "../pages/ViewRoute/ViewRoute";
 import DriverProfile from "../pages/DriverProfilePage/DriverProfilePage";
 import AdminStatistics from "../pages/AdminStatistics/AdminStatistics";
-import { EditDetails } from "../components/ui/EditDetails";
+import { EditDetails } from "../pages/EditDetails/EditDetails";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);

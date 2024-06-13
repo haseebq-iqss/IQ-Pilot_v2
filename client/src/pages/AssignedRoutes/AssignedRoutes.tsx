@@ -166,9 +166,22 @@ function AssignedRoutes() {
       )
     );
 
+    const sourceColumn = combinedData.find((column) =>
+      column.passengers.some(
+        (passenger: EmployeeTypes) => passenger._id === activeId
+      )
+    );
+
+    // Ensure the type of route comparison is correct
+    const isSameTypeOfRoute =
+      sourceColumn?.typeOfRoute === targetColumn?.typeOfRoute;
+
     // Move from Task column to Task column
     if (
-      (isActiveATask && isOverATask && targetColumn?.availableCapacity !== 0) ||
+      (isActiveATask &&
+        isOverATask &&
+        targetColumn?.availableCapacity !== 0 &&
+        isSameTypeOfRoute) ||
       isOverAColumn
     ) {
       setPassengers((passengers: EmployeeTypes[]) => {

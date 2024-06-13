@@ -61,11 +61,11 @@ function CreateShift() {
   const currentLocation = window.location.pathname;
 
   // useEffect(() => {
-    // if (window.location.pathname.includes("createShift")) {
-    //   window.onpopstate = (event) => {
-    //     alert("Data will be lost !");
-    //   };
-    // }
+  // if (window.location.pathname.includes("createShift")) {
+  //   window.onpopstate = (event) => {
+  //     alert("Data will be lost !");
+  //   };
+  // }
   // }, []);
 
   const [reservedPassengers, setReservedPassengers] = useState(() => {

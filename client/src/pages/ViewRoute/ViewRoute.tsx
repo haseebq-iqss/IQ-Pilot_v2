@@ -15,7 +15,7 @@ import {
   DateRange,
 } from "@mui/icons-material";
 import { Typography, Avatar, Box } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import MapComponent from "../../components/Map";
 import { PageFlex, ColFlex, RowFlex } from "../../style_extentions/Flex";
 import RouteTypes from "../../types/RouteTypes";
@@ -31,10 +31,10 @@ import DaysTillActive from "../../utils/DaysTillActive";
 function ViewRoute() {
   const location = useLocation();
   const routeState: RouteTypes = location.state;
-  console.log(routeState);
+  const { rid } = useParams();
 
   const getAllRouteAttendances = () => {
-    return useAxios.get(`attendances/route-attendance/${routeState?._id}`);
+    return useAxios.get(`attendances/route-attendance/${rid}`);
   };
 
   const { data: attendanceData } = useQuery({
@@ -43,6 +43,14 @@ function ViewRoute() {
     select: (data: any) => {
       return data.data.route_attendance as Array<EmployeeTypes>;
     },
+  });
+
+  const { data: routeData } = useQuery({
+    queryFn: async () => {
+      const response = await useAxios.get(`/routes/${rid}`);
+      return response.data.data;
+    },
+    queryKey: ["Route Data"],
   });
 
   const [numberOfPresentPassengers, setNumberOfPresentPassengers] =
@@ -100,12 +108,17 @@ function ViewRoute() {
             sx={{ ...RowFlex, width: "100%", justifyContent: "space-between" }}
           >
             <Typography
-              sx={{ fontWeight: 600, fontSize: "1.75rem", color: "#212A3B", ...RowFlex }}
+              sx={{
+                fontWeight: 600,
+                fontSize: "1.75rem",
+                color: "#212A3B",
+                ...RowFlex,
+              }}
               variant="body2"
               fontWeight={600}
               color={"GrayText"}
             >
-              <AccessTime sx={{fontSize:"2rem", mr:1}}/>
+              <AccessTime sx={{ fontSize: "2rem", mr: 1 }} />
               {ConvertShiftTimeTo12HrFormat(
                 routeState?.currentShift as string,
                 routeState?.typeOfRoute
@@ -128,7 +141,6 @@ function ViewRoute() {
                 {routeState?.routeStatus?.toUpperCase()}
               </Typography>
             </Box>
-
           </Box>
           {/* L1 R2 */}
           <Box
@@ -144,12 +156,17 @@ function ViewRoute() {
               }
             />
             <Typography
-              sx={{ fontWeight: 600, fontSize: "1.75rem", color: "#212A3B", ...RowFlex }}
+              sx={{
+                fontWeight: 600,
+                fontSize: "1.75rem",
+                color: "#212A3B",
+                ...RowFlex,
+              }}
               variant="body2"
               fontWeight={600}
               color={"GrayText"}
             >
-              <DateRange sx={{fontSize:"2rem", mr:1}}/>
+              <DateRange sx={{ fontSize: "2rem", mr: 1 }} />
               {DaysTillActive(
                 routeState?.createdAt as any,
                 routeState?.daysRouteIsActive as any
@@ -177,13 +194,39 @@ function ViewRoute() {
               {attendanceData?.length} are Present)
             </Typography>
           ) : (
-            <Box sx={{...ColFlex, justifyContent:'flex-start', alignItems:"flex-start"}}>
-            <Typography variant="h5" sx={{ fontWeight: 600, ...RowFlex, width:"100%", justifyContent:"flex-start" }}>
-              <PeopleAlt sx={{mr:1}}/>{routeState?.passengers?.length} Passengers
-            </Typography>
-            <Typography variant="body1" sx={{color:"warning.main", fontWeight:500, mb: 1, ...RowFlex, width:"100%", justifyContent:"flex-end" }}>
-              <Error sx={{mr:1, color:"warning.main", p:0.25}}/>Route Not Started Yet!
-            </Typography>
+            <Box
+              sx={{
+                ...ColFlex,
+                justifyContent: "flex-start",
+                alignItems: "flex-start",
+              }}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 600,
+                  ...RowFlex,
+                  width: "100%",
+                  justifyContent: "flex-start",
+                }}
+              >
+                <PeopleAlt sx={{ mr: 1 }} />
+                {routeState?.passengers?.length} Passengers
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: "warning.main",
+                  fontWeight: 500,
+                  mb: 1,
+                  ...RowFlex,
+                  width: "100%",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Error sx={{ mr: 1, color: "warning.main", p: 0.25 }} />
+                Route Not Started Yet!
+              </Typography>
             </Box>
           )}
           {attendanceData?.length
@@ -264,10 +307,7 @@ function ViewRoute() {
             : routeState?.passengers?.map((employee: any) => {
                 // console.log(employee);
                 return (
-                  <Box
-                    key={employee?._id}
-                    sx={{ ...RowFlex, width: "100%" }}
-                  >
+                  <Box key={employee?._id} sx={{ ...RowFlex, width: "100%" }}>
                     <Box
                       sx={{
                         ...RowFlex,
@@ -284,9 +324,7 @@ function ViewRoute() {
                         <Typography
                           sx={{ fontSize: "1.25rem", fontWeight: 500 }}
                         >
-                          {employee.fname +
-                            " " +
-                            employee.lname}
+                          {employee.fname + " " + employee.lname}
                         </Typography>
                         <Typography
                           sx={{
@@ -308,14 +346,16 @@ function ViewRoute() {
                       </Box>
                     </Box>
                     <Box sx={{ ...RowFlex, width: "20%" }}>
-                      <NotListedLocation                           sx={{
-                            backgroundColor: "info.main",
-                            borderRadius: "100px",
-                            p: 0.5,
-                            width: "40px",
-                            height: "40px",
-                            color: "white",
-                          }} />
+                      <NotListedLocation
+                        sx={{
+                          backgroundColor: "info.main",
+                          borderRadius: "100px",
+                          p: 0.5,
+                          width: "40px",
+                          height: "40px",
+                          color: "white",
+                        }}
+                      />
                     </Box>
                   </Box>
                 );
@@ -336,7 +376,7 @@ function ViewRoute() {
       >
         <MapComponent
           mode="route-view"
-          routePathArray={routeState?.cabPath as []}
+          routePathArray={routeData?.cabPath as []}
           employees={routeState?.passengers as [EmployeeTypes]}
           height="100%"
         />
