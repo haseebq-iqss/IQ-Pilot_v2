@@ -596,7 +596,7 @@ function StartRoute() {
           </span>
         </Typography>
         <Typography variant="h4" fontWeight={600}>
-          {getElapsedTime()}
+          {getElapsedTime() < 60 ? getElapsedTime() : (getElapsedTime()/60).toFixed(2)}
           <span style={{ fontSize: "1rem" }}>
             {getElapsedTime() < 60 ? "mins" : "hr"}
           </span>

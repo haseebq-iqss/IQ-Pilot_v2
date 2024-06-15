@@ -22,6 +22,7 @@ import UserDataContext from "../context/UserDataContext";
 import baseURL from "../utils/baseURL";
 import { Close } from "@mui/icons-material";
 import MapCenterUpdater from "./MapCenterUpdater";
+import InterpolateLatLon from "../utils/LatLonAnimator";
 
 type MapTypes = {
   width?: string;
@@ -195,8 +196,32 @@ const MapComponent = ({
     }
   }
 
-  // console.log("center -----> ", center);
-  // console.log(driverOnFocus)
+  const [_positions, setPositions] = useState<Array<[number, number] | null>>([null, null]);
+  const [animatedDriverOnFocus, setAnimatedDriverOnFocus] = useState<[number, number] | null>(null);
+
+  useEffect(() => {
+      if (driverOnFocus) {
+          setPositions(prevPositions => {
+              // Update the array with the new position
+              const newPositions = [...prevPositions.slice(-1), driverOnFocus];
+              
+              // If both previous and current positions are available, call interpolateLatLon
+              if (newPositions[0] && newPositions[1]) {
+                  const interpolated = InterpolateLatLon(newPositions[0], newPositions[1]);
+                  // Map over the interpolated values and set them to animatedDriverOnFocus with a delay of 50ms
+                  interpolated.forEach((point, index): any => {
+                      setTimeout(() => {
+                          setAnimatedDriverOnFocus(point as [number, number]);
+                      }, 50 * index);
+                  });
+              }
+
+              return newPositions;
+          });
+      }
+  }, [driverOnFocus]);
+
+  // console.log(animatedDriverOnFocus)
 
   return (
     <div style={{ position: "relative", height, width, overflow: "hidden" }}>
@@ -207,9 +232,28 @@ const MapComponent = ({
         center={center}
         zoom={zoom}
       >
-        {driverOnFocus?.length && <MapCenterUpdater
-          center={driverOnFocus?.length ? driverOnFocus : center}
-        />}
+        {/* <div
+          style={{
+            position: "absolute",
+            top: 50,
+            right: 50,
+            zIndex: 999,
+            display: "flex",
+            flexDirection: "row-reverse",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "white",
+            color: "black",
+            width: "100px",
+            height: "100px",
+            gap: "10px",
+          }}
+        ></div> */}
+        {driverOnFocus?.length && (
+          <MapCenterUpdater
+            center={driverOnFocus?.length ? driverOnFocus : center}
+          />
+        )}
         {/* OPTIONS BAR */}
         <div
           style={{
@@ -383,7 +427,7 @@ const MapComponent = ({
           })}
 
         {driverOnFocus?.length && (
-          <Marker icon={cabIcon} position={driverOnFocus as LatLngExpression}>
+          <Marker icon={cabIcon} position={(animatedDriverOnFocus?.length && !Number.isNaN(animatedDriverOnFocus[0])) ? animatedDriverOnFocus : driverOnFocus as LatLngExpression}>
             <Tooltip
               className="driver-tooltip"
               direction="top"
@@ -489,12 +533,16 @@ const MapComponent = ({
 
         {activeDrivers &&
           activeDrivers?.length &&
-          activeDrivers?.map((drivers:any) => {
+          activeDrivers?.map((drivers: any) => {
             return (
               <Marker
                 icon={cabIcon}
                 key={drivers?.fname}
-                position={(drivers?.pickUp ? drivers?.pickUp?.coordinates : drivers?.location) as LatLngExpression}
+                position={
+                  (drivers?.pickUp
+                    ? drivers?.pickUp?.coordinates
+                    : drivers?.location) as LatLngExpression
+                }
               >
                 <Tooltip
                   className="driver-tooltip"
