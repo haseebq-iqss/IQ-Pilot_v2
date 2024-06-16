@@ -14,7 +14,7 @@ import {
   AccessTime,
   DateRange,
 } from "@mui/icons-material";
-import { Typography, Avatar, Box } from "@mui/material";
+import { Typography, Avatar, Box, CircularProgress } from "@mui/material";
 import { useLocation, useParams } from "react-router-dom";
 import MapComponent from "../../components/Map";
 import { PageFlex, ColFlex, RowFlex } from "../../style_extentions/Flex";
@@ -27,6 +27,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
 import DaysTillActive from "../../utils/DaysTillActive";
+import { LatLngExpression } from "leaflet";
 
 function ViewRoute() {
   const location = useLocation();
@@ -374,12 +375,24 @@ function ViewRoute() {
           overflow: "hidden",
         }}
       >
-        <MapComponent
-          mode="route-view"
-          routePathArray={routeData?.cabPath as []}
-          employees={routeState?.passengers as [EmployeeTypes]}
-          height="100%"
-        />
+        {routeData ? (
+          <MapComponent
+            center={
+              routeData?.cabPath
+                ? (routeData?.cabPath[
+                    Math.floor(routeData?.cabPath?.length / 2)
+                  ] as LatLngExpression)
+                : [34.071635, 74.803872]
+            }
+            zoom={12}
+            mode="route-view"
+            routePathArray={routeData?.cabPath as []}
+            employees={routeData?.passengers as [EmployeeTypes]}
+            height="100%"
+          />
+        ) : (
+          <CircularProgress />
+        )}
         {/* CALCULATED + MEASURED TIME & DISTANCE */}
         <Box
           sx={{

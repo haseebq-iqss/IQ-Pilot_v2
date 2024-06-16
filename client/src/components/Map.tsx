@@ -63,6 +63,7 @@ const MapComponent = ({
   const [mapDataView, setMapDataView] = useState<"TM-View" | "Routes-View">(
     "TM-View"
   );
+  
   // console.log(selectedEmps)
   const [routes, setRoutes] = useState<any>();
   const [rawRouteData, setRawRouteData] = useState<RouteTypes>();
