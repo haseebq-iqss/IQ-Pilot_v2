@@ -23,6 +23,7 @@ import baseURL from "../utils/baseURL";
 import { Close } from "@mui/icons-material";
 import MapCenterUpdater from "./MapCenterUpdater";
 import InterpolateLatLon from "../utils/LatLonAnimator";
+import CalculateSpeed from "../utils/CalculateSpeedByCoordinates";
 
 type MapTypes = {
   width?: string;
@@ -196,29 +197,43 @@ const MapComponent = ({
     }
   }
 
-  const [_positions, setPositions] = useState<Array<[number, number] | null>>([null, null]);
-  const [animatedDriverOnFocus, setAnimatedDriverOnFocus] = useState<[number, number] | null>(null);
+  const [_positions, setPositions] = useState<Array<[number, number] | null>>([
+    null,
+    null,
+  ]);
+  const [animatedDriverOnFocus, setAnimatedDriverOnFocus] = useState<
+    [number, number] | null
+  >(null);
+
+  const [currSpeed, setCurrSpeed] = useState<number>(0);
 
   useEffect(() => {
-      if (driverOnFocus) {
-          setPositions(prevPositions => {
-              // Update the array with the new position
-              const newPositions = [...prevPositions.slice(-1), driverOnFocus];
-              
-              // If both previous and current positions are available, call interpolateLatLon
-              if (newPositions[0] && newPositions[1]) {
-                  const interpolated = InterpolateLatLon(newPositions[0], newPositions[1]);
-                  // Map over the interpolated values and set them to animatedDriverOnFocus with a delay of 50ms
-                  interpolated.forEach((point, index): any => {
-                      setTimeout(() => {
-                          setAnimatedDriverOnFocus(point as [number, number]);
-                      }, 50 * index);
-                  });
-              }
+    if (driverOnFocus) {
+      setPositions((prevPositions) => {
+        // Update the array with the new position
+        const newPositions = [...prevPositions.slice(-1), driverOnFocus];
 
-              return newPositions;
+        // If both previous and current positions are available, call interpolateLatLon
+        if (newPositions[0] && newPositions[1]) {
+          const interpolated = InterpolateLatLon(
+            newPositions[0],
+            newPositions[1]
+          );
+
+          // Calculate the speed
+          setCurrSpeed(() => CalculateSpeed(newPositions[0], newPositions[1]));
+
+          // Map over the interpolated values and set them to animatedDriverOnFocus with a delay of 50ms
+          interpolated.forEach((point, index): any => {
+            setTimeout(() => {
+              setAnimatedDriverOnFocus(point as [number, number]);
+            }, 50 * index);
           });
-      }
+        }
+
+        return newPositions;
+      });
+    }
   }, [driverOnFocus]);
 
   // console.log(animatedDriverOnFocus)
@@ -426,18 +441,23 @@ const MapComponent = ({
             );
           })}
 
-        {driverOnFocus?.length && (
-          <Marker icon={cabIcon} position={(animatedDriverOnFocus?.length && !Number.isNaN(animatedDriverOnFocus[0])) ? animatedDriverOnFocus : driverOnFocus as LatLngExpression}>
-            <Tooltip
-              className="driver-tooltip"
-              direction="top"
-              offset={[0, -40]}
-              permanent
+        {driverOnFocus?.length &&
+          animatedDriverOnFocus?.length &&
+          !Number.isNaN(animatedDriverOnFocus[0]) && (
+            <Marker
+              icon={cabIcon}
+              position={animatedDriverOnFocus as LatLngExpression}
             >
-              <span>You</span>
-            </Tooltip>
-          </Marker>
-        )}
+              <Tooltip
+                className="driver-tooltip"
+                direction="top"
+                offset={[0, -40]}
+                permanent
+              >
+                <span>You - {currSpeed.toFixed(1)}km/h</span>
+              </Tooltip>
+            </Marker>
+          )}
 
         {mapDataView === "Routes-View" &&
           routes &&

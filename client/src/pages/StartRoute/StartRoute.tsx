@@ -380,7 +380,7 @@ function StartRoute() {
         localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray));
       }
       console.log(myLocation);
-    });
+    }, () => {}, {maximumAge: 0, enableHighAccuracy: false, });
   }, [getElapsedTime()]);
 
   type Coordinates = [number, number];
