@@ -673,7 +673,7 @@ const MapComponent = ({
                   offset={[0, -40]}
                   permanent
                 >
-                  <span>{drivers.fname ? drivers.fname : drivers.name} - ({drivers?.speed.toFixed(1)}km/h)</span>
+                  <span>{drivers.fname ? drivers.fname : drivers.name} - ({drivers?.speed?.toFixed(1)}km/h)</span>
                 </Tooltip>
               </Marker>
             );
