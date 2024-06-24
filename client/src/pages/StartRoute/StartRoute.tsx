@@ -37,6 +37,7 @@ import AttendanceTypes from "../../types/AttendanceTypes";
 import { ColFlex, RowFlex } from "./../../style_extentions/Flex";
 import useTimer from "../../hooks/useTimer";
 import useLocalStorage from "../../hooks/useLocalStorage";
+import CalculateSpeed from "../../utils/CalculateSpeedByCoordinates";
 
 type modalPropTypes = {
   openModal: boolean;
@@ -74,12 +75,38 @@ function StartRoute() {
     }
   }, [actionUpdater]);
 
+  const [_positions, setPositions] = useState<Array<[number, number] | null>>([
+    null,
+    null,
+  ]);
+  const [currSpeed, setCurrSpeed] = useState<number>(0);
+
+  useEffect(() => {
+    if (myLocation) {
+      setPositions((prevPositions) => {
+        // Update the array with the new position
+        const newPositions = [...prevPositions.slice(-1), myLocation];
+
+        // If both previous and current positions are available, call interpolateLatLon
+        if (newPositions[0] && newPositions[1]) {
+          // Calculate the speed
+          setCurrSpeed(() => CalculateSpeed(newPositions[0], newPositions[1]));
+        }
+
+        return newPositions;
+      });
+    }
+  }, [myLocation]);
+
+  // console.log(currSpeed)
+
   useEffect(() => {
     if (myLocation.length == 2) {
       console.log(myLocation);
       const driverData = {
-        name: userData?.fname[0] + ". " + userData?.lname,
+        name: userData?.fname + " " + userData?.lname[0]+ ".",
         location: myLocation,
+        speed: currSpeed
       };
 
       console.log(myLocation);
@@ -371,16 +398,20 @@ function StartRoute() {
   // }, [myLocation]);
 
   useEffect(() => {
-    const locAtCurrMoment = navigator.geolocation.getCurrentPosition((pos) => {
-      setRoutePathArray((prevPoints) => [
-        ...prevPoints,
-        [pos.coords.latitude, pos.coords.longitude],
-      ]);
-      if (UpdateRouteStatus !== "success") {
-        localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray));
-      }
-      console.log(myLocation);
-    }, () => {}, {maximumAge: 0, enableHighAccuracy: false, });
+    const locAtCurrMoment = navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setRoutePathArray((prevPoints) => [
+          ...prevPoints,
+          [pos.coords.latitude, pos.coords.longitude],
+        ]);
+        if (UpdateRouteStatus !== "success") {
+          localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray));
+        }
+        console.log(myLocation);
+      },
+      () => {},
+      { maximumAge: 0, enableHighAccuracy: false }
+    );
   }, [getElapsedTime()]);
 
   type Coordinates = [number, number];
@@ -591,12 +622,12 @@ function StartRoute() {
         <Typography variant="h4" fontWeight={600}>
           {/* {parseFloat(distTravelled) * 0.621371} */}
           {calculatedDistance?.toFixed(3)}
-          <span style={{ fontSize: "1rem" }}>
-            kms
-          </span>
+          <span style={{ fontSize: "1rem" }}>kms</span>
         </Typography>
         <Typography variant="h4" fontWeight={600}>
-          {getElapsedTime() < 60 ? getElapsedTime() : (getElapsedTime()/60).toFixed(2)}
+          {getElapsedTime() < 60
+            ? getElapsedTime()
+            : (getElapsedTime() / 60).toFixed(2)}
           <span style={{ fontSize: "1rem" }}>
             {getElapsedTime() < 60 ? "mins" : "hr"}
           </span>

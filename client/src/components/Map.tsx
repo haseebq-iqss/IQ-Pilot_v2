@@ -24,6 +24,7 @@ import { Close } from "@mui/icons-material";
 import MapCenterUpdater from "./MapCenterUpdater";
 import InterpolateLatLon from "../utils/LatLonAnimator";
 import CalculateSpeed from "../utils/CalculateSpeedByCoordinates";
+// import InterpolateActiveDrivers from "../utils/InterpolateActiveDrivers";
 
 type MapTypes = {
   width?: string;
@@ -63,7 +64,7 @@ const MapComponent = ({
   const [mapDataView, setMapDataView] = useState<"TM-View" | "Routes-View">(
     "TM-View"
   );
-  
+
   // console.log(selectedEmps)
   const [routes, setRoutes] = useState<any>();
   const [rawRouteData, setRawRouteData] = useState<RouteTypes>();
@@ -237,7 +238,108 @@ const MapComponent = ({
     }
   }, [driverOnFocus]);
 
-  // console.log(animatedDriverOnFocus)
+  // console.log(
+  //   "ACTIVE DRIVERS INTERPOLATION -------> ",
+  //   activeDrivers?.length && InterpolateActiveDrivers(activeDrivers as any)
+  //   );
+
+  // const [mutatedDrivers, setMutatedDrivers] = useState<any>();
+  // const [rawActiveDrivers, setRawActiveDrivers] = useState<any>([]);
+  // const [dummyArr, setDummyArr] = useState<any>([]);
+
+  // const DriverMutator = () => {
+  //   rawActiveDrivers?.length &&
+  //     rawActiveDrivers?.map((data: any) => {
+  //       console.log("N 1 -> ", data[0]?.name, "N 2 -> ", data[1]?.name);
+  //       console.log(
+  //         "LOC 1 -> ",
+  //         data[0]?.location,
+  //         "LOC 2 -> ",
+  //         data[1]?.location
+  //       );
+
+  //       const pushedDriverNames =
+  //         mutatedDrivers?.length && mutatedDrivers.map(({ name }: any) => name);
+  //       console.log(pushedDriverNames);
+
+  //           if (pushedDriverNames?.length && !pushedDriverNames.includes(data[0]?.name)) {
+  //             setDummyArr((prevDummy:any) => [
+  //               ...prevDummy,
+  //               {
+  //                 name: data[0]?.name,
+  //                 startLocation: data[0]?.location,
+  //                 endLocation: data[1]?.location,
+  //               }
+  //             ])
+  //           }
+
+  //       console.log(dummyArr);
+
+  //         setMutatedDrivers([
+  //           ...dummyArr,
+  //           {
+  //             name: data[0]?.name,
+  //             startLocation: data[0]?.location,
+  //             endLocation: data[1]?.location,
+  //           },
+  //         ]);
+  //     });
+  // };
+
+  // console.log(mutatedDrivers);
+
+  // useEffect(() => {
+  //   if (activeDrivers?.length) {
+  //     if (rawActiveDrivers?.length < 2) {
+  //       setRawActiveDrivers((prevDrivers: any) => [
+  //         ...prevDrivers,
+  //         activeDrivers,
+  //       ]);
+  //     } else {
+  //       setRawActiveDrivers((prevDrivers: any) => [
+  //         (prevDrivers[0] = prevDrivers[1]),
+  //         (prevDrivers[1] = activeDrivers),
+  //       ]);
+  //     }
+  //   }
+  //   if (rawActiveDrivers?.length > 1) {
+  //     DriverMutator();
+  //   }
+  // }, [activeDrivers]);
+
+  // console.log(rawActiveDrivers);
+
+  // const [startEndLocs, setStartEndLocs] = useState<any>([]);
+  // const [activeDriversMod, setActiveDriversMod] = useState<any>();
+
+  // useEffect(() => {
+  //   if (activeDrivers?.length) {
+  //     if (startEndLocs?.length < 2) {
+  //       setStartEndLocs((prevArr: any) => [
+  //         ...prevArr,
+  //         (activeDrivers as any)[0]?.location,
+  //       ]);
+  //     } else {
+  //       setStartEndLocs((prevArray: any) => [
+  //         (prevArray[0] = prevArray[1]),
+  //         (prevArray[1] = (activeDrivers as any)[0]?.location),
+  //       ]);
+  //     }
+  //     if (startEndLocs?.length == 2) {
+  //       setActiveDriversMod({
+  //         name: (activeDrivers as any)?.name,
+  //         startLocation: startEndLocs[0]?.location,
+  //         endLocation: startEndLocs[1]?.location,
+  //       });
+  //     }
+  //   }
+  // }, [activeDrivers]);
+
+  // console.log(
+  //   startEndLocs.length >= 2 &&
+  //     InterpolateLatLon(startEndLocs[0], startEndLocs[1])
+  // );
+  // console.log(activeDriversMod);
 
   return (
     <div style={{ position: "relative", height, width, overflow: "hidden" }}>
@@ -558,7 +660,7 @@ const MapComponent = ({
             return (
               <Marker
                 icon={cabIcon}
-                key={drivers?.fname}
+                key={drivers?.fname ? drivers?.fname : drivers?.name}
                 position={
                   (drivers?.pickUp
                     ? drivers?.pickUp?.coordinates
@@ -571,7 +673,7 @@ const MapComponent = ({
                   offset={[0, -40]}
                   permanent
                 >
-                  <span>{drivers.fname ? drivers.fname : drivers.name}</span>
+                  <span>{drivers.fname ? drivers.fname : drivers.name} - ({drivers?.speed.toFixed(1)}km/h)</span>
                 </Tooltip>
               </Marker>
             );
