@@ -104,9 +104,9 @@ function StartRoute() {
     if (myLocation.length == 2) {
       console.log(myLocation);
       const driverData = {
-        name: userData?.fname + " " + userData?.lname[0]+ ".",
+        name: userData?.fname + " " + userData?.lname[0] + ".",
         location: myLocation,
-        speed: currSpeed
+        speed: currSpeed,
       };
 
       console.log(myLocation);
@@ -237,13 +237,19 @@ function StartRoute() {
         severity: "success",
       });
       navigate("/driver/routeCompleted", { state: data.data?.updated_route });
+      socket.disconnect(); // Disconnect from the Socket Server before leaving the page.
     },
   });
 
-  window.onpopstate = (event) => {
+  const BackHandler = () => {
+    // socket.disconnect();
     alert(
       "You are Abandoning this route! Please continue this route from the Homepage."
     );
+  };
+
+  window.onpopstate = (event) => {
+    BackHandler();
     // console.log(currentLocation, location.state)
     // navigate("/admin/createShift", {state: location.state})
   };

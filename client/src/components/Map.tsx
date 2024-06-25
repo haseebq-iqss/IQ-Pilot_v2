@@ -25,6 +25,7 @@ import MapCenterUpdater from "./MapCenterUpdater";
 import InterpolateLatLon from "../utils/LatLonAnimator";
 import CalculateSpeed from "../utils/CalculateSpeedByCoordinates";
 // import InterpolateActiveDrivers from "../utils/InterpolateActiveDrivers";
+import CabJoinSound from "../assets/sounds/cab-joined.mp3";
 
 type MapTypes = {
   width?: string;
@@ -199,6 +200,29 @@ const MapComponent = ({
     }
   }
 
+  const [triggerCenterUpdate, setTriggerCenterUpdate] =
+    useState<boolean>(false);
+
+  useEffect(() => {
+    if ((activeDrivers as [])?.length > 0) {
+      // alert("New driver joined");
+      PlaySound();
+      setTriggerCenterUpdate(!triggerCenterUpdate);
+      // console.log(activeDrivers[activeDrivers?.length - 1]?.location)
+    }
+  }, [activeDrivers?.length]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setTriggerCenterUpdate(false);
+    }, 5000);
+  }, [triggerCenterUpdate]);
+
+  const PlaySound = () => {
+    const audio = new Audio(CabJoinSound);
+    audio.play();
+  };
+
   const [_positions, setPositions] = useState<Array<[number, number] | null>>([
     null,
     null,
@@ -372,6 +396,14 @@ const MapComponent = ({
             center={driverOnFocus?.length ? driverOnFocus : center}
           />
         )}
+        {triggerCenterUpdate && (
+          <MapCenterUpdater
+            center={
+              ((activeDrivers as [])[(activeDrivers as [])?.length - 1] as any)
+                ?.location as LatLngExpression
+            }
+          />
+        )}
         {/* OPTIONS BAR */}
         <div
           style={{
@@ -389,7 +421,8 @@ const MapComponent = ({
           {/* TMs and Routes View */}
           {mode === "full-view" && (
             <div
-              onClick={() => openFullscreen("map")}
+              // onClick={() => openFullscreen("map")}
+              onClick={() => PlaySound()}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -673,7 +706,10 @@ const MapComponent = ({
                   offset={[0, -40]}
                   permanent
                 >
-                  <span>{drivers.fname ? drivers.fname : drivers.name} - ({drivers?.speed?.toFixed(1)}km/h)</span>
+                  <span>
+                    {drivers.fname ? drivers.fname : drivers.name} - (
+                    {drivers?.speed?.toFixed(1)}km/h)
+                  </span>
                 </Tooltip>
               </Marker>
             );
