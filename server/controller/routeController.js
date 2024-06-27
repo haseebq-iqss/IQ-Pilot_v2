@@ -62,12 +62,15 @@ const assignCabToEmployees = async (
     // CHECK FOR CONFLICTING ROUTES
     const conflicting_routes = cab.routes.some((route) => {
       const [route_start, route_end] = route.currentShift.split("-");
-      const [new_route_start, new_route_end] = route.currentShift.split("-");
+      const [new_route_start, new_route_end] = currentShift.split("-");
+
       return (
+        route.typeOfRoute === typeOfRoute &&
         route_start === new_route_start &&
         (route_end !== new_route_end || route.workLocation !== workLocation)
       );
     });
+
     if (conflicting_routes) continue;
 
     // GET ROUTES FOR PICKUP/DROP TYPE
@@ -93,6 +96,7 @@ const assignCabToEmployees = async (
     cab_passengers = populated_passengers.filter((val) => val !== null);
 
     const available_capacity = cab.seatingCapacity - cab_passengers.length;
+
     if (available_capacity <= 0) continue;
 
     const group = {
@@ -172,6 +176,7 @@ exports.createShift = catchAsync(async (req, res, next) => {
         route.typeOfRoute === typeOfRoute
       );
     });
+
     if (check_active_routes)
       return next(
         new AppError(
@@ -226,6 +231,13 @@ exports.createShift = catchAsync(async (req, res, next) => {
     closestEmployees,
     cabs
   );
+
+  if (groups.length === 0)
+    return next(
+      new AppError(
+        `Roster for ${currentShift} and Worklocation: ${workLocation} cannot be created...No Cabs available right now...`
+      )
+    );
 
   res.status(200).json({
     message: "Success",
