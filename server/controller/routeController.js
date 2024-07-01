@@ -20,7 +20,7 @@ const activeRoutesFun = async (all_routes) => {
   const active_routes = all_routes.filter((route) => {
     const route_created = route.createdAt;
     route_created.setHours(0, 0, 0, 0);
-    const end_date = new Date();
+    const end_date = new Date(route_created);
     end_date.setDate(route_created.getDate() + route.daysRouteIsActive);
     end_date.setHours(0, 0, 0, 0);
 
@@ -173,7 +173,8 @@ exports.createShift = catchAsync(async (req, res, next) => {
       return (
         route.workLocation === workLocation &&
         route.currentShift === currentShift &&
-        route.typeOfRoute === typeOfRoute
+        route.typeOfRoute === typeOfRoute &&
+        route.availableCapacity > 0
       );
     });
 
@@ -361,6 +362,7 @@ exports.pendingPassengers = catchAsync(async (req, res, next) => {
   // if (active_routes.length === 0) {
   //   return next(new AppError(`No Active Routes as of now...`, 404));
   // }
+  console.log(active_routes);
 
   const passengerIds = active_routes.flatMap((route) => route.passengers);
   const pending_passengers = await User.find({

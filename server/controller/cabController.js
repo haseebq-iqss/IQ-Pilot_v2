@@ -200,7 +200,7 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "Success",
-    results: [...cabsAvailable, ...availableAssignedCabs].length,
-    data: [...cabsAvailable, ...availableAssignedCabs],
+    results: [...cabsAvailable].length,
+    // data: [...cabsAvailable, ...availableAssignedCabs],
   });
 });
