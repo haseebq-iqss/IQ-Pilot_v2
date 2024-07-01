@@ -240,11 +240,9 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
   //   data: [...cabsAvailable],
   // });
   // console.log(noOfCabsAvailable.length);
-  res
-    .status(200)
-    .json({
-      status: "Success",
-      result: noOfCabsAvailable.length,
-      cabsAvailable: noOfCabsAvailable,
-    });
+  res.status(200).json({
+    status: "Success",
+    result: noOfCabsAvailable.length,
+    data: noOfCabsAvailable,
+  });
 });
