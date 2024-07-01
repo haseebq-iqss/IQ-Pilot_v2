@@ -173,8 +173,7 @@ exports.createShift = catchAsync(async (req, res, next) => {
       return (
         route.workLocation === workLocation &&
         route.currentShift === currentShift &&
-        route.typeOfRoute === typeOfRoute &&
-        route.availableCapacity > 0
+        route.typeOfRoute === typeOfRoute
       );
     });
 
