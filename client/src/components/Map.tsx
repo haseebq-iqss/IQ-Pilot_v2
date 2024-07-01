@@ -26,6 +26,7 @@ import InterpolateLatLon from "../utils/LatLonAnimator";
 import CalculateSpeed from "../utils/CalculateSpeedByCoordinates";
 // import InterpolateActiveDrivers from "../utils/InterpolateActiveDrivers";
 import CabJoinSound from "../assets/sounds/cab-joined.mp3";
+import MarkerClusterGroup from "react-leaflet-cluster";
 
 type MapTypes = {
   width?: string;
@@ -551,7 +552,22 @@ const MapComponent = ({
         )}
 
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"   // VANILLA MAP STYLE
+          url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png" // FRANCE HOT MAP         --- MOST CONSISTENT
+          // url="https://tile.osm.ch/switzerland/{z}/{x}/{y}.png"   // SWISS MAP STYLE (SLOW TO LOAD)
+          // url="https://tile.openstreetmap.de/{z}/{x}/{y}.png"   // DUTCH MAP STYLE
+
+          // ---> PAID MAP TILES
+          // url="https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // OPENCYCLE MAP STYLE      --- MOST BASIC
+          // url="https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // TRANSPORT MAP STYLE     --- MOST CLEAN
+          // url="https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // LANDSCAPE STYLE
+          // url="https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // OUTDOORS STYLE
+          // url="https://tile.thunderforest.com/transport-dark/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // TRANSPORT DARK STYLE
+          // url="https://tile.thunderforest.com/pioneer/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // PIONEER STYLE     --- DESERT
+          // url="https://tile.thunderforest.com/spinal-map/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // SPINAL MAP STYLE     --- HELL
+          // url="https://tile.thunderforest.com/mobile-atlas/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // MOBILE ATLAS MAP STYLE     --- SKETCH STYLE
+          // url="https://tile.thunderforest.com/atlas/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // ATLAS MAP STYLE
+          // url="https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // NEIGHBOURHOOD MAP STYLE
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">Haseeb Qureshi</a>'
         />
 
@@ -715,69 +731,48 @@ const MapComponent = ({
             );
           })}
 
-        {employees &&
-          employees?.length >= 1 &&
-          employees.map((employee: EmployeeTypes) => {
-            const isCoordinatesIncluded = activeEmployees.some(
-              (coord: [number, number]) => {
-                const empCoord1 =
-                  String(employee.pickUp?.coordinates[0]).length > 6
-                    ? String(employee.pickUp?.coordinates[0]).slice(0, 6)
-                    : String(employee.pickUp?.coordinates[0]).slice(0, 4);
-                const empCoord2 =
-                  String(employee.pickUp?.coordinates[1]).length > 6
-                    ? String(employee.pickUp?.coordinates[1]).slice(0, 6)
-                    : String(employee.pickUp?.coordinates[1]).slice(0, 4);
+        <MarkerClusterGroup
+          maxClusterRadius={75}
+          chunkedLoading
+          animate
+          spiderfyOnEveryZoom
+          disableClusteringAtZoom={16}
+          animateAddingMarkers
+        >
+          {employees &&
+            employees?.length >= 1 &&
+            employees.map((employee: EmployeeTypes) => {
+              const isCoordinatesIncluded = activeEmployees.some(
+                (coord: [number, number]) => {
+                  const empCoord1 =
+                    String(employee.pickUp?.coordinates[0]).length > 6
+                      ? String(employee.pickUp?.coordinates[0]).slice(0, 6)
+                      : String(employee.pickUp?.coordinates[0]).slice(0, 4);
+                  const empCoord2 =
+                    String(employee.pickUp?.coordinates[1]).length > 6
+                      ? String(employee.pickUp?.coordinates[1]).slice(0, 6)
+                      : String(employee.pickUp?.coordinates[1]).slice(0, 4);
 
-                const presentCoord1 =
-                  String(coord[0]).length > 6
-                    ? String(coord[0]).slice(0, 6)
-                    : String(coord[0]).slice(0, 4);
-                const presentCoord2 =
-                  String(coord[1]).length > 6
-                    ? String(coord[1]).slice(0, 6)
-                    : String(coord[1]).slice(0, 4);
-                if (
-                  empCoord1 === presentCoord1 &&
-                  empCoord2 === presentCoord2
-                ) {
-                  console.log(empCoord1, presentCoord1);
+                  const presentCoord1 =
+                    String(coord[0]).length > 6
+                      ? String(coord[0]).slice(0, 6)
+                      : String(coord[0]).slice(0, 4);
+                  const presentCoord2 =
+                    String(coord[1]).length > 6
+                      ? String(coord[1]).slice(0, 6)
+                      : String(coord[1]).slice(0, 4);
+                  if (
+                    empCoord1 === presentCoord1 &&
+                    empCoord2 === presentCoord2
+                  ) {
+                    console.log(empCoord1, presentCoord1);
+                  }
+                  return (
+                    empCoord1 === presentCoord1 && empCoord2 === presentCoord2
+                  );
                 }
-                return (
-                  empCoord1 === presentCoord1 && empCoord2 === presentCoord2
-                );
-              }
-            );
-
-            // console.log(isCoordinatesIncluded)
-
-            return activePolylineIndex === null ? (
-              <Marker
-                eventHandlers={{
-                  click: () => {
-                    setEmpCard(employee);
-                    setCardOpen(true);
-                  },
-                  //  mouseover: () => console.log(employee?.fname)
-                }}
-                icon={empIcon}
-                key={employee?._id}
-                position={employee?.pickUp?.coordinates as LatLngExpression}
-              >
-                <Tooltip
-                  className="employee-tooltip"
-                  key={employee?._id}
-                  direction="top"
-                  offset={[0, -40]}
-                  permanent
-                >
-                  <span>
-                    {employee?.fname! + " " + employee.lname![0] + "."}
-                  </span>
-                </Tooltip>
-              </Marker>
-            ) : (
-              isCoordinatesIncluded && (
+              );
+              return activePolylineIndex === null ? (
                 <Marker
                   eventHandlers={{
                     click: () => {
@@ -791,8 +786,8 @@ const MapComponent = ({
                   position={employee?.pickUp?.coordinates as LatLngExpression}
                 >
                   <Tooltip
-                    key={employee?._id}
                     className="employee-tooltip"
+                    key={employee?._id}
                     direction="top"
                     offset={[0, -40]}
                     permanent
@@ -802,9 +797,37 @@ const MapComponent = ({
                     </span>
                   </Tooltip>
                 </Marker>
-              )
-            );
-          })}
+              ) : (
+                isCoordinatesIncluded && (
+                  <Marker
+                    eventHandlers={{
+                      click: () => {
+                        setEmpCard(employee);
+                        setCardOpen(true);
+                      },
+                      //  mouseover: () => console.log(employee?.fname)
+                    }}
+                    icon={empIcon}
+                    key={employee?._id}
+                    position={employee?.pickUp?.coordinates as LatLngExpression}
+                  >
+                    <Tooltip
+                      key={employee?._id}
+                      className="employee-tooltip"
+                      direction="top"
+                      offset={[0, -40]}
+                      permanent
+                    >
+                      <span>
+                        {employee?.fname! + " " + employee.lname![0] + "."}
+                      </span>
+                    </Tooltip>
+                  </Marker>
+                )
+              );
+            })}
+        </MarkerClusterGroup>
+
         {SOS && (
           <Marker
             icon={empIcon}
