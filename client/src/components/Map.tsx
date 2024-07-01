@@ -421,8 +421,8 @@ const MapComponent = ({
           {/* TMs and Routes View */}
           {mode === "full-view" && (
             <div
-              // onClick={() => openFullscreen("map")}
-              onClick={() => PlaySound()}
+              onClick={() => openFullscreen("map")}
+              // onClick={() => PlaySound()}
               style={{
                 display: "flex",
                 alignItems: "center",
