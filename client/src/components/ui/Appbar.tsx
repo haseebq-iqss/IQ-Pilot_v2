@@ -226,15 +226,15 @@ function Appbar() {
                   {/* {console.log(cabs)} */}
                   {cabs?.length ? (
                     cabs?.map((driver: any) => {
-                      // console.log(driver)
+                      console.log(driver);
                       return (
                         <MenuItem
                           key={driver?.cabDriver?._id}
                           value={driver as any}
                         >
-                          {(driver?.cabDriver as EmployeeTypes)?.fname +
+                          {(driver?.cabDriver[0] as EmployeeTypes)?.fname +
                             " " +
-                            (driver?.cabDriver as EmployeeTypes)?.lname}
+                            (driver?.cabDriver[0] as EmployeeTypes)?.lname}
                         </MenuItem>
                       );
                     })

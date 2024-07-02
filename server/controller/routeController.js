@@ -56,7 +56,7 @@ const assignCabToEmployees = async (
 
     if (cab.routes.length === 2) {
       console.log(`Cab has already been assigned with two routes`);
-      break;
+      continue;
     }
 
     // CHECK FOR CONFLICTING ROUTES
@@ -131,7 +131,7 @@ exports.createShift = catchAsync(async (req, res, next) => {
     ref_coords,
     daysRouteIsActive,
   } = req.body;
-  const PROXIMITY_THRESHOLD = 8;
+  const PROXIMITY_THRESHOLD = 10;
   const present_day = new Date();
   present_day.setHours(0, 0, 0, 0);
 
@@ -155,6 +155,7 @@ exports.createShift = catchAsync(async (req, res, next) => {
       },
     },
   ]);
+  // console.log(closestEmployees.length);
 
   if (closestEmployees.length === 0)
     return next(
@@ -232,12 +233,12 @@ exports.createShift = catchAsync(async (req, res, next) => {
     cabs
   );
 
-  if (groups.length === 0)
-    return next(
-      new AppError(
-        `Roster for ${currentShift} and Worklocation: ${workLocation} cannot be created...No Cabs available right now...`
-      )
-    );
+  // if (groups.length === 0)
+  //   return next(
+  //     new AppError(
+  //       `Roster for ${currentShift} and Worklocation: ${workLocation} cannot be created...No Cabs available right now...`
+  //     )
+  //   );
 
   res.status(200).json({
     message: "Success",
@@ -342,7 +343,7 @@ exports.updateRoute = catchAsync(async (req, res, next) => {
 
 exports.deleteRoute = catchAsync(async (req, res, next) => {
   const id = req.params.id;
-  console.log(id);
+  // console.log(id);
   const deleted_route = await Route.findByIdAndDelete(id);
   if (!deleted_route)
     return next(new AppError(`No route found for this id: ${id}`, 404));
@@ -361,7 +362,7 @@ exports.pendingPassengers = catchAsync(async (req, res, next) => {
   // if (active_routes.length === 0) {
   //   return next(new AppError(`No Active Routes as of now...`, 404));
   // }
-  console.log(active_routes);
+  // console.log(active_routes);
 
   const passengerIds = active_routes.flatMap((route) => route.passengers);
   const pending_passengers = await User.find({

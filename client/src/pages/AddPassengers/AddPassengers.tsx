@@ -599,9 +599,9 @@ function AddPassengers() {
                   {"Cab " +
                     routeState?.driver?.cabNumber +
                     " - " +
-                    routeState?.driver?.cabDriver?.fname +
+                    routeState?.driver?.cabDriver[0]?.fname +
                     " " +
-                    routeState?.driver.cabDriver?.lname}
+                    routeState?.driver.cabDriver[0]?.lname}
                 </Typography>
                 <Typography
                   sx={{
