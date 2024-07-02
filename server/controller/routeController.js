@@ -51,6 +51,9 @@ const assignCabToEmployees = async (
   const shuffled_cabs = shuffleArray(cabs);
   const assigned_employees = new Set();
 
+  if (shuffled_cabs.length === 0)
+    return next(new AppError(`No cabs available as of now...`, 404));
+
   for (const cab of shuffled_cabs) {
     if (remaining_employees.length === 0) break;
 
@@ -205,6 +208,8 @@ exports.createShift = catchAsync(async (req, res, next) => {
       },
     },
   ]);
+
+  console.log(cabs);
 
   // NOT TO CONSIDER NON-ACTIVE ROUTES ASSIGNED TO CABS(FILTERING OF CABS)
   for (const cab of cabs) {
