@@ -42,6 +42,7 @@ type MapTypes = {
   activeRoute?: any;
   routePathArray?: [];
   highlightedEmployees?: [];
+  clusterRadiusValue?: number;
 };
 
 const MapComponent = ({
@@ -57,6 +58,7 @@ const MapComponent = ({
   activeRoute = [],
   routePathArray = [],
   highlightedEmployees = [],
+  clusterRadiusValue = 75,
 }: MapTypes) => {
   // const [driversPosition, setDriversPosition] = useState<any>();
 
@@ -732,7 +734,7 @@ const MapComponent = ({
           })}
 
         <MarkerClusterGroup
-          maxClusterRadius={75}
+          maxClusterRadius={clusterRadiusValue}
           chunkedLoading
           animate
           spiderfyOnEveryZoom
