@@ -51,9 +51,6 @@ const assignCabToEmployees = async (
   const shuffled_cabs = shuffleArray(cabs);
   const assigned_employees = new Set();
 
-  if (shuffled_cabs.length === 0)
-    return next(new AppError(`No cabs available as of now...`, 404));
-
   for (const cab of shuffled_cabs) {
     if (remaining_employees.length === 0) break;
 
@@ -209,7 +206,8 @@ exports.createShift = catchAsync(async (req, res, next) => {
     },
   ]);
 
-  console.log(cabs);
+  if (cabs.length === 0)
+    return next(new AppError(`No cabs available as of now...`, 404));
 
   // NOT TO CONSIDER NON-ACTIVE ROUTES ASSIGNED TO CABS(FILTERING OF CABS)
   for (const cab of cabs) {
@@ -321,7 +319,9 @@ exports.getActiveRoutes = catchAsync(async (req, res, next) => {
   const active_routes = await activeRoutesFun(all_routes);
 
   if (active_routes.length === 0) {
-    return next(new AppError(`No Active Routes as of now...`, 404));
+    return res
+      .status(200)
+      .json({ message: "No active routes found as of now..." });
   }
 
   res.status(200).json({
