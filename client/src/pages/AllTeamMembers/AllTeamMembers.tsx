@@ -171,7 +171,15 @@ function AllTeamMembers() {
                       <TableCell align="center">
                         {employee.pickUp?.address}
                       </TableCell>
-                      <TableCell sx={{color: employee.isCabCancelled ? "error.main" : "info.main", fontWeight:600}} align="center">
+                      <TableCell
+                        sx={{
+                          color: employee.isCabCancelled
+                            ? "error.main"
+                            : "info.main",
+                          fontWeight: 600,
+                        }}
+                        align="center"
+                      >
                         {!employee.isCabCancelled ? "In Office" : "On Leave"}
                       </TableCell>
                       <TableCell align="center" sx={{ position: "relative" }}>

@@ -494,6 +494,7 @@ function AddPassengers() {
                   ?.coordinates
               : [34.071635, 74.803872]) as [number, number]
           }
+          clusterRadiusValue={0}
           mode="route-view"
           highlightedEmployees={selectedPassengers as []}
           employees={
