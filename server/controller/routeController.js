@@ -13,25 +13,46 @@ const shuffleArray = (nums) => {
   return arr;
 };
 
+// const activeRoutesFun = async (all_routes) => {
+//   const present_day = new Date();
+//   present_day.setHours(0, 0, 0, 0);
+
+//   const active_routes = all_routes.filter((route) => {
+//     const route_created = route.createdAt;
+//     route_created.setHours(0, 0, 0, 0);
+//     const end_date = new Date(route_created);
+//     end_date.setDate(route_created.getDate() + route.daysRouteIsActive);
+//     end_date.setHours(0, 0, 0, 0);
+
+//     return (
+//       route_created.getTime() <= present_day.getTime() &&
+//       present_day.getTime() <= end_date.getTime()
+//     );
+//   });
+//   return active_routes;
+// };
+
 const activeRoutesFun = async (all_routes) => {
   const present_day = new Date();
-  present_day.setHours(0, 0, 0, 0);
+  present_day.setHours(0, 0, 0, 0); // Set present day to midnight
 
   const active_routes = all_routes.filter((route) => {
-    const route_created = route.createdAt;
-    route_created.setHours(0, 0, 0, 0);
+    // Create a new Date object based on the creation date to avoid mutating the original date
+    const route_created = new Date(route.createdAt);
+    route_created.setHours(0, 0, 0, 0); // Set creation date to midnight
+
     const end_date = new Date(route_created);
     end_date.setDate(route_created.getDate() + route.daysRouteIsActive);
-    end_date.setHours(0, 0, 0, 0);
+    end_date.setHours(0, 0, 0, 0); // Set end date to midnight
 
     return (
       route_created.getTime() <= present_day.getTime() &&
       present_day.getTime() <= end_date.getTime()
     );
   });
+
   return active_routes;
 };
-
 const setMonthTimeLine = () => {
   const now = new Date();
   const firstDayMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -65,12 +86,11 @@ const assignCabToEmployees = async (
       const [new_route_start, new_route_end] = currentShift.split("-");
 
       return (
-        route.typeOfRoute === typeOfRoute &&
-        route_start === new_route_start &&
-        (route_end !== new_route_end || route.workLocation !== workLocation)
+        route_start === new_route_start && route.typeOfRoute === typeOfRoute
       );
     });
 
+    // console.log(conflicting_routes);
     if (conflicting_routes) continue;
 
     // GET ROUTES FOR PICKUP/DROP TYPE
@@ -120,6 +140,7 @@ const assignCabToEmployees = async (
     }
     groups.push(group);
   }
+
   return groups;
 };
 
@@ -155,7 +176,7 @@ exports.createShift = catchAsync(async (req, res, next) => {
       },
     },
   ]);
-  // console.log(closestEmployees.length);
+  console.log(closestEmployees.length);
 
   if (closestEmployees.length === 0)
     return next(
