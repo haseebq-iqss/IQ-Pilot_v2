@@ -34,6 +34,7 @@ import Cabtypes from "../../types/CabTypes";
 import GetArrivalTime from "../../utils/ReturnPickupTime";
 import GetOfficeCoordinates from "../../utils/OfficeCoordinates";
 import EmployeeTypes from "./../../types/EmployeeTypes";
+import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
 
 const socket = io(baseURL);
 
@@ -53,7 +54,9 @@ function EmployeeDashboard() {
 
   const navigate = useNavigate();
 
-  const [isCabCancelled, setIsCabCancelled] = useState<boolean>(userData?.isCabCancelled)
+  const [isCabCancelled, setIsCabCancelled] = useState<boolean>(
+    userData?.isCabCancelled
+  );
 
   const qc = useQueryClient();
 
@@ -114,12 +117,16 @@ function EmployeeDashboard() {
     return useAxios.patch(`users/cancel-cab/${userData?._id}`);
   };
 
-  const { mutate: cancelCab, status: cabCancelStatus, data: cabCancelData } = useMutation({
+  const {
+    mutate: cancelCab,
+    status: cabCancelStatus,
+    data: cabCancelData,
+  } = useMutation({
     mutationFn: cancelCabMF,
     onSuccess: (data) => {
       qc.invalidateQueries("Route Attendance" as never);
-      setIsCabCancelled(!isCabCancelled)
-      console.log(data.data)
+      setIsCabCancelled(!isCabCancelled);
+      console.log(data.data);
       setOpenSnack({
         open: true,
         message: data.data.cancelCab
@@ -168,15 +175,16 @@ function EmployeeDashboard() {
     const mapValues = Array.from(mapTest.values());
     if (routeData) {
       const formattedDriverName =
-        (routeData?.cab as any)?.cabDriver?.fname[0] +
-        ". " +
-        (routeData?.cab as any)?.cabDriver?.lname;
+        (routeData?.cab as any)?.cabDriver?.fname +
+        " " +
+        (routeData?.cab as any)?.cabDriver?.lname[0] +
+        ".";
       // console.log(route);
       const myDriver = mapValues?.filter(
         ({ name, location }) => name === formattedDriverName
       );
       console.log(formattedDriverName);
-      console.log(myDriver);
+      console.log("MY DRIVER -> ", myDriver);
       setDriversLocation(myDriver);
     }
     // else {
@@ -427,7 +435,10 @@ function EmployeeDashboard() {
               <Typography sx={{ color: "white", fontWeight: 500 }} variant="h5">
                 Onboarding at - {"  "}
                 <span style={{ fontWeight: 600 }}>
-                  {/* {ConvertTo12HourFormat(routeData?.shiftTime as string)} */}
+                  {ConvertShiftTimeTo12HrFormat(
+                    routeData?.currentShift as string,
+                    routeData?.typeOfRoute
+                  )}
                 </span>
               </Typography>
             )
@@ -510,16 +521,14 @@ function EmployeeDashboard() {
             <Button
               onClick={HandleCancelCab}
               sx={{
-                backgroundColor: isCabCancelled
-                  ? "info.main"
-                  : "error.main",
+                backgroundColor: isCabCancelled ? "info.main" : "error.main",
                 borderRadius: "10px",
                 color: "white",
                 padding: "15px",
                 width: "60%",
               }}
               variant="contained"
-              startIcon={!isCabCancelled ? <Close /> : <ArrowRight/>}
+              startIcon={!isCabCancelled ? <Close /> : <ArrowRight />}
             >
               {isCabCancelled ? "RESUME CAB" : "CANCEL CAB"}
             </Button>
