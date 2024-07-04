@@ -111,7 +111,7 @@ function AdminDashboard() {
       queryFn: getPendingPassengersQF,
       queryKey: ["All Pending Passengers"],
       select: (data) => {
-        return data.data;
+        return data.data.pending_passengers;
       },
     }
   );
@@ -209,7 +209,7 @@ function AdminDashboard() {
               }}
             >
               <MapComponent
-              mode="route-view"
+                mode="route-view"
                 width="100%"
                 height="30vh"
                 SOS={SOSEmergency}
@@ -348,8 +348,8 @@ function AdminDashboard() {
           <Box sx={{ ...ColFlex, gap: "5px" }}>
             <Typography sx={{ fontWeight: 600 }} variant="h4">
               {pendingPassengersStatus === "success"
-                ? pendingPassengers?.pending_passengers?.length
-                : 6}
+                ? pendingPassengers?.length
+                : 0}
             </Typography>
             <Typography
               sx={{
@@ -386,6 +386,7 @@ function AdminDashboard() {
             allEmployees
           }
           activeDrivers={activeDrivers}
+          unrosteredTms={pendingPassengers}
         />
       </Box>
     </Box>

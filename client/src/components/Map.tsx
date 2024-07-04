@@ -43,6 +43,7 @@ type MapTypes = {
   routePathArray?: [];
   highlightedEmployees?: [];
   clusterRadiusValue?: number;
+  unrosteredTms?: [any];
 };
 
 const MapComponent = ({
@@ -59,15 +60,19 @@ const MapComponent = ({
   routePathArray = [],
   highlightedEmployees = [],
   clusterRadiusValue = 75,
+  unrosteredTms,
 }: MapTypes) => {
   // const [driversPosition, setDriversPosition] = useState<any>();
+
+  console.log(unrosteredTms);
 
   const { userData }: UserContextTypes = useContext(UserDataContext);
 
   const { selectedEmps } = useContext(SelectedEmpsContext);
-  const [mapDataView, setMapDataView] = useState<"TM-View" | "Routes-View">(
-    "TM-View"
-  );
+  const [mapDataView, setMapDataView] = useState<
+    "TM-View" | "Routes-View" | "Unrostered-View"
+  >("TM-View");
+  const [viewUnrosteredTms, setViewUnrosteredTms] = useState<boolean>(false);
 
   // console.log(selectedEmps)
   const [routes, setRoutes] = useState<any>();
@@ -265,6 +270,8 @@ const MapComponent = ({
     }
   }, [driverOnFocus]);
 
+  // DRIVERS LOCATION INTERPOLATION
+
   // console.log(
   //   "ACTIVE DRIVERS INTERPOLATION -------> ",
   //   activeDrivers?.length && InterpolateActiveDrivers(activeDrivers as any)
@@ -421,7 +428,7 @@ const MapComponent = ({
             gap: "10px",
           }}
         >
-          {/* TMs and Routes View */}
+          {/* Full Screen View */}
           {mode === "full-view" && (
             <div
               onClick={() => openFullscreen("map")}
@@ -445,42 +452,66 @@ const MapComponent = ({
           )}
 
           {mode === "full-view" && (
-            <div
-              onClick={() =>
-                setMapDataView(
-                  mapDataView === "TM-View" ? "Routes-View" : "TM-View"
-                )
-              }
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#2997FC",
-                color: "white",
-                padding: "7.5px 15px",
-                borderRadius: "100px",
-                border: "2.5px solid white",
-                gap: 10,
-
-                // cursor:"grabbing"
-              }}
-            >
-              <h3
+            <>
+              <div
+                onClick={() => {
+                  setMapDataView(
+                    mapDataView === "TM-View" ? "Routes-View" : "TM-View"
+                  );
+                  setViewUnrosteredTms(false);
+                }}
                 style={{
-                  backgroundColor: "white",
-                  borderRadius: 100,
-                  padding: 1.5,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#2997FC",
+                  color: "white",
+                  padding: "7.5px 15px",
+                  borderRadius: "100px",
+                  border: "2.5px solid white",
+                  gap: 10,
+
+                  // cursor:"grabbing"
                 }}
               >
-                {mapDataView === "Routes-View" ? "📌" : "👨🏻‍💻"}
-              </h3>
-              <h3>
-                {" "}
-                {mapDataView === "Routes-View"
-                  ? "Routes View"
-                  : "Team Members View"}
-              </h3>
-            </div>
+                <h3
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: 100,
+                    padding: 1.5,
+                  }}
+                >
+                  {mapDataView === "Routes-View" ? "📌" : "👨🏻‍💻"}
+                </h3>
+                <h3>
+                  {" "}
+                  {mapDataView === "Routes-View"
+                    ? "Routes View"
+                    : "Team Members View"}
+                </h3>
+              </div>
+              {mapDataView === "TM-View" && (
+                <div
+                  onClick={() => setViewUnrosteredTms(!viewUnrosteredTms)}
+                  // onClick={() => PlaySound()}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "darkgrey",
+                    color: "white",
+                    padding: "7.5px 15px",
+                    borderRadius: "100px",
+                    border: "2.5px solid white",
+                    gap: 10,
+
+                    // cursor:"grabbing"
+                  }}
+                >
+                  <h3>🙋🏻‍♀️ {!viewUnrosteredTms ? "Not Rostered" : "All TMs"}</h3>
+                </div>
+              )}
+            </>
           )}
           {/* Reset Routes View */}
           {activePolylineIndex != null && (
@@ -742,6 +773,7 @@ const MapComponent = ({
           animateAddingMarkers
         >
           {employees &&
+            !viewUnrosteredTms &&
             employees?.length >= 1 &&
             employees.map((employee: EmployeeTypes) => {
               const isCoordinatesIncluded = activeEmployees.some(
@@ -829,6 +861,39 @@ const MapComponent = ({
               );
             })}
         </MarkerClusterGroup>
+
+        {/* UNROSTERED TMS */}
+        {viewUnrosteredTms &&
+          unrosteredTms &&
+          unrosteredTms?.length > 1 &&
+          unrosteredTms?.map((employee: EmployeeTypes) => {
+            return (
+              <Marker
+                eventHandlers={{
+                  click: () => {
+                    setEmpCard(employee);
+                    setCardOpen(true);
+                  },
+                  //  mouseover: () => console.log(employee?.fname)
+                }}
+                icon={empIcon}
+                key={employee?._id}
+                position={employee?.pickUp?.coordinates as LatLngExpression}
+              >
+                <Tooltip
+                  className="employee-tooltip"
+                  key={employee?._id}
+                  direction="top"
+                  offset={[0, -40]}
+                  permanent
+                >
+                  <span>
+                    {employee?.fname! + " " + employee.lname![0] + "."}
+                  </span>
+                </Tooltip>
+              </Marker>
+            );
+          })}
 
         {SOS && (
           <Marker
