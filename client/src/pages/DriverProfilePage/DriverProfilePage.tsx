@@ -38,10 +38,9 @@ import formatDateString from "../../utils/DateFormatter";
 
 const DriverProfile = () => {
   const { id } = useParams();
-
   const navigate = useNavigate();
 
-  const [allDriverRoutes, setAllDriverRoutes] = useState<any>();
+  const [allDriverRoutes, setAllDriverRoutes] = useState<any>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
 
@@ -61,6 +60,7 @@ const DriverProfile = () => {
           (driverDetails?.cabDriver as EmployeeTypes)?._id
         }`
       );
+      console.log(response);
       const { dropArr, pickArr }: any = response?.data?.data;
       setAllDriverRoutes([...dropArr, ...pickArr]);
 
@@ -301,7 +301,7 @@ const DriverProfile = () => {
           <Typography variant="body1" sx={{ ...ColFlex }}>
             <span style={{ fontWeight: 500, fontSize: 20 }}>Total Routes</span>
             <span style={{ fontSize: 38, fontWeight: 600 }}>
-              {allDriverRoutes?.length}
+              {allDriverRoutes?.length || 0}
             </span>
           </Typography>
           <Typography variant="body1" sx={{ ...ColFlex }}>
@@ -311,7 +311,15 @@ const DriverProfile = () => {
             </span>
           </Typography>
         </Box>
-        <Box sx={{ px: 10, bgcolor: "#eeeeee", py: 4, borderRadius: 2, marginTop:5 }}>
+        <Box
+          sx={{
+            px: 10,
+            bgcolor: "#eeeeee",
+            py: 4,
+            borderRadius: 2,
+            marginTop: 5,
+          }}
+        >
           <Typography
             variant="h6"
             component="h2"
@@ -370,7 +378,7 @@ const DriverProfile = () => {
                       </TableCell>
                       <TableCell sx={{ fontWeight: 600 }} align="center">
                         {route.totalDistance
-                          ? "₹ " + ((route.totalDistance / 15) * 100).toFixed(0) 
+                          ? "₹ " + ((route.totalDistance / 15) * 100).toFixed(0)
                           : "Not Calculated"}
                       </TableCell>
                       <TableCell component="th" scope="row">

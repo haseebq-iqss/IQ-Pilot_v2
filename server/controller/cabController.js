@@ -6,20 +6,23 @@ const { catchAsync } = require("../utils/catchAsync");
 
 const activeRoutesFun = async (all_routes) => {
   const present_day = new Date();
-  present_day.setHours(0, 0, 0, 0);
+  present_day.setHours(0, 0, 0, 0); // Set present day to midnight
 
   const active_routes = all_routes.filter((route) => {
-    const route_created = route.createdAt;
-    route_created.setHours(0, 0, 0, 0);
-    const end_date = new Date();
+    // Create a new Date object based on the creation date to avoid mutating the original date
+    const route_created = new Date(route.createdAt);
+    route_created.setHours(0, 0, 0, 0); // Set creation date to midnight
+
+    const end_date = new Date(route_created);
     end_date.setDate(route_created.getDate() + route.daysRouteIsActive);
-    end_date.setHours(0, 0, 0, 0);
+    end_date.setHours(0, 0, 0, 0); // Set end date to midnight
 
     return (
       route_created.getTime() <= present_day.getTime() &&
       present_day.getTime() <= end_date.getTime()
     );
   });
+
   return active_routes;
 };
 
@@ -85,7 +88,10 @@ exports.getEmployeeCab = catchAsync(async (req, res, next) => {
     currentShift: employee.currentShift,
   });
 
+  console.log(routes);
+
   const active_routes = await activeRoutesFun(routes);
+
   const not_completed_active_routes = active_routes.filter(
     (route) => route.routeStatus !== "completed"
   );
