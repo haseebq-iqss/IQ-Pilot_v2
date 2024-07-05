@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import {
   AccessTime,
   AirlineSeatReclineNormal,
+  CalendarToday,
   LocationOn,
 } from "@mui/icons-material";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat.ts";
@@ -178,7 +179,7 @@ const ScheduledRouteCard = ({
                 }}
                 fontWeight={500}
               >
-                <AccessTime
+                <CalendarToday
                   sx={{
                     width: "17px",
                     height: "17px",
@@ -186,7 +187,7 @@ const ScheduledRouteCard = ({
                     color: "black",
                   }}
                 />
-                {scheduledRoutes?.daysRouteIsActive}
+                {scheduledRoutes?.daysRouteIsActive} Day(s)
               </Typography>
             </Box>
           </Box>

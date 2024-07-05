@@ -87,7 +87,7 @@ const AssignedPassengers = ({ passenger }: { passenger: EmployeeTypes }) => {
               sx={{ width: "25px", height: "25px" }}
               src={baseURL + passenger?.profilePicture}
             />
-            <Box>
+            <Box sx={{overflow:"hidden"}}>
               <Typography fontSize={13} fontWeight={500} color={"#2997FC"}>
                 {passenger?.fname + " " + passenger.lname![0] + "."}
               </Typography>
