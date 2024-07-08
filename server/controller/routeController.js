@@ -3,7 +3,6 @@ const User = require("../models/user");
 const Route = require("../models/route");
 const { catchAsync } = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
-const { addDays, startOfDay } = require("date-fns");
 
 const shuffleArray = (nums) => {
   const arr = [...nums];
