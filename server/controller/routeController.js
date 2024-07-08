@@ -3,6 +3,7 @@ const User = require("../models/user");
 const Route = require("../models/route");
 const { catchAsync } = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const getActiveRoutes = require("../utils/activeRoutesFun");
 
 const shuffleArray = (nums) => {
   const arr = [...nums];
@@ -13,46 +14,6 @@ const shuffleArray = (nums) => {
   return arr;
 };
 
-// const activeRoutesFun = async (all_routes) => {
-//   const present_day = new Date();
-//   present_day.setHours(0, 0, 0, 0);
-
-//   const active_routes = all_routes.filter((route) => {
-//     const route_created = route.createdAt;
-//     route_created.setHours(0, 0, 0, 0);
-//     const end_date = new Date(route_created);
-//     end_date.setDate(route_created.getDate() + route.daysRouteIsActive);
-//     end_date.setHours(0, 0, 0, 0);
-
-//     return (
-//       route_created.getTime() <= present_day.getTime() &&
-//       present_day.getTime() <= end_date.getTime()
-//     );
-//   });
-//   return active_routes;
-// };
-
-const activeRoutesFun = async (all_routes) => {
-  const present_day = new Date();
-  present_day.setHours(0, 0, 0, 0); // Set present day to midnight
-
-  const active_routes = all_routes.filter((route) => {
-    // Create a new Date object based on the creation date to avoid mutating the original date
-    const route_created = new Date(route.createdAt);
-    route_created.setHours(0, 0, 0, 0); // Set creation date to midnight
-
-    const end_date = new Date(route_created);
-    end_date.setDate(route_created.getDate() + route.daysRouteIsActive);
-    end_date.setHours(0, 0, 0, 0); // Set end date to midnight
-
-    return (
-      route_created.getTime() <= present_day.getTime() &&
-      present_day.getTime() <= end_date.getTime()
-    );
-  });
-
-  return active_routes;
-};
 const setMonthTimeLine = () => {
   const now = new Date();
   const firstDayMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -190,7 +151,7 @@ exports.createShift = catchAsync(async (req, res, next) => {
 
   // CHECK FOR ACTIVE ROUTES
   if (routes.length >= 1) {
-    const active_routes = await activeRoutesFun(routes);
+    const active_routes = await getActiveRoutes(routes);
     const check_active_routes = active_routes.find((route) => {
       return (
         route.workLocation === workLocation &&
@@ -275,36 +236,6 @@ exports.createShift = catchAsync(async (req, res, next) => {
   });
 });
 
-// exports.createRoute = catchAsync(async (req, res, next) => {
-//   const {
-//     cabEmployeeGroups,
-//     workLocation,
-//     currentShift,
-//     typeOfRoute,
-//     daysRouteIsActive,
-//   } = req.body;
-
-//   if (!Array.isArray(cabEmployeeGroups) || cabEmployeeGroups.length === 0)
-//     return next(new AppError(`Invalid or cabEmployeeGroups is empty`, 400));
-
-//   for (const group of cabEmployeeGroups) {
-//     const { cab, passengers, availableCapacity } = group;
-//     const route = await Route.create({
-//       cab,
-//       passengers,
-//       workLocation,
-//       currentShift,
-//       typeOfRoute,
-//       availableCapacity,
-//       daysRouteIsActive,
-//     });
-//   }
-//   res.status(201).json({
-//     status: "Success",
-//     message: "Shifts confirmed and routes created successfully",
-//   });
-// });
-
 exports.createRoute = catchAsync(async (req, res, next) => {
   const {
     cabEmployeeGroups,
@@ -375,15 +306,18 @@ exports.getRoutes = catchAsync(async (req, res, next) => {
 });
 
 exports.getActiveRoutes = catchAsync(async (req, res, next) => {
-  const active_routes = await Route.find({ activeOnDate: { $lte: new Date() } })
+  const all_routes = await Route.find({})
     .populate({
       path: "cab",
       populate: { path: "cabDriver" },
     })
     .populate("passengers");
-  // const active_routes = await activeRoutesFun(all_routes);
+  const active_routes = await getActiveRoutes(all_routes);
+  const active_routes_not_completed = active_routes.filter(
+    (active_route) => active_route.routeStatus !== "completed"
+  );
 
-  if (active_routes.length === 0) {
+  if (active_routes_not_completed.length === 0) {
     return res
       .status(200)
       .json({ message: "No active routes found as of now..." });
@@ -391,8 +325,8 @@ exports.getActiveRoutes = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "Success",
-    results: active_routes.length,
-    data: active_routes,
+    results: active_routes_not_completed.length,
+    data: active_routes_not_completed,
   });
 });
 
@@ -428,11 +362,7 @@ exports.pendingPassengers = catchAsync(async (req, res, next) => {
       populate: { path: "cabDriver" },
     })
     .populate("passengers");
-  const active_routes = await activeRoutesFun(all_routes);
-  // if (active_routes.length === 0) {
-  //   return next(new AppError(`No Active Routes as of now...`, 404));
-  // }
-  // console.log(active_routes);
+  const active_routes = await getActiveRoutes(all_routes);
 
   const passengerIds = active_routes.flatMap((route) => route.passengers);
   const pending_passengers = await User.find({
@@ -453,10 +383,7 @@ exports.rosteredPassengers = catchAsync(async (req, res, next) => {
       populate: { path: "cabDriver" },
     })
     .populate("passengers");
-  const active_routes = await activeRoutesFun(all_routes);
-  // if (active_routes.length === 0) {
-  //   return next(new AppError(`No Active Routes as of now...`, 404));
-  // }
+  const active_routes = await getActiveRoutes(all_routes);
 
   const passengerIds = active_routes.flatMap((route) => route.passengers);
 
@@ -493,7 +420,7 @@ exports.driverRoute = catchAsync(async (req, res, next) => {
   if (cab_all_routes.length === 0)
     return next(new AppError(`No routes assigned to this cab: ${cab_id}`, 404));
 
-  const active_routes = await activeRoutesFun(cab_all_routes);
+  const active_routes = await getActiveRoutes(cab_all_routes);
   if (active_routes.length === 0)
     return next(
       new AppError(`No active routes assigned to this cab: ${cab_id}`, 404)
