@@ -43,6 +43,9 @@ const routeSchema = new mongoose.Schema({
     type: Number,
     default: 1,
   },
+  activeOnDate: {
+    type: Date,
+  },
   totalDistance: {
     type: Number,
   },
@@ -50,7 +53,7 @@ const routeSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
-    index:true,
+    index: true,
   },
 });
 

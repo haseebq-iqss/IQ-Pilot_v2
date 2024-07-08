@@ -3,6 +3,7 @@ const User = require("../models/user");
 const Route = require("../models/route");
 const { catchAsync } = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const { addDays, startOfDay } = require("date-fns");
 
 const shuffleArray = (nums) => {
   const arr = [...nums];
@@ -176,7 +177,7 @@ exports.createShift = catchAsync(async (req, res, next) => {
       },
     },
   ]);
-  console.log(closestEmployees.length);
+  // console.log(closestEmployees.length);
 
   if (closestEmployees.length === 0)
     return next(
@@ -275,6 +276,36 @@ exports.createShift = catchAsync(async (req, res, next) => {
   });
 });
 
+// exports.createRoute = catchAsync(async (req, res, next) => {
+//   const {
+//     cabEmployeeGroups,
+//     workLocation,
+//     currentShift,
+//     typeOfRoute,
+//     daysRouteIsActive,
+//   } = req.body;
+
+//   if (!Array.isArray(cabEmployeeGroups) || cabEmployeeGroups.length === 0)
+//     return next(new AppError(`Invalid or cabEmployeeGroups is empty`, 400));
+
+//   for (const group of cabEmployeeGroups) {
+//     const { cab, passengers, availableCapacity } = group;
+//     const route = await Route.create({
+//       cab,
+//       passengers,
+//       workLocation,
+//       currentShift,
+//       typeOfRoute,
+//       availableCapacity,
+//       daysRouteIsActive,
+//     });
+//   }
+//   res.status(201).json({
+//     status: "Success",
+//     message: "Shifts confirmed and routes created successfully",
+//   });
+// });
+
 exports.createRoute = catchAsync(async (req, res, next) => {
   const {
     cabEmployeeGroups,
@@ -289,15 +320,29 @@ exports.createRoute = catchAsync(async (req, res, next) => {
 
   for (const group of cabEmployeeGroups) {
     const { cab, passengers, availableCapacity } = group;
-    const route = await Route.create({
-      cab,
-      passengers,
-      workLocation,
-      currentShift,
-      typeOfRoute,
-      availableCapacity,
-      daysRouteIsActive,
-    });
+    for (let i = 0; i < daysRouteIsActive; i++) {
+      const dateActive = new Date(
+        Date.UTC(
+          new Date().getUTCFullYear(),
+          new Date().getUTCMonth(),
+          new Date().getUTCDate()
+        )
+      );
+      // Increment the date by i days
+      dateActive.setUTCDate(dateActive.getUTCDate() + i);
+
+      // console.log(dateActive.toISOString());
+      await Route.create({
+        cab,
+        passengers,
+        workLocation,
+        currentShift,
+        typeOfRoute,
+        availableCapacity,
+        daysRouteIsActive,
+        activeOnDate: dateActive,
+      });
+    }
   }
   res.status(201).json({
     status: "Success",
@@ -331,13 +376,13 @@ exports.getRoutes = catchAsync(async (req, res, next) => {
 });
 
 exports.getActiveRoutes = catchAsync(async (req, res, next) => {
-  const all_routes = await Route.find({})
+  const active_routes = await Route.find({ activeOnDate: { $lte: new Date() } })
     .populate({
       path: "cab",
       populate: { path: "cabDriver" },
     })
     .populate("passengers");
-  const active_routes = await activeRoutesFun(all_routes);
+  // const active_routes = await activeRoutesFun(all_routes);
 
   if (active_routes.length === 0) {
     return res
