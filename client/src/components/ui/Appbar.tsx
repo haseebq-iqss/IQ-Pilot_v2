@@ -226,7 +226,7 @@ function Appbar() {
                   {/* {console.log(cabs)} */}
                   {cabs?.length ? (
                     cabs?.map((driver: any) => {
-                      console.log(driver);
+                      // console.log(driver);
                       return (
                         <MenuItem
                           key={driver?.cabDriver?._id}

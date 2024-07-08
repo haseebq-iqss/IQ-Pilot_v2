@@ -64,7 +64,7 @@ const MapComponent = ({
 }: MapTypes) => {
   // const [driversPosition, setDriversPosition] = useState<any>();
 
-  console.log(unrosteredTms);
+  // console.log(unrosteredTms);
 
   const { userData }: UserContextTypes = useContext(UserDataContext);
 

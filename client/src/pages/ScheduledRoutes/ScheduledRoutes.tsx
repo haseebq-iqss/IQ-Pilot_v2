@@ -1,8 +1,13 @@
 import {
   AccessTime,
+  Commute,
   DeleteForever,
+  DepartureBoard,
   EditLocation,
+  EmojiTransportation,
+  GridView,
   MoreHoriz,
+  TableRows,
   Visibility,
 } from "@mui/icons-material";
 import {
@@ -16,10 +21,13 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
 } from "@mui/material";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import PageContainer from "../../components/ui/PageContainer";
-import { RowFlex } from "../../style_extentions/Flex";
+import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
 import EmployeeTypes from "../../types/EmployeeTypes";
@@ -28,7 +36,10 @@ import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
 import { useNavigate } from "react-router-dom";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 import SnackbarContext from "../../context/SnackbarContext";
-import DaysTillActive from "../../utils/DaysTillActive";
+import formatDateString from "../../utils/DateFormatter";
+import RouteTypes from "../../types/RouteTypes";
+import IsToday from "../../utils/IsToday";
+import IsFutureDate from "../../utils/IsFutureDate";
 
 // type routeCacheTypes = {
 //   nonActiveroutes: [RouteTypes];
@@ -38,6 +49,10 @@ function ScheduledRoutes() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
+
+  const [tableDataView, settableDataView] = useState<
+    "Active" | "Scheduled" | "Completed"
+  >("Active");
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
@@ -58,9 +73,35 @@ function ScheduledRoutes() {
     queryKey: ["all-routes"],
     queryFn: async () => {
       const response = await useAxios.get("routes");
-      return response?.data?.data;
+      return response?.data?.data as [RouteTypes];
     },
   });
+
+  const [selectedRoutes, setSelectedRoutes] = useState<Array<RouteTypes>>();
+
+  const ExtractSelectedRouteTypes = (currentView:any) => {
+    console.log(tableDataView)
+    if (currentView === "Active") {
+      const filtered = routes?.filter((route: RouteTypes) => {
+        return IsToday(route.activeOnDate as Date) === true;
+      });
+      setSelectedRoutes(filtered);
+    } else if (currentView === "Scheduled") {
+      const filtered = routes?.filter((route: RouteTypes) => {
+        return IsFutureDate(route.activeOnDate as Date) === true;
+      });
+      setSelectedRoutes(filtered);
+    } else {
+      const filtered = routes?.filter((route: RouteTypes) => {
+        return route.routeStatus === "completed";
+      });
+      setSelectedRoutes(filtered);
+    }
+  };
+
+  useEffect(() => {
+    ExtractSelectedRouteTypes(tableDataView);
+  }, [routes]);
 
   const handlerDeleteRoute = async (route_id: string) => {
     try {
@@ -77,9 +118,20 @@ function ScheduledRoutes() {
     }
   };
 
+  const HandleChangeTabletableDataView = (
+    _event: React.MouseEvent<HTMLElement>,
+    newAlignment: any
+  ) => {
+    if (newAlignment != null) {
+      settableDataView(newAlignment);
+      ExtractSelectedRouteTypes(newAlignment);
+      // console.log(newAlignment, tableDataView)
+    }
+  };
+
   return (
     <PageContainer
-      headerText={`Scheduled Routes (${routes?.length || 0})`}
+      headerText={`All Routes (${routes?.length || 0})`}
       subHeadingText="All of your scheduled routes are here."
     >
       <Box
@@ -88,6 +140,66 @@ function ScheduledRoutes() {
           height: "50vh",
         }}
       >
+        <Box
+          sx={{ ...ColFlex, width: "100%", alignItems: "flex-start", mt: 2.5 }}
+        >
+          {/* SELECTION HEADER */}
+          <Box
+            sx={{
+              ...RowFlex,
+              width: "100%",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 2,
+            }}
+          >
+            <Box sx={{ ...RowFlex, gap: 2 }}>
+              {tableDataView == "Active" ? (
+                <>
+                  <Commute sx={{ fontSize: "2.5rem" }} />{" "}
+                  <Typography sx={{ fontWeight: 600 }} variant="h5">
+                    {`Viewing Today's Routes (${selectedRoutes?.length})`}
+                  </Typography>
+                </>
+              ) : tableDataView == "Scheduled" ? (
+                <>
+                  <DepartureBoard sx={{ fontSize: "2rem" }} />
+                  <Typography sx={{ fontWeight: 600 }} variant="h5">
+                    {`Viewing Scheduled Routes (${selectedRoutes?.length})`}
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <EmojiTransportation sx={{ fontSize: "2.5rem" }} />
+                  <Typography sx={{ fontWeight: 600 }} variant="h5">
+                    {`Viewing Completed Routes (${selectedRoutes?.length})`}
+                  </Typography>
+                </>
+              )}
+            </Box>
+
+            <ToggleButtonGroup
+              size="small"
+              color="primary"
+              value={tableDataView}
+              exclusive
+              onChange={HandleChangeTabletableDataView}
+              aria-label="View"
+            >
+              <ToggleButton sx={{ px: 2.5 }} value="Active">
+                Active
+              </ToggleButton>
+              <ToggleButton sx={{ px: 2.5 }} value="Scheduled">
+                Scheduled
+              </ToggleButton>
+              <ToggleButton sx={{ px: 2.5 }} value="Completed">
+                Completed
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+        </Box>
+
+        {/* ACTIVE ROUTES */}
         <TableContainer sx={{}}>
           <Table sx={{ minWidth: 650 }} aria-label="routes table">
             <TableHead>
@@ -102,8 +214,8 @@ function ScheduledRoutes() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {routes?.length &&
-                routes?.map((route: any, index: number) => (
+              {selectedRoutes?.length &&
+                selectedRoutes?.map((route: any, index: number) => (
                   <TableRow
                     key={route._id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -126,7 +238,7 @@ function ScheduledRoutes() {
                       </Box>
                     </TableCell>
                     <TableCell sx={{ fontWeight: 600 }} align="left">
-                      {routes[index]?.cab?.cabNumber}
+                      {(selectedRoutes[index]?.cab as Cabtypes)?.cabNumber}
                     </TableCell>
                     <TableCell align="center">
                       <Box
@@ -150,7 +262,8 @@ function ScheduledRoutes() {
                     </TableCell>
                     <TableCell sx={{ fontWeight: 600 }} align="center">
                       {/* {route.totalDistance || "Not Calculated"} */}
-                      {DaysTillActive(route.createdAt, route.daysRouteIsActive)}
+                      {/* {DaysTillActive(route.createdAt, route.daysRouteIsActive)} */}
+                      {formatDateString(route?.activeOnDate)}
                     </TableCell>
                     <TableCell
                       sx={{
