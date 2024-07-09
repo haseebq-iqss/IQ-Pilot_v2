@@ -125,7 +125,7 @@ exports.getTMSAssignedCabs = catchAsync(async (req, res, next) => {
 
 exports.availableCabs = catchAsync(async (req, res, next) => {
   const allRoutes = await Route.find({});
-  // const allCabs = await Cab.find({}).populate("cabDriver");
+
   const cabs = await Cab.aggregate([
     {
       $lookup: {
@@ -149,85 +149,40 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
   const present_day = new Date();
   present_day.setHours(0, 0, 0, 0);
   for (const cab of cabs) {
-    cab.routes = cab.routes
-      .map((route) => {
-        const route_created = new Date(route.createdAt);
-        route_created.setHours(0, 0, 0, 0);
-        const end_date = new Date(route.createdAt);
-        end_date.setDate(route_created.getDate() + route.daysRouteIsActive);
-        end_date.setHours(0, 0, 0, 0);
-        if (
-          route_created.getTime() < present_day.getTime() &&
-          end_date.getTime() < present_day.getTime()
-        )
-          return null;
-        return route;
-      })
-      .filter((val) => val !== null);
+    cab.routes = cab.routes.filter((route) => {
+      return (
+        route.activeOnDate.getDate() === present_day.getDate() &&
+        route.activeOnDate.getMonth() === present_day.getMonth() &&
+        route.activeOnDate.getFullYear() === present_day.getFullYear()
+      );
+    });
+  }
+  const cabsShiftForCurrentDay = [];
+  for (const cab of cabs) {
+    const cabObj = {
+      cab: cab._id,
+      cabNumber: cab.cabNumber,
+      seatingCapacity: cab.seatingCapacity,
+      numberPlate: cab.numberPlate,
+      carModel: cab.carModel,
+      carColor: cab.carColor,
+      cabDriver: cab.cabDriver,
+      occupiedShifts: [],
+    };
+    cab.routes.forEach((route) => {
+      cabObj.occupiedShifts.push(route.currentShift);
+    });
+    cabsShiftForCurrentDay.push(cabObj);
   }
 
-  const activeRoutes = await getActiveRoutes(allRoutes);
+  const cabsNotAvailable = cabsShiftForCurrentDay.reduce((acc, cab) => {
+    if (cab.occupiedShifts.length === 2) return acc + 1;
+    else return acc;
+  }, 0);
 
-  // const activeRoutesAssignedCab = activeRoutes.filter(
-  //   (route) => route.availableCapacity === 0
-  // );
-
-  const activeRoutesAssignedCab = activeRoutes.map((route) => route.cab);
-  // const assignedCabsWithCapacity = await Promise.all(
-  //   activeRoutes.map(async (route) => {
-  //     if (route.availableCapacity > 0) {
-  //       const cab = await Cab.findById(route.cab).populate("cabDriver");
-  //       return {
-  //         _id: cab._id,
-  //         cabDriver: cab.cabDriver,
-  //         seatingCapacity: route.availableCapacity,
-  //         cabNumber: cab.cabNumber,
-  //         numberPlate: cab.numberPlate,
-  //         carColor: cab.carColor,
-  //         carModel: cab.carModel,
-  //         passengers: [...route.passengers],
-  //       };
-  //     }
-  //     return null;
-  //   })
-  // );
-
-  // const availableAssignedCabs = assignedCabsWithCapacity.filter(
-  //   (val) => val !== null
-  // );
-
-  // const cabsNotAvailable = activeRoutesNoCapacity.map((route) =>
-  //   route.cab.toString()
-  // );
-
-  const noOfCabsAvailable = cabs.filter(
-    (cab) =>
-      !activeRoutesAssignedCab.includes(cab._id.toString()) &&
-      cab.routes.length !== 2
-  );
-
-  // const cabsAvailable = noOfCabsAvailable.map((cab) => {
-  //   return {
-  //     _id: cab._id,
-  //     cabDriver: cab.cabDriver,
-  //     cabNumber: cab.cabNumber,
-  //     numberPlate: cab.numberPlate,
-  //     carColor: cab.carColor,
-  //     carModel: cab.carModel,
-  //     seatingCapacity: cab.seatingCapacity,
-  //     passengers: [],
-  //   };
-  // });
-
-  // res.status(200).json({
-  //   status: "Success",
-  //   results: [...cabsAvailable].length,
-  //   data: [...cabsAvailable],
-  // });
-  // console.log(noOfCabsAvailable.length);
   res.status(200).json({
     status: "Success",
-    result: noOfCabsAvailable.length,
-    data: [...noOfCabsAvailable],
+    noOfCabsAvailable: cabs.length - cabsNotAvailable,
+    data: cabsShiftForCurrentDay,
   });
 });
