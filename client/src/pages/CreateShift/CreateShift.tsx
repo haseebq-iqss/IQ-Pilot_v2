@@ -107,6 +107,7 @@ function CreateShift() {
     },
   });
 
+
   const mapCoordinatesToText = (value: string) => {
     switch (value) {
       case "[34.07918418861709, 74.76795882716988]":
@@ -148,11 +149,13 @@ function CreateShift() {
       workLocation: routeState?.data?.workLocation,
       currentShift: routeState?.data?.currentShift,
       typeOfRoute: routeState?.data?.typeOfRoute,
+      daysRouteIsActive: routeState?.data?.daysRouteIsActive
     };
     setIsLoaderEnabled(true);
     showLoader();
     setTimeout(() => {
       mutate(dataToDeploy);
+      // console.log(dataToDeploy)
     }, 1500);
   };
 
@@ -392,6 +395,9 @@ function CreateShift() {
       }
     }
   };
+
+  // console.log(combinedData)
+
 
   return (
     <DndContext
