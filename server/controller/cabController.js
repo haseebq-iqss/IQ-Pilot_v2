@@ -172,17 +172,18 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
     cab.routes.forEach((route) => {
       cabObj.occupiedShifts.push(route.currentShift);
     });
-    cabsShiftForCurrentDay.push(cabObj);
+    cabObj.occupiedShifts.length < 2 && cabsShiftForCurrentDay.push(cabObj);
   }
 
-  const cabsNotAvailable = cabsShiftForCurrentDay.reduce((acc, cab) => {
-    if (cab.occupiedShifts.length === 2) return acc + 1;
-    else return acc;
-  }, 0);
+  // const cabsNotAvailable = cabsShiftForCurrentDay.reduce((acc, cab) => {
+  //   if (cab.occupiedShifts.length === 2) return acc + 1;
+  //   else return acc;
+  // }, 0);
+  // console.log(cabsNotAvailable);
 
   res.status(200).json({
     status: "Success",
-    noOfCabsAvailable: cabs.length - cabsNotAvailable,
+    noOfCabsAvailable: cabsShiftForCurrentDay.length,
     data: cabsShiftForCurrentDay,
   });
 });
