@@ -172,7 +172,7 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
     cab.routes.forEach((route) => {
       cabObj.occupiedShifts.push(route.currentShift);
     });
-    cabsShiftForCurrentDay.push(cabObj);
+    cabObj.occupiedShifts.length < 2 && cabsShiftForCurrentDay.push(cabObj);
   }
 
   const cabsNotAvailable = cabsShiftForCurrentDay.reduce((acc, cab) => {
