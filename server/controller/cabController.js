@@ -160,7 +160,7 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
   const cabsShiftForCurrentDay = [];
   for (const cab of cabs) {
     const cabObj = {
-      cab: cab._id,
+      _id: cab._id,
       cabNumber: cab.cabNumber,
       seatingCapacity: cab.seatingCapacity,
       numberPlate: cab.numberPlate,

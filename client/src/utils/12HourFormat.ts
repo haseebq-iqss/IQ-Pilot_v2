@@ -21,6 +21,7 @@ const ConvertShiftTimeTo12HrFormat = (time24: string, mode: string = "pickup"): 
   };
 
   const [startTime, endTime] = time24.split("-");
+
   if (mode === "drop") {
     const [endHour, endMinute] = endTime.split(":").map(Number);
     return formatTime(endHour, endMinute);

@@ -585,7 +585,7 @@ const MapComponent = ({
         )}
 
         <TileLayer
-          url="https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.png" // WORLD IMAGERY MAP  >>>REQUIRES API KEY<<<       --- MOST REALISTIC
+          url="https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.png" // WORLD IMAGERY MAP  >>>REQUIRES DOMAIN SETUP<<<       --- MOST REALISTIC
           // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"   // VANILLA MAP STYLE
           // url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png" // FRANCE HOT MAP         --- MOST CONSISTENT
           // url="https://tile.osm.ch/switzerland/{z}/{x}/{y}.png"   // SWISS MAP STYLE (SLOW TO LOAD)
