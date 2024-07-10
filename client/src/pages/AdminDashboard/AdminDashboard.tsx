@@ -38,7 +38,7 @@ function AdminDashboard() {
 
     const mapValues = Array.from(mapTest.values());
 
-    console.log(mapValues);
+    // console.log(mapValues);
     setActiveDrivers(mapValues as any);
   };
 
@@ -55,7 +55,7 @@ function AdminDashboard() {
 
   useEffect(() => {
     socket.on("live-drivers", (data) => {
-      console.log("Live Drivers ------->  ", data);
+      // console.log("Live Drivers ------->  ", data);
       const locations = data;
       extractDriverData(locations);
     });

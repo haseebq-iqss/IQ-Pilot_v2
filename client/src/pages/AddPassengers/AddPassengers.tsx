@@ -64,7 +64,7 @@ function AddPassengers() {
     queryKey: ["all-employees"],
     queryFn: async () => {
       const response = await useAxios.get("/routes/pendingPassengers");
-      return response.data.pending_passengers;
+      return filterAvailableEmpsOnShift(response.data.pending_passengers);
     },
   });
 
@@ -128,8 +128,28 @@ function AddPassengers() {
     );
   };
 
+  const filterAvailableEmpsOnShift = (tmsForCheck: [any]) => {
+    const employeesAvailOnShift = tmsForCheck?.filter((emp: EmployeeTypes) => {
+      // (emp.currentShift?.split("-")[0] === routeState?.currentShift.split("-")[0], emp.workLocation === routeState?.office)
+      // console.log(
+      //   emp.currentShift?.split("-")[0] ==
+      //     routeState?.currentShift.split("-")[0]
+      // );
+      // console.log(emp.workLocation === routeState?.office)
+      return (
+        emp.currentShift?.split("-")[
+          routeState?.typeOfRoute === "pickup" ? 0 : 1
+        ] ==
+          routeState?.currentShift.split("-")[
+            routeState?.typeOfRoute === "pickup" ? 0 : 1
+          ] && emp.workLocation === routeState?.office
+      );
+    });
+    return employeesAvailOnShift;
+  };
+
   useEffect(() => {
-    setFilteredEmployees(employees);
+    setFilteredEmployees(filterAvailableEmpsOnShift(employees));
   }, [employees]);
 
   const handleChangeDepartment = (e: any) => {
@@ -257,7 +277,7 @@ function AddPassengers() {
       daysRouteIsActive: routeState?.daysRouteIsActive,
     };
 
-    // console.log(routeData);
+    console.log(routeData);
     mutate(routeData);
     // });
   }
@@ -312,7 +332,7 @@ function AddPassengers() {
               {routeState?.currentShift !== undefined &&
                 ConvertShiftTimeTo12HrFormat(
                   routeState?.currentShift,
-                  routeState?.typoOfRoute
+                  routeState?.typeOfRoute
                 )}
             </span>
           </Typography>

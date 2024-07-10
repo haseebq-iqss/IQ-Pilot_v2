@@ -14,7 +14,7 @@ import {
   Select,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
@@ -23,6 +23,7 @@ import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import GlobalModal from "./Modal";
 import useAxios from "../../api/useAxios";
 import { CreateShiftModal } from "./CreateShiftModal";
+import Cabtypes from "./../../types/CabTypes";
 
 function Appbar() {
   const navigate = useNavigate();
@@ -83,6 +84,23 @@ function Appbar() {
       });
     }
   }
+
+  const [availableCabsOnShift, setAvailableCabsOnShift] =
+    useState<[Cabtypes]>();
+
+  const GetAvailableCabsOnShift = () => {
+    const availableCabs = cabs?.filter(
+      (cab: any) => !cab.occupiedShifts.includes(currentShift)
+    );
+    setAvailableCabsOnShift(availableCabs);
+    console.log(availableCabs);
+  };
+
+  useEffect(() => {
+    GetAvailableCabsOnShift();
+  }, [cabs, currentShift]);
+
+  // console.log(cabs[0]?.occupiedShifts)
 
   // console.log(drivers);
 
@@ -224,8 +242,8 @@ function Appbar() {
                   onChange={handleSelectDriver}
                 >
                   {/* {console.log(cabs)} */}
-                  {cabs?.length ? (
-                    cabs?.map((driver: any) => {
+                  {availableCabsOnShift?.length ? (
+                    availableCabsOnShift?.map((driver: any) => {
                       // console.log(driver);
                       return (
                         <MenuItem
