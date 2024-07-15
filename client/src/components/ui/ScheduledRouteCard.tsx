@@ -1,12 +1,9 @@
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Avatar,
   Box,
   Typography,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+// import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex.ts";
 import baseURL from "../../utils/baseURL.ts";
 import EmployeeTypes from "./../../types/EmployeeTypes";
@@ -34,7 +31,7 @@ type RosterCardTypes = {
 
 const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
   const [activeRouteCoords, setActiveRouteCoords] = useState<Array<any>>([]);
-  const [expanded, setExpanded] = useState<string[]>(["map"]);
+  // const [expanded, setExpanded] = useState<string[]>(["map"]);
 
   useEffect(() => {
     const activeRouteCoordinates: any = passengerDetails?.map(
@@ -62,14 +59,14 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
     },
   });
 
-  const handleAccordionChange =
-    (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-      setExpanded((prevExpanded) =>
-        isExpanded
-          ? [...prevExpanded, panel]
-          : prevExpanded.filter((item) => item !== panel)
-      );
-    };
+  // const handleAccordionChange =
+  //   (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+  //     setExpanded((prevExpanded) =>
+  //       isExpanded
+  //         ? [...prevExpanded, panel]
+  //         : prevExpanded.filter((item) => item !== panel)
+  //     );
+  //   };
 
   return (
     <Box
