@@ -31,7 +31,7 @@ type RosterCardTypes = {
 
 const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
   const [activeRouteCoords, setActiveRouteCoords] = useState<Array<any>>([]);
-  // const [expanded, setExpanded] = useState<string[]>(["map"]);
+  // const [expanded, setExpanded] = useState<string[]>(["map"]); 
 
   useEffect(() => {
     const activeRouteCoordinates: any = passengerDetails?.map(
