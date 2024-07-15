@@ -379,7 +379,8 @@ const MapComponent = ({
     <div style={{ position: "relative", height, width, overflow: "hidden" }}>
       <MapContainer
         id={"map"}
-        key={activeRoute.length ? "Primary Map" + Math.random() : "Primary Map"}
+        // key={activeRoute.length ? "Primary Map" + Math.random() : "Primary Map"}
+        key={"Primary Map"}
         style={{ height: "100%", width: "100%" }}
         center={center}
         zoom={zoom}

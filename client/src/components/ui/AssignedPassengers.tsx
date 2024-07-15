@@ -56,7 +56,7 @@ const AssignedPassengers = ({ passenger }: { passenger: EmployeeTypes }) => {
       <Box
         sx={{
           ...ColFlex,
-          width: "7rem",
+          width: "8rem",
           backgroundColor: "white",
           padding: "5px",
           borderRadius: "100px",

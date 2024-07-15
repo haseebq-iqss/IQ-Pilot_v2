@@ -5,7 +5,7 @@ import { ColFlex, RowFlex, PageFlex } from "../../style_extentions/Flex.ts";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 import Cabtypes from "../../types/CabTypes.ts";
-import { useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import {
   DndContext,
   DragEndEvent,
@@ -13,7 +13,6 @@ import {
   DragOverlay,
   DragStartEvent,
   PointerSensor,
-  UniqueIdentifier,
   closestCorners,
   useSensor,
   useSensors,
@@ -25,19 +24,22 @@ import {
 } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import ScheduledRouteCard from "../../components/ui/ScheduledRouteCard.tsx";
-import AssignedPassengers from "../../components/ui/AssignedPassengers.tsx";
+// import AssignedPassengers from "../../components/ui/AssignedPassengers.tsx";
 import ReserveModal from "../../components/ui/ReserveModal.tsx";
 import { useMutation } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios.ts";
 import SnackbarContext from "../../context/SnackbarContext.ts";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes.ts";
-import MapComponent from "../../components/Map.tsx";
-import { Close, Warning } from "@mui/icons-material";
+import PassengerTab from "../../components/ui/PassengerTab.tsx";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { ArrowForward } from "@mui/icons-material";
+import AssignedPassengers from "../../components/ui/AssignedPassengers.tsx";
 
 function AssignedRoutes() {
   const location = useLocation();
   const routeState = location.state;
 
+  const [next, setNext] = useState(2);
   const [activeColumn, setActiveColumn] = useState<ShiftTypes | null>(null);
   const [activeTask, setActiveTask] = useState<EmployeeTypes | null>(null);
   const [columns, setColumns] = useState(
@@ -137,8 +139,15 @@ function AssignedRoutes() {
     })
   );
 
-  const getPassengerPos = (id: UniqueIdentifier, passengers: EmployeeTypes[]) =>
-    passengers.findIndex((passenger: EmployeeTypes) => passenger._id === id);
+  const getPassengerPos = useCallback((id, passengers) => {
+    return passengers.findIndex((passenger) => passenger._id === id);
+  }, []);
+
+  const findColumnByPassengerId = useCallback((id, data) => {
+    return data.find((column) =>
+      column.passengers.some((passenger: EmployeeTypes) => passenger._id === id)
+    );
+  }, []);
 
   // console.log(passengers);
   function onDragOver(event: DragOverEvent) {
@@ -160,30 +169,11 @@ function AssignedRoutes() {
 
     if (!isActiveATask && !isActiveAReserveTask) return;
 
-    const targetColumn = combinedData.find((column) =>
-      column.passengers.some(
-        (passenger: EmployeeTypes) => passenger._id === overId
-      )
-    );
-
-    const sourceColumn = combinedData.find((column) =>
-      column.passengers.some(
-        (passenger: EmployeeTypes) => passenger._id === activeId
-      )
-    );
-
-    // Ensure the type of route comparison is correct
-    const isSameTypeOfRoute =
-      sourceColumn?.typeOfRoute === targetColumn?.typeOfRoute;
+    const targetColumn = findColumnByPassengerId(overId, combinedData);
+    // const sourceColumn = findColumnByPassengerId(activeId, combinedData);
 
     // Move from Task column to Task column
-    if (
-      (isActiveATask &&
-        isOverATask &&
-        targetColumn?.availableCapacity !== 0 &&
-        isSameTypeOfRoute) ||
-      isOverAColumn
-    ) {
+    if (isActiveATask && isOverATask && targetColumn?.availableCapacity !== 0) {
       setPassengers((passengers: EmployeeTypes[]) => {
         const activeIndex = getPassengerPos(activeId, passengers);
         const overIndex = getPassengerPos(overId, passengers);
@@ -200,7 +190,6 @@ function AssignedRoutes() {
           ) {
             passengers[activeIndex].columnId = newColumnId;
           }
-          setEditMode(true);
           return arrayMove(passengers, activeIndex, overIndex - 1);
         }
 
@@ -208,24 +197,34 @@ function AssignedRoutes() {
       });
     }
 
-    if (isActiveATask && (isOverAReserveColumn || isOverAReserveTask)) {
+    // Move from Task column to Reserve column
+    if (isActiveATask && isOverAReserveTask) {
+      setEditMode(true);
+
       setPassengers((prevPassengers: EmployeeTypes[]) => {
         const activeIndex = getPassengerPos(activeId, prevPassengers);
-        const passenger = prevPassengers[activeIndex];
 
+        if (activeIndex === -1) {
+          return prevPassengers; // Return previous state if activeId is not found
+        }
+
+        const passenger = prevPassengers[activeIndex];
         const updatedPassenger = {
           ...passenger,
           columnId: "reserved" as string,
         };
 
+        // Remove the active passenger from prevPassengers
         const updatedPassengers = [
           ...prevPassengers.slice(0, activeIndex),
           ...prevPassengers.slice(activeIndex + 1),
         ];
 
+        // Update reservedColumn
         setReservedColumn((prevColumns) => {
           return prevColumns.map((column) => {
             if (column.id === "reserved") {
+              // Check if the passenger already exists in column.passengers
               if (!column.passengers.some((p) => p.id === activeId)) {
                 return {
                   ...column,
@@ -237,6 +236,7 @@ function AssignedRoutes() {
           });
         });
 
+        // Update reservedPassengers
         setReservedPassengers((prevReserved: EmployeeTypes[]) => {
           if (!prevReserved.some((p) => p.id === activeId)) {
             return [...prevReserved, updatedPassenger];
@@ -244,69 +244,128 @@ function AssignedRoutes() {
           return prevReserved;
         });
 
-        setEditMode(true);
+        return updatedPassengers;
+      });
+    }
+
+    if (isActiveATask && isOverAReserveColumn) {
+      setEditMode(true);
+
+      setPassengers((prevPassengers: EmployeeTypes[]) => {
+        const activeIndex = getPassengerPos(activeId, prevPassengers);
+
+        if (activeIndex === -1) {
+          return prevPassengers;
+        }
+
+        const passenger = prevPassengers[activeIndex];
+        const updatedPassenger = {
+          ...passenger,
+          columnId: "reserved" as string,
+        };
+
+        const updatedPassengers = [
+          ...prevPassengers.slice(0, activeIndex),
+          ...prevPassengers.slice(activeIndex + 1),
+        ];
+
+        // Update reservedColumn
+        setReservedColumn((prevColumns) => {
+          return prevColumns.map((column) => {
+            if (column.id === "reserved") {
+              // Check if the passenger already exists in column.passengers
+              if (!column.passengers.some((p) => p.id === activeId)) {
+                return {
+                  ...column,
+                  passengers: [...column.passengers, updatedPassenger],
+                };
+              }
+            }
+            return column;
+          });
+        });
+
+        // Update reservedPassengers
+        setReservedPassengers((prevReserved: EmployeeTypes[]) => {
+          if (!prevReserved.some((p) => p.id === activeId)) {
+            return [...prevReserved, updatedPassenger];
+          }
+          return prevReserved;
+        });
 
         return updatedPassengers;
       });
     }
 
     // Move from Reserve column to Task column
-    if (
-      (isActiveAReserveTask &&
-        isOverATask &&
-        targetColumn?.availableCapacity !== 0) ||
-      isOverAColumn
-    ) {
-      setReservedPassengers((prevReserved: EmployeeTypes[]) => {
-        const activeIndex = getPassengerPos(activeId, prevReserved);
-        const passenger = prevReserved[activeIndex];
+    const updatePassengerAndColumns = (
+      prevReserved,
+      activeId,
+      overId,
+      targetColumnId
+    ) => {
+      const activeIndex = getPassengerPos(activeId, prevReserved);
+      if (activeIndex === -1) return prevReserved; // Handle case where activeId is not found
 
-        const updatedReservedPassengers = [
-          ...prevReserved.slice(0, activeIndex),
-          ...prevReserved.slice(activeIndex + 1),
-        ];
+      const passenger = prevReserved[activeIndex];
 
-        const targetColumnId = passengers.find((p) => p?.id === overId)
-          ?.columnId as string;
+      // Remove the active passenger from the reserved list
+      const updatedReservedPassengers = prevReserved.filter(
+        (_, index) => index !== activeIndex
+      );
 
-        const updatedPassengerColumnId = targetColumnId || overId;
+      // Create an updated passenger object with the new column ID
+      const updatedPassenger = { ...passenger, columnId: targetColumnId };
 
-        const updatedPassenger = {
-          ...passenger,
-          columnId: updatedPassengerColumnId,
-        };
+      // Update the passengers list with the updated passenger if it's not already present
+      setPassengers((prevPassengers) => {
+        if (!prevPassengers.some((p) => p.id === activeId)) {
+          return [...prevPassengers, updatedPassenger];
+        }
+        return prevPassengers;
+      });
 
-        setPassengers((prevPassengers: EmployeeTypes[]) => {
-          if (!prevPassengers.some((p) => p.id === activeId)) {
-            return [...prevPassengers, updatedPassenger];
-          }
-          return prevPassengers;
-        });
-
-        setReservedColumn((prevColumns) => {
-          return prevColumns.map((column) => {
-            if (column.id === "reserved") {
-              return {
+      // Remove the passenger from the reserved column
+      setReservedColumn((prevColumns) =>
+        prevColumns.map((column) =>
+          column.id === "reserved"
+            ? {
                 ...column,
                 passengers: column.passengers.filter((p) => p.id !== activeId),
-              };
-            }
-            return column;
-          });
-        });
-        setEditMode(true);
+              }
+            : column
+        )
+      );
 
-        return updatedReservedPassengers;
-      });
+      return updatedReservedPassengers;
+    };
+
+    if (isActiveAReserveTask && (isOverATask || isOverAColumn)) {
+      if (!isOverATask || targetColumn?.availableCapacity !== 0) {
+        if (isOverATask) setEditMode(true);
+
+        setReservedPassengers((prevReserved) => {
+          const targetColumnId =
+            passengers.find((p) => p?.id === overId)?.columnId || overId;
+          if (!targetColumnId) return prevReserved; // Ensure targetColumnId is valid
+
+          return updatePassengerAndColumns(
+            prevReserved,
+            activeId,
+            overId,
+            targetColumnId
+          );
+        });
+      }
     }
 
-    if (isActiveAReserveTask && isOverAReserveTask) {
-      setReservedPassengers((prevReserved: EmployeeTypes[]) => {
-        const activeIndex = getPassengerPos(activeId, prevReserved);
-        const overIndex = getPassengerPos(overId, prevReserved);
-        setEditMode(true);
+    // ✅
+    if (isActiveATask && isOverAColumn) {
+      setPassengers((tasks) => {
+        const activeIndex = tasks.findIndex((t) => t.id === activeId);
 
-        return arrayMove(prevReserved, activeIndex, overIndex);
+        tasks[activeIndex].columnId = overId;
+        return arrayMove(tasks, activeIndex, activeIndex);
       });
     }
   }
@@ -335,56 +394,36 @@ function AssignedRoutes() {
     setActiveTask(null);
     setActiveReserveColumn(null);
     setActiveColumn(null);
-    const { active, over } = event;
-    if (active && over) {
-      const sourceCard = columns.find(
-        (card: ShiftTypes) => card.id === active.id
-      );
-      const destinationCard =
-        over && over.id === "reserved"
-          ? reservedColumn
-          : columns.find((card: ShiftTypes) => card.id === over.id);
-      if (sourceCard && destinationCard) {
-        const sourceIndex = sourceCard.passengers.indexOf(active.id);
-        const destinationIndex =
-          over && over.id === "reserved"
-            ? destinationCard.passengers.length
-            : over.index;
-        if (destinationIndex > -1) {
-          const newSourcePassengers = [...sourceCard.passengers];
-          const newDestinationPassengers = [...destinationCard.passengers];
-          newSourcePassengers.splice(sourceIndex, 1);
-          newDestinationPassengers.splice(destinationIndex, 0, active.id);
-          if (over.id === "reserved") {
-            setReservedColumn({
-              ...destinationCard,
-              passengers: newDestinationPassengers,
-            });
-          } else {
-            const updatedRosterCards = columns.map((card: ShiftTypes) => {
-              if (card.id === sourceCard.id) {
-                return { ...card, passengers: newSourcePassengers };
-              }
-              if (card.id === destinationCard.id) {
-                return { ...card, passengers: newDestinationPassengers };
-              }
-              return card;
-            });
-            setColumns(updatedRosterCards);
-          }
-        }
-      }
-    }
   };
 
+  const nextStep = () => {
+    setNext((prev) => prev + 2);
+  };
+
+  const prevStep = () => {
+    if (next !== 2) {
+      return setNext((prev) => prev - 2);
+    }
+    setNext((prev) => prev + regularColumns.length + 1);
+  };
+
+  const getUniquePassengers = (passengers: EmployeeTypes[]) => {
+    const seen = new Set();
+    return passengers.filter((passenger) => {
+      const duplicate = seen.has(passenger.id);
+      seen.add(passenger.id);
+      return !duplicate;
+    });
+  };
   return (
-    <DndContext
-      onDragOver={onDragOver}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      collisionDetection={closestCorners}
-      sensors={sensors}
-    >
+    <>
+      {/* // <DndContext
+    //   onDragOver={onDragOver}
+    //   onDragStart={onDragStart}
+    //   onDragEnd={onDragEnd}
+    //   collisionDetection={closestCorners}
+    //   sensors={sensors}
+    // > */}
       <Box
         sx={{
           ...PageFlex,
@@ -505,61 +544,110 @@ function AssignedRoutes() {
                 ...RowFlex,
                 flexWrap: "wrap",
                 height: "100%",
-                width: "70%",
+                width: "100%",
                 whiteSpace: "nowrap",
-                gap: "2.5rem",
+                gap: "2rem",
                 overflowY: "auto",
-                justifyContent: "start",
+                justifyContent: "center",
                 px: 2,
                 py: 2,
               }}
               className="scroll-mod"
             >
               <SortableContext
-                items={regularColumns.map((column: ShiftTypes) => column.id)}
+                items={regularColumns.map((column) => column.id)}
               >
-                {regularColumns.length ? (
-                  regularColumns.map((shift: ShiftTypes) => {
-                    return (
-                      <ScheduledRouteCard
-                        scheduledRoutes={shift}
-                        key={shift?.id}
-                        passengerDetails={passengers?.filter(
-                          (passenger: EmployeeTypes) =>
-                            passenger.columnId === shift.id
-                        )}
-                      />
-                    );
-                  })
-                ) : (
-                  <Typography variant="h4" sx={{ fontWeight: 500 }}>
-                    No Routes Assigned Yet 😅
-                  </Typography>
-                )}
+                {/* <Button
+                  onClick={prevStep}
+                  sx={{
+                    backgroundColor: "primary.main",
+                    color: "white",
+                    borderRadius: "99px",
+                    border: "2px solid white",
+
+                    height: "60px",
+                    width: "50px",
+                    ":hover": {
+                      backgroundColor: "rgba(158, 158, 158, 0.1)",
+                      border: "2px solid #2997FC",
+                      color: "primary.main",
+                    },
+                  }}
+                >
+                  <ArrowBackIcon />
+                </Button> */}
+                {regularColumns.map((shift: ShiftTypes) => {
+                  const uniquePassengers = getUniquePassengers(
+                    passengers.filter(
+                      (passenger: EmployeeTypes) =>
+                        passenger.columnId === shift.id
+                    )
+                  );
+
+                  return (
+                    <ScheduledRouteCard
+                      key={shift?.id}
+                      column={shift}
+                      passengerDetails={uniquePassengers}
+                    />
+                  );
+                })}
+                {/* {regularColumns.length > next - 2 && (
+                  // <Button
+                  //   onClick={nextStep}
+                  //   sx={{
+                  //     backgroundColor: "primary.main",
+                  //     color: "white",
+                  //     borderRadius: "99px",
+                  //     border: "2px solid white",
+
+                  //     height: "60px",
+                  //     width: "50px",
+                  //     ":hover": {
+                  //       backgroundColor: "rgba(158, 158, 158, 0.1)",
+                  //       border: "2px solid #2997FC",
+                  //       color: "primary.main",
+                  //     },
+                  //   }}
+                  // >
+                  //   <ArrowForward />
+                  // </Button>
+                )} */}
               </SortableContext>
             </Box>
             <Box sx={{ mx: 2 }}>
               <SortableContext
                 items={reservedColumn.map((column) => column.id)}
               >
-                {reservedColumn.map((column) => (
-                  <ReserveModal
-                    key={column.id}
-                    column={column}
-                    passengerDetails={reservedPassengers}
-                  />
-                ))}
+                {reservedColumn.map((column) => {
+                  const uniquePassengers = getUniquePassengers(
+                    reservedPassengers.filter(
+                      (passenger: EmployeeTypes) =>
+                        passenger.columnId === column.id
+                    )
+                  );
+
+                  return (
+                    <ReserveModal
+                      key={column.id}
+                      column={column}
+                      passengerDetails={uniquePassengers}
+                    />
+                  );
+                })}
               </SortableContext>
             </Box>
             {createPortal(
               <DragOverlay>
                 {activeColumn && (
                   <ScheduledRouteCard
-                    passengerDetails={activeColumn.passengers!.filter(
-                      (passenger: EmployeeTypes) =>
-                        passenger.columnId === activeColumn.id
+                    passengerDetails={getUniquePassengers(
+                      activeColumn.passengers!.filter(
+                        (passenger: EmployeeTypes) =>
+                          passenger.columnId === activeColumn.id
+                      )
                     )}
-                    scheduledRoutes={activeColumn}
+                    column={activeColumn}
                   />
                 )}
                 {activeTask && <AssignedPassengers passenger={activeTask} />}
@@ -568,9 +656,11 @@ function AssignedRoutes() {
                 )}
                 {activeReserveColumn && (
                   <ReserveModal
-                    passengerDetails={activeReserveColumn.passengers!.filter(
-                      (passenger: EmployeeTypes) =>
-                        passenger.columnId === activeReserveColumn.id
+                    passengerDetails={getUniquePassengers(
+                      activeReserveColumn.passengers!.filter(
+                        (passenger: EmployeeTypes) =>
+                          passenger.columnId === activeReserveColumn.id
+                      )
                     )}
                     column={activeReserveColumn}
                   />
@@ -667,7 +757,8 @@ function AssignedRoutes() {
           </Box>
         </Box>
       </Modal>
-    </DndContext>
+    </>
+    // </DndContext>
   );
 }
 
