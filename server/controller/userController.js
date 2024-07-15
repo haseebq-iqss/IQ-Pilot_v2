@@ -131,6 +131,27 @@ const cancelCab = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: "Success", data: user });
 });
 
+
+const bulkUserUpload = catchAsync(async (req, res, next) => {
+  const data = req.body
+  // console.log(data)
+  for (const item of data) {
+    // const hashedPassword = await bcrypt.hash("password", 12);
+    const user = new User({
+      fname: item.fname, lname: item.lname, password: "password", phone: item.phone, email: item.email, role: item.role, profilePicture: item.profilePicture, department: item.department, pickUp: {
+        type: "Point", coordinates: [Number(item.coordinates.split(",")[0]), Number(item.coordinates.split(",")[1])], // Assuming you have longitude and latitude in the data 
+        address: item.address, description: item.description,
+      }, isCabCancelled: item.isCabCancelled || false, currentShift: item.currentShift, workLocation: item.workLocation, role: "employee",
+    });
+    await user.save();
+    // console.log(`Inserted:`, user);
+
+  }
+  res.status(200).json({ status: "Success" });
+});
+
+
+
 module.exports = {
   getAllUsers,
   getAllTMS,
@@ -140,4 +161,5 @@ module.exports = {
   updateUser,
   deleteUser,
   cancelCab,
+  bulkUserUpload
 };

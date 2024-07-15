@@ -7,7 +7,7 @@ import RosterCard from "../../components/ui/RosterCard.tsx";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 import Cabtypes from "../../types/CabTypes.ts";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios.ts";
 import {
@@ -178,9 +178,17 @@ function CreateShift() {
     })
   );
 
-  const getPassengerPos = (id: UniqueIdentifier, passengers: EmployeeTypes[]) =>
-    passengers.findIndex((passenger: EmployeeTypes) => passenger._id === id);
+  const getPassengerPos = useCallback((id, passengers) => {
+    return passengers.findIndex((passenger) => passenger._id === id);
+  }, []);
 
+  const findColumnByPassengerId = useCallback((id, data) => {
+    return data.find((column) =>
+      column.passengers.some((passenger: EmployeeTypes) => passenger._id === id)
+    );
+  }, []);
+
+  // console.log(passengers);
   function onDragOver(event: DragOverEvent) {
     const { active, over } = event;
 
@@ -200,17 +208,11 @@ function CreateShift() {
 
     if (!isActiveATask && !isActiveAReserveTask) return;
 
-    const targetColumn = combinedData.find((column) =>
-      column.passengers.some(
-        (passenger: EmployeeTypes) => passenger._id === overId
-      )
-    );
+    const targetColumn = findColumnByPassengerId(overId, combinedData);
+    // const sourceColumn = findColumnByPassengerId(activeId, combinedData);
 
     // Move from Task column to Task column
-    if (
-      (isActiveATask && isOverATask && targetColumn?.availableCapacity !== 0) ||
-      isOverAColumn
-    ) {
+    if (isActiveATask && isOverATask && targetColumn?.availableCapacity !== 0) {
       setPassengers((passengers: EmployeeTypes[]) => {
         const activeIndex = getPassengerPos(activeId, passengers);
         const overIndex = getPassengerPos(overId, passengers);
@@ -234,24 +236,34 @@ function CreateShift() {
       });
     }
 
-    if (isActiveATask && (isOverAReserveColumn || isOverAReserveTask)) {
+    // Move from Task column to Reserve column
+    if (isActiveATask && isOverAReserveTask) {
+      // setEditMode(true);
+
       setPassengers((prevPassengers: EmployeeTypes[]) => {
         const activeIndex = getPassengerPos(activeId, prevPassengers);
-        const passenger = prevPassengers[activeIndex];
 
+        if (activeIndex === -1) {
+          return prevPassengers; // Return previous state if activeId is not found
+        }
+
+        const passenger = prevPassengers[activeIndex];
         const updatedPassenger = {
           ...passenger,
           columnId: "reserved" as string,
         };
 
+        // Remove the active passenger from prevPassengers
         const updatedPassengers = [
           ...prevPassengers.slice(0, activeIndex),
           ...prevPassengers.slice(activeIndex + 1),
         ];
 
+        // Update reservedColumn
         setReservedColumn((prevColumns) => {
           return prevColumns.map((column) => {
             if (column.id === "reserved") {
+              // Check if the passenger already exists in column.passengers
               if (!column.passengers.some((p) => p.id === activeId)) {
                 return {
                   ...column,
@@ -263,6 +275,56 @@ function CreateShift() {
           });
         });
 
+        // Update reservedPassengers
+        setReservedPassengers((prevReserved: EmployeeTypes[]) => {
+          if (!prevReserved.some((p) => p.id === activeId)) {
+            return [...prevReserved, updatedPassenger];
+          }
+          return prevReserved;
+        });
+
+        return updatedPassengers;
+      });
+    }
+
+    if (isActiveATask && isOverAReserveColumn) {
+      // setEditMode(true);
+
+      setPassengers((prevPassengers: EmployeeTypes[]) => {
+        const activeIndex = getPassengerPos(activeId, prevPassengers);
+
+        if (activeIndex === -1) {
+          return prevPassengers;
+        }
+
+        const passenger = prevPassengers[activeIndex];
+        const updatedPassenger = {
+          ...passenger,
+          columnId: "reserved" as string,
+        };
+
+        const updatedPassengers = [
+          ...prevPassengers.slice(0, activeIndex),
+          ...prevPassengers.slice(activeIndex + 1),
+        ];
+
+        // Update reservedColumn
+        setReservedColumn((prevColumns) => {
+          return prevColumns.map((column) => {
+            if (column.id === "reserved") {
+              // Check if the passenger already exists in column.passengers
+              if (!column.passengers.some((p) => p.id === activeId)) {
+                return {
+                  ...column,
+                  passengers: [...column.passengers, updatedPassenger],
+                };
+              }
+            }
+            return column;
+          });
+        });
+
+        // Update reservedPassengers
         setReservedPassengers((prevReserved: EmployeeTypes[]) => {
           if (!prevReserved.some((p) => p.id === activeId)) {
             return [...prevReserved, updatedPassenger];
@@ -275,59 +337,74 @@ function CreateShift() {
     }
 
     // Move from Reserve column to Task column
-    if (
-      (isActiveAReserveTask &&
-        isOverATask &&
-        targetColumn?.availableCapacity !== 0) ||
-      isOverAColumn
-    ) {
-      setReservedPassengers((prevReserved: EmployeeTypes[]) => {
-        const activeIndex = getPassengerPos(activeId, prevReserved);
-        const passenger = prevReserved[activeIndex];
+    const updatePassengerAndColumns = (
+      prevReserved,
+      activeId,
+      overId,
+      targetColumnId
+    ) => {
+      const activeIndex = getPassengerPos(activeId, prevReserved);
+      if (activeIndex === -1) return prevReserved; // Handle case where activeId is not found
 
-        const updatedReservedPassengers = [
-          ...prevReserved.slice(0, activeIndex),
-          ...prevReserved.slice(activeIndex + 1),
-        ];
+      const passenger = prevReserved[activeIndex];
 
-        const targetColumnId = passengers.find((p) => p?.id === overId)
-          ?.columnId as string;
+      // Remove the active passenger from the reserved list
+      const updatedReservedPassengers = prevReserved.filter(
+        (_, index) => index !== activeIndex
+      );
 
-        const updatedPassengerColumnId = targetColumnId || overId;
+      // Create an updated passenger object with the new column ID
+      const updatedPassenger = { ...passenger, columnId: targetColumnId };
 
-        const updatedPassenger = {
-          ...passenger,
-          columnId: updatedPassengerColumnId,
-        };
+      // Update the passengers list with the updated passenger if it's not already present
+      setPassengers((prevPassengers) => {
+        if (!prevPassengers.some((p) => p.id === activeId)) {
+          return [...prevPassengers, updatedPassenger];
+        }
+        return prevPassengers;
+      });
 
-        setPassengers((prevPassengers: EmployeeTypes[]) => {
-          if (!prevPassengers.some((p) => p.id === activeId)) {
-            return [...prevPassengers, updatedPassenger];
-          }
-          return prevPassengers;
-        });
-
-        setReservedColumn((prevColumns) => {
-          return prevColumns.map((column) => {
-            if (column.id === "reserved") {
-              return {
+      // Remove the passenger from the reserved column
+      setReservedColumn((prevColumns) =>
+        prevColumns.map((column) =>
+          column.id === "reserved"
+            ? {
                 ...column,
                 passengers: column.passengers.filter((p) => p.id !== activeId),
-              };
-            }
-            return column;
-          });
-        });
+              }
+            : column
+        )
+      );
 
-        return updatedReservedPassengers;
-      });
+      return updatedReservedPassengers;
+    };
+
+    if (isActiveAReserveTask && (isOverATask || isOverAColumn)) {
+      if (!isOverATask || targetColumn?.availableCapacity !== 0) {
+        // if (isOverATask) setEditMode(true);
+
+        setReservedPassengers((prevReserved) => {
+          const targetColumnId =
+            passengers.find((p) => p?.id === overId)?.columnId || overId;
+          if (!targetColumnId) return prevReserved; // Ensure targetColumnId is valid
+
+          return updatePassengerAndColumns(
+            prevReserved,
+            activeId,
+            overId,
+            targetColumnId
+          );
+        });
+      }
     }
 
-    if (isActiveAReserveTask && isOverAReserveTask) {
-      setReservedPassengers((prevReserved: EmployeeTypes[]) => {
-        const activeIndex = getPassengerPos(activeId, prevReserved);
-        const overIndex = getPassengerPos(overId, prevReserved);
-        return arrayMove(prevReserved, activeIndex, overIndex);
+    // ✅
+    if (isActiveATask && isOverAColumn) {
+      setPassengers((tasks) => {
+        const activeIndex = tasks.findIndex((t) => t.id === activeId);
+
+        tasks[activeIndex].columnId = overId;
+        return arrayMove(tasks, activeIndex, activeIndex);
       });
     }
   }
@@ -356,45 +433,8 @@ function CreateShift() {
     setActiveTask(null);
     setActiveReserveColumn(null);
     setActiveColumn(null);
-    const { active, over } = event;
-    if (active && over) {
-      const sourceCard = columns.find((card) => card.id === active.id);
-      const destinationCard =
-        over && over.id === "reserved"
-          ? reservedColumn
-          : columns.find((card) => card.id === over.id);
-      if (sourceCard && destinationCard) {
-        const sourceIndex = sourceCard.passengers.indexOf(active.id);
-        const destinationIndex =
-          over && over.id === "reserved"
-            ? destinationCard.passengers.length
-            : over.index;
-        if (destinationIndex > -1) {
-          const newSourcePassengers = [...sourceCard.passengers];
-          const newDestinationPassengers = [...destinationCard.passengers];
-          newSourcePassengers.splice(sourceIndex, 1);
-          newDestinationPassengers.splice(destinationIndex, 0, active.id);
-          if (over.id === "reserved") {
-            setReservedColumn({
-              ...destinationCard,
-              passengers: newDestinationPassengers,
-            });
-          } else {
-            const updatedRosterCards = columns.map((card) => {
-              if (card.id === sourceCard.id) {
-                return { ...card, passengers: newSourcePassengers };
-              }
-              if (card.id === destinationCard.id) {
-                return { ...card, passengers: newDestinationPassengers };
-              }
-              return card;
-            });
-            setColumns(updatedRosterCards);
-          }
-        }
-      }
-    }
   };
+
 
   // console.log(combinedData)
 
