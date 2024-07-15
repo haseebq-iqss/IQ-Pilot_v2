@@ -4,6 +4,7 @@ const Route = require("../models/route");
 const { catchAsync } = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const getActiveRoutes = require("../utils/activeRoutesFun");
+const kmeans = require("node-kmeans");
 
 const shuffleArray = (nums) => {
   const arr = [...nums];
@@ -148,7 +149,6 @@ exports.createShift = catchAsync(async (req, res, next) => {
     );
 
   const routes = await Route.find({});
-
   // CHECK FOR ACTIVE ROUTES
   if (routes.length >= 1) {
     const active_routes = await getActiveRoutes(routes);
@@ -191,7 +191,7 @@ exports.createShift = catchAsync(async (req, res, next) => {
   if (cabs.length === 0)
     return next(new AppError(`No cabs available as of now...`, 404));
 
-  // NOT TO CONSIDER NON-ACTIVE ROUTES ASSIGNED TO CABS(FILTERING OF CABS)
+  // NOT TO PUSH NON-ACTIVE ROUTES ROUTES ARRAY IN EACH CABS(FILTERING OF CABS)
   for (const cab of cabs) {
     cab.routes = cab.routes
       .map((route) => {
@@ -234,6 +234,117 @@ exports.createShift = catchAsync(async (req, res, next) => {
     typeOfRoute,
     daysRouteIsActive,
   });
+});
+
+exports.createShiftKM = catchAsync(async (req, res, next) => {
+  const { workLocation, currentShift, typeOfRoute, daysRouteIsActive } =
+    req.body;
+
+  const employees = await User.find({ workLocation, currentShift });
+  if (employees.length === 0)
+    return next(
+      new AppError(
+        `No employees found for this shift:${currentShift} and workloction:${workLocation}`
+      )
+    );
+
+  const employeesPickUpCoordinates = employees.map(
+    (employee) => employee.pickUp.coordinates
+  );
+
+  const routes = await Route.find({});
+  // CHECK FOR ACTIVE ROUTES
+  if (routes.length >= 1) {
+    const active_routes = await getActiveRoutes(routes);
+    const check_active_routes = active_routes.find((route) => {
+      return (
+        route.workLocation === workLocation &&
+        route.currentShift === currentShift &&
+        route.typeOfRoute === typeOfRoute
+      );
+    });
+
+    if (check_active_routes)
+      return next(
+        new AppError(
+          `Team Members for this shift: ${currentShift} and work-loction: ${workLocation} are already rostered!`,
+          400
+        )
+      );
+  }
+
+  const numOfClusters = Math.ceil(employees.length / 6);
+  kmeans.clusterize(
+    employeesPickUpCoordinates,
+    { k: numOfClusters },
+    async (err, resClusters) => {
+      const cabs = await Cab.aggregate([
+        {
+          $lookup: {
+            from: "routes",
+            foreignField: "cab",
+            localField: "_id",
+            as: "routes",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            foreignField: "_id",
+            localField: "cabDriver",
+            as: "cabDriver",
+          },
+        },
+      ]);
+
+      if (cabs.length === 0)
+        return next(new AppError(`No cabs available as of now...`, 404));
+
+      // NOT TO CONSIDER NON-ACTIVE ROUTES ASSIGNED TO CABS(FILTERING OF CABS)
+      for (const cab of cabs) {
+        cab.routes = cab.routes
+          .map((route) => {
+            const present_day = new Date();
+            present_day.setHours(0, 0, 0, 0);
+            const route_active_till = route.activeOnDate;
+            if (present_day.getTime() > route_active_till.getTime())
+              return null;
+            return route;
+          })
+          .filter((val) => val !== null);
+      }
+      let groups = [];
+      for (const cluster of resClusters) {
+        const employeesInCluster = cluster.clusterInd.map(
+          (ind) => employees[ind]
+        );
+        const assignedGroups = await assignCabToEmployees(
+          workLocation,
+          currentShift,
+          typeOfRoute,
+          employeesInCluster,
+          cabs
+        );
+        groups = [...groups, ...assignedGroups];
+      }
+
+      if (groups.length === 0)
+        return next(
+          new AppError(
+            `Roster for ${currentShift} and Worklocation: ${workLocation} cannot be created...No Cabs available right now...`
+          )
+        );
+      res.status(200).json({
+        message: "Success",
+        data: groups,
+        results: groups.length,
+        workLocation,
+        currentShift,
+        typeOfRoute,
+        daysRouteIsActive,
+      });
+    }
+  );
 });
 
 exports.createRoute = catchAsync(async (req, res, next) => {
