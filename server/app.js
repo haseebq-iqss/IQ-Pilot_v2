@@ -9,20 +9,7 @@ const usersRoutes = require("./routes/usersRoutes");
 const routeRouter = require("./routes/routeRoute");
 const cronJob = require("./utils/cronJob");
 const attendanceRouter = require("./routes/attendanceRoutes");
-const path = require("path");
-const fs = require("fs");
-const { createServer } = require("https");
 const app = express();
-
-const certPath = path.join(__dirname, 'certs');
-
-console.log(certPath)
-const options = {
-  key: fs.readFileSync(path.join(certPath, 'cert.key')),
-  cert: fs.readFileSync(path.join(certPath, 'cert.crt')),
-};
-
-const https_server = createServer(options, app);
 
 // Middlewares
 app.use(function (req, res, next) {
@@ -35,8 +22,7 @@ app.use(
   cors({
     credentials: true,
     exposedHeaders: "Set-Cookie",
-    // origin: ["https://localhost:5173", "https://6zkcx3p4-5173.inc1.devtunnels.ms", "https://ipvt.vercel.app"],
-    origin : true
+    origin: ["http://localhost:5173", "https://6zkcx3p4-5173.inc1.devtunnels.ms", "https://ipvt.vercel.app"],
   })
 );
 
@@ -63,4 +49,4 @@ app.all("*", (req, res, next) => {
 // Global Error Controller
 app.use(globalErrorController);
 cronJob.run();
-module.exports = https_server;
+module.exports = app;
