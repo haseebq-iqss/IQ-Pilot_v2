@@ -1,6 +1,6 @@
 const { Server } = require("socket.io");
-const server = require("./app.js");
 const mongoose = require("mongoose");
+const https_server = require("./app.js");
 const dotenv = require("dotenv").config({ path: "./config.env" });
 
 const DB = process.env.MONGO_URI;
@@ -9,7 +9,7 @@ mongoose.connect(DB).then(() => {
   console.log("DB connected...✅");
 });
 
-const socketServer = server.listen(PORT, () => {
+const socketServer = https_server.listen(PORT, () => {
   console.log(`Server is listening at ${PORT}`);
 });
 

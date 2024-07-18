@@ -9,10 +9,19 @@ const usersRoutes = require("./routes/usersRoutes");
 const routeRouter = require("./routes/routeRoute");
 const cronJob = require("./utils/cronJob");
 const attendanceRouter = require("./routes/attendanceRoutes");
+const path = require("path");
+const fs = require("fs");
+const { createServer } = require("https");
 const app = express();
 
-// Middlewares
+const certPath = path.join(__dirname, 'certs');
+const options = {
+  key: fs.readFileSync(path.join(certPath, 'cert.key')),
+  cert: fs.readFileSync(path.join(certPath, 'cert.crt')),
+};
+const https_server = createServer(options, app);
 
+// Middlewares
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "https://ipvt.vercel.app");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -50,4 +59,4 @@ app.all("*", (req, res, next) => {
 // Global Error Controller
 app.use(globalErrorController);
 cronJob.run();
-module.exports = app;
+module.exports = https_server;
