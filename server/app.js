@@ -15,10 +15,13 @@ const { createServer } = require("https");
 const app = express();
 
 const certPath = path.join(__dirname, 'certs');
+
+console.log(certPath)
 const options = {
   key: fs.readFileSync(path.join(certPath, 'cert.key')),
   cert: fs.readFileSync(path.join(certPath, 'cert.crt')),
 };
+
 const https_server = createServer(options, app);
 
 // Middlewares
@@ -32,7 +35,8 @@ app.use(
   cors({
     credentials: true,
     exposedHeaders: "Set-Cookie",
-    origin: ["http://localhost:5173", "https://6zkcx3p4-5173.inc1.devtunnels.ms", "https://ipvt.vercel.app"],
+    // origin: ["https://localhost:5173", "https://6zkcx3p4-5173.inc1.devtunnels.ms", "https://ipvt.vercel.app"],
+    origin : true
   })
 );
 

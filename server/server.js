@@ -15,7 +15,7 @@ const socketServer = https_server.listen(PORT, () => {
 
 const io = new Server(socketServer, {
   cors: {
-    origin: ["http://localhost:5173", "https://ipvt.vercel.app", "https://6zkcx3p4-5173.inc1.devtunnels.ms"],
+    origin: ["https://localhost:5173", "https://ipvt.vercel.app", "https://6zkcx3p4-5173.inc1.devtunnels.ms"],
   },
   // maxHttpBufferSize: 1e7, // Set maximum HTTP buffer size (10 MB in this example)
   // pingInterval: 10000, // Set ping interval to 10 seconds
