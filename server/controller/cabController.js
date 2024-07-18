@@ -124,8 +124,6 @@ exports.getTMSAssignedCabs = catchAsync(async (req, res, next) => {
 });
 
 exports.availableCabs = catchAsync(async (req, res, next) => {
-  const allRoutes = await Route.find({});
-
   const cabs = await Cab.aggregate([
     {
       $lookup: {
@@ -151,7 +149,7 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
   for (const cab of cabs) {
     cab.routes = cab.routes.filter((route) => {
       return (
-        route.activeOnDate.getDate() === present_day.getDate() &&
+        route.activeOnDate.getDate() === present_day.getDate() + 1 &&
         route.activeOnDate.getMonth() === present_day.getMonth() &&
         route.activeOnDate.getFullYear() === present_day.getFullYear()
       );
@@ -174,12 +172,6 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
     });
     cabObj.occupiedShifts.length < 2 && cabsShiftForCurrentDay.push(cabObj);
   }
-
-  // const cabsNotAvailable = cabsShiftForCurrentDay.reduce((acc, cab) => {
-  //   if (cab.occupiedShifts.length === 2) return acc + 1;
-  //   else return acc;
-  // }, 0);
-  // console.log(cabsNotAvailable);
 
   res.status(200).json({
     status: "Success",

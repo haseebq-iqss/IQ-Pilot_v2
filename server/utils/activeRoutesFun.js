@@ -4,7 +4,7 @@ const getActiveRoutes = async (all_routes) => {
 
   const active_routes = all_routes.filter((route) => {
     return (
-      route.activeOnDate.getDate() === present_day.getDate() &&
+      route.activeOnDate.getDate() === present_day.getDate() + 1 &&
       route.activeOnDate.getMonth() === present_day.getMonth() &&
       route.activeOnDate.getFullYear() === present_day.getFullYear()
     );
