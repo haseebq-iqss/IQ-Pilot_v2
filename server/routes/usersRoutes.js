@@ -10,7 +10,6 @@ const {
   updateUser,
   deleteUser,
   cancelCab,
-  bulkUserUpload,
 } = require("../controller/userController");
 const { protect, restrictTo } = require("../controller/authController");
 
@@ -37,7 +36,5 @@ router
 router
   .route("/cancel-cab/:id")
   .patch(restrictTo("admin", "employee"), cancelCab);
-
-router.route("/bulk-upload").post(restrictTo("admin"), bulkUserUpload)
 
 module.exports = router;
