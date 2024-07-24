@@ -586,7 +586,7 @@ const MapComponent = ({
         )}
 
         <TileLayer
-          url="https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.png" // WORLD IMAGERY MAP  >>>REQUIRES DOMAIN SETUP<<<       --- MOST REALISTIC
+          // url="https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.png" // WORLD IMAGERY MAP  >>>REQUIRES DOMAIN SETUP<<<       --- MOST REALISTIC
           // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"   // VANILLA MAP STYLE
           // url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png" // FRANCE HOT MAP         --- MOST CONSISTENT
           // url="https://tile.osm.ch/switzerland/{z}/{x}/{y}.png"   // SWISS MAP STYLE (SLOW TO LOAD)
@@ -594,7 +594,7 @@ const MapComponent = ({
 
           // ---> PAID MAP TILES
           // url="https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // OPENCYCLE MAP STYLE      --- MOST BASIC
-          // url="https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // TRANSPORT MAP STYLE     --- MOST CLEAN
+          url="https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // TRANSPORT MAP STYLE     --- MOST CLEAN
           // url="https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // LANDSCAPE STYLE
           // url="https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // OUTDOORS STYLE
           // url="https://tile.thunderforest.com/transport-dark/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // TRANSPORT DARK STYLE
