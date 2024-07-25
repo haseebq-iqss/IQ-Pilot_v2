@@ -14,6 +14,7 @@ const {
   totalDistanceMonth,
   driverRoutesForMonth,
   createShiftKM,
+  getTodayRoute,
 } = require("../controller/routeController");
 const { protect, restrictTo } = require("../controller/authController");
 
@@ -22,8 +23,10 @@ router.use(protect);
 router.route("/").post(restrictTo("admin"), createRoute).get(getRoutes);
 router.route("/shifts").post(createShift);
 router.route("/createShiftK-Means").post(createShiftKM);
+
 router.route("/totalDistanceMonth").get(totalDistanceMonth);
 
+router.get("/todayRoute", getTodayRoute);
 router.route("/activeRoutes").get(restrictTo("admin"), getActiveRoutes);
 router.route("/pendingPassengers").get(restrictTo("admin"), pendingPassengers);
 router

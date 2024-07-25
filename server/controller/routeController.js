@@ -254,8 +254,13 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
   const present_day = new Date();
   present_day.setHours(0, 0, 0, 0);
 
-  const { workLocation, currentShift, typeOfRoute, daysRouteIsActive } =
-    req.body;
+  const {
+    workLocation,
+    currentShift,
+    typeOfRoute,
+    daysRouteIsActive,
+    activationMode,
+  } = req.body;
 
   const employees = await User.find({ workLocation, currentShift });
   if (employees.length === 0)
@@ -402,6 +407,7 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
         currentShift,
         typeOfRoute,
         daysRouteIsActive,
+        activationMode,
       });
     }
   );
@@ -414,37 +420,54 @@ exports.createRoute = catchAsync(async (req, res, next) => {
     currentShift,
     typeOfRoute,
     daysRouteIsActive,
+    activationMode,
   } = req.body;
 
   if (!Array.isArray(cabEmployeeGroups) || cabEmployeeGroups.length === 0)
     return next(new AppError(`Invalid or cabEmployeeGroups is empty`, 400));
 
+  const baseDate = new Date(
+    Date.UTC(
+      new Date().getUTCFullYear(),
+      new Date().getUTCMonth(),
+      new Date().getUTCDate()
+    )
+  );
+  const routesToCreate = [];
+
   for (const group of cabEmployeeGroups) {
     const { cab, passengers, availableCapacity } = group;
-    for (let i = 0; i < daysRouteIsActive; i++) {
-      const dateActive = new Date(
-        Date.UTC(
-          new Date().getUTCFullYear(),
-          new Date().getUTCMonth(),
-          new Date().getUTCDate()
-        )
-      );
-      // Increment the date by i days
-      dateActive.setUTCDate(dateActive.getUTCDate() + i + 1);
 
-      // console.log(dateActive.toISOString());
-      await Route.create({
-        cab,
-        passengers,
-        workLocation,
-        currentShift,
-        typeOfRoute,
-        availableCapacity,
-        daysRouteIsActive,
-        activeOnDate: dateActive,
-      });
+    for (let i = 0; i < daysRouteIsActive; i++) {
+      const dateActive = new Date(baseDate);
+      if (activationMode === "immediate") {
+        dateActive.setUTCDate(baseDate.getUTCDate() + i);
+        routesToCreate.push({
+          cab,
+          passengers,
+          workLocation,
+          currentShift,
+          typeOfRoute,
+          availableCapacity,
+          daysRouteIsActive,
+          activeOnDate: dateActive,
+        });
+      } else {
+        dateActive.setUTCDate(baseDate.getUTCDate() + i + 1);
+        routesToCreate.push({
+          cab,
+          passengers,
+          workLocation,
+          currentShift,
+          typeOfRoute,
+          availableCapacity,
+          daysRouteIsActive,
+          activeOnDate: dateActive,
+        });
+      }
     }
   }
+  await Route.insertMany(routesToCreate);
   res.status(201).json({
     status: "Success",
     message: "Shifts confirmed and routes created successfully",
@@ -499,6 +522,24 @@ exports.getActiveRoutes = catchAsync(async (req, res, next) => {
     results: active_routes_not_completed.length,
     data: active_routes_not_completed,
   });
+});
+
+exports.getTodayRoute = catchAsync(async (req, res, next) => {
+  const startDate = new Date(
+    Date.UTC(
+      new Date().getUTCFullYear(),
+      new Date().getUTCMonth(),
+      new Date().getUTCDate()
+    )
+  );
+  const todayRoute = await Route.find({
+    activeOnDate: {
+      $eq: startDate,
+    },
+  });
+  res
+    .status(200)
+    .json({ message: "Success", results: todayRoute.length, todayRoute });
 });
 
 exports.updateRoute = catchAsync(async (req, res, next) => {
