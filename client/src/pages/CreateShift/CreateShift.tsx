@@ -108,22 +108,22 @@ function CreateShift() {
   });
 
 
-  const mapCoordinatesToText = (value: string) => {
-    switch (value) {
-      case "[34.07918418861709, 74.76795882716988]":
-        return "Bemina Area";
-      case "[34.07884610905441, 74.77249651656975]":
-        return "Lal Bazar Area";
-      case "[34.084051032954854, 74.79703437982327]":
-        return "Karanagar Area";
-      case "[34.01011349472341, 74.79879001141188]":
-        return "Rangreth Area";
-      case "[34.13990801842636, 74.80077605668806]":
-        return "Soura Area";
-      default:
-        return "Unknown Area";
-    }
-  };
+  // const mapCoordinatesToText = (value: string) => {
+  //   switch (value) {
+  //     case "[34.07918418861709, 74.76795882716988]":
+  //       return "Bemina Area";
+  //     case "[34.07884610905441, 74.77249651656975]":
+  //       return "Lal Bazar Area";
+  //     case "[34.084051032954854, 74.79703437982327]":
+  //       return "Karanagar Area";
+  //     case "[34.01011349472341, 74.79879001141188]":
+  //       return "Rangreth Area";
+  //     case "[34.13990801842636, 74.80077605668806]":
+  //       return "Soura Area";
+  //     default:
+  //       return "Unknown Area";
+  //   }
+  // };
 
   const combinedData: {
     cab: Cabtypes;
@@ -149,7 +149,8 @@ function CreateShift() {
       workLocation: routeState?.data?.workLocation,
       currentShift: routeState?.data?.currentShift,
       typeOfRoute: routeState?.data?.typeOfRoute,
-      daysRouteIsActive: routeState?.data?.daysRouteIsActive
+      daysRouteIsActive: routeState?.data?.daysRouteIsActive,
+      activationMode: routeState?.data?.activationMode
     };
     setIsLoaderEnabled(true);
     showLoader();
@@ -434,8 +435,8 @@ function CreateShift() {
               {routeState?.data?.workLocation}
             </Typography>
             <Typography variant="h6" fontWeight={600}>
-              {mapCoordinatesToText(routeState?.centralPoint) +
-                "-->" +
+              {routeState?.data?.activationMode === "immediate" ? "IIA" : "FND" +
+                " --> " +
                 ConvertShiftTimeTo12HrFormat(routeState?.data?.currentShift)}
             </Typography>
           </Box>

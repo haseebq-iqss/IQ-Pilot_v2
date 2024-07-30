@@ -63,14 +63,14 @@ function AdminDashboard() {
 
   // ALL ASSIGNED ROUTES
   const getAllAssignedRoutesQF = () => {
-    return useAxios.get("routes/activeRoutes");
+    return useAxios.get("routes/todayRoute");
   };
 
   const { data: allRoutes, status: allRoutesStatus } = useQuery({
     queryFn: getAllAssignedRoutesQF,
     queryKey: ["All Assigned Routes"],
     select: (data) => {
-      return data.data.data;
+      return data.data.todayRoute;
     },
   });
 

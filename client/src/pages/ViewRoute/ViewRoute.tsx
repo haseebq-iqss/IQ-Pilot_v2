@@ -389,6 +389,7 @@ function ViewRoute() {
             routePathArray={routeData?.cabPath as []}
             employees={routeData?.passengers as [EmployeeTypes]}
             height="100%"
+            visibleOffice={routeData?.workLocation}
           />
         ) : (
           <CircularProgress />

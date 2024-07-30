@@ -45,7 +45,7 @@ const DriverProfile = () => {
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
 
   const { data: driverDetails } = useQuery({
-    queryKey: ["driver-details"],
+    queryKey: [`driver-details ${id}`],
     queryFn: async () => {
       const response = await useAxios.get(`/cabs/${id}`);
       return response?.data?.data;
@@ -53,7 +53,7 @@ const DriverProfile = () => {
   });
 
   const { data: driverRoutes } = useQuery({
-    queryKey: ["driver-routes"],
+    queryKey: [`${(driverDetails?.cabDriver as EmployeeTypes)?.fname} - driver-routes`],
     queryFn: async () => {
       const response = await useAxios.get(
         `routes/driverRoutesMonth/${

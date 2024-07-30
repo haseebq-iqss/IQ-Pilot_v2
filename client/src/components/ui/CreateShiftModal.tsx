@@ -29,7 +29,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
   const [typeOfRoute, settypeOfRoute] = useState<"pickup" | "drop">("pickup");
   const [workLocation, setworkLocation] = useState("");
   const [currentShift, setcurrentShift] = useState("");
-  const [ref_coords, setref_coords] = useState<any>();
+  const [activationMode, setActivationMode] = useState<any>();
   const [activeDays, setActiveDays] = useState<number>(1);
   const [artificialDelay, setArtificialDelay] = useState<boolean>(false);
 
@@ -38,20 +38,19 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
   const createShiftMF = (shiftData: any) => {
-    return useAxios.post("/routes/shifts", shiftData);
+    return useAxios.post("/routes/createShiftK-Means", shiftData);
   };
 
   const { mutate: createShiftMutation, status } = useMutation({
     mutationFn: createShiftMF,
     onSuccess: (data: any) => {
-      // console.log(data);
-      console.log(data);
+      console.log("SD --> ", data);
       navigate("createShift", {
-        state: { data: data.data, centralPoint: ref_coords },
+        state: { data: data.data, centralPoint: "NOT SET" },
       });
     },
     onError: (err: any) => {
-      setArtificialDelay(!artificialDelay)
+      setArtificialDelay(!artificialDelay);
       setOpenSnack({
         open: true,
         message: err.response.data.message,
@@ -60,7 +59,11 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
     },
   });
   const HandleProceedToCreateShiftPage = () => {
-    if (workLocation?.length && currentShift?.length && ref_coords?.length) {
+    if (
+      workLocation?.length &&
+      currentShift?.length &&
+      activationMode?.length
+    ) {
       setArtificialDelay(!artificialDelay);
       setTimeout(() => {
         setArtificialDelay(!artificialDelay);
@@ -69,7 +72,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
           workLocation,
           currentShift,
           daysRouteIsActive: activeDays,
-          ref_coords: eval(ref_coords),
+          activationMode,
         };
         createShiftMutation(shiftData);
       }, 2000);
@@ -89,7 +92,13 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
       openModal={openModal}
       setOpenModal={setOpenModal}
     >
-      <LinearProgress sx={{ width: artificialDelay ? "100%" : "0%", backgroundColor:"white", height:5 }} />
+      <LinearProgress
+        sx={{
+          width: artificialDelay ? "100%" : "0%",
+          backgroundColor: "white",
+          height: 5,
+        }}
+      />
       <Box sx={{ ...RowFlex, width: "100%", height: "100%", padding: "1rem" }}>
         {/* LS */}
         <Box
@@ -169,28 +178,19 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
             </FormControl>
 
             <FormControl sx={{ width: "50%" }}>
-              <InputLabel id="central-point-label">Central Point</InputLabel>
+              <InputLabel id="central-point-label">Activation Mode</InputLabel>
               <Select
                 labelId="central-point-label"
                 id="central-point-label"
-                value={ref_coords}
+                value={activationMode}
                 label="central-point-label"
-                onChange={(e) => setref_coords(e.target.value)}
+                onChange={(e) => setActivationMode(e.target.value)}
               >
-                <MenuItem value={"[34.07918418861709, 74.76795882716988]"}>
-                  Bemina Area
+                <MenuItem value={"immediate"}>
+                  Immediate (Shift will activate right now)
                 </MenuItem>
-                <MenuItem value={"[34.07884610905441, 74.77249651656975]"}>
-                  Lal Bazar Area
-                </MenuItem>
-                <MenuItem value={"[34.084051032954854, 74.79703437982327]"}>
-                  Karanagar Area
-                </MenuItem>
-                <MenuItem value={"[34.01011349472341, 74.79879001141188]"}>
-                  Rangreth Area
-                </MenuItem>
-                <MenuItem value={"[34.13990801842636, 74.80077605668806]"}>
-                  Soura Area
+                <MenuItem value={"next-day"}>
+                  Next Day (Shift will activate on the next day's start)
                 </MenuItem>
               </Select>
             </FormControl>
@@ -203,13 +203,13 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
                 label="Active For Days"
                 onChange={(e: any) => setActiveDays(e.target.value)}
               >
-                <MenuItem value="1">1</MenuItem>
-                <MenuItem value="2">2</MenuItem>
-                <MenuItem value="3">3</MenuItem>
-                <MenuItem value="4">4</MenuItem>
-                <MenuItem value="5">5</MenuItem>
-                <MenuItem value="6">6</MenuItem>
-                <MenuItem value="7">7</MenuItem>
+                <MenuItem value="1">1 Day</MenuItem>
+                <MenuItem value="2">2 Days</MenuItem>
+                <MenuItem value="3">3 Days</MenuItem>
+                <MenuItem value="4">4 Days</MenuItem>
+                <MenuItem value="5">5 Days</MenuItem>
+                <MenuItem value="6">6 Days</MenuItem>
+                <MenuItem value="7">7 Days</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -223,7 +223,9 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               marginTop: 2.5,
               py: 1.5,
             }}
-            onClick={!artificialDelay ? HandleProceedToCreateShiftPage : () => {}}
+            onClick={
+              !artificialDelay ? HandleProceedToCreateShiftPage : () => {}
+            }
             color="primary"
             disabled={status === "pending"}
             variant="contained"

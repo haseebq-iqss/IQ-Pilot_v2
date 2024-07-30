@@ -44,6 +44,7 @@ type MapTypes = {
   highlightedEmployees?: [];
   clusterRadiusValue?: number;
   unrosteredTms?: [any];
+  visibleOffice?: "Both" | "Rangreth" | "Zaira Tower"
 };
 
 const MapComponent = ({
@@ -61,6 +62,7 @@ const MapComponent = ({
   highlightedEmployees = [],
   clusterRadiusValue = 75,
   unrosteredTms,
+  visibleOffice = "Both"
 }: MapTypes) => {
   // const [driversPosition, setDriversPosition] = useState<any>();
 
@@ -771,7 +773,7 @@ const MapComponent = ({
           chunkedLoading
           animate
           spiderfyOnEveryZoom
-          disableClusteringAtZoom={16}
+          disableClusteringAtZoom={(employees as [EmployeeTypes])?.length < 10 ? 0 : 16}
           animateAddingMarkers
         >
           {employees &&
@@ -918,8 +920,7 @@ const MapComponent = ({
         {selectedEmps?.length && <RoutingMachine routes={[...selectedEmps]} />}
 
         {/* OFFICE ICONS */}
-        {/* Rangreth */}
-        <Marker
+        {visibleOffice === "Both" ? <><Marker
           icon={officeIcon}
           key={"rangrethOffice"}
           position={rangreth as LatLngExpression}
@@ -933,7 +934,6 @@ const MapComponent = ({
             <span>{"Rangreth Office"}</span>
           </Tooltip>
         </Marker>
-        {/* Zaira */}
         <Marker
           icon={officeIcon}
           key={"zairaTowersOffice"}
@@ -947,7 +947,33 @@ const MapComponent = ({
           >
             <span>{"Zaira Towers"}</span>
           </Tooltip>
-        </Marker>
+        </Marker></> : visibleOffice === "Rangreth" ? (<Marker
+          icon={officeIcon}
+          key={"rangrethOffice"}
+          position={rangreth as LatLngExpression}
+        >
+          <Tooltip
+            className="office-tooltip"
+            direction="top"
+            offset={[0, -40]}
+            permanent
+          >
+            <span>{"Rangreth Office"}</span>
+          </Tooltip>
+        </Marker>) : <Marker
+          icon={officeIcon}
+          key={"zairaTowersOffice"}
+          position={zaira as LatLngExpression}
+        >
+          <Tooltip
+            className="office-tooltip"
+            direction="top"
+            offset={[0, -40]}
+            permanent
+          >
+            <span>{"Zaira Towers"}</span>
+          </Tooltip>
+        </Marker>}
       </MapContainer>
     </div>
   );

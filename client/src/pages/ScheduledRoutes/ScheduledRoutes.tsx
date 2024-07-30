@@ -206,13 +206,14 @@ function ScheduledRoutes() {
                 <TableCell align="left">Cab</TableCell>
                 <TableCell align="left">Driver</TableCell>
                 <TableCell align="center">Pickup/Drop</TableCell>
+                <TableCell align="center">Office</TableCell>
                 <TableCell align="center">Date</TableCell>
                 <TableCell align="center">Status</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {selectedRoutes?.length &&
+              {selectedRoutes?.length ?
                 selectedRoutes?.map((route: any, index: number) => (
                   <TableRow
                     key={route._id}
@@ -235,7 +236,7 @@ function ScheduledRoutes() {
                         )}
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ fontWeight: 600 }} align="left">
+                    <TableCell sx={{ fontWeight: 600, color:"primary.dark" }} align="left">
                       {(selectedRoutes[index]?.cab as Cabtypes)?.cabNumber}
                     </TableCell>
                     <TableCell align="center">
@@ -257,6 +258,9 @@ function ScheduledRoutes() {
                     <TableCell sx={{ fontWeight: 600 }} align="center">
                       {(route.typeOfRoute?.charAt(0).toUpperCase() as string) +
                         route.typeOfRoute?.slice(1, 99)}
+                    </TableCell>
+                    <TableCell align="center"  sx={{ fontWeight: 600 }}>
+                      {route.workLocation}
                     </TableCell>
                     <TableCell sx={{ fontWeight: 600 }} align="center">
                       {/* {route.totalDistance || "Not Calculated"} */}
@@ -343,7 +347,7 @@ function ScheduledRoutes() {
                       </Menu>
                     </TableCell>
                   </TableRow>
-                ))}
+                )) : <Typography variant="h6" sx={{p:1, fontWeight:500}}>No {tableDataView} Routes Found 🤷‍♂️</Typography>}
             </TableBody>
           </Table>
         </TableContainer>
