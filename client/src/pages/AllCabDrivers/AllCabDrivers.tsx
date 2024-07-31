@@ -21,7 +21,7 @@ import {
   TextField,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import PageContainer from "../../components/ui/PageContainer";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import baseURL from "../../utils/baseURL";
@@ -30,6 +30,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
 import Cabtypes from "../../types/CabTypes";
 import { useNavigate } from "react-router-dom";
+import SnackbarContext from "../../context/SnackbarContext";
+import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 
 // type driverTypes = {
 //   drivers: [EmployeeTypes];
@@ -38,6 +40,7 @@ import { useNavigate } from "react-router-dom";
 function AllCabDrivers() {
   const [searchtext, setSearchText] = useState("");
   const qc = useQueryClient();
+  const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
   const navigate = useNavigate();
   const { data: cabDetails } = useQuery({
@@ -85,10 +88,17 @@ function AllCabDrivers() {
   const { mutate: deleteEmpMf } = useMutation({
     mutationKey: ["delete-driver"],
     mutationFn: async (driverID: string) => {
-      await useAxios.delete(`/users/driver/${driverID}`);
+      await useAxios.delete(`/cabs/${driverID}`);
+    },
+    onSuccess: (data) => {
+      setOpenSnack({
+        open:true,
+        message:"Driver was deleted!",
+        severity: 'info'
+      })
     },
     onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["all-teamMembers"] });
+      qc.invalidateQueries({ queryKey: ["all-cabs"] });
     },
   });
   return (

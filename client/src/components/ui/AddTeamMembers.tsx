@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { FormEvent, useContext, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useAxios from "../../api/useAxios";
 import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
@@ -23,6 +23,9 @@ import Cabtypes from "../../types/CabTypes";
 export const AddTeamMembers = () => {
   const [department, setDepartment] = useState("");
   const [workLocation, setWorkLocation] = useState("");
+
+  const navigate = useNavigate();
+
   const [fullName, setFullName] = useState({
     firstName: "",
     lastName: "",
@@ -55,6 +58,7 @@ export const AddTeamMembers = () => {
         message: data.data.message,
         severity: "success",
       });
+      navigate(-1);
     },
     onError: (err: any) => {
       setOpenSnack({
@@ -73,6 +77,7 @@ export const AddTeamMembers = () => {
         message: data.data.message,
         severity: "success",
       });
+      navigate(-1);
     },
     onError: (err: any) => {
       setOpenSnack({
