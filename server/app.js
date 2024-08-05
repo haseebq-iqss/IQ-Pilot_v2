@@ -7,7 +7,7 @@ const AppError = require("./utils/appError");
 const globalErrorController = require("./controller/errorController");
 const usersRoutes = require("./routes/usersRoutes");
 const routeRouter = require("./routes/routeRoute");
-const cronJob = require("./utils/cronJob");
+// const cronJob = require("./utils/cronJob");
 const attendanceRouter = require("./routes/attendanceRoutes");
 const app = express();
 
@@ -22,7 +22,7 @@ app.use(
   cors({
     credentials: true,
     exposedHeaders: "Set-Cookie",
-    origin: ["http://localhost:5173", "https://6zkcx3p4-5173.inc1.devtunnels.ms", "https://ipvt.vercel.app", "http://127.0.0.1:5500/", "http://iqpilot.s3-website.ap-south-1.amazonaws.com/"],
+    origin: ["http://localhost:5173", "https://6zkcx3p4-5173.inc1.devtunnels.ms", "https://ipvt.vercel.app", "http://127.0.0.1:5500/", "http://iqpilot.s3-website.ap-south-1.amazonaws.com/", "https://d1yv0plhtxvzs7.cloudfront.net/"],
   })
 );
 
@@ -48,5 +48,5 @@ app.all("*", (req, res, next) => {
 
 // Global Error Controller
 app.use(globalErrorController);
-cronJob.run();
+// cronJob.run();
 module.exports = app;

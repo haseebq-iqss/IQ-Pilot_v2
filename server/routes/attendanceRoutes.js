@@ -1,7 +1,7 @@
 const attendanceController = require("../controller/attendanceController");
 const express = require("express");
 const { protect, restrictTo } = require("../controller/authController");
-const { updateLeaveStatus } = require("../utils/cronJob");
+// const { updateLeaveStatus } = require("../utils/cronJob");
 const { catchAsync } = require("../utils/catchAsync");
 
 const router = express.Router();
