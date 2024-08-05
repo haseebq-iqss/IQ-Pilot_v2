@@ -22,7 +22,7 @@ app.use(
   cors({
     credentials: true,
     exposedHeaders: "Set-Cookie",
-    origin: ["http://localhost:5173", "https://6zkcx3p4-5173.inc1.devtunnels.ms", "https://ipvt.vercel.app", "http://127.0.0.1:5500/", "http://iqpilot.s3-website.ap-south-1.amazonaws.com/", "https://d1yv0plhtxvzs7.cloudfront.net/"],
+    origin: ["http://localhost:5173", "https://6zkcx3p4-5173.inc1.devtunnels.ms", "https://ipvt.vercel.app", "http://127.0.0.1:5500/", "http://iqpilot.s3-website.ap-south-1.amazonaws.com", "https://d1yv0plhtxvzs7.cloudfront.net"],
   })
 );
 
