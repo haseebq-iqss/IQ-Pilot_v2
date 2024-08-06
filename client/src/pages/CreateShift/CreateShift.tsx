@@ -35,6 +35,7 @@ import { SnackBarContextTypes } from "../../types/SnackbarTypes.ts";
 function CreateShift() {
   const location = useLocation();
   const routeState = location?.state;
+  console.log(routeState)
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
@@ -150,7 +151,8 @@ function CreateShift() {
       currentShift: routeState?.data?.currentShift,
       typeOfRoute: routeState?.data?.typeOfRoute,
       daysRouteIsActive: routeState?.data?.daysRouteIsActive,
-      activationMode: routeState?.data?.activationMode
+      activationMode: routeState?.data?.activationMode,
+      nextAvailableStartDate: routeState?.data?.nextAvailableStartDate
     };
     setIsLoaderEnabled(true);
     showLoader();

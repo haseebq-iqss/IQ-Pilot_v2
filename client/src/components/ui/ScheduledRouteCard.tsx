@@ -68,6 +68,8 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
   //     );
   //   };
 
+  console.log(column)
+
   return (
     <Box
       sx={{

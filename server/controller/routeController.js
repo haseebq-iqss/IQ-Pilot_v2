@@ -250,9 +250,234 @@ function kmeansPlusPlusInitialization(data, k) {
   return centroids;
 }
 
+// exports.createShiftKM = catchAsync(async (req, res, next) => {
+//   const present_day = new Date();
+//   present_day.setHours(0, 0, 0, 0);
+
+//   const {
+//     workLocation,
+//     currentShift,
+//     typeOfRoute,
+//     daysRouteIsActive,
+//     activationMode,
+//   } = req.body;
+
+//   const employees = await User.find({ workLocation, currentShift });
+//   if (employees.length === 0)
+//     return next(
+//       new AppError(
+//         `No employees found for this shift:${currentShift} and workloction:${workLocation}`
+//       )
+//     );
+
+//   const employeesPickUpCoordinates = employees.map(
+//     (employee) => employee.pickUp.coordinates
+//   );
+
+//   const routes = await Route.find({});
+//   // CHECK FOR ACTIVE ROUTES
+//   if (routes.length >= 1) {
+//     const active_routes = await getActiveRoutes(routes);
+//     const check_active_routes = active_routes.find((route) => {
+//       return (
+//         route.workLocation === workLocation &&
+//         route.currentShift === currentShift &&
+//         route.typeOfRoute === typeOfRoute
+//       );
+//     });
+
+//     if (check_active_routes)
+//       return next(
+//         new AppError(
+//           `Team Members for this shift: ${currentShift} and work-loction: ${workLocation} are already rostered!`,
+//           400
+//         )
+//       );
+//   }
+
+//   const numOfClusters = Math.ceil(employees.length / 6);
+//   const initialCentroids = kmeansPlusPlusInitialization(
+//     employeesPickUpCoordinates,
+//     numOfClusters
+//   );
+
+//   kmeans.clusterize(
+//     employeesPickUpCoordinates,
+//     { k: numOfClusters, initialize: initialCentroids },
+//     async (err, resClusters) => {
+//       let employeesSortedByPickCoords = [];
+//       for (const cluster of resClusters) {
+//         const clusterCentroid = cluster.centroid;
+//         const sortedCluster = cluster.clusterInd
+//           .map((ind) => ({
+//             employee: employees[ind],
+//             distance: euclidian_distance(
+//               clusterCentroid,
+//               employeesPickUpCoordinates[ind]
+//             ),
+//           }))
+//           .sort((a, b) => a.distance - b.distance)
+//           .map((obj) => obj.employee);
+
+//         employeesSortedByPickCoords.push(...sortedCluster);
+//       }
+//       if (employeesSortedByPickCoords.length === 0)
+//         return next(
+//           new AppError(
+//             `No employees found as of now for this shift: ${currentShift} and workLocation: ${workLocation}`,
+//             404
+//           )
+//         );
+
+//       const routes = await Route.find({});
+//       // CHECK FOR ACTIVE ROUTES
+//       if (routes.length >= 1) {
+//         const active_routes = await getActiveRoutes(routes);
+//         const check_active_routes = active_routes.find((route) => {
+//           return (
+//             route.workLocation === workLocation &&
+//             route.currentShift === currentShift &&
+//             route.typeOfRoute === typeOfRoute
+//           );
+//         });
+
+//         if (check_active_routes)
+//           return next(
+//             new AppError(
+//               `Team Members for this shift: ${currentShift} and work-loction: ${workLocation} are already rostered!`,
+//               400
+//             )
+//           );
+//       }
+
+//       const cabs = await Cab.aggregate([
+//         {
+//           $lookup: {
+//             from: "routes",
+//             foreignField: "cab",
+//             localField: "_id",
+//             as: "routes",
+//           },
+//         },
+//         {
+//           $lookup: {
+//             from: "users",
+//             foreignField: "_id",
+//             localField: "cabDriver",
+//             as: "cabDriver",
+//           },
+//         },
+//       ]);
+
+//       if (cabs.length === 0)
+//         return next(new AppError(`No cabs available as of now...`, 404));
+
+//       // NOT TO PUSH NON-ACTIVE ROUTES ROUTES ARRAY IN EACH CABS(FILTERING OF CABS)
+//       for (const cab of cabs) {
+//         cab.routes = cab.routes
+//           .map((route) => {
+//             const route_created = new Date(route.createdAt);
+//             route_created.setHours(0, 0, 0, 0);
+//             const end_date = new Date(route.createdAt);
+//             end_date.setDate(route_created.getDate() + route.daysRouteIsActive);
+//             end_date.setHours(0, 0, 0, 0);
+//             if (
+//               route_created.getTime() < present_day.getTime() &&
+//               end_date.getTime() < present_day.getTime()
+//             )
+//               return null;
+//             return route;
+//           })
+//           .filter((val) => val !== null);
+//       }
+
+//       const groups = await assignCabToEmployees(
+//         workLocation,
+//         currentShift,
+//         typeOfRoute,
+//         employeesSortedByPickCoords,
+//         cabs
+//       );
+
+//       res.status(200).json({
+//         message: "Success",
+//         results: groups.length,
+//         data: groups,
+//         workLocation,
+//         currentShift,
+//         typeOfRoute,
+//         daysRouteIsActive,
+//         activationMode,
+//       });
+//     }
+//   );
+// });
+
+// exports.createRoute = catchAsync(async (req, res, next) => {
+//   const {
+//     cabEmployeeGroups,
+//     workLocation,
+//     currentShift,
+//     typeOfRoute,
+//     daysRouteIsActive,
+//     activationMode,
+//   } = req.body;
+
+//   if (!Array.isArray(cabEmployeeGroups) || cabEmployeeGroups.length === 0)
+//     return next(new AppError(`Invalid or cabEmployeeGroups is empty`, 400));
+
+//   const baseDate = new Date(
+//     Date.UTC(
+//       new Date().getUTCFullYear(),
+//       new Date().getUTCMonth(),
+//       new Date().getUTCDate()
+//     )
+//   );
+//   const routesToCreate = [];
+
+//   for (const group of cabEmployeeGroups) {
+//     const { cab, passengers, availableCapacity } = group;
+
+//     for (let i = 0; i < daysRouteIsActive; i++) {
+//       const dateActive = new Date(baseDate);
+//       if (activationMode === "immediate") {
+//         dateActive.setUTCDate(baseDate.getUTCDate() + i);
+//         routesToCreate.push({
+//           cab,
+//           passengers,
+//           workLocation,
+//           currentShift,
+//           typeOfRoute,
+//           availableCapacity,
+//           daysRouteIsActive,
+//           activeOnDate: dateActive,
+//         });
+//       } else {
+//         dateActive.setUTCDate(baseDate.getUTCDate() + i + 1);
+//         routesToCreate.push({
+//           cab,
+//           passengers,
+//           workLocation,
+//           currentShift,
+//           typeOfRoute,
+//           availableCapacity,
+//           daysRouteIsActive,
+//           activeOnDate: dateActive,
+//         });
+//       }
+//     }
+//   }
+//   await Route.insertMany(routesToCreate);
+//   res.status(201).json({
+//     status: "Success",
+//     message: "Shifts confirmed and routes created successfully",
+//   });
+// });
+
 exports.createShiftKM = catchAsync(async (req, res, next) => {
   const present_day = new Date();
   present_day.setHours(0, 0, 0, 0);
+  let nextAvailableStartDate;
 
   const {
     workLocation,
@@ -276,9 +501,27 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
 
   const routes = await Route.find({});
   // CHECK FOR ACTIVE ROUTES
+  // if (routes.length >= 1) {
+  //   const active_routes = await getActiveRoutes(routes);
+  //   const check_active_routes = active_routes.find((route) => {
+  //     return (
+  //       route.workLocation === workLocation &&
+  //       route.currentShift === currentShift &&
+  //       route.typeOfRoute === typeOfRoute
+  //     );
+  //   });
+
+  //   if (check_active_routes)
+  //     return next(
+  //       new AppError(
+  //         `Team Members for this shift: ${currentShift} and work-loction: ${workLocation} are already rostered!`,
+  //         400
+  //       )
+  //     );
+  // }
   if (routes.length >= 1) {
     const active_routes = await getActiveRoutes(routes);
-    const check_active_routes = active_routes.find((route) => {
+    const filter_active_routes = active_routes.filter((route) => {
       return (
         route.workLocation === workLocation &&
         route.currentShift === currentShift &&
@@ -286,13 +529,14 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
       );
     });
 
-    if (check_active_routes)
-      return next(
-        new AppError(
-          `Team Members for this shift: ${currentShift} and work-loction: ${workLocation} are already rostered!`,
-          400
-        )
+    let latest_active_routes;
+    if (filter_active_routes.length != 0) {
+      latest_active_routes = filter_active_routes.sort(
+        (a, b) => b.activeOnDate - a.activeOnDate
       );
+      nextAvailableStartDate = new Date(latest_active_routes[0].activeOnDate);
+      nextAvailableStartDate.setDate(nextAvailableStartDate.getDate() + 1);
+    }
   }
 
   const numOfClusters = Math.ceil(employees.length / 6);
@@ -329,26 +573,26 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
           )
         );
 
-      const routes = await Route.find({});
-      // CHECK FOR ACTIVE ROUTES
-      if (routes.length >= 1) {
-        const active_routes = await getActiveRoutes(routes);
-        const check_active_routes = active_routes.find((route) => {
-          return (
-            route.workLocation === workLocation &&
-            route.currentShift === currentShift &&
-            route.typeOfRoute === typeOfRoute
-          );
-        });
+      // const routes = await Route.find({});
+      // // CHECK FOR ACTIVE ROUTES
+      // if (routes.length >= 1) {
+      //   const active_routes = await getActiveRoutes(routes);
+      //   const check_active_routes = active_routes.find((route) => {
+      //     return (
+      //       route.workLocation === workLocation &&
+      //       route.currentShift === currentShift &&
+      //       route.typeOfRoute === typeOfRoute
+      //     );
+      //   });
 
-        if (check_active_routes)
-          return next(
-            new AppError(
-              `Team Members for this shift: ${currentShift} and work-loction: ${workLocation} are already rostered!`,
-              400
-            )
-          );
-      }
+      //   if (check_active_routes)
+      //     return next(
+      //       new AppError(
+      //         `Team Members for this shift: ${currentShift} and work-loction: ${workLocation} are already rostered!`,
+      //         400
+      //       )
+      //     );
+      // }
 
       const cabs = await Cab.aggregate([
         {
@@ -382,8 +626,9 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
             end_date.setDate(route_created.getDate() + route.daysRouteIsActive);
             end_date.setHours(0, 0, 0, 0);
             if (
-              route_created.getTime() < present_day.getTime() &&
-              end_date.getTime() < present_day.getTime()
+              (route_created.getTime() < present_day.getTime() &&
+                end_date.getTime() < present_day.getTime()) ||
+              present_day.getTime() < nextAvailableStartDate?.getTime()
             )
               return null;
             return route;
@@ -408,6 +653,7 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
         typeOfRoute,
         daysRouteIsActive,
         activationMode,
+        nextAvailableStartDate,
       });
     }
   );
@@ -421,19 +667,31 @@ exports.createRoute = catchAsync(async (req, res, next) => {
     typeOfRoute,
     daysRouteIsActive,
     activationMode,
+    nextAvailableStartDate,
   } = req.body;
 
   if (!Array.isArray(cabEmployeeGroups) || cabEmployeeGroups.length === 0)
     return next(new AppError(`Invalid or cabEmployeeGroups is empty`, 400));
 
-  const baseDate = new Date(
-    Date.UTC(
-      new Date().getUTCFullYear(),
-      new Date().getUTCMonth(),
-      new Date().getUTCDate()
-    )
-  );
+  // const baseDate = new Date(
+  //   Date.UTC(
+  //     new Date().getUTCFullYear(),
+  //     new Date().getUTCMonth(),
+  //     new Date().getUTCDate()
+  //   )
+  // );
   const routesToCreate = [];
+  const baseDate = nextAvailableStartDate
+    ? new Date(nextAvailableStartDate)
+    : new Date(
+        Date.UTC(
+          new Date().getUTCFullYear(),
+          new Date().getUTCMonth(),
+          new Date().getUTCDate()
+        )
+      );
+
+  // console.log(baseDate);
 
   for (const group of cabEmployeeGroups) {
     const { cab, passengers, availableCapacity } = group;
@@ -536,7 +794,11 @@ exports.getTodayRoute = catchAsync(async (req, res, next) => {
     activeOnDate: {
       $eq: startDate,
     },
-  });
+  }).populate({
+    path: "cab",
+    populate: { path: "cabDriver" },
+  })
+  .populate("passengers");
   res
     .status(200)
     .json({ message: "Success", results: todayRoute.length, todayRoute });

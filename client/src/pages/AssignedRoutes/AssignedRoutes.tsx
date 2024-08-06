@@ -39,6 +39,8 @@ function AssignedRoutes() {
   const location = useLocation();
   const routeState = location.state;
 
+  console.log("ROUTE STATE ___> ",routeState)
+
   const [next, setNext] = useState(2);
   const [activeColumn, setActiveColumn] = useState<ShiftTypes | null>(null);
   const [activeTask, setActiveTask] = useState<EmployeeTypes | null>(null);

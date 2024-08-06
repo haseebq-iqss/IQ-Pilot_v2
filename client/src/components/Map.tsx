@@ -104,9 +104,9 @@ const MapComponent = ({
   useEffect(() => {
     if (userData?.role === "admin") {
       (async () => {
-        const res = await useAxios.get("/routes/activeRoutes");
-        setRawRouteData(res.data.data);
-        const groupedCoordinates = res.data.data
+        const res = await useAxios.get("/routes/todayRoute");
+        setRawRouteData(res.data.todayRoute);
+        const groupedCoordinates = res.data.todayRoute
           ?.map((route: RouteTypes) =>
             route.passengers?.map(
               (employee: any) => employee?.pickUp?.coordinates
