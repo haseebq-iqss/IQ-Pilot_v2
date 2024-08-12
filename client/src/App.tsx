@@ -13,6 +13,9 @@ import useAxios from "./api/useAxios";
 import { useNavigate } from "react-router-dom";
 import SelectedEmpsContext from "./context/SelectedEmpsContext";
 
+//@ts-ignore
+import { Analytics } from "@vercel/analytics/react"; // Vercel Analytics Import
+
 function App() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState<EmployeeTypes>();
@@ -37,7 +40,7 @@ function App() {
           let user: EmployeeTypes = res.data.data;
           setUserData(user);
           // if (res.data.currentUser?.role) {
-            // console.log(res.data)
+          // console.log(res.data)
           isBaseRoute && navigate(`/${user.role}`);
           // }
         })
