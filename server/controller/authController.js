@@ -130,6 +130,16 @@ const autologin = catchAsync(async (req, res, next) => {
   });
 });
 
+// update password
+const updatePassword = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user._id).select("+password");
+  if (!user) return new AppError(`No User found...`, 404);
+
+  user.password = req.body.password;
+  await user.save();
+  createSendToken(user, 200, res);
+});
+
 module.exports = {
   signup,
   login,
@@ -137,4 +147,5 @@ module.exports = {
   restrictTo,
   logout,
   autologin,
+  updatePassword,
 };
