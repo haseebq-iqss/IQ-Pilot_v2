@@ -2,6 +2,7 @@
 import {
   DeleteForever,
   EditLocation,
+  ExitToApp,
   MoreHoriz,
   Search,
   Visibility,
@@ -224,6 +225,27 @@ function AllTeamMembers() {
                           >
                             <EditLocation sx={{}} />
                             Edit Details
+                          </MenuItem>
+                          <Divider />
+                          <MenuItem
+                            sx={{
+                              ...RowFlex,
+                              color: !employee?.isCabCancelled
+                                ? "warning.light"
+                                : "success.main",
+                              fontWeight: 600,
+                              justifyContent: "flex-start",
+                              gap: "10px",
+                            }}
+                            onClick={() =>
+                              // navigate(`/admin/editDetails/${employee?._id}`)
+                              console.log(employee?._id, " is marked!")
+                            }
+                          >
+                            <ExitToApp sx={{}} />
+                            {employee?.isCabCancelled
+                              ? "Mark Present"
+                              : "Mark Absent"}
                           </MenuItem>
                           <Divider />
                           <MenuItem

@@ -44,7 +44,7 @@ type MapTypes = {
   highlightedEmployees?: [];
   clusterRadiusValue?: number;
   unrosteredTms?: [any];
-  visibleOffice?: "Both" | "Rangreth" | "Zaira Tower"
+  visibleOffice?: "All" | "Rangreth" | "Zaira Tower" | "Karanagar";
 };
 
 const MapComponent = ({
@@ -62,7 +62,7 @@ const MapComponent = ({
   highlightedEmployees = [],
   clusterRadiusValue = 75,
   unrosteredTms,
-  visibleOffice = "Both"
+  visibleOffice = "All",
 }: MapTypes) => {
   // const [driversPosition, setDriversPosition] = useState<any>();
 
@@ -85,6 +85,7 @@ const MapComponent = ({
 
   const rangreth = [33.996807, 74.79202];
   const zaira = [34.173415, 74.808653];
+  const karanagar = [34.081357, 74.799716];
 
   const generateDistinctColors = (count: number) => {
     const colors = [];
@@ -596,7 +597,7 @@ const MapComponent = ({
 
           // ---> PAID MAP TILES
           // url="https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // OPENCYCLE MAP STYLE      --- MOST BASIC
-          url="https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // TRANSPORT MAP STYLE     --- MOST CLEAN
+          url="https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c" // TRANSPORT MAP STYLE     --- MOST CLEAN
           // url="https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // LANDSCAPE STYLE
           // url="https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // OUTDOORS STYLE
           // url="https://tile.thunderforest.com/transport-dark/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // TRANSPORT DARK STYLE
@@ -773,7 +774,9 @@ const MapComponent = ({
           chunkedLoading
           animate
           spiderfyOnEveryZoom
-          disableClusteringAtZoom={(employees as [EmployeeTypes])?.length < 10 ? 0 : 16}
+          disableClusteringAtZoom={
+            (employees as [EmployeeTypes])?.length < 10 ? 0 : 16
+          }
           animateAddingMarkers
         >
           {employees &&
@@ -920,60 +923,97 @@ const MapComponent = ({
         {selectedEmps?.length && <RoutingMachine routes={[...selectedEmps]} />}
 
         {/* OFFICE ICONS */}
-        {visibleOffice === "Both" ? <><Marker
-          icon={officeIcon}
-          key={"rangrethOffice"}
-          position={rangreth as LatLngExpression}
-        >
-          <Tooltip
-            className="office-tooltip"
-            direction="top"
-            offset={[0, -40]}
-            permanent
+        {visibleOffice === "All" ? (
+          <>
+            <Marker
+              icon={officeIcon}
+              key={"rangrethOffice"}
+              position={rangreth as LatLngExpression}
+            >
+              <Tooltip
+                className="office-tooltip"
+                direction="top"
+                offset={[0, -40]}
+                permanent
+              >
+                <span>{"Rangreth Office"}</span>
+              </Tooltip>
+            </Marker>
+            <Marker
+              icon={officeIcon}
+              key={"zairaTowersOffice"}
+              position={zaira as LatLngExpression}
+            >
+              <Tooltip
+                className="office-tooltip"
+                direction="top"
+                offset={[0, -40]}
+                permanent
+              >
+                <span>{"Zaira Towers"}</span>
+              </Tooltip>
+            </Marker>
+            <Marker
+              icon={officeIcon}
+              key={"karanagarOffice"}
+              position={karanagar as LatLngExpression}
+            >
+              <Tooltip
+                className="office-tooltip"
+                direction="top"
+                offset={[0, -40]}
+                permanent
+              >
+                <span>{"Karanagar Office"}</span>
+              </Tooltip>
+            </Marker>
+          </>
+        ) : visibleOffice === "Rangreth" ? (
+          <Marker
+            icon={officeIcon}
+            key={"rangrethOffice"}
+            position={rangreth as LatLngExpression}
           >
-            <span>{"Rangreth Office"}</span>
-          </Tooltip>
-        </Marker>
-        <Marker
-          icon={officeIcon}
-          key={"zairaTowersOffice"}
-          position={zaira as LatLngExpression}
-        >
-          <Tooltip
-            className="office-tooltip"
-            direction="top"
-            offset={[0, -40]}
-            permanent
+            <Tooltip
+              className="office-tooltip"
+              direction="top"
+              offset={[0, -40]}
+              permanent
+            >
+              <span>{"Rangreth Office"}</span>
+            </Tooltip>
+          </Marker>
+        ) : visibleOffice === "Zaira Tower" ? (
+          <Marker
+            icon={officeIcon}
+            key={"zairaTowersOffice"}
+            position={zaira as LatLngExpression}
           >
-            <span>{"Zaira Towers"}</span>
-          </Tooltip>
-        </Marker></> : visibleOffice === "Rangreth" ? (<Marker
-          icon={officeIcon}
-          key={"rangrethOffice"}
-          position={rangreth as LatLngExpression}
-        >
-          <Tooltip
-            className="office-tooltip"
-            direction="top"
-            offset={[0, -40]}
-            permanent
+            <Tooltip
+              className="office-tooltip"
+              direction="top"
+              offset={[0, -40]}
+              permanent
+            >
+              <span>{"Zaira Towers"}</span>
+            </Tooltip>
+          </Marker>
+        ) : (
+          <Marker
+            icon={officeIcon}
+            key={"karanagarOffice"}
+            position={karanagar as LatLngExpression}
           >
-            <span>{"Rangreth Office"}</span>
-          </Tooltip>
-        </Marker>) : <Marker
-          icon={officeIcon}
-          key={"zairaTowersOffice"}
-          position={zaira as LatLngExpression}
-        >
-          <Tooltip
-            className="office-tooltip"
-            direction="top"
-            offset={[0, -40]}
-            permanent
-          >
-            <span>{"Zaira Towers"}</span>
-          </Tooltip>
-        </Marker>}
+            <Tooltip
+              className="office-tooltip"
+              direction="top"
+              offset={[0, -40]}
+              permanent
+            >
+              <span>{"Karanagar Office"}</span>
+            </Tooltip>
+          </Marker>
+        )}
       </MapContainer>
     </div>
   );

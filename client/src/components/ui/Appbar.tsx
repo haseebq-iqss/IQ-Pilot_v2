@@ -93,7 +93,7 @@ function Appbar() {
       (cab: any) => !cab.occupiedShifts.includes(currentShift)
     );
     setAvailableCabsOnShift(availableCabs);
-    console.log(availableCabs);
+    // console.log(availableCabs);
   };
 
   useEffect(() => {
@@ -247,7 +247,7 @@ function Appbar() {
                       // console.log(driver);
                       return (
                         <MenuItem
-                          key={driver?.cabDriver?._id}
+                          key={driver?.cabDriver?.[0]._id}
                           value={driver as any}
                         >
                           {(driver?.cabDriver[0] as EmployeeTypes)?.fname +

@@ -17,6 +17,16 @@ import SnackbarContext from "../../context/SnackbarContext";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 import GlobalModal from "./Modal";
+import {
+  DarkMode,
+  EmojiTransportation,
+  Hail,
+  Home,
+  LightMode,
+  ScheduleSend,
+  Send,
+  Timelapse,
+} from "@mui/icons-material";
 
 type CreateShiftModalProps = {
   openModal: boolean;
@@ -34,6 +44,19 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
   const [artificialDelay, setArtificialDelay] = useState<boolean>(false);
 
   const navigate = useNavigate();
+
+  const pickupTimings = [
+    { t4Time: "10:00", t2Time: "10:00 AM" },
+    { t4Time: "14:00", t2Time: "02:00 PM" },
+    { t4Time: "16:00", t2Time: "04:00 PM" },
+  ];
+
+  const dropTimings = [
+    { t4Time: "18:00", t2Time: "06:00 PM" },
+    { t4Time: "20:30", t2Time: "08:30 PM" },
+    { t4Time: "23:00", t2Time: "11:00 PM" },
+    { t4Time: "01:00", t2Time: "01:00 AM" },
+  ];
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
@@ -129,8 +152,30 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
                 label="Pickup or Drop"
                 onChange={(e: any) => settypeOfRoute(e.target.value)}
               >
-                <MenuItem value="pickup">Pickup</MenuItem>
-                <MenuItem value="drop">Drop</MenuItem>
+                <MenuItem
+                  value={"pickup"}
+                  sx={{
+                    ...RowFlex,
+                    pl: 2.5,
+                    fontWeight: 600,
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <Hail sx={{ mr: 1 }} />
+                  Pickup
+                </MenuItem>
+                <MenuItem
+                  value={"drop"}
+                  sx={{
+                    ...RowFlex,
+                    pl: 2.5,
+                    fontWeight: 600,
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <Home sx={{ mr: 1 }} />
+                  Drop
+                </MenuItem>
               </Select>
             </FormControl>
 
@@ -143,8 +188,42 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
                 label="workLocation"
                 onChange={(e) => setworkLocation(e.target.value)}
               >
-                <MenuItem value="Zaira Tower">Zaira Tower</MenuItem>
-                <MenuItem value="Rangreth">Rangreth</MenuItem>
+                <MenuItem
+                  value={"Zaira Tower"}
+                  sx={{
+                    ...RowFlex,
+                    pl: 2.5,
+                    fontWeight: 600,
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <EmojiTransportation sx={{ mr: 1 }} />
+                  Zaira Tower
+                </MenuItem>
+                <MenuItem
+                  value={"Rangreth"}
+                  sx={{
+                    ...RowFlex,
+                    pl: 2.5,
+                    fontWeight: 600,
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <EmojiTransportation sx={{ mr: 1 }} />
+                  Rangreth
+                </MenuItem>
+                <MenuItem
+                  value={"Karanagar"}
+                  sx={{
+                    ...RowFlex,
+                    pl: 2.5,
+                    fontWeight: 600,
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <EmojiTransportation sx={{ mr: 1 }} />
+                  Karanagar
+                </MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -168,12 +247,29 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
                 label="Shift currentShift"
                 onChange={(e) => setcurrentShift(e.target.value)}
               >
-                <MenuItem value="14:00-20:30">02.00PM - 08.30PM</MenuItem>
-                <MenuItem value="14:00-18:00">02:00PM - 06:00PM</MenuItem>
-                <MenuItem value="14:00-23:00">02.00PM - 11.00PM</MenuItem>
-                <MenuItem value="16:00-20:30">04.00PM - 08.30PM</MenuItem>
-                <MenuItem value="16:00-01:00">04.00PM - 01.00AM</MenuItem>
-                <MenuItem value="12:30-20:30">12:30PM - 08:30PM</MenuItem>
+                {typeOfRoute === "pickup"
+                  ? pickupTimings.map((time: any) => {
+                      return (
+                        <MenuItem
+                          value={time?.t4Time}
+                          sx={{ ...RowFlex, pl: 2.5, fontWeight: 600 }}
+                        >
+                          <LightMode sx={{ mr: 1 }} />
+                          {time.t2Time}
+                        </MenuItem>
+                      );
+                    })
+                  : dropTimings.map((time: any) => {
+                      return (
+                        <MenuItem
+                          value={time?.t4Time}
+                          sx={{ ...RowFlex, pl: 2.5, fontWeight: 600 }}
+                        >
+                          <DarkMode sx={{ mr: 1 }} />
+                          {time.t2Time}
+                        </MenuItem>
+                      );
+                    })}
               </Select>
             </FormControl>
 
@@ -186,10 +282,28 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
                 label="central-point-label"
                 onChange={(e) => setActivationMode(e.target.value)}
               >
-                <MenuItem value={"immediate"}>
+                <MenuItem
+                  value={"immediate"}
+                  sx={{
+                    ...RowFlex,
+                    pl: 2.5,
+                    fontWeight: 600,
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <Send sx={{ mr: 1 }} />
                   Immediate (Shift will activate right now)
                 </MenuItem>
-                <MenuItem value={"next-day"}>
+                <MenuItem
+                  value={"next-day"}
+                  sx={{
+                    ...RowFlex,
+                    pl: 2.5,
+                    fontWeight: 600,
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <ScheduleSend sx={{ mr: 1 }} />
                   Next Day (Shift will activate on the next day's start)
                 </MenuItem>
               </Select>
@@ -203,13 +317,22 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
                 label="Active For Days"
                 onChange={(e: any) => setActiveDays(e.target.value)}
               >
-                <MenuItem value="1">1 Day</MenuItem>
-                <MenuItem value="2">2 Days</MenuItem>
-                <MenuItem value="3">3 Days</MenuItem>
-                <MenuItem value="4">4 Days</MenuItem>
-                <MenuItem value="5">5 Days</MenuItem>
-                <MenuItem value="6">6 Days</MenuItem>
-                <MenuItem value="7">7 Days</MenuItem>
+                {Array.from({ length: 7 }).map((_, index: any) => {
+                  return (
+                    <MenuItem
+                      value={index + 1}
+                      sx={{
+                        ...RowFlex,
+                        pl: 2.5,
+                        fontWeight: 600,
+                        justifyContent: "flex-start",
+                      }}
+                    >
+                      <Timelapse sx={{ mr: 1 }} />
+                      {index + 1}
+                    </MenuItem>
+                  );
+                })}
               </Select>
             </FormControl>
           </Box>
