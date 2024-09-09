@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
 const AppError = require("../utils/appError");
 const Cab = require("../models/cab");
-const { json } = require("express");
 
 const signingFunction = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -19,7 +18,7 @@ const createSendToken = function (user, statusCode, res) {
       Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    secure: true,
+    secure: false,
     sameSite: "none",
   };
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
@@ -131,6 +130,16 @@ const autologin = catchAsync(async (req, res, next) => {
   });
 });
 
+// update password
+const updatePassword = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user._id).select("+password");
+  if (!user) return new AppError(`No User found...`, 404);
+
+  user.password = req.body.password;
+  await user.save();
+  createSendToken(user, 200, res);
+});
+
 module.exports = {
   signup,
   login,
@@ -138,4 +147,5 @@ module.exports = {
   restrictTo,
   logout,
   autologin,
+  updatePassword,
 };
