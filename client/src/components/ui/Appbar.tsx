@@ -1,11 +1,18 @@
 import {
   AddCircleOutline,
   ArrowForward,
+  DarkMode,
+  EmojiTransportation,
+  Hail,
+  Home,
+  LightMode,
   Notifications,
   Route,
   Settings,
+  Timelapse,
 } from "@mui/icons-material";
 import {
+  Avatar,
   Box,
   Button,
   FormControl,
@@ -24,6 +31,7 @@ import GlobalModal from "./Modal";
 import useAxios from "../../api/useAxios";
 import { CreateShiftModal } from "./CreateShiftModal";
 import Cabtypes from "./../../types/CabTypes";
+import baseURL from "../../utils/baseURL";
 
 function Appbar() {
   const navigate = useNavigate();
@@ -49,16 +57,21 @@ function Appbar() {
     },
   });
 
+  const pickupTimings = [
+    { t4Time: "10:00", t2Time: "10:00 AM" },
+    { t4Time: "14:00", t2Time: "02:00 PM" },
+    { t4Time: "16:00", t2Time: "04:00 PM" },
+  ];
+
+  const dropTimings = [
+    { t4Time: "18:00", t2Time: "06:00 PM" },
+    { t4Time: "20:30", t2Time: "08:30 PM" },
+    { t4Time: "23:00", t2Time: "11:00 PM" },
+    { t4Time: "01:00", t2Time: "01:00 AM" },
+  ];
+
   const [currentShift, setcurrentShift] = useState("");
   const [activeDays, setActiveDays] = useState<number>(1);
-
-  const handlePickupOrDropChange = (event: any) => {
-    setRouteType(event.target.value);
-  };
-
-  const handleOfficeLocationChange = (event: any) => {
-    setOffice(event.target.value);
-  };
 
   const handleSelectDriver = (event: any) => {
     console.log(event.target.value);
@@ -137,7 +150,6 @@ function Appbar() {
               gap: "15px",
             }}
           >
-            {/* Shift time and date*/}
             <Box
               sx={{
                 ...RowFlex,
@@ -146,6 +158,112 @@ function Appbar() {
                 gap: "15px",
               }}
             >
+              {/* Route Type */}
+              <FormControl sx={{ width: "50%" }}>
+                <InputLabel id="pickup-or-drop-label">Shift Type</InputLabel>
+                <Select
+                  labelId="pickup-or-drop-label"
+                  id="pickup-or-drop"
+                  value={routeType}
+                  label="Pickup or Drop"
+                  onChange={(e: any) => setRouteType(e.target.value)}
+                >
+                  <MenuItem
+                    value={"pickup"}
+                    sx={{
+                      ...RowFlex,
+                      pl: 2.5,
+                      fontWeight: 600,
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    <Hail sx={{ mr: 1 }} />
+                    Pickup
+                  </MenuItem>
+                  <MenuItem
+                    value={"drop"}
+                    sx={{
+                      ...RowFlex,
+                      pl: 2.5,
+                      fontWeight: 600,
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    <Home sx={{ mr: 1 }} />
+                    Drop
+                  </MenuItem>
+                </Select>
+              </FormControl>
+              {/* Work Locations */}
+              <FormControl sx={{ width: "50%" }}>
+                <InputLabel id="office-label">Work Location</InputLabel>
+                <Select
+                  labelId="office-label"
+                  id="office"
+                  value={office}
+                  label="workLocation"
+                  onChange={(e) => setOffice(e.target.value)}
+                >
+                  <MenuItem
+                    value={"Zaira Tower"}
+                    sx={{
+                      ...RowFlex,
+                      pl: 2.5,
+                      fontWeight: 600,
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    <EmojiTransportation sx={{ mr: 1 }} />
+                    Zaira Tower
+                  </MenuItem>
+                  <MenuItem
+                    value={"Rangreth"}
+                    sx={{
+                      ...RowFlex,
+                      pl: 2.5,
+                      fontWeight: 600,
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    <EmojiTransportation sx={{ mr: 1 }} />
+                    Rangreth
+                  </MenuItem>
+                  <MenuItem
+                    value={"Karanagar"}
+                    sx={{
+                      ...RowFlex,
+                      pl: 2.5,
+                      fontWeight: 600,
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    <EmojiTransportation sx={{ mr: 1 }} />
+                    Karanagar
+                  </MenuItem>
+                  <MenuItem
+                    value={"Zirakpur"}
+                    sx={{
+                      ...RowFlex,
+                      pl: 2.5,
+                      fontWeight: 600,
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    <EmojiTransportation sx={{ mr: 1 }} />
+                    Zirakpur
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+            <Box
+              sx={{
+                ...RowFlex,
+                width: "100%",
+                justifyContent: "space-between",
+                gap: "15px",
+              }}
+            >
+              {/* Current Shift*/}
               <FormControl sx={{ width: "50%" }}>
                 <InputLabel id="shift-currentShift-label">
                   Current Shift
@@ -157,14 +275,32 @@ function Appbar() {
                   label="Shift currentShift"
                   onChange={(e) => setcurrentShift(e.target.value)}
                 >
-                  <MenuItem value="14:00-20:30">02.00PM - 08.30PM</MenuItem>
-                  <MenuItem value="14:00-18:00">02:00PM - 06:00PM</MenuItem>
-                  <MenuItem value="14:00-23:00">02.00PM - 11.00PM</MenuItem>
-                  <MenuItem value="16:00-20:30">04.00PM - 08.30PM</MenuItem>
-                  <MenuItem value="16:00-01:00">04.00PM - 01.00AM</MenuItem>
-                  <MenuItem value="12:30-20:30">12:30PM - 08:30PM</MenuItem>
+                  {routeType === "pickup"
+                    ? pickupTimings.map((time: any) => {
+                        return (
+                          <MenuItem
+                            value={time?.t4Time}
+                            sx={{ ...RowFlex, pl: 2.5, fontWeight: 600 }}
+                          >
+                            <LightMode sx={{ mr: 1 }} />
+                            {time.t2Time}
+                          </MenuItem>
+                        );
+                      })
+                    : dropTimings.map((time: any) => {
+                        return (
+                          <MenuItem
+                            value={time?.t4Time}
+                            sx={{ ...RowFlex, pl: 2.5, fontWeight: 600 }}
+                          >
+                            <DarkMode sx={{ mr: 1 }} />
+                            {time.t2Time}
+                          </MenuItem>
+                        );
+                      })}
                 </Select>
               </FormControl>
+              {/* Active for days */}
               <FormControl sx={{ width: "50%" }}>
                 <InputLabel id="pickup-or-drop-label">
                   Active for Days
@@ -176,54 +312,26 @@ function Appbar() {
                   label="Active For Days"
                   onChange={(e: any) => setActiveDays(e.target.value)}
                 >
-                  <MenuItem value="1">1</MenuItem>
-                  <MenuItem value="2">2</MenuItem>
-                  <MenuItem value="3">3</MenuItem>
-                  <MenuItem value="4">4</MenuItem>
-                  <MenuItem value="5">5</MenuItem>
-                  <MenuItem value="6">6</MenuItem>
-                  <MenuItem value="7">7</MenuItem>
+                  {Array.from({ length: 7 }).map((_, index: any) => {
+                    return (
+                      <MenuItem
+                        value={index + 1}
+                        sx={{
+                          ...RowFlex,
+                          pl: 2.5,
+                          fontWeight: 600,
+                          justifyContent: "flex-start",
+                        }}
+                      >
+                        <Timelapse sx={{ mr: 1 }} />
+                        {index + 1}
+                      </MenuItem>
+                    );
+                  })}
                 </Select>
               </FormControl>
             </Box>
-            <Box
-              sx={{
-                ...RowFlex,
-                width: "100%",
-                justifyContent: "space-between",
-                gap: "15px",
-              }}
-            >
-              <FormControl sx={{ width: "50%" }}>
-                <InputLabel id="pickup-or-drop-label">
-                  Pickup or Drop
-                </InputLabel>
-                <Select
-                  labelId="pickup-or-drop-label"
-                  id="pickup-or-drop"
-                  value={routeType}
-                  label="Pickup or Drop"
-                  onChange={handlePickupOrDropChange}
-                >
-                  <MenuItem value="pickup">Pickup</MenuItem>
-                  <MenuItem value="drop">Drop</MenuItem>
-                </Select>
-              </FormControl>
 
-              <FormControl sx={{ width: "50%" }}>
-                <InputLabel id="office-label">Location</InputLabel>
-                <Select
-                  labelId="office-label"
-                  id="office"
-                  value={office}
-                  label="Location"
-                  onChange={handleOfficeLocationChange}
-                >
-                  <MenuItem value="Zaira Tower">Zaira Tower</MenuItem>
-                  <MenuItem value="Rangreth">Rangreth</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
             <Box
               sx={{
                 ...RowFlex,
@@ -250,6 +358,14 @@ function Appbar() {
                           key={driver?.cabDriver?.[0]._id}
                           value={driver as any}
                         >
+                          <Avatar
+                            sx={{ width: 30, height: 30, m: 1 }}
+                            src={
+                              (baseURL +
+                                (driver?.cabDriver[0] as EmployeeTypes)
+                                  ?.profilePicture) as string
+                            }
+                          />
                           {(driver?.cabDriver[0] as EmployeeTypes)?.fname +
                             " " +
                             (driver?.cabDriver[0] as EmployeeTypes)?.lname}

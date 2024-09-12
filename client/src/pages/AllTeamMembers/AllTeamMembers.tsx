@@ -23,7 +23,7 @@ import {
   TableRow,
   TextField,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import PageContainer from "../../components/ui/PageContainer";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import baseURL from "../../utils/baseURL";
@@ -31,12 +31,17 @@ import { RowFlex } from "../../style_extentions/Flex";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
 import { useNavigate } from "react-router-dom";
+import { QueryClient } from "@tanstack/react-query";
+import { SnackBarContextTypes } from "../../types/SnackbarTypes";
+import SnackbarContext from "../../context/SnackbarContext";
 
 function AllTeamMembers() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [searchtext, setSearchText] = useState("");
   const [cabNumersArray, setCabNumersArray] = useState<Array<string>>([]);
+
+  const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
   const GetAllTeamMembersQF = () => {
     return useAxios.get("/users/tms");
@@ -50,6 +55,22 @@ function AllTeamMembers() {
     },
   });
 
+  // Mark TM Absent
+  const { status, mutate: MarkAsAbsent, data } = useMutation({
+    mutationFn: (uid: string) => {
+      return useAxios.patch(`/users/cancel-cab/${uid}`);
+    },
+    onSuccess: (data) => {
+      setOpenSnack({
+        open:true,
+        message: `TM marked absent ${data.data.data.isCabCancelled ? "absent" : "present"} successfully`,
+        severity: !data.data.data.isCabCancelled ? "info" : "warning",
+      });
+      qc.invalidateQueries({ queryKey: ["all-teamMembers"] })
+      handleMenuClose()
+    },
+  });
+
   const filteredTeamMembers = teamMemberData?.filter(
     (teamMember: EmployeeTypes) => {
       return (
@@ -58,6 +79,7 @@ function AllTeamMembers() {
       );
     }
   );
+
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
@@ -239,7 +261,8 @@ function AllTeamMembers() {
                             }}
                             onClick={() =>
                               // navigate(`/admin/editDetails/${employee?._id}`)
-                              console.log(employee?._id, " is marked!")
+                              // console.log(employee?._id, " is marked!")
+                              MarkAsAbsent(employee?._id as string)
                             }
                           >
                             <ExitToApp sx={{}} />

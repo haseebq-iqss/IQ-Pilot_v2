@@ -86,6 +86,7 @@ const MapComponent = ({
   const rangreth = [33.996807, 74.79202];
   const zaira = [34.173415, 74.808653];
   const karanagar = [34.081357, 74.799716];
+  const zirakpur = [30.633014690428567, 76.8251843278478];
 
   const generateDistinctColors = (count: number) => {
     const colors = [];
@@ -966,6 +967,20 @@ const MapComponent = ({
                 permanent
               >
                 <span>{"Karanagar Office"}</span>
+              </Tooltip>
+            </Marker>
+            <Marker
+              icon={officeIcon}
+              key={"zirakpurOffice"}
+              position={zirakpur as LatLngExpression}
+            >
+              <Tooltip
+                className="office-tooltip"
+                direction="top"
+                offset={[0, -40]}
+                permanent
+              >
+                <span>{"Zirakpur Office"}</span>
               </Tooltip>
             </Marker>
           </>
