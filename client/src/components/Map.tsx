@@ -636,7 +636,8 @@ const MapComponent = ({
           !Number.isNaN(animatedDriverOnFocus[0]) && (
             <Marker
               icon={cabIcon}
-              position={animatedDriverOnFocus as LatLngExpression}
+              // position={animatedDriverOnFocus as LatLngExpression}  REMOVED DUE TO MISBEHAVIOUR AT VARYING SPEEDS.
+              position={driverOnFocus as LatLngExpression}
             >
               <Tooltip
                 className="driver-tooltip"
