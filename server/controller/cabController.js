@@ -62,12 +62,15 @@ exports.getEmployeeCab = catchAsync(async (req, res, next) => {
   if (!employee)
     return next(new AppError(`No employee with this id:${emp_id}`, 404));
 
+  const [emp_start_time, emp_end_time] = employee.currentShift.split("-");
+
   const routes = await Route.find({
     workLocation: employee.workLocation,
-    currentShift: employee.currentShift,
+    $or: [
+      { currentShift: emp_start_time, typeOfRoute: "pickup" },
+      { currentShift: emp_end_time, typeOfRoute: "drop" },
+    ],
   });
-
-  // console.log(routes);
 
   const active_routes = await getActiveRoutes(routes);
 
@@ -145,7 +148,7 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
 
   // NOT TO CONSIDER NON-ACTIVE ROUTES ASSIGNED TO CABS(FILTERING OF CABS)
   const present_day = new Date();
-  present_day.setHours(0, 0, 0, 0);
+  present_day.setUTCHours(0, 0, 0, 0);
   for (const cab of cabs) {
     cab.routes = cab.routes.filter((route) => {
       return (
