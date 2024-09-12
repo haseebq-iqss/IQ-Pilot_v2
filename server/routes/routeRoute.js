@@ -21,7 +21,7 @@ const { protect, restrictTo } = require("../controller/authController");
 router.use(protect);
 
 router.route("/").post(restrictTo("admin"), createRoute).get(getRoutes);
-router.route("/shifts").post(createShift);
+// router.route("/shifts").post(createShift);
 router.route("/createShiftK-Means").post(createShiftKM);
 
 router.route("/totalDistanceMonth").get(totalDistanceMonth);

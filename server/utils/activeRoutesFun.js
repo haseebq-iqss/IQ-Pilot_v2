@@ -15,13 +15,18 @@
 
 // module.exports = getActiveRoutes;
 
-
-
 const getActiveRoutes = async (all_routes) => {
-  const present_day = new Date();
-  present_day.setHours(0, 0, 0, 0); // Set present day to midnight
+  const present_day = new Date(
+    Date.UTC(
+      new Date().getUTCFullYear(),
+      new Date().getUTCMonth(),
+      new Date().getUTCDate()
+    )
+  );
+  // present_day.setHours(0, 0, 0, 0); // Set present day to midnight
 
   const active_routes = all_routes.filter((route) => {
+    // console.log(route.activeOnDate, present_day);
     return route.activeOnDate >= present_day;
   });
 
