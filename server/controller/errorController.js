@@ -26,7 +26,7 @@ function handleDBValidationError(error) {
 }
 
 function sendProdError(err, res) {
-  // console.log(err);
+  console.log(err);
   if (err.isOperational) {
     return res.status(err.statusCode).json({
       status: err.status,
