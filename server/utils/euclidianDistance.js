@@ -6,7 +6,7 @@ function euclidian_distance(point1, point2) {
 
 function squaredDistance(point1, point2) {
   return point1.reduce(
-    (sum, coord, idx) => sum + Math.pow(coord - point2[idx], 2),
+    (sum, value, index) => sum + Math.pow(value - point2[index], 2),
     0
   );
 }

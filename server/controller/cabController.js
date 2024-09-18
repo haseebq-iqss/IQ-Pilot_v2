@@ -146,16 +146,25 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
     },
   ]);
 
-  // NOT TO CONSIDER NON-ACTIVE ROUTES ASSIGNED TO CABS(FILTERING OF CABS)
-  const present_day = new Date();
-  present_day.setUTCHours(0, 0, 0, 0);
+  //Filter out non-active routes
+  const present_day = new Date(
+    Date.UTC(
+      new Date().getUTCFullYear(),
+      new Date().getUTCMonth(),
+      new Date().getUTCDate()
+    )
+  );
+
   for (const cab of cabs) {
     cab.routes = cab.routes.filter((route) => {
-      return (
-        route.activeOnDate.getDate() === present_day.getDate() + 1 &&
-        route.activeOnDate.getMonth() === present_day.getMonth() &&
-        route.activeOnDate.getFullYear() === present_day.getFullYear()
+      const routeDate = new Date(
+        Date.UTC(
+          route.activeOnDate.getUTCFullYear(),
+          route.activeOnDate.getUTCMonth(),
+          route.activeOnDate.getUTCDate()
+        )
       );
+      return routeDate.getTime() === present_day.getTime();
     });
   }
   const cabsShiftForCurrentDay = [];

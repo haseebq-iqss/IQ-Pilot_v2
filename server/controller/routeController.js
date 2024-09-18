@@ -7,18 +7,32 @@ const getActiveRoutes = require("../utils/activeRoutesFun");
 const shuffleArray = require("../utils/shuffleArray");
 const setMonthTimeLine = require("../utils/setMonthTimeLine");
 const kmeans = require("node-kmeans");
+const geolib = require("geolib");
 const {
   euclidian_distance,
   squaredDistance,
 } = require("../utils/euclidianDistance");
 
 function kmeansPlusPlusInitialization(data, k) {
+  // Edge Case: Check if data is empty
+  if (!data || data.length === 0) {
+    throw new Error("Data is empty. Cannot initialize centroids.");
+  }
+
+  // Edge Case: Check if k is greater than the number of data points
+  if (k > data.length) {
+    throw new Error(
+      "Number of centroids (k) cannot be greater than the number of data points."
+    );
+  }
+
   const centroids = [];
 
   // Choose the first centroid randomly
   centroids.push(data[Math.floor(Math.random() * data.length)]);
 
   for (let i = 1; i < k; i++) {
+    // Calculate distance from each point to the nearest centroid
     const distances = data.map((point) => {
       const minDistance = Math.min(
         ...centroids.map((centroid) => squaredDistance(point, centroid))
@@ -26,9 +40,25 @@ function kmeansPlusPlusInitialization(data, k) {
       return minDistance;
     });
 
+    // Handle Edge Case: If all points are identical
+    const uniqueDistances = new Set(distances);
+    if (uniqueDistances.size === 1) {
+      throw new Error(
+        "All data points are identical. Cannot properly initialize centroids."
+      );
+    }
+
+    // Normalize distances to get probabilities
     const sumDistances = distances.reduce((sum, distance) => sum + distance, 0);
+    if (sumDistances === 0) {
+      throw new Error(
+        "Sum of distances is zero. This might be due to identical data points."
+      );
+    }
+
     const probabilities = distances.map((distance) => distance / sumDistances);
 
+    // Select the next centroid based on the probabilities
     const randomValue = Math.random();
     let cumulativeProbability = 0;
     for (let j = 0; j < probabilities.length; j++) {
@@ -44,6 +74,11 @@ function kmeansPlusPlusInitialization(data, k) {
 }
 
 const assignCabToEmployees = async (currentShift, employees, cabs) => {
+  if (!employees.length || !cabs.length) {
+    console.log("No employees or cabs available for this shift.");
+    return [];
+  }
+
   const remaining_employees = [...employees];
   const groups = [];
   const shuffled_cabs = shuffleArray(cabs);
@@ -61,7 +96,13 @@ const assignCabToEmployees = async (currentShift, employees, cabs) => {
     const conflicting_routes = cab.routes.some(
       (route) => route.currentShift === currentShift
     );
-    if (conflicting_routes) continue;
+    // console.log(conflicting_routes);
+    if (conflicting_routes) {
+      console.log(
+        `Cab ${cab._id} already has a route for shift: ${currentShift}.`
+      );
+      continue;
+    }
 
     const group = {
       cab,
@@ -82,9 +123,10 @@ const assignCabToEmployees = async (currentShift, employees, cabs) => {
         i--;
       }
     }
-    groups.push(group);
+    if (group.passengers.length > 0) {
+      groups.push(group);
+    } else console.log(`No passengers assigned to cab ${cab._id}`);
   }
-
   return groups;
 };
 
@@ -97,6 +139,7 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
     )
   );
   let nextAvailableStartDate;
+  // const RADIUS = 1000;
 
   const {
     workLocation,
@@ -110,9 +153,10 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
     {
       $match: {
         workLocation,
+        isCabCancelled: { $eq: false },
         $expr: {
           $cond: {
-            if: { $eq: [typeOfRoute, "pickup"] }, // If "pickup", check start shift
+            if: { $eq: [typeOfRoute, "pickup"] },
             then: {
               $eq: [
                 { $arrayElemAt: [{ $split: ["$currentShift", "-"] }, 0] },
@@ -120,7 +164,6 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
               ],
             },
             else: {
-              // If "drop", check end shift
               $eq: [
                 { $arrayElemAt: [{ $split: ["$currentShift", "-"] }, 1] },
                 currentShift,
@@ -173,9 +216,31 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
     employeesPickUpCoordinates,
     { k: numOfClusters, initialize: initialCentroids },
     async (err, resClusters) => {
+      if (err) {
+        console.error("Clustering error: ", err);
+        return next(new AppError("Clustering error occurred", 500));
+      }
       let employeesSortedByPickCoords = [];
       for (const cluster of resClusters) {
         const clusterCentroid = cluster.centroid;
+        // const sortedCluster = cluster.clusterInd
+        //   .map((ind) => {
+        //     const employee = employees[ind];
+        //     const employeeCoords = employeesPickUpCoordinates[ind];
+        //     // console.log(clusterCentroid[1], clusterCentroid[0]);
+        //     const distance = geolib.getDistance(
+        //       { latitude: clusterCentroid[1], longitude: clusterCentroid[0] },
+        //       { latitude: employeeCoords[1], longitude: employeeCoords[0] }
+        //     );
+        //     // console.log(
+        //     //   `Distance from centroid to employee ${ind}: ${distance} meters`
+        //     // );
+        //     return { employee, distance };
+        //   })
+        //   .filter((entry) => entry.distance <= RADIUS)
+        //   .sort((a, b) => a.distance - b.distance)
+        //   .map((obj) => obj.employee);
+
         const sortedCluster = cluster.clusterInd
           .map((ind) => ({
             employee: employees[ind],
@@ -222,19 +287,25 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
       for (const cab of cabs) {
         cab.routes = cab.routes
           .map((route) => {
-            const route_created = new Date(route.createdAt);
-            route_created.setUTCHours(0, 0, 0, 0);
-
-            const end_date = new Date(route.createdAt);
-            end_date.setUTCDate(
-              route_created.getUTCDate() + route.daysRouteIsActive
+            const route_created = new Date(
+              Date.UTC(
+                route.createdAt.getUTCFullYear(),
+                route.createdAt.getUTCMonth(),
+                route.createdAt.getUTCDate()
+              )
             );
-            end_date.setUTCHours(0, 0, 0, 0);
+            const end_date = new Date(
+              Date.UTC(
+                route.createdAt.getUTCFullYear(),
+                route.createdAt.getUTCMonth(),
+                route.createdAt.getUTCDate() + route.daysRouteIsActive
+              )
+            );
             // check this condition
             if (
-              (route_created.getTime() < present_day.getTime() &&
-                end_date.getTime() < present_day.getTime()) ||
-              present_day.getTime() < nextAvailableStartDate?.getTime()
+              end_date.getTime() < present_day.getTime() ||
+              (nextAvailableStartDate &&
+                present_day.getTime() < nextAvailableStartDate.getTime())
             )
               return null;
             return route;
@@ -243,9 +314,7 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
       }
 
       const groups = await assignCabToEmployees(
-        // workLocation,
         currentShift,
-        // typeOfRoute,
         employeesSortedByPickCoords,
         cabs
       );
@@ -276,55 +345,71 @@ exports.createRoute = catchAsync(async (req, res, next) => {
     nextAvailableStartDate,
   } = req.body;
 
-  if (!Array.isArray(cabEmployeeGroups) || cabEmployeeGroups.length === 0)
-    return next(new AppError(`Invalid or cabEmployeeGroups is empty`, 400));
+  if (!Array.isArray(cabEmployeeGroups) || cabEmployeeGroups.length === 0) {
+    return next(new AppError(`Invalid or empty cabEmployeeGroups`, 400));
+  }
+
+  if (typeof daysRouteIsActive !== "number" || daysRouteIsActive <= 0) {
+    return next(
+      new AppError("daysRouteIsActive must be a positive number", 400)
+    );
+  }
+
+  let baseDate;
+  if (nextAvailableStartDate) {
+    const parsedDate = new Date(nextAvailableStartDate);
+    if (isNaN(parsedDate.getTime())) {
+      return next(new AppError("Invalid nextAvailableStartDate format", 400));
+    }
+
+    baseDate = new Date(
+      Date.UTC(
+        parsedDate.getUTCFullYear(),
+        parsedDate.getUTCMonth(),
+        parsedDate.getUTCDate()
+      )
+    );
+  } else {
+    baseDate = new Date(
+      Date.UTC(
+        new Date().getUTCFullYear(),
+        new Date().getUTCMonth(),
+        new Date().getUTCDate()
+      )
+    );
+  }
 
   const routesToCreate = [];
-  const baseDate = nextAvailableStartDate
-    ? new Date(nextAvailableStartDate)
-    : new Date(
-        Date.UTC(
-          new Date().getUTCFullYear(),
-          new Date().getUTCMonth(),
-          new Date().getUTCDate()
-        )
-      );
-
-  // console.log(baseDate);
 
   for (const group of cabEmployeeGroups) {
     const { cab, passengers, availableCapacity } = group;
 
+    if (!cab || !passengers || typeof availableCapacity !== "number") {
+      return next(new AppError(`Invalid data in cabEmployeeGroups`, 400));
+    }
+
     for (let i = 0; i < daysRouteIsActive; i++) {
       const dateActive = new Date(baseDate);
-      if (activationMode === "immediate") {
-        dateActive.setUTCDate(baseDate.getUTCDate() + i);
-        routesToCreate.push({
-          cab,
-          passengers,
-          workLocation,
-          currentShift,
-          typeOfRoute,
-          availableCapacity,
-          daysRouteIsActive,
-          activeOnDate: dateActive,
-        });
-      } else {
-        dateActive.setUTCDate(baseDate.getUTCDate() + i + 1);
-        routesToCreate.push({
-          cab,
-          passengers,
-          workLocation,
-          currentShift,
-          typeOfRoute,
-          availableCapacity,
-          daysRouteIsActive,
-          activeOnDate: dateActive,
-        });
-      }
+      dateActive.setUTCDate(
+        baseDate.getUTCDate() + (activationMode === "immediate" ? i : i + 1)
+      );
+
+      routesToCreate.push({
+        cab,
+        passengers,
+        workLocation,
+        currentShift,
+        typeOfRoute,
+        availableCapacity,
+        daysRouteIsActive,
+        activeOnDate: dateActive,
+      });
     }
   }
+
+  // Insert all routes at once
   await Route.insertMany(routesToCreate);
+
   res.status(201).json({
     status: "Success",
     message: "Shifts confirmed and routes created successfully",
