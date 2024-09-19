@@ -53,7 +53,9 @@ const DriverProfile = () => {
   });
 
   const { data: driverRoutes } = useQuery({
-    queryKey: [`${(driverDetails?.cabDriver as EmployeeTypes)?.fname} - driver-routes`],
+    queryKey: [
+      `${(driverDetails?.cabDriver as EmployeeTypes)?.fname} - driver-routes`,
+    ],
     queryFn: async () => {
       const response = await useAxios.get(
         `routes/driverRoutesMonth/${
@@ -392,7 +394,7 @@ const DriverProfile = () => {
                           }}
                         >
                           <AccessTime />
-                          {formatDateString(route?.createdAt)}
+                          {formatDateString(route?.activeOnDate)}
                         </Box>
                       </TableCell>
                       <TableCell sx={{ fontWeight: 600 }} align="center">

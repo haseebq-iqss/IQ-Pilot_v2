@@ -23,6 +23,7 @@ import Cabtypes from "../../types/CabTypes";
 export const AddTeamMembers = () => {
   const [department, setDepartment] = useState("");
   const [workLocation, setWorkLocation] = useState("");
+  const [androidSetup, setAndroidSetup] = useState(true);
 
   const navigate = useNavigate();
 
@@ -120,6 +121,7 @@ export const AddTeamMembers = () => {
       numberPlate: currentTarget.numberPlate.value,
       carModel: currentTarget.carModel.value,
       carColor: currentTarget.carColor.value,
+      androidSetup,
       role: "driver",
     };
 
@@ -475,6 +477,30 @@ export const AddTeamMembers = () => {
                   placeholder="Cab Number"
                   InputLabelProps={{ shrink: true }}
                 />
+                <FormControl fullWidth>
+                  <InputLabel
+                    sx={{ lineHeight: "10px", fontSize: "0.8rem" }}
+                    id="department-label"
+                  >
+                    Android Setup
+                  </InputLabel>
+
+                  <Select
+                    // size="small"
+                    sx={{ width: "100%" }}
+                    labelId="androidsetup"
+                    id="androidsetup"
+                    value={androidSetup}
+                    onChange={(e) => {
+                      setAndroidSetup(e.target.value);
+                      console.log(e.target.value);
+                    }}
+                    label="Android Device"
+                  >
+                    <MenuItem value={true}>Installed</MenuItem>
+                    <MenuItem value={false}>Not Installed</MenuItem>
+                  </Select>
+                </FormControl>
               </Box>
               <Box
                 sx={{

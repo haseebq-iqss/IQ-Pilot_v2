@@ -14,13 +14,13 @@ const socketServer = server.listen(PORT, () => {
 });
 
 const io = new Server(socketServer, {
+  pingTimeout: 60000,  // Wait for 60 seconds before timing out
+  pingInterval: 25000, // Send a ping every 25 seconds
   cors: {
-    // origin: ["http://localhost:5173", "https://ipvt.vercel.app", "https://6zkcx3p4-5173.inc1.devtunnels.ms", "http://iqpilot.s3-website.ap-south-1.amazonaws.com", "https://d1yv0plhtxvzs7.cloudfront.net", "https://iqpilot.iquasarsolutions.com", "https://iqpilot.iquasarsolutions.com/", "https://iqpilot.iquasarsolutions.com/socket.io"],
-    origin: "*"
+    // origin: ["https://localhost:5173", "https://ipvt.vercel.app", "https://6zkcx3p4-5173.inc1.devtunnels.ms"],
+    origin: true
   },
   // maxHttpBufferSize: 1e7, // Set maximum HTTP buffer size (10 MB in this example)
-  // pingInterval: 10000, // Set ping interval to 10 seconds
-  // pingTimeout: 5000, // Set ping timeout to 5 seconds
   // transports: ["websocket"], // Use WebSocket transport only
 });
 

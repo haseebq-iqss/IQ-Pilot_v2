@@ -59,6 +59,10 @@ function AdminDashboard() {
       const locations = data;
       extractDriverData(locations);
     });
+    socket.on('disconnect', () => {
+      console.log('Socket disconnected, attempting to reconnect...');
+      socket.connect();
+    });
   }, [socket]);
 
   // ALL ASSIGNED ROUTES

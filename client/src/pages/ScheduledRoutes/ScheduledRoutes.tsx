@@ -77,8 +77,8 @@ function ScheduledRoutes() {
 
   const [selectedRoutes, setSelectedRoutes] = useState<Array<RouteTypes>>();
 
-  const ExtractSelectedRouteTypes = (currentView:any) => {
-    console.log(tableDataView)
+  const ExtractSelectedRouteTypes = (currentView: any) => {
+    // console.log(tableDataView)
     if (currentView === "Active") {
       const filtered = routes?.filter((route: RouteTypes) => {
         return IsToday(route.activeOnDate as Date) === true;
@@ -213,7 +213,7 @@ function ScheduledRoutes() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {selectedRoutes?.length ?
+              {selectedRoutes?.length ? (
                 selectedRoutes?.map((route: any, index: number) => (
                   <TableRow
                     key={route._id}
@@ -236,7 +236,10 @@ function ScheduledRoutes() {
                         )}
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ fontWeight: 600, color:"primary.dark" }} align="left">
+                    <TableCell
+                      sx={{ fontWeight: 600, color: "primary.dark" }}
+                      align="left"
+                    >
                       {(selectedRoutes[index]?.cab as Cabtypes)?.cabNumber}
                     </TableCell>
                     <TableCell align="center">
@@ -259,7 +262,7 @@ function ScheduledRoutes() {
                       {(route.typeOfRoute?.charAt(0).toUpperCase() as string) +
                         route.typeOfRoute?.slice(1, 99)}
                     </TableCell>
-                    <TableCell align="center"  sx={{ fontWeight: 600 }}>
+                    <TableCell align="center" sx={{ fontWeight: 600 }}>
                       {route.workLocation}
                     </TableCell>
                     <TableCell sx={{ fontWeight: 600 }} align="center">
@@ -347,7 +350,16 @@ function ScheduledRoutes() {
                       </Menu>
                     </TableCell>
                   </TableRow>
-                )) : <Typography variant="h6" sx={{p:1, fontWeight:500}}>No {tableDataView} Routes Found 🤷‍♂️</Typography>}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell sx={{ border: 0 }}>
+                    <Typography variant="h6" sx={{ p: 1, fontWeight: 500 }}>
+                      No {tableDataView} Routes Found 🤷‍♂️
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </TableContainer>
