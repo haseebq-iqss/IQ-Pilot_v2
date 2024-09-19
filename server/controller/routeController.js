@@ -579,17 +579,39 @@ exports.driverRoute = catchAsync(async (req, res, next) => {
   if (cab_all_routes.length === 0)
     return next(new AppError(`No routes assigned to this cab: ${cab_id}`, 404));
 
-  const active_routes = await getActiveRoutes(cab_all_routes);
-  if (active_routes.length === 0)
+  const present_day = new Date(
+    Date.UTC(
+      new Date().getUTCFullYear(),
+      new Date().getUTCMonth(),
+      new Date().getUTCDate()
+    )
+  );
+
+  const todayRoutes = cab_all_routes.filter((route) => {
+    const routeDate = new Date(
+      Date.UTC(
+        route.activeOnDate.getUTCFullYear(),
+        route.activeOnDate.getUTCMonth(),
+        route.activeOnDate.getUTCDate()
+      )
+    );
+    return routeDate.getTime() === present_day.getTime();
+  });
+
+  if (todayRoutes.length === 0)
     return next(
-      new AppError(`No active routes assigned to this cab: ${cab_id}`, 404)
+      new AppError(`No routes assigned to this cab for today: ${cab_id}`, 404)
     );
 
-  active_routes.forEach((route) => {
-    if (route.typeOfRoute === "pickup" && route.routeStatus !== "completed")
+  todayRoutes.forEach((route) => {
+    if (route.typeOfRoute === "pickup" && route.routeStatus !== "completed") {
       pickArr.push(route);
-    else if (route.typeOfRoute === "drop" && route.routeStatus !== "completed")
+    } else if (
+      route.typeOfRoute === "drop" &&
+      route.routeStatus !== "completed"
+    ) {
       dropArr.push(route);
+    }
   });
 
   res.status(200).json({ status: "Success", data: { pickArr, dropArr } });
