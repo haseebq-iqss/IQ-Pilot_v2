@@ -36,7 +36,11 @@ import GetOfficeCoordinates from "../../utils/OfficeCoordinates";
 import EmployeeTypes from "./../../types/EmployeeTypes";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
 
-const socket = io(baseURL);
+const socket = io(baseURL, {
+  reconnection: true,
+  reconnectionAttempts: 10, // Retry 10 times before giving up
+  reconnectionDelay: 5000, // Wait 5 seconds between reconnection attempts
+});
 
 function EmployeeDashboard() {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
@@ -197,6 +201,10 @@ function EmployeeDashboard() {
       // console.log("Live Drivers ------->  ", data);
       // const locations = data;
       extractDriverData(data);
+    });
+    socket.on("disconnect", () => {
+      console.log("Socket disconnected, attempting to reconnect...");
+      socket.connect();
     });
   }, [socket, routeData]);
 
