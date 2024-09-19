@@ -32,6 +32,7 @@ import Cabtypes from "../../types/CabTypes";
 import baseURL from "../../utils/baseURL";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import { useNavigate } from "react-router-dom";
+import BigNumberFormatter from "../../utils/BigNumberFormatter";
 
 function AdminStatistics() {
   const navigate = useNavigate();
@@ -144,7 +145,10 @@ function AdminStatistics() {
           }}
         >
           <Box
-            sx={{ ...ColFlex, gap: "5px", cursor: "pointer" }}
+            title={
+              "Shrinkage is derived from the no. of absent TMs in comparison to the present no. of TMs in the month."
+            }
+            sx={{ ...ColFlex, gap: "5px" }}
             // onClick={() => {
             //   navigate("assignedRoutes", { state: allRoutes });
             // }}
@@ -173,9 +177,16 @@ function AdminStatistics() {
               Total Shrinkage
             </Typography>
           </Box>
-          <Box sx={{ ...ColFlex, gap: "5px" }}>
+          <Box
+            title={
+              "The cost of travel is calculated by multiplying the total kilometers covered by the cab driver with the cab fare per kilometer (10km / 15kmpl * 100) ."
+            }
+            sx={{ ...ColFlex, gap: "5px" }}
+          >
             <Typography sx={{ fontWeight: 600 }} variant="h4">
-              {((totalKilometers / 15) * 100).toFixed(0)}
+              {BigNumberFormatter(
+                ((totalKilometers / 15) * 100).toFixed(0) as unknown as number
+              )}
               <Box
                 component={"span"}
                 sx={{ fontSize: "1rem", color: "text.secondary" }}
@@ -197,9 +208,14 @@ function AdminStatistics() {
               Cost of Travel (Est.)
             </Typography>
           </Box>
-          <Box sx={{ ...ColFlex, gap: "5px" }}>
+          <Box
+            title={
+              "The total kilometers covered by all the cab drivers in the month."
+            }
+            sx={{ ...ColFlex, gap: "5px", "& > [title]:hover::after" : { color: "red" } }}
+          >
             <Typography sx={{ fontWeight: 600 }} variant="h4">
-              {totalKilometers}
+              {BigNumberFormatter(totalKilometers)}
               <Box
                 component={"span"}
                 sx={{ fontSize: "0.95rem", color: "text.secondary" }}
@@ -251,7 +267,7 @@ function AdminStatistics() {
             Active Drivers ({allCabs?.length})
           </Typography>
           <ToggleButtonGroup
-          size="small"
+            size="small"
             color="primary"
             value={dataView}
             exclusive
@@ -295,16 +311,16 @@ function AdminStatistics() {
                       (cab?.cabDriver as EmployeeTypes)?.profilePicture
                     })`,
                     backgroundSize: "cover",
-                    backgroundPosition:"center center",
-                    backgroundRepeat:"no-repeat",
-                    backgroundOrigin:"center",
+                    backgroundPosition: "center center",
+                    backgroundRepeat: "no-repeat",
+                    backgroundOrigin: "center",
                     ":hover": {
                       border: "10px solid white",
                       // backgroundSize: "110%",
                       transition: "all 0.3s",
                       // transition:"all 0.3 ease"
-                      },
-                      ":not(:hover)": {
+                    },
+                    ":not(:hover)": {
                       border: "0px solid white",
                       // backgroundSize: "cover",
                       transition: "all 0.15s",
@@ -388,58 +404,62 @@ function AdminStatistics() {
                             sx={{ cursor: "pointer" }}
                             onClick={(e: any) => handleMenuOpen(e, index)}
                           />
-                            <Menu
-                              key={driver?._id}
-                              elevation={1}
-                              anchorEl={anchorEl}
-                              open={menuIndex === index}
-                              onClose={handleMenuClose}
+                          <Menu
+                            key={driver?._id}
+                            elevation={1}
+                            anchorEl={anchorEl}
+                            open={menuIndex === index}
+                            onClose={handleMenuClose}
+                          >
+                            <MenuItem
+                              sx={{
+                                ...RowFlex,
+                                color: "info.main",
+                                fontWeight: 600,
+                                justifyContent: "flex-start",
+                                gap: "10px",
+                              }}
+                              onClick={() =>
+                                navigate(`/admin/driverProfile/${driver?._id}`)
+                              }
                             >
-                              <MenuItem
-                                sx={{
-                                  ...RowFlex,
-                                  color: "info.main",
-                                  fontWeight: 600,
-                                  justifyContent: "flex-start",
-                                  gap: "10px",
-                                }}
-                                onClick={() => navigate(`/admin/driverProfile/${driver?._id}`)}
-                              >
-                                <Visibility sx={{}} />
-                                View Details
-                              </MenuItem>
-                              <Divider />
-                              <MenuItem
-                                sx={{
-                                  ...RowFlex,
-                                  color: "warning.main",
-                                  fontWeight: 600,
-                                  justifyContent: "flex-start",
-                                  gap: "10px",
-                                }}
-                                onClick={() =>
-                                  navigate(
-                                    `/admin/editDetails/${(driver?.cabDriver as EmployeeTypes)?._id}`
-                                  )
-                                }
-                              >
-                                <EditLocation sx={{}} />
-                                Edit Details
-                              </MenuItem>
-                              <Divider />
-                              <MenuItem
-                                sx={{
-                                  ...RowFlex,
-                                  color: "error.main",
-                                  fontWeight: 600,
-                                  justifyContent: "flex-start",
-                                  gap: "10px",
-                                }}
-                              >
-                                <DeleteForever sx={{}} />
-                                Remove Driver
-                              </MenuItem>
-                            </Menu>
+                              <Visibility sx={{}} />
+                              View Details
+                            </MenuItem>
+                            <Divider />
+                            <MenuItem
+                              sx={{
+                                ...RowFlex,
+                                color: "warning.main",
+                                fontWeight: 600,
+                                justifyContent: "flex-start",
+                                gap: "10px",
+                              }}
+                              onClick={() =>
+                                navigate(
+                                  `/admin/editDetails/${
+                                    (driver?.cabDriver as EmployeeTypes)?._id
+                                  }`
+                                )
+                              }
+                            >
+                              <EditLocation sx={{}} />
+                              Edit Details
+                            </MenuItem>
+                            <Divider />
+                            <MenuItem
+                              sx={{
+                                ...RowFlex,
+                                color: "error.main",
+                                fontWeight: 600,
+                                justifyContent: "flex-start",
+                                gap: "10px",
+                              }}
+                            >
+                              <DeleteForever sx={{}} />
+                              Remove Driver
+                            </MenuItem>
+                          </Menu>
                         </TableCell>
                       </TableRow>
                     ))}

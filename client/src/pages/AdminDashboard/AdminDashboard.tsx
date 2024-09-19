@@ -20,6 +20,7 @@ function AdminDashboard() {
   const [SOSEmergency, setSOSEmergency] = useState<any>(null);
   const audioRef = useRef<any>();
   const navigate = useNavigate();
+
   // const emergencyAudio = new Audio(SOSAudio);
 
   // function extractLocations(input: any) {
@@ -42,6 +43,16 @@ function AdminDashboard() {
     setActiveDrivers(mapValues as any);
   };
 
+  const [counter, setCounter] = useState<number>(0);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCounter((prevCount) => prevCount + 1);
+    }, 3000);
+
+    // Clear the timer on component unmount
+    return () => clearInterval(timer);
+  }, []);
+
   useEffect(() => {
     socket.on("SOS", (data) => {
       console.log("SOS ------->  ", data);
@@ -51,7 +62,7 @@ function AdminDashboard() {
       // emergencyAudio?.play();
       // }
     });
-  }, [socket]);
+  }, [socket, counter]);
 
   useEffect(() => {
     socket.on("live-drivers", (data) => {
@@ -59,11 +70,11 @@ function AdminDashboard() {
       const locations = data;
       extractDriverData(locations);
     });
-    socket.on('disconnect', () => {
-      console.log('Socket disconnected, attempting to reconnect...');
+    socket.on("disconnect", () => {
+      console.log("Socket disconnected, attempting to reconnect...");
       socket.connect();
     });
-  }, [socket]);
+  }, [socket, counter]);
 
   // ALL ASSIGNED ROUTES
   const getAllAssignedRoutesQF = () => {

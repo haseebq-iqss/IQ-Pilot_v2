@@ -115,7 +115,7 @@ function EmployeeDashboard() {
     },
   });
 
-  // console.log(routeData)
+  // console.log("RD -> ", routeData?.workLocation)
 
   const cancelCabMF = () => {
     return useAxios.patch(`users/cancel-cab/${userData?._id}`);
@@ -196,6 +196,16 @@ function EmployeeDashboard() {
     // }
   };
 
+  const [counter, setCounter] = useState<number>(0);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCounter((prevCount) => prevCount + 1);
+    }, 3000);
+
+    // Clear the timer on component unmount
+    return () => clearInterval(timer);
+  }, []);
+
   useEffect(() => {
     socket.on("live-drivers", (data) => {
       // console.log("Live Drivers ------->  ", data);
@@ -206,7 +216,7 @@ function EmployeeDashboard() {
       console.log("Socket disconnected, attempting to reconnect...");
       socket.connect();
     });
-  }, [socket, routeData]);
+  }, [socket, routeData, counter]);
 
   return (
     <Box sx={{ ...PageFlex, height: "100vh" }}>
@@ -576,6 +586,7 @@ function EmployeeDashboard() {
         )}
       </Box>
       <MapComponent
+        visibleOffice={routeData?.workLocation}
         height="100%"
         mode="route-view"
         employees={routeData?.passengers as [EmployeeTypes]}
