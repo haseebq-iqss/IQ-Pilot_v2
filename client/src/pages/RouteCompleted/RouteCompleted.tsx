@@ -14,13 +14,14 @@ import RouteTypes from "../../types/RouteTypes";
 import baseURL from "../../utils/baseURL";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import { ColFlex, RowFlex } from "./../../style_extentions/Flex";
+import { useEffect, useState } from "react";
 
 function RouteCompleted() {
   const location = useLocation();
   const navigate = useNavigate();
   const route = location.state as RouteTypes;
 
-  console.log(route);
+  // console.log(route);
 
   const getAllDriverRoutes = () => {
     return useAxios.get(`attendances/route-attendance/${route?._id}`);
@@ -34,7 +35,19 @@ function RouteCompleted() {
     },
   });
 
-  // console.log(attendanceData);
+  function GetPresentPeople(attendanceData: any) {
+    return attendanceData.filter((person: any) => person.isPresent);
+  }
+
+  const [presentPeople, setPresentPeople] = useState<Array<EmployeeTypes>>([]);
+
+  useEffect(() => {
+    if (attendanceData?.length) {
+      setPresentPeople(GetPresentPeople(attendanceData));
+    }
+  }, [attendanceData]);
+
+  console.log(presentPeople)
 
   return (
     <Box
@@ -128,7 +141,7 @@ function RouteCompleted() {
           >
             <DoneAll />
             <Typography variant="h5">
-              {route?.passengers?.length + "/" + attendanceData?.length} Picked
+              {presentPeople?.length + "/" + attendanceData?.length} Picked
             </Typography>
           </Box>
         </Box>

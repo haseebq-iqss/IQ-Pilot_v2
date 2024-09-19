@@ -51,7 +51,7 @@ const createRoutineMachineLayer = ({ routes }: any) => {
       distanceInKilometers,
     };
 
-    console.log("new data ---> ", RMData);
+    // console.log("new data ---> ", RMData);
 
     // Resolve the current RMDataPromise with the latest RMData
     if (resolveRMData) {

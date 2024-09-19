@@ -38,6 +38,7 @@ import { ColFlex, RowFlex } from "./../../style_extentions/Flex";
 import useTimer from "../../hooks/useTimer";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import CalculateSpeed from "../../utils/CalculateSpeedByCoordinates";
+import isXSmall from "./../../utils/isXSmall";
 
 type modalPropTypes = {
   openModal: boolean;
@@ -102,14 +103,14 @@ function StartRoute() {
 
   useEffect(() => {
     if (myLocation.length == 2) {
-      console.log(myLocation);
+      // console.log(myLocation);
       const driverData = {
         name: userData?.fname + " " + userData?.lname[0] + ".",
         location: myLocation,
         speed: currSpeed,
       };
 
-      console.log(myLocation);
+      // console.log(myLocation);
 
       socket.emit("live-drivers", driverData);
     }
@@ -154,13 +155,13 @@ function StartRoute() {
 
   useEffect(() => {
     const passengersLLs = route?.passengers;
-    console.log(route);
+    // console.log(route);
 
     if (passengersLLs) {
       const passengersLatLons: string[] = passengersLLs.map(
         (passenger: any) => passenger.pickUp.coordinates
       );
-      console.log(passengersLatLons);
+      // console.log(passengersLatLons);
       // passengers?.workLocation
       setSelectedEmps([
         ...passengersLatLons,
@@ -194,7 +195,7 @@ function StartRoute() {
       openModal: true,
       currentPassenger: passenger,
     });
-    console.log("Modal Updated!");
+    // console.log("Modal Updated!");
   };
 
   const markAttendanceMF = (attendanceData: AttendanceTypes) => {
@@ -225,12 +226,12 @@ function StartRoute() {
       deleteItem("CurrentRoute");
       deleteItem("elapsedTime");
       deleteItem("markedPassengers");
-      console.log({
-        routeStatus: "completed",
-        estimatedTime: getElapsedTime()?.toFixed(3),
-        totalDistance: calculatedDistance?.toFixed(3),
-        cabPath: routePathArray,
-      });
+      // console.log({
+      //   routeStatus: "completed",
+      //   estimatedTime: getElapsedTime()?.toFixed(3),
+      //   totalDistance: calculatedDistance?.toFixed(3),
+      //   cabPath: routePathArray,
+      // });
       setOpenSnack({
         open: true,
         message: `Route successfully completed!`,
@@ -256,11 +257,11 @@ function StartRoute() {
   const [artificialDelay, setArtificialDelay] = useState<boolean>(false);
 
   function HandleCompleteRoute() {
-    console.log({
-      estimatedTime: getElapsedTime(),
-      totalDistance: calculatedDistance,
-      cabPath: routePathArray,
-    });
+    // console.log({
+    //   estimatedTime: getElapsedTime(),
+    //   totalDistance: calculatedDistance,
+    //   cabPath: routePathArray,
+    // });
     // alert(`time: ${getElapsedTime()}, dist: ${(calculatedDistance)?.toFixed(3)}, cabPath:${routePathArray}`)
     if (route?.passengers?.length <= markedPassengersArray.length) {
       setArtificialDelay(true);
@@ -268,7 +269,7 @@ function StartRoute() {
         UpdateRoute();
       }, 1000);
     } else {
-      console.log(markedPassengersArray);
+      // console.log(markedPassengersArray);
       setOpenSnack({
         open: true,
         message: "Please mark all passengers first!",
@@ -281,8 +282,8 @@ function StartRoute() {
       localStorage.getItem("markedPassengers");
     if (storedMarkedPassengersArray?.length) {
       setMarkedPassengersArray(JSON.parse(storedMarkedPassengersArray));
-      console.log(storedMarkedPassengersArray);
-      console.log(markedPassengersArray);
+      // console.log(storedMarkedPassengersArray);
+      // console.log(markedPassengersArray);
     }
   }, []);
 
@@ -325,8 +326,8 @@ function StartRoute() {
     // Pull RoutePath if exits already in LS
     const lastRoutePath = localStorage.getItem("CurrentRoute");
     if (lastRoutePath?.length) {
-      console.log("Previous Path exists");
-      console.log(JSON.parse(lastRoutePath));
+      // console.log("Previous Path exists");
+      // console.log(JSON.parse(lastRoutePath));
       setRoutePathArray(JSON.parse(lastRoutePath));
     }
   }, []);
@@ -355,7 +356,7 @@ function StartRoute() {
       ofRoute: route?._id as string,
       // Driver: route?.driver as any,
     };
-    console.log(attendanceData);
+    // console.log(attendanceData);
     markAttendance(attendanceData);
   }
 
@@ -413,7 +414,7 @@ function StartRoute() {
         if (UpdateRouteStatus !== "success") {
           localStorage.setItem("CurrentRoute", JSON.stringify(routePathArray));
         }
-        console.log(myLocation);
+        // console.log(myLocation);
       },
       () => {},
       { maximumAge: 0, enableHighAccuracy: false }
@@ -459,6 +460,8 @@ function StartRoute() {
     return totalDistance;
   };
 
+  const { isSM, isXS } = isXSmall();
+
   useEffect(() => {
     setCalculatedDistance(sumDistances(routePathArray));
   }, [routePathArray]);
@@ -466,7 +469,9 @@ function StartRoute() {
   return (
     <Box
       sx={{
-        ...ColFlex,
+        // ...ColFlex,
+        display: "flex",
+        flexDirection: isXS || isSM ? "column" : "row",
         width: "100%",
         minHeight: "100%",
         justifyContent: "flex-start",
@@ -615,52 +620,58 @@ function StartRoute() {
         }}
       />
 
-      <Box
-        sx={{
-          ...RowFlex,
-          width: "100%",
-          justifyContent: "space-between",
-          p: "15px",
-          backgroundColor: "text.primary",
-          color: "white",
-        }}
-      >
-        <Typography variant="h4" fontWeight={600}>
-          {/* {parseFloat(distTravelled) * 0.621371} */}
-          {calculatedDistance?.toFixed(3)}
-          <span style={{ fontSize: "1rem" }}>kms</span>
-        </Typography>
-        <Typography variant="h4" fontWeight={600}>
-          {getElapsedTime() < 60
-            ? getElapsedTime()
-            : (getElapsedTime() / 60).toFixed(2)}
-          <span style={{ fontSize: "1rem" }}>
-            {getElapsedTime() < 60 ? "mins" : "hr"}
-          </span>
-        </Typography>
+      <Box sx={{ ...ColFlex, width: "100%" }}>
+        <Box
+          sx={{
+            ...RowFlex,
+            // width: isXS || isSM ? "100%" : "70%",
+            width:"100%",
+            alignSelf:"self-start",
+            justifyContent: "space-between",
+            p: "15px",
+            backgroundColor: "text.primary",
+            color: "white",
+          }}
+        >
+          <Typography variant="h4" fontWeight={600}>
+            {/* {parseFloat(distTravelled) * 0.621371} */}
+            {calculatedDistance?.toFixed(3)}
+            <span style={{ fontSize: "1rem" }}>kms</span>
+          </Typography>
+          <Typography variant="h4" fontWeight={600}>
+            {getElapsedTime() < 60
+              ? getElapsedTime()
+              : (getElapsedTime() / 60).toFixed(2)}
+            <span style={{ fontSize: "1rem" }}>
+              {getElapsedTime() < 60 ? "mins" : "hr"}
+            </span>
+          </Typography>
+        </Box>
+        {/* MAP */}
+        <MapComponent
+          mode="route-view"
+          zoom={14}
+          routePathArray={routePathArray as []}
+          mode="route-view"
+          height={ isXS || isSM ? "50vh" : "75vh"}
+          employees={route?.passengers as [EmployeeTypes]}
+          driverOnFocus={myLocation as LatLngExpression}
+        />
       </Box>
-      {/* MAP */}
-      <MapComponent
-        mode="route-view"
-        zoom={14}
-        routePathArray={routePathArray as []}
-        mode="route-view"
-        height="50vh"
-        employees={route?.passengers as [EmployeeTypes]}
-        driverOnFocus={myLocation as LatLngExpression}
-      />
       {/* PASSENGER BOX */}
       <Box
         sx={{
           ...ColFlex,
-          width: "95%",
+          zIndex:999,
+          width: isXS || isSM ? "95%" : "90vh%",
+          height: isXS || isSM ? "auto" : "90vh",
           margin: "auto",
-          my: "15px",
+          my: "0px",
           padding: "15px",
           gap: "30px",
           color: "white",
           backgroundColor: "text.primary",
-          borderRadius: "15px",
+          borderRadius: isXS || isSM ? "15px" : 0,
         }}
       >
         <Button
