@@ -1,0 +1,24 @@
+{
+    "name": "Pilot v2",
+    "version": "2.0.0",
+    "short_name": "Pilot v2",
+    "description": "Route Planning App for optimizing industrial cost and travel operations efficiently.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#D9D9D9",
+    "theme_color": "#D9D9D9",
+    "icons": [
+      {
+        "src": "/images/icon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/images/icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "splash_pages": null
+  }
+  

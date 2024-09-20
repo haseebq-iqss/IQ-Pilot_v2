@@ -12,8 +12,12 @@ import GlobalSnackbar from "./components/ui/Snackbar";
 import useAxios from "./api/useAxios";
 import { useNavigate } from "react-router-dom";
 import SelectedEmpsContext from "./context/SelectedEmpsContext";
+import { registerServiceWorker } from "./serviceWorkerRegistration";
 
 function App() {
+
+  registerServiceWorker();
+
   const navigate = useNavigate();
   const [userData, setUserData] = useState<EmployeeTypes>();
   const [themeMode, setThemeMode] = useState<PaletteMode>("light");
