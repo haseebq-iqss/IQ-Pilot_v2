@@ -434,6 +434,7 @@ function AssignedRoutes() {
           flexDirection: "column",
           gap: "15px",
           backgroundColor: "background.default",
+          color:"text.primary"
         }}
       >
         <Box
@@ -445,6 +446,7 @@ function AssignedRoutes() {
             pt: "15px",
             justifyContent: "space-between",
             alignItems: "center",
+            color:"text.primary"
           }}
         >
           <Box
@@ -504,7 +506,7 @@ function AssignedRoutes() {
               sx={{
                 px: 5,
                 height: "50px",
-                bgcolor: "text.primary",
+                backgroundColor: "text.primary",
                 ...RowFlex,
                 gap: 2.5,
                 borderRadius: 1.5,
@@ -514,7 +516,7 @@ function AssignedRoutes() {
             >
               <Typography
                 variant="h5"
-                sx={{ fontStyle: "italic", fontWeight: "700", color:"text.primary" }}
+                sx={{ fontStyle: "italic", fontWeight: "700", color:"background.default" }}
               >
                 BACK
               </Typography>
