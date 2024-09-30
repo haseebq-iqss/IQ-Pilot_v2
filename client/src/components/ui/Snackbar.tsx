@@ -33,7 +33,7 @@ const GlobalSnackbar = ({
         })
       }
     >
-      <Alert severity={openSnack.severity || "info"} variant="filled">
+      <Alert sx={{color: "white"}} severity={openSnack.severity || "info"} variant="filled">
         {openSnack.message}
       </Alert>
     </Snackbar>

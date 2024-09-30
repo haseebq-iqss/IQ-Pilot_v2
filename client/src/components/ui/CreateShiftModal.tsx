@@ -354,7 +354,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               fontWeight: 500,
               ml: "auto",
               backgroundColor: "text.primary",
-              color:"text.primary",
+              color: "background.default",
               marginTop: 2.5,
               py: 1.5,
             }}

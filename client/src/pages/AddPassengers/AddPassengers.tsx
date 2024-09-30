@@ -293,7 +293,9 @@ function AddPassengers() {
         gap: "15px",
         p: "15px",
         height: "100vh",
-        backgroundColor: "#D9D9D9",
+        // backgroundColor: "#D9D9D9",
+        backgroundColor: "#64748B",
+        color: "background.default",
       }}
     >
       {/* LS */}
@@ -313,7 +315,13 @@ function AddPassengers() {
       >
         {/* L-1 */}
         <Box
-          sx={{ ...RowFlex, width: "100%", justifyContent: "space-between" }}
+          sx={{
+            ...RowFlex,
+            width: "100%",
+            justifyContent: "space-between",
+            backgroundColor: "background.default",
+            color: "text.primary",
+          }}
         >
           <Box
             sx={{ width: "100px", aspectRatio: 2.6863 }}
@@ -324,10 +332,10 @@ function AddPassengers() {
                 : "/images/drop-dark.png"
             }
           />
-          <Typography variant="body2" fontWeight={600} color={"GrayText"}>
+          <Typography variant="body2" fontWeight={600}  sx={{color:"text.secondary"}}>
             Shift time -{" "}
             <span
-              style={{ fontWeight: 600, fontSize: "1.75rem", color: "#212A3B" }}
+              style={{ fontWeight: 600, fontSize: "1.75rem", color: "text.primary" }}
             >
               {routeState?.currentShift !== undefined &&
                 ConvertShiftTimeTo12HrFormat(
@@ -369,8 +377,8 @@ function AddPassengers() {
                 width: "40%",
                 fontWeight: 600,
                 ml: "auto",
-                backgroundColor: "text.primary",
-                color:"text.primary",
+                backgroundColor: "primary.main",
+                color: "text.primary",
               }}
               onClick={handleClearFilterAndSearch}
               color="primary"
@@ -432,6 +440,8 @@ function AddPassengers() {
                     width: "80%",
                     justifyContent: "flex-start",
                     gap: "10px",
+                    backgroundColor: "background.default",
+                    color: "text.primary",
                   }}
                 >
                   <Avatar
@@ -472,7 +482,7 @@ function AddPassengers() {
                           p: 0.5,
                           width: "40px",
                           height: "40px",
-                          color:"text.primary",
+                          color: "text.primary",
                         }}
                       />
                     ) : (
@@ -484,7 +494,7 @@ function AddPassengers() {
                           p: 0.5,
                           width: "40px",
                           height: "40px",
-                          color:"text.primary",
+                          color: "text.primary",
                         }}
                       />
                     )}
@@ -548,9 +558,13 @@ function AddPassengers() {
             }}
           >
             <NavigationOutlined
-              sx={{ color:"text.primary", width: "30px", height: "30px" }}
+              sx={{ color: "text.primary", width: "30px", height: "30px" }}
             />
-            <Typography sx={{ color:"text.primary" }} variant="h5" fontWeight={600}>
+            <Typography
+              sx={{ color: "text.primary" }}
+              variant="h5"
+              fontWeight={600}
+            >
               {distNtime?.distanceInKilometers}{" "}
               <span style={{ fontWeight: 500 }}>kms</span>
             </Typography>
@@ -566,9 +580,13 @@ function AddPassengers() {
             }}
           >
             <AccessTimeOutlined
-              sx={{ color:"text.primary", width: "30px", height: "30px" }}
+              sx={{ color: "text.primary", width: "30px", height: "30px" }}
             />
-            <Typography sx={{ color:"text.primary" }} variant="h5" fontWeight={600}>
+            <Typography
+              sx={{ color: "text.primary" }}
+              variant="h5"
+              fontWeight={600}
+            >
               {distNtime?.totalMinutes}{" "}
               <span style={{ fontWeight: 500 }}>mins</span>
             </Typography>
@@ -590,6 +608,8 @@ function AddPassengers() {
             alignItems: "flex-start",
             backgroundColor: "background.default",
             transition: "all 1s",
+            backgroundColor: "background.default",
+            color: "text.primary",
           }}
         >
           <Typography variant="h6" fontWeight={600}>
@@ -723,7 +743,7 @@ function AddPassengers() {
                             p: 0.5,
                             width: "35px",
                             height: "35px",
-                            color:"text.primary",
+                            color: "text.primary",
                           }}
                         />
                       </ButtonBase>

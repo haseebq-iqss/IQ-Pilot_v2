@@ -103,6 +103,8 @@ function Appbar() {
   const [availableCabsOnShift, setAvailableCabsOnShift] =
     useState<[Cabtypes]>();
 
+    console.log(cabs)
+
   const GetAvailableCabsOnShift = () => {
     const availableCabs = cabs?.filter(
       (cab: any) => !cab.occupiedShifts.includes(currentShift)
@@ -389,7 +391,7 @@ function Appbar() {
                 fontWeight: 600,
                 ml: "auto",
                 backgroundColor: "text.primary",
-                color: "text.primary",
+                color: "background.default",
               }}
               onClick={HandleProceedToAddPassengers}
               color="primary"
