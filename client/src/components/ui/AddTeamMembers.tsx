@@ -444,7 +444,7 @@ export const AddTeamMembers = () => {
                 width: "50%",
                 height: "3.4rem",
                 bgcolor: "#9329FC",
-                color: "white",
+                color:"text.primary",
                 p: "0",
               }}
             >

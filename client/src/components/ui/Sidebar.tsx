@@ -58,7 +58,7 @@ function Sidebar() {
         sx={{
           borderRadius: "100px",
           backgroundColor: isActive ? "text.primary" : "inherit",
-          color: !isActive ? "text.primary" : "white",
+          color: !isActive ? "text.primary" : "background.default",
           width: "90%",
           py: "10px",
           justifyContent: "flex-start",
@@ -78,7 +78,7 @@ function Sidebar() {
   return (
     <Box
       sx={{
-        backgroundColor: "white",
+        backgroundColor: "background.default",
         width: "20%",
         height: "100%",
         borderRadius: "15px",
@@ -156,7 +156,11 @@ function Sidebar() {
           sx={{ width: "60px", height: "60px", mb: "10px" }}
           src={baseURL + userData?.profilePicture}
         />
-        <Typography variant="body1" fontWeight={600}>
+        <Typography
+          variant="body1"
+          fontWeight={600}
+          sx={{ color: "text.primary" }}
+        >
           {userData?.fname + " " + userData?.lname![0] + "."}
         </Typography>
         <Typography

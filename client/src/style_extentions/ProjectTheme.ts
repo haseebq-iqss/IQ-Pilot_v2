@@ -9,10 +9,10 @@ const ProjectTheme = (themeMode: PaletteMode) =>
       },
       secondary: {
         main: "#9329FC",
-      },
-      text: {
-        primary: "#212A3B",
-      },
+      }
+      // text: {
+      //   primary: "#212A3B",
+      // },
     },
     typography: {
       fontFamily: "Inter",

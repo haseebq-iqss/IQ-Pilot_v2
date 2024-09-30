@@ -418,7 +418,7 @@ function CreateShift() {
           height: "100vh",
           flexDirection: "column",
           gap: "15px",
-          backgroundColor: "white",
+          backgroundColor: "background.default",
         }}
       >
         <Box
@@ -459,7 +459,7 @@ function CreateShift() {
                 ...RowFlex,
                 justifyContent: "space-between",
                 gap: 2.5,
-                backgroundColor: "white",
+                backgroundColor: "background.default",
                 border: "3px solid #2997fc",
                 borderRadius: 1.5,
                 cursor: "pointer",
@@ -486,7 +486,7 @@ function CreateShift() {
                 }}
               >
                 <Typography
-                  sx={{ fontWeight: 700, color: "white", fontStyle: "italic" }}
+                  sx={{ fontWeight: 700, color:"text.primary", fontStyle: "italic" }}
                   variant="h5"
                 >
                   0
@@ -517,7 +517,7 @@ function CreateShift() {
             >
               <Typography
                 variant="h5"
-                sx={{ fontStyle: "italic", fontWeight: "700", color: "white" }}
+                sx={{ fontStyle: "italic", fontWeight: "700", color:"text.primary" }}
               >
                 DEPLOY
               </Typography>

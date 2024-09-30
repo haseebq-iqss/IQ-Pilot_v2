@@ -96,7 +96,7 @@ function ViewRoute() {
             ...ColFlex,
             width: "100%",
             height: "20%",
-            backgroundColor: "white",
+            backgroundColor: "background.default",
             justifyContent: "center",
             alignItems: "flex-start",
             p: "15px",
@@ -134,7 +134,7 @@ function ViewRoute() {
                     : routeState?.routeStatus === "inProgress"
                     ? "purple"
                     : "black",
-                color: "white",
+                color:"text.primary",
                 borderRadius: 1,
               }}
             >
@@ -181,7 +181,7 @@ function ViewRoute() {
             ...ColFlex,
             width: "100%",
             height: "80%",
-            backgroundColor: "white",
+            backgroundColor: "background.default",
             padding: "15px 20px",
             borderRadius: "15px",
             justifyContent: "flex-start",
@@ -286,7 +286,7 @@ function ViewRoute() {
                             p: 0.5,
                             width: "40px",
                             height: "40px",
-                            color: "white",
+                            color:"text.primary",
                           }}
                         />
                       ) : (
@@ -297,7 +297,7 @@ function ViewRoute() {
                             p: 0.5,
                             width: "40px",
                             height: "40px",
-                            color: "white",
+                            color:"text.primary",
                           }}
                         />
                       )}
@@ -354,7 +354,7 @@ function ViewRoute() {
                           p: 0.5,
                           width: "40px",
                           height: "40px",
-                          color: "white",
+                          color:"text.primary",
                         }}
                       />
                     </Box>
@@ -369,7 +369,7 @@ function ViewRoute() {
           ...ColFlex,
           //   flex: 6.5,
           width: "70%",
-          backgroundColor: "white",
+          backgroundColor: "background.default",
           height: "100%",
           borderRadius: "15px",
           overflow: "hidden",
@@ -418,9 +418,9 @@ function ViewRoute() {
             }}
           >
             <NavigationOutlined
-              sx={{ color: "white", width: "30px", height: "30px" }}
+              sx={{ color:"text.primary", width: "30px", height: "30px" }}
             />
-            <Typography sx={{ color: "white" }} variant="h5" fontWeight={600}>
+            <Typography sx={{ color:"text.primary" }} variant="h5" fontWeight={600}>
               {routeState?.totalDistance}{" "}
               <span style={{ fontWeight: 500 }}>kms</span>
             </Typography>
@@ -436,9 +436,9 @@ function ViewRoute() {
             }}
           >
             <AccessTimeOutlined
-              sx={{ color: "white", width: "30px", height: "30px" }}
+              sx={{ color:"text.primary", width: "30px", height: "30px" }}
             />
-            <Typography sx={{ color: "white" }} variant="h5" fontWeight={600}>
+            <Typography sx={{ color:"text.primary" }} variant="h5" fontWeight={600}>
               {routeState?.estimatedTime}{" "}
               <span style={{ fontWeight: 500 }}>mins</span>
             </Typography>
@@ -458,7 +458,7 @@ function ViewRoute() {
             p: "15px",
             borderRadius: "15px",
             alignItems: "flex-start",
-            backgroundColor: "white",
+            backgroundColor: "background.default",
             transition: "all 1s",
           }}
         >

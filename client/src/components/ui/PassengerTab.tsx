@@ -67,7 +67,7 @@ const PassengerTab = ({
           width: "100%",
           height: "4.5rem",
           minHeight: "4rem",
-          backgroundColor: "white",
+          backgroundColor: "background.default",
           padding: "8px",
           borderRadius: "1rem",
           boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
@@ -137,7 +137,7 @@ const PassengerTab = ({
                 p: 0.5,
                 width: "35px",
                 height: "35px",
-                color: "white",
+                color:"text.primary",
               }}
             />
           </ButtonBase> */}

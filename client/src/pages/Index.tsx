@@ -64,7 +64,14 @@ function Index() {
   }, [setScreenClicked]);
 
   return (
-    <Box sx={{ ...PageFlex, overflow: "hidden" }}>
+    <Box
+      sx={{
+        ...PageFlex,
+        overflow: "hidden",
+        backgroundColor: "background.default",
+        color: "text.primary",
+      }}
+    >
       <Box
         onClick={() => setScreenClicked(!screenClicked)}
         sx={{
@@ -146,7 +153,7 @@ function Index() {
             >
               LOGIN
             </Button>
-            <Typography
+            {/* <Typography
               variant="body2"
               sx={{ color: "text.secondary", fontWeight: 600 }}
             >
@@ -159,7 +166,7 @@ function Index() {
               onClick={() => navigate("/signup")}
             >
               SIGNUP
-            </Button>
+            </Button> */}
           </Box>
         </FadeIn>
       )}

@@ -103,7 +103,7 @@ const RosterCard = ({
           flexDirection: "column",
           p: "20px",
           borderRadius: "15px",
-          backgroundColor: "white",
+          backgroundColor: "background.default",
           transition: "all 1s",
           justifyContent: "flex-start",
           gap: "0.5rem",

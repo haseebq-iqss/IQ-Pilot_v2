@@ -304,7 +304,7 @@ function AddPassengers() {
           alignItems: "flex-start",
           //   flex: 3.5,
           width: "30%",
-          backgroundColor: "white",
+          backgroundColor: "background.default",
           height: "100%",
           borderRadius: "15px",
           p: "15px",
@@ -370,7 +370,7 @@ function AddPassengers() {
                 fontWeight: 600,
                 ml: "auto",
                 backgroundColor: "text.primary",
-                color: "white",
+                color:"text.primary",
               }}
               onClick={handleClearFilterAndSearch}
               color="primary"
@@ -472,7 +472,7 @@ function AddPassengers() {
                           p: 0.5,
                           width: "40px",
                           height: "40px",
-                          color: "white",
+                          color:"text.primary",
                         }}
                       />
                     ) : (
@@ -484,7 +484,7 @@ function AddPassengers() {
                           p: 0.5,
                           width: "40px",
                           height: "40px",
-                          color: "white",
+                          color:"text.primary",
                         }}
                       />
                     )}
@@ -501,7 +501,7 @@ function AddPassengers() {
           ...ColFlex,
           //   flex: 6.5,
           width: "70%",
-          backgroundColor: "white",
+          backgroundColor: "background.default",
           height: "100%",
           borderRadius: "15px",
           overflow: "hidden",
@@ -548,9 +548,9 @@ function AddPassengers() {
             }}
           >
             <NavigationOutlined
-              sx={{ color: "white", width: "30px", height: "30px" }}
+              sx={{ color:"text.primary", width: "30px", height: "30px" }}
             />
-            <Typography sx={{ color: "white" }} variant="h5" fontWeight={600}>
+            <Typography sx={{ color:"text.primary" }} variant="h5" fontWeight={600}>
               {distNtime?.distanceInKilometers}{" "}
               <span style={{ fontWeight: 500 }}>kms</span>
             </Typography>
@@ -566,9 +566,9 @@ function AddPassengers() {
             }}
           >
             <AccessTimeOutlined
-              sx={{ color: "white", width: "30px", height: "30px" }}
+              sx={{ color:"text.primary", width: "30px", height: "30px" }}
             />
-            <Typography sx={{ color: "white" }} variant="h5" fontWeight={600}>
+            <Typography sx={{ color:"text.primary" }} variant="h5" fontWeight={600}>
               {distNtime?.totalMinutes}{" "}
               <span style={{ fontWeight: 500 }}>mins</span>
             </Typography>
@@ -588,7 +588,7 @@ function AddPassengers() {
             p: "15px",
             borderRadius: "15px",
             alignItems: "flex-start",
-            backgroundColor: "white",
+            backgroundColor: "background.default",
             transition: "all 1s",
           }}
         >
@@ -723,7 +723,7 @@ function AddPassengers() {
                             p: 0.5,
                             width: "35px",
                             height: "35px",
-                            color: "white",
+                            color:"text.primary",
                           }}
                         />
                       </ButtonBase>

@@ -100,7 +100,7 @@ function DriverLayout() {
               width: "100%",
               gap: "15px",
               backgroundColor: "text.primary",
-              color: "white",
+              color:"text.primary",
               borderRadius: "10px",
               p: "5px",
             }}
@@ -168,7 +168,7 @@ function DriverLayout() {
               onClick={() => Logout()}
               sx={{
                 backgroundColor: "text.primary",
-                color: "white",
+                color:"text.primary",
                 borderRadius: "10px",
                 p: "15px",
               }}
@@ -188,7 +188,7 @@ function DriverLayout() {
           justifyContent: "flex-start",
           width: "100%",
           height: "100%",
-          backgroundColor: "white",
+          backgroundColor: "background.default",
           gap: "0px",
           pb: "20px",
         }}

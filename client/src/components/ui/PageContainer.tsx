@@ -31,7 +31,8 @@ function PageContainer({
         height: "100%",
         justifyContent: "flex-start",
         alignItems: "flex-start",
-        backgroundColor: "white",
+        backgroundColor: "background.default",
+        color: "text.primary",
         borderRadius: "15px",
         overflowY: "scroll",
         gap: "25px",
@@ -66,8 +67,8 @@ function PageContainer({
         {!location.pathname.includes("/admin/scheduledRoutes") && (
           <Button
             sx={{
-              backgroundColor: "text.primary",
-              color: "white",
+              backgroundColor: "primary.main",
+              color: "text.primary",
               borderRadius: "4px",
               px: 2.5,
               width: "15rem",

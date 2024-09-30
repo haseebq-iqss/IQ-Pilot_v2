@@ -81,7 +81,7 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
         flexDirection: "column",
         borderRadius: "15px",
         justifyContent: "flex-start",
-        backgroundColor: "white",
+        backgroundColor: "background.default",
         border:
           column?.typeOfRoute === "pickup"
             ? "8px solid #2997FC"

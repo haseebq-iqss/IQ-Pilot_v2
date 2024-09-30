@@ -32,11 +32,13 @@ import useAxios from "../../api/useAxios";
 import { CreateShiftModal } from "./CreateShiftModal";
 import Cabtypes from "./../../types/CabTypes";
 import baseURL from "../../utils/baseURL";
+import ThemeModeContext from "../../context/ThemeModeContext";
 
 function Appbar() {
   const navigate = useNavigate();
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
+  const { themeMode, setThemeMode }: any = useContext(ThemeModeContext);
 
   const [onHover, setOnHover] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -122,7 +124,7 @@ function Appbar() {
       sx={{
         ...RowFlex,
         justifyContent: "flex-end",
-        backgroundColor: "white",
+        backgroundColor: "background.default",
         width: "100%",
         // border: "",
         // height: "10vh",
@@ -279,7 +281,7 @@ function Appbar() {
                     ? pickupTimings.map((time: any) => {
                         return (
                           <MenuItem
-                          key={time?.t4Time}
+                            key={time?.t4Time}
                             value={time?.t4Time}
                             sx={{ ...RowFlex, pl: 2.5, fontWeight: 600 }}
                           >
@@ -291,7 +293,7 @@ function Appbar() {
                     : dropTimings.map((time: any) => {
                         return (
                           <MenuItem
-                          key={time?.t4Time}
+                            key={time?.t4Time}
                             value={time?.t4Time}
                             sx={{ ...RowFlex, pl: 2.5, fontWeight: 600 }}
                           >
@@ -387,7 +389,7 @@ function Appbar() {
                 fontWeight: 600,
                 ml: "auto",
                 backgroundColor: "text.primary",
-                color: "white",
+                color: "text.primary",
               }}
               onClick={HandleProceedToAddPassengers}
               color="primary"
@@ -400,11 +402,57 @@ function Appbar() {
           {/* RS */}
         </Box>
       </GlobalModal>
+
+      {themeMode === "light" ? (
+        <Box onClick={() => setThemeMode("dark")}>
+          <LightMode
+            sx={{
+              width: "30px",
+              height: "30px",
+              cursor: "pointer",
+              color: "text.primary",
+              "&:hover": {
+                rotate: "180deg",
+                scale: "1.2",
+                transition: "all 0.5s",
+              },
+              "&:not(:hover)": {
+                rotate: "0deg",
+                scale: "1",
+                transition: "all 0.4s",
+              },
+            }}
+          />
+        </Box>
+      ) : (
+        <Box onClick={() => setThemeMode("light")}>
+          <DarkMode
+            sx={{
+              width: "30px",
+              height: "30px",
+              cursor: "pointer",
+              color: "text.primary",
+              "&:hover": {
+                rotate: "180deg",
+                scale: "1.2",
+                transition: "all 0.5s",
+              },
+              "&:not(:hover)": {
+                rotate: "0deg",
+                scale: "1",
+                transition: "all 0.4s",
+              },
+            }}
+          />
+        </Box>
+      )}
+
       <Notifications
         sx={{
           width: "30px",
           height: "30px",
           cursor: "pointer",
+          color: "text.primary",
           "&:hover": {
             transform: "translateY(-2.5px)",
             scale: "1.2",
@@ -422,6 +470,7 @@ function Appbar() {
           width: "30px",
           height: "30px",
           cursor: "pointer",
+          color: "text.primary",
           "&:hover": {
             rotate: "180deg",
             scale: "1.2",
@@ -436,10 +485,10 @@ function Appbar() {
       />
 
       {/* <Box sx={{ ...RowFlex, gap:1,backgroundColor: "text.primary",  borderRadius:"100px", py:0.75, px:2.5 }}>
-        <Typography sx={{ color: "white" }} fontWeight={600} variant="body2">
+        <Typography sx={{ color:"text.primary" }} fontWeight={600} variant="body2">
           Create a Custom Route
         </Typography>
-        <Route sx={{ color: "white", p:0.25 }} />
+        <Route sx={{ color:"text.primary", p:0.25 }} />
       </Box> */}
 
       <Button
@@ -447,8 +496,8 @@ function Appbar() {
         onMouseEnter={() => setOnHover(true)}
         onMouseLeave={() => setOnHover(false)}
         sx={{
-          backgroundColor: "text.primary",
-          color: "white",
+          // backgroundColor: "text.primary",
+          color: "text.primary",
           borderRadius: "100px",
           px: 2.5,
         }}
@@ -461,8 +510,8 @@ function Appbar() {
 
       <Button
         sx={{
-          backgroundColor: "text.primary",
-          color: "white",
+          // backgroundColor: "text.primary",
+          color: "text.primary",
           borderRadius: "100px",
           px: 2.5,
         }}
