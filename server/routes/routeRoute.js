@@ -15,6 +15,7 @@ const {
   driverRoutesForMonth,
   createShiftKM,
   getTodayRoute,
+  exportShiftsData,
 } = require("../controller/routeController");
 const { protect, restrictTo } = require("../controller/authController");
 
@@ -45,5 +46,7 @@ router
 router
   .route("/driverRoutesMonth/:id")
   .get(restrictTo("admin", "driver"), driverRoutesForMonth);
+
+router.get("/exports/shifts-data", restrictTo("admin"), exportShiftsData);
 
 module.exports = router;

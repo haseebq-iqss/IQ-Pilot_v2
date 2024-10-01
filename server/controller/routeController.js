@@ -1,3 +1,4 @@
+const path = require("path");
 const Cab = require("../models/cab");
 const User = require("../models/user");
 const Route = require("../models/route");
@@ -12,6 +13,10 @@ const {
   euclidian_distance,
   squaredDistance,
 } = require("../utils/euclidianDistance");
+const {
+  prepareShiftDataForExport,
+  exportShiftDataToExcel,
+} = require("../utils/exportShiftDataFun");
 
 function kmeansPlusPlusInitialization(data, k) {
   // Edge Case: Check if data is empty
@@ -670,4 +675,43 @@ exports.driverRoutesForMonth = catchAsync(async (req, res, next) => {
   });
 
   res.status(200).json({ status: "Success", data: { pickArr, dropArr } });
+});
+
+exports.exportShiftsData = catchAsync(async (req, res, next) => {
+  // let { cabEmployeeGroups, workLocation, currentShift, typeOfRoute } = req.body;
+  // if (cabEmployeeGroups.length === 0 || !cabEmployeeGroups) {
+  //   return next(new AppError(`Invalid or empty cabEmployeeGroups`, 400));
+  // }
+
+  const present_day = new Date(
+    Date.UTC(
+      new Date().getUTCFullYear(),
+      new Date().getUTCMonth(),
+      new Date().getUTCDate()
+    )
+  );
+  const today_day_routes = await Route.find({
+    activeOnDate: { $eq: present_day },
+  })
+    .populate("passengers")
+    .populate({ path: "cab", populate: "cabDriver" });
+
+  const shiftData = prepareShiftDataForExport(today_day_routes);
+
+  const fileName = `roster_data_${present_day.toLocaleDateString()}.xlsx`;
+
+  const buffer = exportShiftDataToExcel(shiftData, fileName);
+  // set the content type and which will tell the browser to treat the response as a file to download
+  res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.send(buffer);
+  // res.status(200).json({
+  //   status: "Success",
+  //   data: shiftData,
+  //   length: today_day_routes.length,
+  // });
 });
