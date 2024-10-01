@@ -5,7 +5,7 @@
   font-family: Inter;
   scroll-behavior: smooth;
   /* transition: all 0.5s cubic-bezier(0.45, 0, 0.1, 1); */
-  transition: all 0.25s cubic-bezier(0.45, 0, 0.1, 1);
+  /* transition: all 0.25s cubic-bezier(0.45, 0, 0.1, 1); */
 }
 
 .leaflet-control-container .leaflet-routing-container-hide {

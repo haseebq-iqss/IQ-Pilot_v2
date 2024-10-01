@@ -109,11 +109,18 @@ const DriverProfile = () => {
   console.log(driverRoutes);
 
   return (
-    <Box sx={{ maxWidth: "100%", p: 2.5 }}>
+    <Box
+      sx={{
+        maxWidth: "100%",
+        p: 2.5,
+        backgroundColor: "background.default",
+        color: "text.primary",
+        minHeight:"100vh"
+      }}
+    >
       <Box sx={{}}>
         <Box
           sx={{
-            bgcolor: "primary.main",
             borderRadius: 2,
             ...RowFlex,
             gap: 5,
@@ -136,7 +143,7 @@ const DriverProfile = () => {
             <Typography
               variant="h4"
               component="h1"
-              sx={{ fontWeight: "bold", mb: 2, color:"text.primary" }}
+              sx={{ fontWeight: "bold", mb: 2, color: "text.primary" }}
             >
               {driverDetails?.cabDriver?.fname +
                 " " +
@@ -156,18 +163,18 @@ const DriverProfile = () => {
                   fontSize: "1.2rem",
                   ...RowFlex,
                   gap: "6px",
-                  color:"text.primary",
+                  color: "text.primary",
                 }}
               >
-                <MailOutlineIcon sx={{ fontSize: "1.5rem" }} />
-                <span style={{ fontWeight: 700 }}>Email: </span>
+                <MailOutlineIcon sx={{ fontSize: "1.5rem", fontWeight: 600 }} />
+                <span style={{ fontWeight: 600 }}>Email: </span>
                 {driverDetails?.cabDriver?.email}
               </Typography>
               <Typography
                 sx={{
                   mb: 1,
                   fontSize: "1.2rem",
-                  color:"text.primary",
+                  color: "text.primary",
                   ...RowFlex,
                   gap: "6px",
                 }}
@@ -189,7 +196,7 @@ const DriverProfile = () => {
                 sx={{
                   mb: 1,
                   fontSize: "1.2rem",
-                  color:"text.primary",
+                  color: "text.primary",
                   ...RowFlex,
                   gap: "6px",
                 }}
@@ -206,7 +213,7 @@ const DriverProfile = () => {
                 sx={{
                   mb: 1,
                   fontSize: "1.2rem",
-                  color:"text.primary",
+                  color: "text.primary",
                   ...RowFlex,
                   gap: "6px",
                 }}
@@ -224,7 +231,7 @@ const DriverProfile = () => {
                   mb: 1,
                   fontSize: "1.2rem",
                   textTransform: "capitalize",
-                  color:"text.primary",
+                  color: "text.primary",
                   ...RowFlex,
                   gap: "6px",
                 }}
@@ -246,7 +253,9 @@ const DriverProfile = () => {
                 alignItems: "flex-start",
               }}
             >
-              <Typography sx={{ mb: 1, fontSize: "1.2rem", color:"text.primary" }}>
+              <Typography
+                sx={{ mb: 1, fontSize: "1.2rem", color: "text.primary" }}
+              >
                 <span style={{ fontWeight: 700 }}>Cab Model: </span>{" "}
                 {driverDetails?.carModel}
               </Typography>
@@ -254,7 +263,7 @@ const DriverProfile = () => {
                 sx={{
                   mb: 1,
                   fontSize: "1.2rem",
-                  color:"text.primary",
+                  color: "text.primary",
                   ...RowFlex,
                   gap: "6px",
                 }}
@@ -316,7 +325,7 @@ const DriverProfile = () => {
         <Box
           sx={{
             px: 10,
-            bgcolor: "#eeeeee",
+            backgroundColor:"background.default", color:"text.primary",
             py: 4,
             borderRadius: 2,
             marginTop: 5,

@@ -97,23 +97,25 @@ const RosterCard = ({
       <Box
         sx={{
           ...ColFlex,
-          minWidth: "27.5vw",
-          maxWidth: "27.5vw",
+          minWidth: "30.5vw",
+          maxWidth: "32vw",
           height: "100%",
           flexDirection: "column",
           p: "20px",
           borderRadius: "15px",
           backgroundColor: "background.default",
+          color: "text.primary",
           transition: "all 1s",
           justifyContent: "flex-start",
+          border: "5px solid #2997FC",
           gap: "0.5rem",
           ":hover": {
-            minWidth: "30vw",
+            minWidth: "32.5vw",
             transition: "all 0.3s",
             // transition:"all 0.3 ease"
           },
           ":not(:hover)": {
-            minWidth: "27.5vw",
+            minWidth: "30.5vw",
             transition: "all 0.2s",
             // transition:"all 0.3 ease"
           },
@@ -218,7 +220,7 @@ const RosterCard = ({
                   fontSize: "1rem",
                   display: "flex",
                   alignItems: "center",
-                  color: "black",
+                  color: "text.primary",
                 }}
                 fontWeight={500}
               >
@@ -227,7 +229,7 @@ const RosterCard = ({
                     width: "20px",
                     height: "20px",
                     mr: "2px",
-                    color: "black",
+                    color: "text.primary",
                   }}
                 />
                 {column?.cab?.numberPlate}
