@@ -41,28 +41,35 @@ function DriverLayout() {
       );
   }
 
-    const SendEmergencyAlert = () => {
-      let sosData;
-      navigator.geolocation.getCurrentPosition((pos) => {
-        sosData = {
-          sosFrom: userData?.fname + " " + userData?.lname,
-          phone: userData?.phone,
-          location: [pos.coords.latitude, pos.coords.longitude],
-        };
-        socket.emit("SOS", sosData);
-        setOpenDrawer(!openDrawer);
-        setOpenSnack({
-          open: true,
-          message:
-            "Emergency SOS was sent. Admin will get in touch with you shortly.",
-          severity: "info",
-        });
-        // console.log(sosData);
+  const SendEmergencyAlert = () => {
+    let sosData;
+    navigator.geolocation.getCurrentPosition((pos) => {
+      sosData = {
+        sosFrom: userData?.fname + " " + userData?.lname,
+        phone: userData?.phone,
+        location: [pos.coords.latitude, pos.coords.longitude],
+      };
+      socket.emit("SOS", sosData);
+      setOpenDrawer(!openDrawer);
+      setOpenSnack({
+        open: true,
+        message:
+          "Emergency SOS was sent. Admin will get in touch with you shortly.",
+        severity: "info",
       });
-    };
+      // console.log(sosData);
+    });
+  };
 
   return (
-    <Box sx={{ ...PageFlex, height: "100vh" }}>
+    <Box
+      sx={{
+        ...PageFlex,
+        height: "100vh",
+        backgroundColor: "background.default",
+        color: "text.primary",
+      }}
+    >
       {/* SIDEBAR */}
       <Drawer open={openDrawer} onClose={() => setOpenDrawer(!openDrawer)}>
         <Box
@@ -72,6 +79,8 @@ function DriverLayout() {
             height: "100vh",
             gap: "40px",
             p: "15px",
+            backgroundColor: "background.default",
+            color: "text.primary",
           }}
         >
           {/* Logo Header */}
@@ -99,18 +108,26 @@ function DriverLayout() {
               ...RowFlex,
               width: "100%",
               gap: "15px",
-              backgroundColor: "text.primary",
-              color:"text.primary",
               borderRadius: "10px",
               p: "5px",
+              backgroundColor: "background.default",
+              color: "text.primary",
             }}
           >
             <Avatar src={baseURL + userData?.profilePicture} />
-            <Box sx={{ ...ColFlex, width: "70%", alignItems: "flex-start" }}>
+            <Box
+              sx={{
+                ...ColFlex,
+                width: "70%",
+                alignItems: "flex-start",
+                backgroundColor: "background.default",
+                color: "text.primary",
+              }}
+            >
               <Typography variant="h6">
                 {userData?.fname + " " + userData?.lname}
               </Typography>
-              <Typography variant="caption" color={"lightgrey"}>
+              <Typography variant="caption">
                 {(userData?.department?.charAt(0).toUpperCase() as string) +
                   userData?.department?.slice(1, 99)}{" "}
                 Department
@@ -167,8 +184,8 @@ function DriverLayout() {
             <Button
               onClick={() => Logout()}
               sx={{
-                backgroundColor: "text.primary",
-                color:"text.primary",
+                backgroundColor: "info.light",
+                color: "text.primary",
                 borderRadius: "10px",
                 p: "15px",
               }}

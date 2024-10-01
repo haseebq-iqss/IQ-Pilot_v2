@@ -1,6 +1,8 @@
 import {
   Dashboard,
+  EmojiPeople,
   Hail,
+  LiveTv,
   LocalTaxi,
   QueryStats,
   Route,
@@ -105,6 +107,7 @@ function Sidebar() {
           height: "50%",
           justifyContent: "flex-start",
           gap: "10px",
+          overflow:"auto"
         }}
       >
         <SideBarButton
@@ -133,8 +136,20 @@ function Sidebar() {
         />
         <SideBarButton
           text="All Team Members"
-          startIcon={<Hail />}
+          startIcon={<EmojiPeople />}
           link="allTeamMembers"
+          // isActive={false}
+        />
+        <SideBarButton
+          text="Live Driver Tracking"
+          startIcon={<LiveTv />}
+          link="live-driver-tracking"
+          // isActive={false}
+        />
+        <SideBarButton
+          text="Pending Team Members"
+          startIcon={<Hail />}
+          link="pending-team-members"
           // isActive={false}
         />
       </Box>

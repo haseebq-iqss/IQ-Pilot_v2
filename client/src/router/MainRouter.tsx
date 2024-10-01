@@ -24,6 +24,7 @@ import ViewRoute from "../pages/ViewRoute/ViewRoute";
 import DriverProfile from "../pages/DriverProfilePage/DriverProfilePage";
 import AdminStatistics from "../pages/AdminStatistics/AdminStatistics";
 import { EditDetails } from "../pages/EditDetails/EditDetails";
+import LiveDriverTracking from "../pages/LiveDriverTracking/LiveDriverTracking";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -165,6 +166,14 @@ function MainRouter() {
                 </SlideInOut>
               }
             />
+                          <Route
+                path="admin/live-driver-tracking"
+                element={
+                  <SlideInOut>
+                    <LiveDriverTracking />
+                  </SlideInOut>
+                }
+              />
           </>
         )}
         {userData?.role === "driver" && (

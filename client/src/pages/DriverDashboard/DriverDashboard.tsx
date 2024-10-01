@@ -55,7 +55,9 @@ function DriverDashboard() {
   //   console.log(Object.values(DriverRoutes))
 
   const updateRouteStatus = (route: RouteTypes) => {
-    return useAxios.patch(`routes/${route?._id}`, { routeStatus: "inProgress" });
+    return useAxios.patch(`routes/${route?._id}`, {
+      routeStatus: "inProgress",
+    });
   };
 
   const { mutate: UpdateRoute } = useMutation({
@@ -89,6 +91,8 @@ function DriverDashboard() {
         width: "100%",
         justifyContent: "flex-start",
         alignItems: "flex-start",
+        backgroundColor: "background.default",
+        color: "text.primary",
       }}
     >
       {/* AR Header */}
@@ -102,7 +106,7 @@ function DriverDashboard() {
       >
         {routesStatus === "success" ? (
           <Typography
-          component={"div"}
+            component={"div"}
             variant="h5"
             sx={{ fontWeight: 500, ...RowFlex, gap: "10px" }}
           >
@@ -110,7 +114,7 @@ function DriverDashboard() {
             <Typography
               sx={{
                 backgroundColor: "primary.main",
-                color:"text.primary",
+                color: "text.primary",
                 borderRadius: "5px",
                 px: "10px",
               }}
@@ -118,7 +122,9 @@ function DriverDashboard() {
               fontWeight={600}
             >
               {/* <Route/> */}
-              {DriverRoutes?.pickArr ? (DriverRoutes?.pickArr.length + DriverRoutes?.dropArr.length) : 0}{" "}
+              {DriverRoutes?.pickArr
+                ? DriverRoutes?.pickArr.length + DriverRoutes?.dropArr.length
+                : 0}{" "}
               Routes
             </Typography>{" "}
           </Typography>
@@ -127,7 +133,16 @@ function DriverDashboard() {
         )}
       </Box>
       {/* PICKUPS */}
-      <Box sx={{ ...ColFlex, width: "100%", gap: "20px", px: "0px" }}>
+      <Box
+        sx={{
+          ...ColFlex,
+          width: "100%",
+          gap: "20px",
+          px: "0px",
+          backgroundColor: "background.default",
+          color: "text.primary",
+        }}
+      >
         {DriverRoutes?.pickArr?.length > 0 &&
           DriverRoutes?.pickArr?.length &&
           DriverRoutes?.pickArr.map((route: RouteTypes) => {
@@ -138,8 +153,8 @@ function DriverDashboard() {
                 sx={{
                   width: "100%",
                   backgroundColor:
-                    isRouteSelected == route ? "text.primary" : "white",
-                  color: isRouteSelected == route ? "white" : "text.primary",
+                    isRouteSelected == route ? "background.default" : "text.primary",
+                  color: isRouteSelected == route ? "text.primary" : "background.default",
                 }}
                 onClick={() => setIsRouteSelected(route)}
                 elevation={1}
@@ -202,7 +217,9 @@ function DriverDashboard() {
                         sx={{ borderRadius: "10px" }}
                         endIcon={<Flag />}
                       >
-                        {route?.routeStatus === "inProgress" ? "Continue Route" : "Start Route"}
+                        {route?.routeStatus === "inProgress"
+                          ? "Continue Route"
+                          : "Start Route"}
                       </Button>
                     </Box>
                     <Divider sx={{ width: "100%" }} />
@@ -256,7 +273,7 @@ function DriverDashboard() {
                               {!passenger?.isCabCancelled ? (
                                 <ButtonBase
                                   component={"a"}
-                                  href={`tel:${passenger?.phone}`} 
+                                  href={`tel:${passenger?.phone}`}
                                   // onClick={() => handleRemovePassengersFromCab(employee)}
                                   sx={{
                                     ...RowFlex,
@@ -271,7 +288,7 @@ function DriverDashboard() {
                                       p: 1,
                                       width: "35px",
                                       height: "35px",
-                                      color:"text.primary",
+                                      color: "text.primary",
                                     }}
                                   />
                                 </ButtonBase>
@@ -370,7 +387,9 @@ function DriverDashboard() {
                         sx={{ borderRadius: "10px" }}
                         endIcon={<Flag />}
                       >
-                        {route?.routeStatus === "inProgress" ? "Continue Route" : "Start Route"}
+                        {route?.routeStatus === "inProgress"
+                          ? "Continue Route"
+                          : "Start Route"}
                       </Button>
                     </Box>
                     <Divider sx={{ width: "100%" }} />
@@ -439,7 +458,7 @@ function DriverDashboard() {
                                       p: 1,
                                       width: "35px",
                                       height: "35px",
-                                      color:"text.primary",
+                                      color: "text.primary",
                                     }}
                                   />
                                 </ButtonBase>

@@ -20,13 +20,21 @@ import EmployeeTypes from "./../types/EmployeeTypes";
 import { UserContextTypes } from "../types/UserContextTypes";
 import UserDataContext from "../context/UserDataContext";
 import baseURL from "../utils/baseURL";
-import { Close, Fullscreen } from "@mui/icons-material";
+import {
+  Close,
+  Directions,
+  Fullscreen,
+  GpsFixed,
+  Groups,
+  LocationOff,
+} from "@mui/icons-material";
 import MapCenterUpdater from "./MapCenterUpdater";
 import InterpolateLatLon from "../utils/LatLonAnimator";
 import CalculateSpeed from "../utils/CalculateSpeedByCoordinates";
 // import InterpolateActiveDrivers from "../utils/InterpolateActiveDrivers";
 import CabJoinSound from "../assets/sounds/cab-joined.mp3";
 import MarkerClusterGroup from "react-leaflet-cluster";
+import { useLocation, useNavigate } from "react-router-dom";
 
 type MapTypes = {
   width?: string;
@@ -67,6 +75,9 @@ const MapComponent = ({
   // const [driversPosition, setDriversPosition] = useState<any>();
 
   // console.log(unrosteredTms);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const { userData }: UserContextTypes = useContext(UserDataContext);
 
@@ -480,6 +491,40 @@ const MapComponent = ({
                   // cursor:"grabbing"
                 }}
               >
+                {mapDataView === "Routes-View" ? <Groups /> : <Directions />}
+                <h3>
+                  {" "}
+                  {mapDataView === "Routes-View" ? "View TMs" : "View Routes"}
+                </h3>
+              </div>
+              {/* Live Tracking */}
+              <div
+                onClick={() =>
+                  navigate(
+                    !location.pathname.includes("live-driver-tracking")
+                      ? "live-driver-tracking"
+                      : "/admin"
+                  )
+                }
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "black",
+                  color: "white",
+                  padding: "7.5px 15px",
+                  borderRadius: "100px",
+                  border: "2.5px solid white",
+                  gap: 10,
+
+                  // cursor:"grabbing"
+                }}
+              >
+                {!location.pathname.includes("live-driver-tracking") ? (
+                  <GpsFixed />
+                ) : (
+                  <LocationOff />
+                )}
                 <h3
                   style={{
                     backgroundColor: "background.default",
@@ -487,11 +532,10 @@ const MapComponent = ({
                     padding: 1.5,
                   }}
                 >
-                  {mapDataView === "Routes-View" ? "👨🏻‍💻" : "📌"}
-                </h3>
-                <h3>
-                  {" "}
-                  {mapDataView === "Routes-View" ? "View TMs" : "View Routes"}
+                  {/* {mapDataView === "Routes-View" ? "👨🏻‍💻" : "📌"} */}
+                  {!location.pathname.includes("live-driver-tracking")
+                    ? "Activate Live Tracking"
+                    : "Disable Live Tracking"}
                 </h3>
               </div>
               {/* {mapDataView === "TM-View" && (
