@@ -136,6 +136,7 @@ function ScheduledRoutes() {
         sx={{
           width: "100%",
           height: "50vh",
+          color: "text.primary"
         }}
       >
         <Box

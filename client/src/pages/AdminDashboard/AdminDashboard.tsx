@@ -258,7 +258,7 @@ function AdminDashboard() {
           ...RowFlex,
           width: "100%",
           height: "20%",
-          backgroundColor: "white",
+          backgroundColor: "background.default",
           borderRadius: "15px",
           justifyContent: "space-between",
         }}
@@ -269,17 +269,24 @@ function AdminDashboard() {
             ...RowFlex,
             width: "40%",
             height: "20%",
-            backgroundColor: "white",
+            backgroundColor: "background.default",
             borderRadius: "15px",
             justifyContent: "flex-start",
             marginLeft: "50px",
           }}
         >
-          <Box sx={{ ...ColFlex, alignItems: "flex-start", gap: "5px" }}>
-            <Typography variant="h4" fontWeight={700}>
+          <Box
+            sx={{
+              ...ColFlex,
+              alignItems: "flex-start",
+              gap: "5px",
+              color: "text.primary",
+            }}
+          >
+            <Typography variant="h4" fontWeight={600}>
               Today's Plan
             </Typography>
-            <Typography color={"GrayText"} variant="body1">
+            <Typography sx={{color: "text.secondary",}} variant="body1">
               It’s{" "}
               <span style={{ fontWeight: 600 }}>{TodayFullDateString()}</span>
             </Typography>
@@ -291,7 +298,7 @@ function AdminDashboard() {
             ...RowFlex,
             width: "60%",
             height: "20%",
-            backgroundColor: "white",
+            backgroundColor: "background.default",
             borderRadius: "15px",
             justifyContent: "space-evenly",
           }}
@@ -302,7 +309,10 @@ function AdminDashboard() {
               navigate("assignedRoutes", { state: allRoutes });
             }}
           >
-            <Typography sx={{ fontWeight: 600 }} variant="h4">
+            <Typography
+              sx={{ fontWeight: 500, color: "text.primary" }}
+              variant="h4"
+            >
               {allRoutesStatus === "success" && allRoutes?.length > 0
                 ? allRoutes?.length
                 : 0}
@@ -317,13 +327,15 @@ function AdminDashboard() {
                 fontWeight: 600,
               }}
               variant="subtitle2"
-              color={"GrayText"}
             >
               Routes Assigned
             </Typography>
           </Box>
           <Box sx={{ ...ColFlex, gap: "5px" }}>
-            <Typography sx={{ fontWeight: 600 }} variant="h4">
+            <Typography
+              sx={{ fontWeight: 500, color: "text.primary" }}
+              variant="h4"
+            >
               {allCabStatus === "success" ? allCabs?.length : 0}
             </Typography>
             <Typography
@@ -333,15 +345,18 @@ function AdminDashboard() {
                 fontSize: "0.8rem",
                 lineHeight: "15px",
                 fontWeight: 600,
+                color: "text.secondary",
               }}
-              color={"GrayText"}
               variant="subtitle2"
             >
               Available Cabs
             </Typography>
           </Box>
           <Box sx={{ ...ColFlex, gap: "5px" }}>
-            <Typography sx={{ fontWeight: 600 }} variant="h4">
+            <Typography
+              sx={{ fontWeight: 500, color: "text.primary" }}
+              variant="h4"
+            >
               {rosteredPassengersStatus === "success"
                 ? rosteredPassengers?.rostered_passengers?.length
                 : 40}
@@ -353,15 +368,18 @@ function AdminDashboard() {
                 fontSize: "0.8rem",
                 lineHeight: "15px",
                 fontWeight: 600,
+                color: "text.secondary",
               }}
               variant="subtitle2"
-              color={"GrayText"}
             >
               Rostered TMs
             </Typography>
           </Box>
           <Box sx={{ ...ColFlex, gap: "5px" }}>
-            <Typography sx={{ fontWeight: 600 }} variant="h4">
+            <Typography
+              sx={{ fontWeight: 500, color: "text.primary" }}
+              variant="h4"
+            >
               {pendingPassengersStatus === "success"
                 ? pendingPassengers?.length
                 : 0}
@@ -374,8 +392,8 @@ function AdminDashboard() {
                 fontSize: "0.8rem",
                 lineHeight: "15px",
                 fontWeight: 600,
+                color: "text.secondary",
               }}
-              color={"GrayText"}
               variant="subtitle2"
             >
               Pending TMs
@@ -388,7 +406,7 @@ function AdminDashboard() {
         sx={{
           width: "100%",
           height: "80%",
-          backgroundColor: "white",
+          backgroundColor: "background.default",
           borderRadius: "15px",
           overflow: "hidden",
         }}

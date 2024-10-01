@@ -540,7 +540,7 @@ function StartRoute() {
                   p: 1.75,
                   width: "60px",
                   height: "60px",
-                  color: "white",
+                  color:"text.primary",
                 }}
               />
             </ButtonBase>
@@ -592,7 +592,7 @@ function StartRoute() {
                   p: 1.75,
                   width: "65px",
                   height: "65px",
-                  color: "white",
+                  color:"text.primary",
                 }}
               />
               <Done
@@ -603,7 +603,7 @@ function StartRoute() {
                   p: 1.75,
                   width: "65px",
                   height: "65px",
-                  color: "white",
+                  color:"text.primary",
                 }}
               />
             </Box>
@@ -615,7 +615,7 @@ function StartRoute() {
       <LinearProgress
         sx={{
           width: artificialDelay ? "100%" : "0%",
-          backgroundColor: "white",
+          backgroundColor: "background.default",
           height: 5,
         }}
       />
@@ -630,7 +630,7 @@ function StartRoute() {
             justifyContent: "space-between",
             p: "15px",
             backgroundColor: "text.primary",
-            color: "white",
+            color:"text.primary",
           }}
         >
           <Typography variant="h4" fontWeight={600}>
@@ -669,7 +669,7 @@ function StartRoute() {
           my: "0px",
           padding: "15px",
           gap: "30px",
-          color: "white",
+          color:"text.primary",
           backgroundColor: "text.primary",
           borderRadius: isXS || isSM ? "15px" : 0,
         }}
@@ -683,7 +683,7 @@ function StartRoute() {
             artificialDelay && (
               <CircularProgress
                 size={"1rem"}
-                sx={{ ml: 2.5, color: "white" }}
+                sx={{ ml: 2.5, color:"text.primary" }}
               />
             )
           }
@@ -772,7 +772,7 @@ function StartRoute() {
                             p: 1,
                             width: "35px",
                             height: "35px",
-                            color: "white",
+                            color:"text.primary",
                           }}
                         />
                       )}

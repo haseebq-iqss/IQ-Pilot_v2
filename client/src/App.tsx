@@ -20,7 +20,7 @@ function App() {
 
   const navigate = useNavigate();
   const [userData, setUserData] = useState<EmployeeTypes>();
-  const [themeMode, setThemeMode] = useState<PaletteMode>("light");
+  const [themeMode, setThemeMode] = useState<PaletteMode>("dark");
   const [openSnack, setOpenSnack] = useState<SnackbarTypes>({
     open: false,
     message: "no message",

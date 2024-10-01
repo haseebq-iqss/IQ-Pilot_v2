@@ -15,7 +15,7 @@ function AdminDashboardLayout() {
         justifyContent: "flex-start",
         p: "15px",
         gap: "15px",
-        backgroundColor: "#D9D9D9",
+        backgroundColor: "#1E375B",
       }}
     >
       {/* SIDEBAR */}

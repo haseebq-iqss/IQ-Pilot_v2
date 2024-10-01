@@ -136,7 +136,7 @@ const DriverProfile = () => {
             <Typography
               variant="h4"
               component="h1"
-              sx={{ fontWeight: "bold", mb: 2, color: "white" }}
+              sx={{ fontWeight: "bold", mb: 2, color:"text.primary" }}
             >
               {driverDetails?.cabDriver?.fname +
                 " " +
@@ -156,7 +156,7 @@ const DriverProfile = () => {
                   fontSize: "1.2rem",
                   ...RowFlex,
                   gap: "6px",
-                  color: "white",
+                  color:"text.primary",
                 }}
               >
                 <MailOutlineIcon sx={{ fontSize: "1.5rem" }} />
@@ -167,7 +167,7 @@ const DriverProfile = () => {
                 sx={{
                   mb: 1,
                   fontSize: "1.2rem",
-                  color: "white",
+                  color:"text.primary",
                   ...RowFlex,
                   gap: "6px",
                 }}
@@ -189,7 +189,7 @@ const DriverProfile = () => {
                 sx={{
                   mb: 1,
                   fontSize: "1.2rem",
-                  color: "white",
+                  color:"text.primary",
                   ...RowFlex,
                   gap: "6px",
                 }}
@@ -206,7 +206,7 @@ const DriverProfile = () => {
                 sx={{
                   mb: 1,
                   fontSize: "1.2rem",
-                  color: "white",
+                  color:"text.primary",
                   ...RowFlex,
                   gap: "6px",
                 }}
@@ -224,7 +224,7 @@ const DriverProfile = () => {
                   mb: 1,
                   fontSize: "1.2rem",
                   textTransform: "capitalize",
-                  color: "white",
+                  color:"text.primary",
                   ...RowFlex,
                   gap: "6px",
                 }}
@@ -246,7 +246,7 @@ const DriverProfile = () => {
                 alignItems: "flex-start",
               }}
             >
-              <Typography sx={{ mb: 1, fontSize: "1.2rem", color: "white" }}>
+              <Typography sx={{ mb: 1, fontSize: "1.2rem", color:"text.primary" }}>
                 <span style={{ fontWeight: 700 }}>Cab Model: </span>{" "}
                 {driverDetails?.carModel}
               </Typography>
@@ -254,7 +254,7 @@ const DriverProfile = () => {
                 sx={{
                   mb: 1,
                   fontSize: "1.2rem",
-                  color: "white",
+                  color:"text.primary",
                   ...RowFlex,
                   gap: "6px",
                 }}

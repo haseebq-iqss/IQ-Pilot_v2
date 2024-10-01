@@ -257,7 +257,7 @@ function EmployeeDashboard() {
               width: "100%",
               gap: "15px",
               backgroundColor: "text.primary",
-              color: "white",
+              color:"text.primary",
               borderRadius: "10px",
               p: "5px",
             }}
@@ -325,7 +325,7 @@ function EmployeeDashboard() {
               onClick={() => Logout()}
               sx={{
                 backgroundColor: "text.primary",
-                color: "white",
+                color:"text.primary",
                 borderRadius: "10px",
                 p: "15px",
               }}
@@ -416,7 +416,7 @@ function EmployeeDashboard() {
           justifyContent: "flex-start",
           width: "100%",
           height: "auto",
-          backgroundColor: "white",
+          backgroundColor: "background.default",
           gap: "20px",
           pb: "20px",
         }}
@@ -432,7 +432,7 @@ function EmployeeDashboard() {
         >
           {routeData !== undefined ? (
             routeData?.typeOfRoute == "pickup" ? (
-              <Typography sx={{ color: "white", fontWeight: 500 }} variant="h4">
+              <Typography sx={{ color:"text.primary", fontWeight: 500 }} variant="h4">
                 Arrival -{" "}
                 <span style={{ fontWeight: 600 }}>
                   {/* {ConvertTo12HourFormat(
@@ -450,7 +450,7 @@ function EmployeeDashboard() {
                 </span>
               </Typography>
             ) : (
-              <Typography sx={{ color: "white", fontWeight: 500 }} variant="h5">
+              <Typography sx={{ color:"text.primary", fontWeight: 500 }} variant="h5">
                 Onboarding at - {"  "}
                 <span style={{ fontWeight: 600 }}>
                   {ConvertShiftTimeTo12HrFormat(
@@ -461,7 +461,7 @@ function EmployeeDashboard() {
               </Typography>
             )
           ) : (
-            <Typography sx={{ color: "white", fontWeight: 500 }} variant="h5">
+            <Typography sx={{ color:"text.primary", fontWeight: 500 }} variant="h5">
               No Cab Assigned ; {"("}
             </Typography>
           )}
@@ -541,7 +541,7 @@ function EmployeeDashboard() {
               sx={{
                 backgroundColor: isCabCancelled ? "info.main" : "error.main",
                 borderRadius: "10px",
-                color: "white",
+                color:"text.primary",
                 padding: "15px",
                 width: "60%",
               }}
@@ -555,7 +555,7 @@ function EmployeeDashboard() {
               sx={{
                 backgroundColor: "success.light",
                 borderRadius: "10px",
-                color: "white",
+                color:"text.primary",
                 padding: "15px",
                 width: "40%",
               }}
@@ -571,7 +571,7 @@ function EmployeeDashboard() {
             sx={{
               // backgroundColor: userData?.cancelCab ? "info.main" : "error.main",
               borderRadius: "10px",
-              // color: "white",
+              // color:"text.primary",
               padding: "15px",
               width: "60%",
             }}

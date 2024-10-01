@@ -57,7 +57,7 @@ const AssignedPassengers = ({ passenger }: { passenger: EmployeeTypes }) => {
         sx={{
           ...ColFlex,
           width: "8rem",
-          backgroundColor: "white",
+          backgroundColor: "background.default",
           padding: "5px",
           borderRadius: "100px",
           boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
@@ -125,7 +125,7 @@ const AssignedPassengers = ({ passenger }: { passenger: EmployeeTypes }) => {
                 p: 0.5,
                 width: "35px",
                 height: "35px",
-                color: "white",
+                color:"text.primary",
               }}
             />
           </ButtonBase> */}

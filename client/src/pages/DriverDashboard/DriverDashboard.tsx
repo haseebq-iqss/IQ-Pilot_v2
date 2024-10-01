@@ -110,7 +110,7 @@ function DriverDashboard() {
             <Typography
               sx={{
                 backgroundColor: "primary.main",
-                color: "white",
+                color:"text.primary",
                 borderRadius: "5px",
                 px: "10px",
               }}
@@ -271,7 +271,7 @@ function DriverDashboard() {
                                       p: 1,
                                       width: "35px",
                                       height: "35px",
-                                      color: "white",
+                                      color:"text.primary",
                                     }}
                                   />
                                 </ButtonBase>
@@ -439,7 +439,7 @@ function DriverDashboard() {
                                       p: 1,
                                       width: "35px",
                                       height: "35px",
-                                      color: "white",
+                                      color:"text.primary",
                                     }}
                                   />
                                 </ButtonBase>

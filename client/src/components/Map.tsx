@@ -399,7 +399,7 @@ const MapComponent = ({
             flexDirection: "row-reverse",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "white",
+            backgroundColor: "background.default",
             color: "black",
             width: "100px",
             height: "100px",
@@ -481,7 +481,7 @@ const MapComponent = ({
               >
                 <h3
                   style={{
-                    backgroundColor: "white",
+                    backgroundColor: "background.default",
                     borderRadius: 100,
                     padding: 1.5,
                   }}
@@ -527,7 +527,7 @@ const MapComponent = ({
                 alignItems: "center",
                 justifyContent: "center",
                 backgroundColor: "#2997FC",
-                color: "white",
+                color: "text.primary",
                 padding: "7.5px 15px",
                 borderRadius: "100px",
                 border: "2.5px solid white",
@@ -538,7 +538,7 @@ const MapComponent = ({
             >
               <h3
                 style={{
-                  backgroundColor: "white",
+                  backgroundColor: "background.default",
                   borderRadius: 100,
                   padding: 1.5,
                 }}
@@ -561,7 +561,7 @@ const MapComponent = ({
               width: "35%",
               display: "flex",
               justifyContent: "space-between",
-              backgroundColor: "white",
+              backgroundColor: "background.default",
               padding: "15px",
               // gap:"25px",
               borderRadius: "10px",

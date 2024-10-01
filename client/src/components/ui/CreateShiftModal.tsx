@@ -118,7 +118,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
       <LinearProgress
         sx={{
           width: artificialDelay ? "100%" : "0%",
-          backgroundColor: "white",
+          backgroundColor: "background.default",
           height: 5,
         }}
       />
@@ -354,7 +354,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               fontWeight: 500,
               ml: "auto",
               backgroundColor: "text.primary",
-              color: "white",
+              color: "background.default",
               marginTop: 2.5,
               py: 1.5,
             }}
@@ -368,7 +368,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               artificialDelay ? (
                 <CircularProgress
                   size={"1rem"}
-                  sx={{ ml: 2.5, color: "white" }}
+                  sx={{ ml: 2.5, color:"text.primary" }}
                 />
               ) : (
                 <RouteIcon />

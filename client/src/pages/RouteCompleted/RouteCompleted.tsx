@@ -68,7 +68,7 @@ function RouteCompleted() {
           justifyContent: "space-between",
           p: "30px",
           // backgroundColor: "text.primary",
-          // color: "white",
+          // color:"text.primary",
         }}
       >
         <Box sx={{ ...ColFlex }}>
@@ -118,7 +118,7 @@ function RouteCompleted() {
           my: "15px",
           padding: "15px",
           gap: "40px",
-          color: "white",
+          color:"text.primary",
           backgroundColor: "text.primary",
           borderRadius: "15px",
         }}
@@ -204,7 +204,7 @@ function RouteCompleted() {
       {/* BACK TO DASH */}
       <Button
         onClick={() => navigate("/driver")}
-        sx={{ backgroundColor: "primary.dark", color: "white", px: 10 }}
+        sx={{ backgroundColor: "primary.dark", color:"text.primary", px: 10 }}
         size="large"
         startIcon={<ArrowBack />}
       >

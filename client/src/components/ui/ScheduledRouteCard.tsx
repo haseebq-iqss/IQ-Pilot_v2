@@ -81,7 +81,8 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
         flexDirection: "column",
         borderRadius: "15px",
         justifyContent: "flex-start",
-        backgroundColor: "white",
+        backgroundColor: "background.default",
+        color:"text.primary",
         border:
           column?.typeOfRoute === "pickup"
             ? "8px solid #2997FC"
@@ -134,7 +135,8 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
                 fontSize: "0.9rem",
                 display: "flex",
                 alignItems: "center",
-                color: "blue",
+                color:"text.primary"
+                
               }}
               fontWeight={600}
             >
@@ -176,7 +178,7 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
                 fontSize: "0.9rem",
                 display: "flex",
                 alignItems: "center",
-                color: "black",
+                color:"text.primary"
               }}
               fontWeight={500}
             >
@@ -185,7 +187,7 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
                   width: "17px",
                   height: "17px",
                   mr: "2px",
-                  color: "black",
+                  color:"text.primary"
                 }}
               />
               {ConvertShiftTimeTo12HrFormat(
@@ -206,7 +208,7 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
       >
         <Typography
           sx={{
-            color: "black",
+            color:"text.primary",
             marginBottom: "8px",
           }}
           fontWeight={600}

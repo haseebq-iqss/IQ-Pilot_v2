@@ -105,7 +105,7 @@ function AdminStatistics() {
           ...RowFlex,
           width: "100%",
           height: "20%",
-          backgroundColor: "white",
+          backgroundColor: "background.default",
           borderRadius: "15px",
           justifyContent: "space-between",
         }}
@@ -116,13 +116,13 @@ function AdminStatistics() {
             ...RowFlex,
             width: "40%",
             height: "20%",
-            backgroundColor: "white",
+            backgroundColor: "background.default",
             borderRadius: "15px",
             justifyContent: "flex-start",
             marginLeft: "50px",
           }}
         >
-          <Box sx={{ ...ColFlex, alignItems: "flex-start", gap: "5px" }}>
+          <Box sx={{ ...ColFlex, alignItems: "flex-start", gap: "5px", color: "text.primary", }}>
             <Typography variant="h4" fontWeight={700}>
               {GetCurrentMonth()}'s Statistics
             </Typography>
@@ -139,7 +139,8 @@ function AdminStatistics() {
             ...RowFlex,
             width: "60%",
             height: "20%",
-            backgroundColor: "white",
+            backgroundColor: "background.default",
+            color: "text.primary",
             borderRadius: "15px",
             justifyContent: "space-evenly",
           }}
@@ -172,7 +173,6 @@ function AdminStatistics() {
                 fontWeight: 600,
               }}
               variant="subtitle2"
-              color={"GrayText"}
             >
               Total Shrinkage
             </Typography>
@@ -212,7 +212,11 @@ function AdminStatistics() {
             title={
               "The total kilometers covered by all the cab drivers in the month."
             }
-            sx={{ ...ColFlex, gap: "5px", "& > [title]:hover::after" : { color: "red" } }}
+            sx={{
+              ...ColFlex,
+              gap: "5px",
+              "& > [title]:hover::after": { color: "red" },
+            }}
           >
             <Typography sx={{ fontWeight: 600 }} variant="h4">
               {BigNumberFormatter(totalKilometers)}
@@ -245,7 +249,7 @@ function AdminStatistics() {
           ...ColFlex,
           width: "100%",
           height: "80%",
-          backgroundColor: "white",
+          backgroundColor: "background.default",
           borderRadius: "15px",
           alignItems: "flex-start",
           justifyContent: "flex-start",
@@ -261,6 +265,7 @@ function AdminStatistics() {
             width: "100%",
             alignItems: "flex-end",
             justifyContent: "space-between",
+            color: "text.primary",
           }}
         >
           <Typography variant="h5" sx={{ fontWeight: 600 }}>
