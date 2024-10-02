@@ -163,7 +163,7 @@ function DriverDashboard() {
                   expandIcon={
                     <ExpandMore
                       sx={{
-                        color: isRouteSelected == route ? "white" : "inherit",
+                        color: isRouteSelected == route ? "text.primary" : "background.default",
                       }}
                     />
                   }

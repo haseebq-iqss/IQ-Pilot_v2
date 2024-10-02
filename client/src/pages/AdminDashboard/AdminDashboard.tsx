@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import TodayFullDateString from "../../utils/TodayFullDateString";
 import baseURL from "../../utils/baseURL";
 // import SOSAudio from "../../assets/sounds/emergency.mp3";
+import { AnimatedCounter } from "react-animated-counter";
 
 const socket = io(baseURL);
 
@@ -279,9 +280,16 @@ function AdminDashboard() {
               sx={{ fontWeight: 500, color: "text.primary" }}
               variant="h4"
             >
-              {allRoutesStatus === "success" && allRoutes?.length > 0
-                ? allRoutes?.length
-                : 0}
+              <AnimatedCounter
+                decimalPrecision={0}
+                fontSize="h3"
+                color="text.primary"
+                value={
+                  allRoutesStatus === "success" && allRoutes?.length > 0
+                    ? allRoutes?.length
+                    : 0
+                }
+              />
             </Typography>
             <Typography
               sx={{
@@ -302,7 +310,12 @@ function AdminDashboard() {
               sx={{ fontWeight: 500, color: "text.primary" }}
               variant="h4"
             >
-              {allCabStatus === "success" ? allCabs?.length : 0}
+              <AnimatedCounter
+                decimalPrecision={0}
+                fontSize="h3"
+                color="text.primary"
+                value={allCabStatus === "success" ? allCabs?.length : 0}
+              />
             </Typography>
             <Typography
               sx={{
@@ -323,9 +336,16 @@ function AdminDashboard() {
               sx={{ fontWeight: 500, color: "text.primary" }}
               variant="h4"
             >
-              {rosteredPassengersStatus === "success"
-                ? rosteredPassengers?.rostered_passengers?.length
-                : 40}
+              <AnimatedCounter
+                decimalPrecision={0}
+                fontSize="h3"
+                color="text.primary"
+                value={
+                  rosteredPassengersStatus === "success"
+                    ? rosteredPassengers?.rostered_passengers?.length
+                    : 40
+                }
+              />
             </Typography>
             <Typography
               sx={{
@@ -346,9 +366,16 @@ function AdminDashboard() {
               sx={{ fontWeight: 500, color: "text.primary" }}
               variant="h4"
             >
-              {pendingPassengersStatus === "success"
-                ? pendingPassengers?.length
-                : 0}
+              <AnimatedCounter
+                decimalPrecision={0}
+                fontSize="h3"
+                color="text.primary"
+                value={
+                  pendingPassengersStatus === "success"
+                    ? pendingPassengers?.length
+                    : 0
+                }
+              />
             </Typography>
             <Typography
               sx={{

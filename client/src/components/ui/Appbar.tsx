@@ -546,8 +546,8 @@ function Appbar() {
         onMouseEnter={() => setOnHover(true)}
         onMouseLeave={() => setOnHover(false)}
         sx={{
-          // backgroundColor: "text.primary",
-          color: "text.primary",
+          backgroundColor: "text.primary",
+          color: "background.default",
           borderRadius: "100px",
           px: 2.5,
         }}
@@ -560,21 +560,8 @@ function Appbar() {
 
       <Button
         sx={{
-          // backgroundColor: "text.primary",
-          color: "text.primary",
-          borderRadius: "100px",
-          px: 2.5,
-        }}
-        variant="contained"
-        startIcon={<AddCircleOutline />}
-        onClick={() => setShiftOpenModal(!openShiftModal)}
-      >
-        Create a Shift
-      </Button>
-      <Button
-        sx={{
-          backgroundColor: "secondary.main",
-          color: "text.primary",
+          backgroundColor: "success.light",
+          color: "white",
           borderRadius: "100px",
           px: 2.5,
         }}
@@ -583,6 +570,20 @@ function Appbar() {
         onClick={HandleDownloadXlsx}
       >
         Export Roster
+      </Button>
+
+      <Button
+        sx={{
+          // backgroundColor: "text.primary",
+          color: "white",
+          borderRadius: "100px",
+          px: 2.5,
+        }}
+        variant="contained"
+        startIcon={<AddCircleOutline />}
+        onClick={() => setShiftOpenModal(!openShiftModal)}
+      >
+        Create a Shift
       </Button>
       {openShiftModal && (
         <CreateShiftModal

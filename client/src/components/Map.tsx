@@ -27,6 +27,7 @@ import {
   GpsFixed,
   Groups,
   LocationOff,
+  Restore,
 } from "@mui/icons-material";
 import MapCenterUpdater from "./MapCenterUpdater";
 import InterpolateLatLon from "../utils/LatLonAnimator";
@@ -458,6 +459,7 @@ const MapComponent = ({
                 padding: "7.5px 7.5px",
                 borderRadius: "100px",
                 border: "2.5px solid white",
+                cursor:"pointer",
                 gap: 10,
 
                 // cursor:"grabbing"
@@ -486,6 +488,7 @@ const MapComponent = ({
                   padding: "7.5px 15px",
                   borderRadius: "100px",
                   border: "2.5px solid white",
+                  cursor:"pointer",
                   gap: 10,
 
                   // cursor:"grabbing"
@@ -515,6 +518,7 @@ const MapComponent = ({
                   padding: "7.5px 15px",
                   borderRadius: "100px",
                   border: "2.5px solid white",
+                  cursor:"pointer",
                   gap: 10,
 
                   // cursor:"grabbing"
@@ -569,25 +573,18 @@ const MapComponent = ({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: "#2997FC",
-                color: "text.primary",
+                backgroundColor: "orange",
+                color: "white",
                 padding: "7.5px 15px",
                 borderRadius: "100px",
                 border: "2.5px solid white",
+                cursor:"pointer",
                 gap: 10,
 
                 // cursor:"grabbing"
               }}
             >
-              <h3
-                style={{
-                  backgroundColor: "background.default",
-                  borderRadius: 100,
-                  padding: 1.5,
-                }}
-              >
-                ♻️
-              </h3>
+              <Restore/>
               <h3>RESET</h3>
             </div>
           )}

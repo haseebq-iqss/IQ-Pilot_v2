@@ -25,6 +25,7 @@ import DriverProfile from "../pages/DriverProfilePage/DriverProfilePage";
 import AdminStatistics from "../pages/AdminStatistics/AdminStatistics";
 import { EditDetails } from "../pages/EditDetails/EditDetails";
 import LiveDriverTracking from "../pages/LiveDriverTracking/LiveDriverTracking";
+import PendingTeamMembers from "../pages/PendingTeamMembers/PendingTeamMembers";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -114,6 +115,14 @@ function MainRouter() {
                 }
               />
               <Route
+                path="pendingTeamMembers"
+                element={
+                  <SlideInOut>
+                    <PendingTeamMembers />
+                  </SlideInOut>
+                }
+              />
+              <Route
                 path="adminStatistics"
                 element={
                   <SlideInOut>
@@ -166,14 +175,14 @@ function MainRouter() {
                 </SlideInOut>
               }
             />
-                          <Route
-                path="admin/live-driver-tracking"
-                element={
-                  <SlideInOut>
-                    <LiveDriverTracking />
-                  </SlideInOut>
-                }
-              />
+            <Route
+              path="admin/live-driver-tracking"
+              element={
+                <SlideInOut>
+                  <LiveDriverTracking />
+                </SlideInOut>
+              }
+            />
           </>
         )}
         {userData?.role === "driver" && (

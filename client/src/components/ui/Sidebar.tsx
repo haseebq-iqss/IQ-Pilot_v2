@@ -141,16 +141,16 @@ function Sidebar() {
           link="allTeamMembers"
           // isActive={false}
         />
+          <SideBarButton
+            text="Pending Team Members"
+            startIcon={<Hail />}
+            link="pendingTeamMembers"
+            // isActive={false}
+          />
         <SideBarButton
           text="Live Driver Tracking"
           startIcon={<LiveTv />}
           link="live-driver-tracking"
-          // isActive={false}
-        />
-        <SideBarButton
-          text="Pending Team Members"
-          startIcon={<Hail />}
-          link="pending-team-members"
           // isActive={false}
         />
       </Box>
