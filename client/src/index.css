@@ -120,10 +120,12 @@ body {
     transform: translateX(-500px) translateY(500px) rotateZ(90deg);
     transition: all 1s ease;
   }
+
   50% {
     transform: translateX(500px) translateY(-500px) rotateZ(90deg);
     transition: all 1s ease;
   }
+
   /* 60% {
     transform:  translateX(500px) translateY(-500px) rotateZ(-90deg);
     transition: all 1s ease;
@@ -138,6 +140,7 @@ body {
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }

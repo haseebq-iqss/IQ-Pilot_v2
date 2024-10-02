@@ -107,7 +107,8 @@ function Sidebar() {
           height: "50%",
           justifyContent: "flex-start",
           gap: "10px",
-          overflow:"auto"
+          overflow:"auto",
+          scrollbarWidth:"none"
         }}
       >
         <SideBarButton
