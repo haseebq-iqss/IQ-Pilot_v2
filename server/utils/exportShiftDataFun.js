@@ -1,5 +1,5 @@
 const xlsx = require("xlsx");
-const { default: ConvertShiftTimeTo12HrFormat } = require("./convertTo12hr");
+const ConvertShiftTimeTo12HrFormat = require("../utils/convertTo12hr");
 
 const prepareShiftDataForExport = (routes) => {
   let rows = [];

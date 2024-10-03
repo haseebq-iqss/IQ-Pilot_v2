@@ -31,4 +31,4 @@ const ConvertShiftTimeTo12HrFormat = (time24, mode = "pickup") => {
   }
 };
 
-export default ConvertShiftTimeTo12HrFormat;
+module.exports = ConvertShiftTimeTo12HrFormat;
