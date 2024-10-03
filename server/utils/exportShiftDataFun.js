@@ -1,19 +1,24 @@
 const xlsx = require("xlsx");
+const { default: ConvertShiftTimeTo12HrFormat } = require("./convertTo12hr");
 
 const prepareShiftDataForExport = (routes) => {
   let rows = [];
   routes.forEach((route) => {
     route.passengers.forEach((passenger) => {
       rows.push({
-        EmployeeName: `${passenger.fname} ${passenger.lname}`,
-        Divison: "ABCD",
-        WorkLocation: route.workLocation,
-        CabNumber: route.cab.cabNumber,
-        CabDriver: `${route.cab.cabDriver.fname} ${route.cab.cabDriver.lname}`,
-        Contact: route.cab.cabDriver.phone,
-        ShiftStart: passenger.currentShift.split("-")[0],
-        ShiftEnd: passenger.currentShift.split("-")[1],
-        TypeOfRoute: route.typeOfRoute,
+        Name: `${passenger.fname} ${passenger.lname}`,
+        Divison: `${passenger.department}`,
+        "Work Location": route.workLocation,
+        "Cab Number": route.cab.cabNumber,
+        "Driver Name": `${route.cab.cabDriver.fname} ${route.cab.cabDriver.lname}`,
+        "Driver Contact": route.cab.cabDriver.phone,
+        "Shift Start": ConvertShiftTimeTo12HrFormat(
+          passenger.currentShift.split("-")[0]
+        ),
+        "Shift End": ConvertShiftTimeTo12HrFormat(
+          passenger.currentShift.split("-")[1]
+        ),
+        "Route Type": route.typeOfRoute,
         Date: route.activeOnDate.toLocaleDateString(),
       });
     });
