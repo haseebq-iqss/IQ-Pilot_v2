@@ -5,7 +5,7 @@
   font-family: Inter;
   scroll-behavior: smooth;
   /* transition: all 0.5s cubic-bezier(0.45, 0, 0.1, 1); */
-  transition: all 0.25s cubic-bezier(0.45, 0, 0.1, 1);
+  /* transition: all 0.25s cubic-bezier(0.45, 0, 0.1, 1); */
 }
 
 .leaflet-control-container .leaflet-routing-container-hide {
@@ -120,10 +120,12 @@ body {
     transform: translateX(-500px) translateY(500px) rotateZ(90deg);
     transition: all 1s ease;
   }
+
   50% {
     transform: translateX(500px) translateY(-500px) rotateZ(90deg);
     transition: all 1s ease;
   }
+
   /* 60% {
     transform:  translateX(500px) translateY(-500px) rotateZ(-90deg);
     transition: all 1s ease;
@@ -138,6 +140,7 @@ body {
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }

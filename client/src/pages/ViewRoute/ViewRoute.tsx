@@ -74,7 +74,7 @@ function ViewRoute() {
         gap: "15px",
         p: "15px",
         height: "100vh",
-        backgroundColor: "#D9D9D9",
+        backgroundColor:"background.default", color:"text.primary"
       }}
     >
       {/* LS */}
@@ -112,12 +112,11 @@ function ViewRoute() {
               sx={{
                 fontWeight: 600,
                 fontSize: "1.75rem",
-                color: "#212A3B",
+                backgroundColor:"background.default", color:"text.primary",
                 ...RowFlex,
               }}
               variant="body2"
               fontWeight={600}
-              color={"GrayText"}
             >
               <AccessTime sx={{ fontSize: "2rem", mr: 1 }} />
               {ConvertShiftTimeTo12HrFormat(
@@ -159,15 +158,15 @@ function ViewRoute() {
             <Typography
               sx={{
                 fontWeight: 600,
-                fontSize: "1.75rem",
-                color: "#212A3B",
+                fontSize: "1.5rem",
+                color: "text.primary",
                 ...RowFlex,
               }}
               variant="body2"
               fontWeight={600}
               color={"GrayText"}
             >
-              <DateRange sx={{ fontSize: "2rem", mr: 1 }} />
+              <DateRange sx={{ fontSize: "1.5rem", mr: 1 }} />
               {DaysTillActive(
                 routeState?.createdAt as any,
                 routeState?.daysRouteIsActive as any

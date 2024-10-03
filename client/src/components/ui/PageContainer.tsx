@@ -11,6 +11,7 @@ type PageContainerPropTypes = {
   headerText: string;
   subHeadingText?: string;
   parentStyles?: CSSProperties;
+  options?: boolean;
 };
 
 function PageContainer({
@@ -18,6 +19,7 @@ function PageContainer({
   headerText,
   subHeadingText,
   parentStyles,
+  options = true,
 }: PageContainerPropTypes) {
   const navigate = useNavigate();
   const goBackHandler = () => {
@@ -64,7 +66,7 @@ function PageContainer({
           </Typography>
         </Box>
 
-        {!location.pathname.includes("/admin/scheduledRoutes") && (
+        {options && !location.pathname.includes("/admin/scheduledRoutes") && (
           <Button
             sx={{
               backgroundColor: "primary.main",

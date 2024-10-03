@@ -7,16 +7,15 @@ import useAxios from "../../api/useAxios";
 import MapComponent from "../../components/Map";
 // import baseURL from "../../utils/baseURL";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex";
-import EmployeeTypes from "../../types/EmployeeTypes";
 import { useNavigate } from "react-router-dom";
 import TodayFullDateString from "../../utils/TodayFullDateString";
 import baseURL from "../../utils/baseURL";
 // import SOSAudio from "../../assets/sounds/emergency.mp3";
+import { AnimatedCounter } from "react-animated-counter";
 
 const socket = io(baseURL);
 
 function AdminDashboard() {
-  const [activeDrivers, setActiveDrivers] = useState<EmployeeTypes[]>([]);
   const [SOSEmergency, setSOSEmergency] = useState<any>(null);
   const audioRef = useRef<any>();
   const navigate = useNavigate();
@@ -33,26 +32,6 @@ function AdminDashboard() {
   //   // return locations;
   // }
 
-  const extractDriverData = (rawData: any) => {
-    const mapTest = new Map(rawData);
-    // console.log(mapTest)
-
-    const mapValues = Array.from(mapTest.values());
-
-    // console.log(mapValues);
-    setActiveDrivers(mapValues as any);
-  };
-
-  const [counter, setCounter] = useState<number>(0);
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCounter((prevCount) => prevCount + 1);
-    }, 3000);
-
-    // Clear the timer on component unmount
-    return () => clearInterval(timer);
-  }, []);
-
   useEffect(() => {
     socket.on("SOS", (data) => {
       console.log("SOS ------->  ", data);
@@ -62,19 +41,7 @@ function AdminDashboard() {
       // emergencyAudio?.play();
       // }
     });
-  }, [socket, counter]);
-
-  useEffect(() => {
-    socket.on("live-drivers", (data) => {
-      // console.log("Live Drivers ------->  ", data);
-      const locations = data;
-      extractDriverData(locations);
-    });
-    socket.on("disconnect", () => {
-      console.log("Socket disconnected, attempting to reconnect...");
-      socket.connect();
-    });
-  }, [socket, counter]);
+  }, [socket]);
 
   // ALL ASSIGNED ROUTES
   const getAllAssignedRoutesQF = () => {
@@ -286,7 +253,7 @@ function AdminDashboard() {
             <Typography variant="h4" fontWeight={600}>
               Today's Plan
             </Typography>
-            <Typography sx={{color: "text.secondary",}} variant="body1">
+            <Typography sx={{ color: "text.secondary" }} variant="body1">
               It’s{" "}
               <span style={{ fontWeight: 600 }}>{TodayFullDateString()}</span>
             </Typography>
@@ -313,9 +280,16 @@ function AdminDashboard() {
               sx={{ fontWeight: 500, color: "text.primary" }}
               variant="h4"
             >
-              {allRoutesStatus === "success" && allRoutes?.length > 0
-                ? allRoutes?.length
-                : 0}
+              <AnimatedCounter
+                decimalPrecision={0}
+                fontSize="h3"
+                color="text.primary"
+                value={
+                  allRoutesStatus === "success" && allRoutes?.length > 0
+                    ? allRoutes?.length
+                    : 0
+                }
+              />
             </Typography>
             <Typography
               sx={{
@@ -336,7 +310,12 @@ function AdminDashboard() {
               sx={{ fontWeight: 500, color: "text.primary" }}
               variant="h4"
             >
-              {allCabStatus === "success" ? allCabs?.length : 0}
+              <AnimatedCounter
+                decimalPrecision={0}
+                fontSize="h3"
+                color="text.primary"
+                value={allCabStatus === "success" ? allCabs?.length : 0}
+              />
             </Typography>
             <Typography
               sx={{
@@ -357,9 +336,16 @@ function AdminDashboard() {
               sx={{ fontWeight: 500, color: "text.primary" }}
               variant="h4"
             >
-              {rosteredPassengersStatus === "success"
-                ? rosteredPassengers?.rostered_passengers?.length
-                : 40}
+              <AnimatedCounter
+                decimalPrecision={0}
+                fontSize="h3"
+                color="text.primary"
+                value={
+                  rosteredPassengersStatus === "success"
+                    ? rosteredPassengers?.rostered_passengers?.length
+                    : 40
+                }
+              />
             </Typography>
             <Typography
               sx={{
@@ -380,9 +366,16 @@ function AdminDashboard() {
               sx={{ fontWeight: 500, color: "text.primary" }}
               variant="h4"
             >
-              {pendingPassengersStatus === "success"
-                ? pendingPassengers?.length
-                : 0}
+              <AnimatedCounter
+                decimalPrecision={0}
+                fontSize="h3"
+                color="text.primary"
+                value={
+                  pendingPassengersStatus === "success"
+                    ? pendingPassengers?.length
+                    : 0
+                }
+              />
             </Typography>
             <Typography
               sx={{
@@ -418,7 +411,6 @@ function AdminDashboard() {
             allEmployees?.length > 1 &&
             allEmployees
           }
-          activeDrivers={activeDrivers}
           unrosteredTms={pendingPassengers}
         />
       </Box>

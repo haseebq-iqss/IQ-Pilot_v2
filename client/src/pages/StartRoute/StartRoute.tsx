@@ -476,11 +476,14 @@ function StartRoute() {
         minHeight: "100%",
         justifyContent: "flex-start",
         alignItems: "flex-start",
+        backgroundColor: "background.default",
+        color: "text.primary",
       }}
     >
       {/* SCHEDULE A ROUTE MODAL */}
       <Modal
-        sx={{ ...ColFlex, width: "100%", height: "100%" }}
+        sx={{ ...ColFlex, width: "100%", height: "100%",          backgroundColor: "background.default",
+          color: "text.primary", }}
         open={modalProps?.openModal}
         onClose={() => setModalProps({ openModal: false })}
       >
@@ -496,6 +499,7 @@ function StartRoute() {
             textAlign: "center",
             justifyContent: "center",
             backgroundColor: "background.default",
+            color: "text.primary",
           }}
         >
           {/* CALL OPTION */}
@@ -631,6 +635,8 @@ function StartRoute() {
             p: "15px",
             backgroundColor: "text.primary",
             color:"text.primary",
+            backgroundColor: "background.default",
+            color: "text.primary",
           }}
         >
           <Typography variant="h4" fontWeight={600}>
@@ -669,8 +675,8 @@ function StartRoute() {
           my: "0px",
           padding: "15px",
           gap: "30px",
-          color:"text.primary",
-          backgroundColor: "text.primary",
+          backgroundColor: "background.default",
+          color: "text.primary",
           borderRadius: isXS || isSM ? "15px" : 0,
         }}
       >
@@ -701,6 +707,8 @@ function StartRoute() {
                   sx={{
                     ...RowFlex,
                     width: "100%",
+                    backgroundColor: "background.default",
+                    color: "text.primary",
                   }}
                 >
                   <Box
@@ -756,12 +764,12 @@ function StartRoute() {
                       {!passenger?.isCabCancelled ? (
                         <Hail
                           sx={{
-                            backgroundColor: "background.default",
+                            backgroundColor: "text.primary",
                             borderRadius: "100px",
                             p: 1,
                             width: "35px",
                             height: "35px",
-                            color: "text.primary",
+                            color: "background.default",
                           }}
                         />
                       ) : (

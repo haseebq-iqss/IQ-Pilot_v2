@@ -219,7 +219,14 @@ function EmployeeDashboard() {
   }, [socket, routeData, counter]);
 
   return (
-    <Box sx={{ ...PageFlex, height: "100vh" }}>
+    <Box
+      sx={{
+        ...PageFlex,
+        height: "100vh",
+        backgroundColor: "background.default",
+        color: "text.primary",
+      }}
+    >
       {/* SIDEBAR */}
       <Drawer open={openDrawer} onClose={() => setOpenDrawer(!openDrawer)}>
         <Box
@@ -229,6 +236,8 @@ function EmployeeDashboard() {
             height: "100vh",
             gap: "40px",
             p: "15px",
+            backgroundColor: "background.default",
+            color: "text.primary",
           }}
         >
           {/* Logo Header */}
@@ -238,6 +247,8 @@ function EmployeeDashboard() {
               width: "100%",
               justifyContent: "space-between",
               alignItems: "flex-start",
+              backgroundColor: "background.default",
+              color: "text.primary",
             }}
           >
             <Box
@@ -256,10 +267,10 @@ function EmployeeDashboard() {
               ...RowFlex,
               width: "100%",
               gap: "15px",
-              backgroundColor: "text.primary",
-              color:"text.primary",
               borderRadius: "10px",
               p: "5px",
+              backgroundColor: "background.default",
+              color: "text.primary",
             }}
           >
             <Avatar src={baseURL + userData?.profilePicture} />
@@ -324,8 +335,8 @@ function EmployeeDashboard() {
             <Button
               onClick={() => Logout()}
               sx={{
-                backgroundColor: "text.primary",
-                color:"text.primary",
+                backgroundColor: "info.main",
+                color: "text.primary",
                 borderRadius: "10px",
                 p: "15px",
               }}
@@ -340,7 +351,13 @@ function EmployeeDashboard() {
 
       {/* SOS MODAL */}
       <Modal
-        sx={{ ...ColFlex, width: "100%", height: "100%" }}
+        sx={{
+          ...ColFlex,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "background.default",
+          color: "text.primary",
+        }}
         open={openModal}
         onClose={() => setOpenModal(!openModal)}
       >
@@ -417,6 +434,7 @@ function EmployeeDashboard() {
           width: "100%",
           height: "auto",
           backgroundColor: "background.default",
+          color: "text.primary",
           gap: "20px",
           pb: "20px",
         }}
@@ -425,14 +443,18 @@ function EmployeeDashboard() {
         <Box
           sx={{
             width: "100%",
-            backgroundColor: "text.primary",
             textAlign: "center",
             py: "5px",
+            backgroundColor: "background.default",
+            color: "text.primary",
           }}
         >
           {routeData !== undefined ? (
             routeData?.typeOfRoute == "pickup" ? (
-              <Typography sx={{ color:"text.primary", fontWeight: 500 }} variant="h4">
+              <Typography
+                sx={{ color: "text.primary", fontWeight: 500 }}
+                variant="h4"
+              >
                 Arrival -{" "}
                 <span style={{ fontWeight: 600 }}>
                   {/* {ConvertTo12HourFormat(
@@ -450,7 +472,10 @@ function EmployeeDashboard() {
                 </span>
               </Typography>
             ) : (
-              <Typography sx={{ color:"text.primary", fontWeight: 500 }} variant="h5">
+              <Typography
+                sx={{ color: "text.primary", fontWeight: 500 }}
+                variant="h5"
+              >
                 Onboarding at - {"  "}
                 <span style={{ fontWeight: 600 }}>
                   {ConvertShiftTimeTo12HrFormat(
@@ -461,7 +486,10 @@ function EmployeeDashboard() {
               </Typography>
             )
           ) : (
-            <Typography sx={{ color:"text.primary", fontWeight: 500 }} variant="h5">
+            <Typography
+              sx={{ color: "text.primary", fontWeight: 500 }}
+              variant="h5"
+            >
               No Cab Assigned ; {"("}
             </Typography>
           )}
@@ -541,7 +569,7 @@ function EmployeeDashboard() {
               sx={{
                 backgroundColor: isCabCancelled ? "info.main" : "error.main",
                 borderRadius: "10px",
-                color:"text.primary",
+                color: "text.primary",
                 padding: "15px",
                 width: "60%",
               }}
@@ -555,7 +583,7 @@ function EmployeeDashboard() {
               sx={{
                 backgroundColor: "success.light",
                 borderRadius: "10px",
-                color:"text.primary",
+                color: "text.primary",
                 padding: "15px",
                 width: "40%",
               }}

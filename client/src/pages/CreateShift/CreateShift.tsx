@@ -418,7 +418,7 @@ function CreateShift() {
           height: "100vh",
           flexDirection: "column",
           gap: "15px",
-          backgroundColor: "background.default",
+          backgroundColor:"background.default", color:"text.primary"
         }}
       >
         <Box
@@ -436,8 +436,8 @@ function CreateShift() {
             <Typography variant="h4" fontWeight={600}>
               {routeState?.data?.workLocation}
             </Typography>
-            <Typography variant="h6" fontWeight={600}>
-              {routeState?.data?.activationMode === "immediate" ? "IIA" : "FND" +
+            <Typography variant="body1" fontWeight={500}>
+              {routeState?.data?.activationMode === "immediate" ? "Route Activation - Today" : "Route Activation - Tomorrow" +
                 " --> " +
                 ConvertShiftTimeTo12HrFormat(routeState?.data?.currentShift)}
             </Typography>

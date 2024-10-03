@@ -3,6 +3,7 @@ import {
   ArrowForward,
   DarkMode,
   EmojiTransportation,
+  GetApp,
   Hail,
   Home,
   LightMode,
@@ -103,7 +104,7 @@ function Appbar() {
   const [availableCabsOnShift, setAvailableCabsOnShift] =
     useState<[Cabtypes]>();
 
-    console.log(cabs)
+  // console.log(cabs)
 
   const GetAvailableCabsOnShift = () => {
     const availableCabs = cabs?.filter(
@@ -117,9 +118,56 @@ function Appbar() {
     GetAvailableCabsOnShift();
   }, [cabs, currentShift]);
 
-  // console.log(cabs[0]?.occupiedShifts)
+  const [downloadXlsx, setDownloadXlsx] = useState<boolean>(false);
 
-  // console.log(drivers);
+  // Fetch the XLSX data when downloadXlsx is true
+  const { data: exportXlsx, refetch } = useQuery({
+    queryKey: ["export-xlsx"],
+    enabled: false, // Disable automatic fetching
+    queryFn: async () => {
+      const response = await useAxios.get("/routes/exports/shifts-data", {
+        responseType: "arraybuffer", // Ensure data is received as an ArrayBuffer
+      });
+      return response.data;
+    },
+  });
+
+  function getFormattedFileName() {
+    const today = new Date();
+    const day = today.getDate().toString().padStart(2, "0");
+    const month = (today.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based, so add 1
+    const year = today.getFullYear();
+
+    // Construct the file name with the day-first format
+    return `iQSS-Team Route Planning (${day}/${month}/${year}).xlsx`;
+  }
+
+  useEffect(() => {
+    if (exportXlsx && downloadXlsx) {
+      // Create a Blob from the ArrayBuffer data
+      const blob = new Blob([exportXlsx], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      const fileName = getFormattedFileName();
+      link.setAttribute("download", fileName); // File name for the download
+      // link.setAttribute("download", "iQSS-Team Route Planning (10/01).xlsx"); // File name for the download
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link); // Clean up the link
+      setDownloadXlsx(false); // Reset the download state
+    }
+  }, [exportXlsx, downloadXlsx]);
+
+  // Trigger the fetch and download
+  const HandleDownloadXlsx = () => {
+    setDownloadXlsx(true);
+    refetch(); // Manually trigger the query to fetch the XLSX file
+  };
 
   return (
     <Box
@@ -498,8 +546,8 @@ function Appbar() {
         onMouseEnter={() => setOnHover(true)}
         onMouseLeave={() => setOnHover(false)}
         sx={{
-          // backgroundColor: "text.primary",
-          color: "text.primary",
+          backgroundColor: "text.primary",
+          color: "background.default",
           borderRadius: "100px",
           px: 2.5,
         }}
@@ -512,8 +560,22 @@ function Appbar() {
 
       <Button
         sx={{
+          backgroundColor: "success.light",
+          color: "white",
+          borderRadius: "100px",
+          px: 2.5,
+        }}
+        variant="contained"
+        startIcon={<GetApp />}
+        onClick={HandleDownloadXlsx}
+      >
+        Export Roster
+      </Button>
+
+      <Button
+        sx={{
           // backgroundColor: "text.primary",
-          color: "text.primary",
+          color: "white",
           borderRadius: "100px",
           px: 2.5,
         }}
