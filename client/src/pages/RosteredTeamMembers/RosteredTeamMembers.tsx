@@ -32,7 +32,7 @@ import useAxios from "../../api/useAxios";
 import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 
-function PendingTeamMembers() {
+function RosteredTeamMembers() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [searchtext, setSearchText] = useState("");
@@ -40,16 +40,16 @@ function PendingTeamMembers() {
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
-  // ALL PENDING PASSENGERS
-  const getPendingPassengersQF = () => {
-    return useAxios.get("routes/pendingPassengers");
+  // ALL ROASTERED PASSENGERS
+  const getRosteredPassengersQF = () => {
+    return useAxios.get("routes/rosteredPassengers");
   };
 
   const { data: teamMemberData } = useQuery({
     queryKey: ["all-teamMembers"],
-    queryFn: getPendingPassengersQF,
+    queryFn: getRosteredPassengersQF,
     select: (data: any) => {
-      return data.data.pending_passengers;
+      return data.data.rostered_passengers;
     },
   });
 
@@ -118,7 +118,7 @@ function PendingTeamMembers() {
   }, []);
   return (
     <PageContainer
-      headerText={`Pending Team Members (${teamMemberData?.length || 0})`}
+      headerText={`Rostered Team Member (${teamMemberData?.length || 0})`}
       options={false}
     >
       <Box sx={{ width: "100%", height: "50vh" }}>
@@ -297,4 +297,4 @@ function PendingTeamMembers() {
   );
 }
 
-export default PendingTeamMembers;
+export default RosteredTeamMembers;

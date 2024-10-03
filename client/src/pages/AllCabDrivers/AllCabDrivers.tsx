@@ -92,10 +92,10 @@ function AllCabDrivers() {
     },
     onSuccess: (data) => {
       setOpenSnack({
-        open:true,
-        message:"Driver was deleted!",
-        severity: 'info'
-      })
+        open: true,
+        message: "Driver was deleted!",
+        severity: "info",
+      });
     },
     onSettled: () => {
       qc.invalidateQueries({ queryKey: ["all-cabs"] });

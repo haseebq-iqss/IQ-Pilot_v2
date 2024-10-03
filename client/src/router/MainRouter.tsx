@@ -26,6 +26,7 @@ import AdminStatistics from "../pages/AdminStatistics/AdminStatistics";
 import { EditDetails } from "../pages/EditDetails/EditDetails";
 import LiveDriverTracking from "../pages/LiveDriverTracking/LiveDriverTracking";
 import PendingTeamMembers from "../pages/PendingTeamMembers/PendingTeamMembers";
+import RosteredTeamMembers from "../pages/RosteredTeamMembers/RosteredTeamMembers";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -119,6 +120,14 @@ function MainRouter() {
                 element={
                   <SlideInOut>
                     <PendingTeamMembers />
+                  </SlideInOut>
+                }
+              />
+              <Route
+                path="rosteredTeamMembers"
+                element={
+                  <SlideInOut>
+                    <RosteredTeamMembers />
                   </SlideInOut>
                 }
               />

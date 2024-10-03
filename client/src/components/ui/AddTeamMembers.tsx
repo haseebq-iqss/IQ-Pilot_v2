@@ -19,6 +19,7 @@ import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import Cabtypes from "../../types/CabTypes";
+import * as XLSX from "xlsx";
 
 export const AddTeamMembers = () => {
   const [department, setDepartment] = useState("");
@@ -201,6 +202,47 @@ export const AddTeamMembers = () => {
 
     AddTeamMember(formData);
   }
+
+  const bulkUploadMF = (bulkUploadData: any) => {
+    return useAxios.post("users/bulk-upload", bulkUploadData);
+  };
+
+  const { mutate: bulkUploadMutation } = useMutation({
+    mutationFn: bulkUploadMF,
+    onSuccess: (data) => {
+      console.log(data);
+      setOpenSnack({
+        open: true,
+        message: "Bulk Upload was Successful",
+        severity: "success",
+      });
+    },
+    onError: (err: any) => {
+      setOpenSnack({
+        open: true,
+        message: "Something went wrong!",
+        severity: "error",
+      });
+    },
+  });
+  // const [jsonData, setJsonData] = useState(null);
+  const BulkUploader = (event: any) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const data: any = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const json = XLSX.utils.sheet_to_json(worksheet);
+        // setJsonData(json);
+        console.log(json);
+        bulkUploadMutation(json);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  };
 
   return (
     <PageContainer
@@ -444,7 +486,7 @@ export const AddTeamMembers = () => {
                 width: "50%",
                 height: "3.4rem",
                 bgcolor: "#9329FC",
-                color:"text.primary",
+                color: "white",
                 p: "0",
               }}
             >
@@ -562,6 +604,7 @@ export const AddTeamMembers = () => {
             sx={{
               width: "100%",
               display: "flex",
+              flexDirection: "column",
               justifyContent: "flex-end",
               mt: "1rem",
             }}
@@ -583,6 +626,27 @@ export const AddTeamMembers = () => {
               }`}
             </Button>
           </Box>
+          {/* BULK UPLOAD */}
+          <Button
+            variant="contained"
+            component="label"
+            sx={{
+              width: "50%",
+              height: "3.4rem",
+              bgcolor: "warning.dark",
+              color: "white",
+              p: "0",
+            }}
+          >
+            Upload an Excel file
+            <input
+              onChange={BulkUploader}
+              type="file"
+              // accept="image/png, image/gif, image/jpeg"
+              hidden
+              name="profilePicture"
+            />
+          </Button>
         </Box>
       </Box>
     </PageContainer>

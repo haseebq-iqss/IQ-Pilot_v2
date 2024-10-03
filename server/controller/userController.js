@@ -141,8 +141,10 @@ const cancelCab = catchAsync(async (req, res, next) => {
 
 const bulkUserUpload = catchAsync(async (req, res, next) => {
   const data = req.body;
+  console.log('asdasdad')
   // console.log(data)
   for (const item of data) {
+    console.log(item.phone)
     // const hashedPassword = await bcrypt.hash("password", 12);
     const user = new User({
       fname: item.fname,
@@ -180,5 +182,6 @@ module.exports = {
   updateUser,
   deleteUser,
   cancelCab,
+  bulkUserUpload
   // uploadTmsExcelSheet,
 };

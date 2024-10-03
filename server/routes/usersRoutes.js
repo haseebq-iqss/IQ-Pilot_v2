@@ -14,7 +14,7 @@ const {
   updateUser,
   deleteUser,
   cancelCab,
-  uploadTmsExcelSheet,
+  bulkUserUpload
 } = require("../controller/userController");
 const { protect, restrictTo } = require("../controller/authController");
 

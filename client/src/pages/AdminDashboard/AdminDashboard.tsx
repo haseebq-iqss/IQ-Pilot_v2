@@ -331,7 +331,10 @@ function AdminDashboard() {
               Available Cabs
             </Typography>
           </Box>
-          <Box sx={{ ...ColFlex, gap: "5px" }}>
+          <Box
+            sx={{ ...ColFlex, gap: "5px", cursor: "pointer" }}
+            onClick={() => navigate("rosteredTeamMembers")}
+          >
             <Typography
               sx={{ fontWeight: 500, color: "text.primary" }}
               variant="h4"
@@ -361,7 +364,10 @@ function AdminDashboard() {
               Rostered TMs
             </Typography>
           </Box>
-          <Box sx={{ ...ColFlex, gap: "5px" }}>
+          <Box
+            sx={{ ...ColFlex, gap: "5px", cursor: "pointer" }}
+            onClick={() => navigate("pendingTeamMembers")}
+          >
             <Typography
               sx={{ fontWeight: 500, color: "text.primary" }}
               variant="h4"

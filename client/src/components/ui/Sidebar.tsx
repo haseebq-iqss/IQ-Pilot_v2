@@ -4,6 +4,7 @@ import {
   Hail,
   LiveTv,
   LocalTaxi,
+  NoCrash,
   QueryStats,
   Route,
 } from "@mui/icons-material";
@@ -145,6 +146,12 @@ function Sidebar() {
             text="Pending Team Members"
             startIcon={<Hail />}
             link="pendingTeamMembers"
+            // isActive={false}
+          />
+          <SideBarButton
+            text="Rostered Team Members"
+            startIcon={<NoCrash />}
+            link="rosteredTeamMembers"
             // isActive={false}
           />
         <SideBarButton
