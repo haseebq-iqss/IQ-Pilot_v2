@@ -52,6 +52,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
   ];
 
   const dropTimings = [
+    { t4Time: "17:00", t2Time: "05:00 PM" },
     { t4Time: "18:00", t2Time: "06:00 PM" },
     { t4Time: "20:30", t2Time: "08:30 PM" },
     { t4Time: "23:00", t2Time: "11:00 PM" },
