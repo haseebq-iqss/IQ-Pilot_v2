@@ -30,12 +30,22 @@ const cabSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide the car color"],
   },
+  mileage: {
+    type: String,
+    required: [true, "Please provide the mileage of the cab"],
+    unique: false,
+  },
   androidSetup: {
     type: Boolean,
     required: [
       true,
       "Please confirm if the Android setup is installed in the cab.",
     ],
+    default: false,
+  },
+  acInstalled: {
+    type: Boolean,
+    required: [true, "Please confirm if the AC is installed in the cab."],
     default: false,
   },
 });

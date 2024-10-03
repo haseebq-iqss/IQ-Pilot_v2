@@ -4,6 +4,7 @@ const Route = require("../models/route");
 const User = require("../models/user");
 const AppError = require("../utils/appError");
 const { catchAsync } = require("../utils/catchAsync");
+const xlsx = require("xlsx");
 
 const filterReqObj = (reqObj) => {
   const newObj = {};
@@ -131,6 +132,45 @@ const cancelCab = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: "Success", data: user });
 });
 
+// const uploadTmsExcelSheet = catchAsync(async (req, res, next) => {
+//   const file = req.file;
+//   if (!file) return next(new AppError(`No file uploaded`, 400));
+//   const work_book = xlsx.read(file.buffer, { type: "buffer" });
+//   const sheet_name = work_book.SheetNames[0];
+// });
+
+const bulkUserUpload = catchAsync(async (req, res, next) => {
+  const data = req.body;
+  // console.log(data)
+  for (const item of data) {
+    // const hashedPassword = await bcrypt.hash("password", 12);
+    const user = new User({
+      fname: item.fname,
+      lname: item.lname,
+      password: "iQuasar@12345",
+      phone: item.phone,
+      email: item.email,
+      role: item.role,
+      profilePicture: item.profilePicture,
+      department: item.department,
+      pickUp: {
+        type: "Point",
+        coordinates: [
+          Number(item.coordinates.split(",")[0]),
+          Number(item.coordinates.split(",")[1]),
+        ],
+        address: item.address,
+        description: item.description,
+      },
+      currentShift: item.currentShift,
+      workLocation: item.workLocation,
+      role: "employee",
+    });
+    await user.save();
+  }
+  res.status(200).json({ status: "Success" });
+});
+
 module.exports = {
   getAllUsers,
   getAllTMS,
@@ -140,4 +180,5 @@ module.exports = {
   updateUser,
   deleteUser,
   cancelCab,
+  // uploadTmsExcelSheet,
 };

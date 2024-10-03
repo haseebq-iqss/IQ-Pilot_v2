@@ -41,6 +41,8 @@ const signup = catchAsync(async (req, res, next) => {
       numberPlate: req.body.numberPlate,
       carModel: req.body.carModel,
       carColor: req.body.carColor,
+      mileage: req.body.mileage,
+      acInstalled: req.body.acInstalled,
     });
   }
   // createSendToken(user, 201, res);

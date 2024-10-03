@@ -1,5 +1,9 @@
 const express = require("express");
 const upload_profile_pic = require("../controller/uploadProfilePicController");
+// const multer = require("multer");
+
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage });
 
 const {
   getAllUsers,
@@ -10,6 +14,7 @@ const {
   updateUser,
   deleteUser,
   cancelCab,
+  uploadTmsExcelSheet,
 } = require("../controller/userController");
 const { protect, restrictTo } = require("../controller/authController");
 
@@ -36,5 +41,14 @@ router
 router
   .route("/cancel-cab/:id")
   .patch(restrictTo("admin", "employee"), cancelCab);
+
+router.route("/bulk-upload").post(restrictTo("admin"), bulkUserUpload);
+
+// router.post(
+//   "/upload-tms-excel-sheet",
+//   restrictTo("admin"),
+//   upload.single("file"),
+//   uploadTmsExcelSheet
+// );
 
 module.exports = router;
