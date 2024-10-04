@@ -39,6 +39,7 @@ import baseURL from "../../utils/baseURL";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat.ts";
 import Cabtypes from "../../types/CabTypes.ts";
+import ThemeModeContext from "../../context/ThemeModeContext.ts";
 
 // export const GetRMData = (RMData:any) => {
 //   console.log(RMData)
@@ -54,11 +55,15 @@ function AddPassengers() {
   const [filteredEmployees, setFilteredEmployees] = useState<EmployeeTypes[]>();
 
   const rangreth = [33.996807, 74.79202];
-  // const zaira = [34.1639168, 74.8158976];
-  const zaira = [34.17342209237591, 74.80831111718207];
+  const zaira = [34.173415, 74.808653];
+  const karanagar = [34.081357, 74.799716];
+  const zirakpur = [30.633014690428567, 76.8251843278478];
+  const hyderabad = [17.438853001366205, 78.34823513646229];
 
   const routeState = location?.state;
-  console.log(routeState);
+  // console.log(routeState);
+
+  const { themeMode }: any = useContext(ThemeModeContext);
 
   const { data: employees } = useQuery({
     queryKey: ["all-employees"],
@@ -215,7 +220,17 @@ function AddPassengers() {
 
     setSelectedEmps([
       ...passengersLatLons,
-      routeState?.office === "Rangreth" ? rangreth : zaira,
+      routeState?.office === "Rangreth"
+        ? rangreth
+        : routeState?.office === "Zaira Towers"
+        ? zaira
+        : routeState?.office === "Karanagar"
+        ? karanagar
+        : routeState?.office === "Zirakpur"
+        ? zirakpur
+        : routeState?.office === "Hyderabad"
+        ? hyderabad
+        : [],
     ]);
 
     RMDataPromise.then((res: any) => {
@@ -326,16 +341,33 @@ function AddPassengers() {
           <Box
             sx={{ width: "100px", aspectRatio: 2.6863 }}
             component={"img"}
+            // src={
+            //   routeState?.typeOfRoute === "pickup"
+            //     ? "/images/pickup-dark.png"
+            //     : "/images/drop-dark.png" 
+            // }
             src={
               routeState?.typeOfRoute === "pickup"
-                ? "/images/pickup-dark.png"
+                ? themeMode === "dark"
+                  ? "/images/pickup-light.png"
+                  : "/images/pickup-dark.png"
+                : themeMode === "dark"
+                ? "/images/drop-light.png"
                 : "/images/drop-dark.png"
             }
           />
-          <Typography variant="body2" fontWeight={600}  sx={{color:"text.secondary"}}>
+          <Typography
+            variant="body2"
+            fontWeight={600}
+            sx={{ color: "text.secondary" }}
+          >
             Shift time -{" "}
             <span
-              style={{ fontWeight: 600, fontSize: "1.75rem", color: "text.primary" }}
+              style={{
+                fontWeight: 600,
+                fontSize: "1.75rem",
+                color: "text.primary",
+              }}
             >
               {routeState?.currentShift !== undefined &&
                 ConvertShiftTimeTo12HrFormat(
@@ -695,7 +727,7 @@ function AddPassengers() {
                               "rgba(10.59%, 38.04%, 98.82%, 0.8)",
                           }}
                         >
-                          <Typography fontWeight={600} variant="body1">
+                          <Typography fontWeight={600} variant="body1" color={"white"}>
                             {index + 1}
                           </Typography>
                         </Avatar>{" "}

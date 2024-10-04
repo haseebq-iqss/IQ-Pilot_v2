@@ -1,4 +1,4 @@
-import { Close, Person, Settings, Warning } from "@mui/icons-material";
+import { Close, MeetingRoom, Person, Settings, Warning } from "@mui/icons-material";
 import { Avatar, Box, Button, Drawer, Modal, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -95,7 +95,7 @@ function DriverLayout() {
             <Box
               component={"img"}
               src="/images/logo-blue.png"
-              sx={{ width: "50px", aspectRatio: 1 }}
+              sx={{ width: "35px", aspectRatio: 1, m: 0.5 }}
             />
             <Close
               sx={{ width: 30, height: 30 }}
@@ -170,11 +170,10 @@ function DriverLayout() {
             <Button
               onClick={() => setOpenModal(!openModal)}
               sx={{
-                backgroundColor: "error",
                 borderRadius: "10px",
                 p: "15px",
               }}
-              color={"error"}
+              color={"warning"}
               fullWidth
               startIcon={<Warning />}
               variant={"contained"}
@@ -184,13 +183,14 @@ function DriverLayout() {
             <Button
               onClick={() => Logout()}
               sx={{
-                backgroundColor: "info.light",
-                color: "text.primary",
+                color: "white",
                 borderRadius: "10px",
                 p: "15px",
               }}
+              color={"error"}
               fullWidth
               variant={"contained"}
+              startIcon={<MeetingRoom />}
             >
               LOG OUT
             </Button>

@@ -3,6 +3,7 @@ import {
   ArrowRight,
   Call,
   Close,
+  MeetingRoom,
   Person,
   Settings,
   Warning,
@@ -145,7 +146,7 @@ function EmployeeDashboard() {
     cancelCab();
   }
 
-  console.log(cabCancelData);
+  // console.log(cabCancelData);
   useEffect(() => {
     const passengers = routeData?.passengers;
     // console.log(passengers);
@@ -254,7 +255,7 @@ function EmployeeDashboard() {
             <Box
               component={"img"}
               src="/images/logo-blue.png"
-              sx={{ width: "50px", aspectRatio: 1 }}
+              sx={{ width: "35px", aspectRatio: 1, m:0.5 }}
             />
             <Close
               sx={{ width: 30, height: 30 }}
@@ -321,11 +322,11 @@ function EmployeeDashboard() {
             <Button
               onClick={() => setOpenModal(!openModal)}
               sx={{
-                backgroundColor: "error",
                 borderRadius: "10px",
                 p: "15px",
+                color:"white"
               }}
-              color={"error"}
+              color={"warning"}
               fullWidth
               startIcon={<Warning />}
               variant={"contained"}
@@ -335,11 +336,12 @@ function EmployeeDashboard() {
             <Button
               onClick={() => Logout()}
               sx={{
-                backgroundColor: "info.main",
+                backgroundColor: "error.main",
                 color: "text.primary",
                 borderRadius: "10px",
                 p: "15px",
               }}
+              startIcon={<MeetingRoom />}
               fullWidth
               variant={"contained"}
             >
