@@ -3,6 +3,7 @@ import PageContainer from "./PageContainer";
 import {
   Box,
   Button,
+  CircularProgress,
   FormControl,
   InputLabel,
   MenuItem,
@@ -20,11 +21,13 @@ import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import Cabtypes from "../../types/CabTypes";
 import * as XLSX from "xlsx";
+import { CloudUpload } from "@mui/icons-material";
 
 export const AddTeamMembers = () => {
   const [department, setDepartment] = useState("");
   const [workLocation, setWorkLocation] = useState("");
   const [androidSetup, setAndroidSetup] = useState(true);
+  const [typeOfCab, setTypeOfCab] = useState("vendor");
 
   const navigate = useNavigate();
 
@@ -107,6 +110,9 @@ export const AddTeamMembers = () => {
       carModel: string;
       carColor: string;
       role: string;
+      androidSetup: boolean;
+      typeOfCab: string;
+      mileage: string;
     }
 
     const cabDriverData: CabDriverType = {
@@ -124,6 +130,8 @@ export const AddTeamMembers = () => {
       carColor: currentTarget.carColor.value,
       androidSetup,
       role: "driver",
+      typeOfCab,
+      mileage: currentTarget.mileage.value,
     };
 
     const formData = new FormData();
@@ -143,6 +151,7 @@ export const AddTeamMembers = () => {
     // console.log(formData);
     AddCabDriver(formData as CabDriverType);
   }
+
   const handleFullName: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { name, value } = e.target;
     setFullName((prevFullName) => ({
@@ -207,7 +216,7 @@ export const AddTeamMembers = () => {
     return useAxios.post("users/bulk-upload", bulkUploadData);
   };
 
-  const { mutate: bulkUploadMutation } = useMutation({
+  const { mutate: bulkUploadMutation, status: bulkUploadStatus } = useMutation({
     mutationFn: bulkUploadMF,
     onSuccess: (data) => {
       console.log(data);
@@ -216,6 +225,7 @@ export const AddTeamMembers = () => {
         message: "Bulk Upload was Successful",
         severity: "success",
       });
+      navigate(-1);
     },
     onError: (err: any) => {
       setOpenSnack({
@@ -598,6 +608,48 @@ export const AddTeamMembers = () => {
                   InputLabelProps={{ shrink: true }}
                 />
               </Box>
+              <Box
+                sx={{
+                  ...RowFlex,
+                  width: "100%",
+                  justifyContent: "space-between",
+                  gap: "15px",
+                }}
+              >
+                <TextField
+                  required={driverPath}
+                  fullWidth
+                  name="mileage"
+                  label="cab mileage"
+                  type="number"
+                  placeholder="Mileage in Kilometers"
+                  InputLabelProps={{ shrink: true }}
+                />
+                <FormControl fullWidth>
+                  <InputLabel
+                    sx={{ lineHeight: "10px", fontSize: "0.8rem" }}
+                    id="department-label"
+                  >
+                    Type Of Cab
+                  </InputLabel>
+
+                  <Select
+                    // size="small"
+                    sx={{ width: "100%" }}
+                    labelId="typeOfCab"
+                    id="typeOfCab"
+                    value={typeOfCab}
+                    onChange={(e) => {
+                      setTypeOfCab(e.target.value);
+                      console.log(e.target.value);
+                    }}
+                    label="Type of Cab"
+                  >
+                    <MenuItem value={"personal"}>Personal</MenuItem>
+                    <MenuItem value={"vendor"}>Vendor (Outsourced)</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
             </>
           )}
           <Box
@@ -636,9 +688,20 @@ export const AddTeamMembers = () => {
               bgcolor: "warning.dark",
               color: "white",
               p: "0",
+              mt: 5,
             }}
+            startIcon={
+              bulkUploadStatus === "pending" ? (
+                <CircularProgress size={20} sx={{ mr: 1, color: "white" }} />
+              ) : (
+                <CloudUpload sx={{ mr: 1 }} />
+              )
+            }
+            disabled={bulkUploadStatus === "pending"}
           >
-            Upload an Excel file
+            {bulkUploadStatus === "pending"
+              ? "Uploading"
+              : "Upload an Excel file"}
             <input
               onChange={BulkUploader}
               type="file"

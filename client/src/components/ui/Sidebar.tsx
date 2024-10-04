@@ -2,6 +2,7 @@ import {
   Dashboard,
   EmojiPeople,
   Hail,
+  KeyboardDoubleArrowDown,
   LiveTv,
   LocalTaxi,
   NoCrash,
@@ -108,10 +109,13 @@ function Sidebar() {
           height: "50%",
           justifyContent: "flex-start",
           gap: "10px",
-          overflow:"auto",
-          scrollbarWidth:"none"
+          overflow: "auto",
+          scrollbarWidth: "none",
         }}
       >
+        <Box sx={{ position: "absolute", left: "17.5%", bottom: "27.5%" }}>
+          <KeyboardDoubleArrowDown sx={{ color: "text.primary" }} />
+        </Box>
         <SideBarButton
           text="Dashboard"
           link="/admin"
@@ -142,18 +146,18 @@ function Sidebar() {
           link="allTeamMembers"
           // isActive={false}
         />
-          <SideBarButton
-            text="Pending Team Members"
-            startIcon={<Hail />}
-            link="pendingTeamMembers"
-            // isActive={false}
-          />
-          <SideBarButton
-            text="Rostered Team Members"
-            startIcon={<NoCrash />}
-            link="rosteredTeamMembers"
-            // isActive={false}
-          />
+        <SideBarButton
+          text="Pending Team Members"
+          startIcon={<Hail />}
+          link="pendingTeamMembers"
+          // isActive={false}
+        />
+        <SideBarButton
+          text="Rostered Team Members"
+          startIcon={<NoCrash />}
+          link="rosteredTeamMembers"
+          // isActive={false}
+        />
         <SideBarButton
           text="Live Driver Tracking"
           startIcon={<LiveTv />}

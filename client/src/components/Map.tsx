@@ -53,7 +53,12 @@ type MapTypes = {
   highlightedEmployees?: [];
   clusterRadiusValue?: number;
   unrosteredTms?: [any];
-  visibleOffice?: "All" | "Rangreth" | "Zaira Tower" | "Karanagar";
+  visibleOffice?:
+    | "All"
+    | "Rangreth"
+    | "Zaira Tower"
+    | "Karanagar"
+    | "Hyderabad";
 };
 
 const MapComponent = ({
@@ -99,6 +104,7 @@ const MapComponent = ({
   const zaira = [34.173415, 74.808653];
   const karanagar = [34.081357, 74.799716];
   const zirakpur = [30.633014690428567, 76.8251843278478];
+  const hyderabad = [17.438853001366205, 78.34823513646229];
 
   const generateDistinctColors = (count: number) => {
     const colors = [];
@@ -459,7 +465,7 @@ const MapComponent = ({
                 padding: "7.5px 7.5px",
                 borderRadius: "100px",
                 border: "2.5px solid white",
-                cursor:"pointer",
+                cursor: "pointer",
                 gap: 10,
 
                 // cursor:"grabbing"
@@ -488,7 +494,7 @@ const MapComponent = ({
                   padding: "7.5px 15px",
                   borderRadius: "100px",
                   border: "2.5px solid white",
-                  cursor:"pointer",
+                  cursor: "pointer",
                   gap: 10,
 
                   // cursor:"grabbing"
@@ -518,7 +524,7 @@ const MapComponent = ({
                   padding: "7.5px 15px",
                   borderRadius: "100px",
                   border: "2.5px solid white",
-                  cursor:"pointer",
+                  cursor: "pointer",
                   gap: 10,
 
                   // cursor:"grabbing"
@@ -578,13 +584,13 @@ const MapComponent = ({
                 padding: "7.5px 15px",
                 borderRadius: "100px",
                 border: "2.5px solid white",
-                cursor:"pointer",
+                cursor: "pointer",
                 gap: 10,
 
                 // cursor:"grabbing"
               }}
             >
-              <Restore/>
+              <Restore />
               <h3>RESET</h3>
             </div>
           )}
@@ -1027,8 +1033,37 @@ const MapComponent = ({
                 <span>{"Zirakpur Office"}</span>
               </Tooltip>
             </Marker>
+            <Marker
+              icon={officeIcon}
+              key={"hyderabadOffice"}
+              position={hyderabad as LatLngExpression}
+            >
+              <Tooltip
+                className="office-tooltip"
+                direction="top"
+                offset={[0, -40]}
+                permanent
+              >
+                <span>{"Hyderabad Office"}</span>
+              </Tooltip>
+            </Marker>
           </>
         ) : visibleOffice === "Rangreth" ? (
+          <Marker
+            icon={officeIcon}
+            key={"rangrethOffice"}
+            position={rangreth as LatLngExpression}
+          >
+            <Tooltip
+              className="office-tooltip"
+              direction="top"
+              offset={[0, -40]}
+              permanent
+            >
+              <span>{"Rangreth Office"}</span>
+            </Tooltip>
+          </Marker>
+        ) : visibleOffice === "Hyderabad" ? (
           <Marker
             icon={officeIcon}
             key={"rangrethOffice"}
