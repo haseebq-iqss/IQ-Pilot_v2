@@ -19,7 +19,7 @@ import RouteTypes from "../types/RouteTypes";
 import EmployeeTypes from "./../types/EmployeeTypes";
 import { UserContextTypes } from "../types/UserContextTypes";
 import UserDataContext from "../context/UserDataContext";
-import baseURL from "../utils/baseURL";
+// import baseURL from "../utils/baseURL";
 import {
   Close,
   Directions,
@@ -36,6 +36,7 @@ import CalculateSpeed from "../utils/CalculateSpeedByCoordinates";
 import CabJoinSound from "../assets/sounds/cab-joined.mp3";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Avatar } from "@mui/material";
 
 type MapTypes = {
   width?: string;
@@ -53,6 +54,7 @@ type MapTypes = {
   highlightedEmployees?: [];
   clusterRadiusValue?: number;
   unrosteredTms?: [any];
+  closeAction?: boolean;
   visibleOffice?:
     | "All"
     | "Rangreth"
@@ -77,6 +79,7 @@ const MapComponent = ({
   clusterRadiusValue = 75,
   unrosteredTms,
   visibleOffice = "All",
+  closeAction = false,
 }: MapTypes) => {
   // const [driversPosition, setDriversPosition] = useState<any>();
 
@@ -451,6 +454,30 @@ const MapComponent = ({
             gap: "10px",
           }}
         >
+          {/*Close  */}
+          {closeAction && (
+            <div
+              onClick={() => navigate(-1)}
+              // onClick={() => PlaySound()}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "red",
+                color: "white",
+                padding: "7.5px 7.5px",
+                borderRadius: "100px",
+                border: "2.5px solid white",
+                cursor: "pointer",
+                gap: 10,
+
+                // cursor:"grabbing"
+              }}
+            >
+              <Close />
+            </div>
+          )}
+
           {/* Full Screen View */}
           {mode === "full-view" && (
             <div
@@ -615,16 +642,21 @@ const MapComponent = ({
             }}
           >
             <div style={{ display: "flex", gap: "10px" }}>
-              <img
-                style={{
+              <Avatar
+                // src={
+                //   baseURL + empCard?.profilePicture ||
+                //   "/images/default_user.png"
+                // }
+                src={"/images/default_user.png"}
+                sx={{
                   width: "100px",
-                  aspectRatio: 1,
+                  height: "100px",
                   objectFit: "cover",
                   borderRadius: "10px",
                 }}
-                src={baseURL + empCard?.profilePicture}
-                alt=""
-              />
+              >
+                {(empCard?.fname as any)[0]}
+              </Avatar>
               <div>
                 <h2>{empCard?.fname + " " + empCard?.lname}</h2>
                 <h3>Department : {empCard?.department}</h3>

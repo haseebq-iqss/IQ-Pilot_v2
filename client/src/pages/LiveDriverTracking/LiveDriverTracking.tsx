@@ -44,7 +44,7 @@ function LiveDriverTracking() {
 
   return (
     <Box sx={{ width: "100%", height: "100vh" }}>
-      <MapComponent height="100%" activeDrivers={activeDrivers} />
+      <MapComponent height="100%" closeAction={true} activeDrivers={activeDrivers} />
     </Box>
   );
 }
