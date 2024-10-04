@@ -24,15 +24,18 @@ import Cabtypes from "./../../types/CabTypes";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import useAxios from "../../api/useAxios";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
 import DaysTillActive from "../../utils/DaysTillActive";
 import { LatLngExpression } from "leaflet";
+import ThemeModeContext from "../../context/ThemeModeContext";
 
 function ViewRoute() {
   const location = useLocation();
   const routeState: RouteTypes = location.state;
   const { rid } = useParams();
+
+  const { themeMode }: any = useContext(ThemeModeContext);
 
   const getAllRouteAttendances = () => {
     return useAxios.get(`attendances/route-attendance/${rid}`);
@@ -74,7 +77,8 @@ function ViewRoute() {
         gap: "15px",
         p: "15px",
         height: "100vh",
-        backgroundColor:"background.default", color:"text.primary"
+        backgroundColor: "background.default",
+        color: "text.primary",
       }}
     >
       {/* LS */}
@@ -112,7 +116,8 @@ function ViewRoute() {
               sx={{
                 fontWeight: 600,
                 fontSize: "1.75rem",
-                backgroundColor:"background.default", color:"text.primary",
+                backgroundColor: "background.default",
+                color: "text.primary",
                 ...RowFlex,
               }}
               variant="body2"
@@ -132,8 +137,8 @@ function ViewRoute() {
                     ? "primary.main"
                     : routeState?.routeStatus === "inProgress"
                     ? "purple"
-                    : "black",
-                color:"text.primary",
+                    : "text.primary",
+                color: "background.default",
                 borderRadius: 1,
               }}
             >
@@ -151,7 +156,11 @@ function ViewRoute() {
               component={"img"}
               src={
                 routeState?.typeOfRoute === "pickup"
-                  ? "/images/pickup-dark.png"
+                  ? themeMode === "dark"
+                    ? "/images/pickup-light.png"
+                    : "/images/pickup-dark.png"
+                  : themeMode === "dark"
+                  ? "/images/drop-light.png"
                   : "/images/drop-dark.png"
               }
             />
@@ -285,7 +294,7 @@ function ViewRoute() {
                             p: 0.5,
                             width: "40px",
                             height: "40px",
-                            color:"text.primary",
+                            color: "text.primary",
                           }}
                         />
                       ) : (
@@ -296,7 +305,7 @@ function ViewRoute() {
                             p: 0.5,
                             width: "40px",
                             height: "40px",
-                            color:"text.primary",
+                            color: "text.primary",
                           }}
                         />
                       )}
@@ -353,7 +362,7 @@ function ViewRoute() {
                           p: 0.5,
                           width: "40px",
                           height: "40px",
-                          color:"text.primary",
+                          color: "text.primary",
                         }}
                       />
                     </Box>
@@ -417,9 +426,13 @@ function ViewRoute() {
             }}
           >
             <NavigationOutlined
-              sx={{ color:"text.primary", width: "30px", height: "30px" }}
+              sx={{ color: "text.primary", width: "30px", height: "30px" }}
             />
-            <Typography sx={{ color:"text.primary" }} variant="h5" fontWeight={600}>
+            <Typography
+              sx={{ color: "text.primary" }}
+              variant="h5"
+              fontWeight={600}
+            >
               {routeState?.totalDistance}{" "}
               <span style={{ fontWeight: 500 }}>kms</span>
             </Typography>
@@ -435,9 +448,13 @@ function ViewRoute() {
             }}
           >
             <AccessTimeOutlined
-              sx={{ color:"text.primary", width: "30px", height: "30px" }}
+              sx={{ color: "text.primary", width: "30px", height: "30px" }}
             />
-            <Typography sx={{ color:"text.primary" }} variant="h5" fontWeight={600}>
+            <Typography
+              sx={{ color: "text.primary" }}
+              variant="h5"
+              fontWeight={600}
+            >
               {routeState?.estimatedTime}{" "}
               <span style={{ fontWeight: 500 }}>mins</span>
             </Typography>

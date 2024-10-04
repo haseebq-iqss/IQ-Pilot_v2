@@ -305,6 +305,18 @@ function Appbar() {
                     <EmojiTransportation sx={{ mr: 1 }} />
                     Zirakpur
                   </MenuItem>
+                  <MenuItem
+                  value={"Hyderabad"}
+                  sx={{
+                    ...RowFlex,
+                    pl: 2.5,
+                    fontWeight: 600,
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <EmojiTransportation sx={{ mr: 1 }} />
+                  Hyderabad
+                </MenuItem>
                 </Select>
               </FormControl>
             </Box>
