@@ -306,17 +306,17 @@ function Appbar() {
                     Zirakpur
                   </MenuItem>
                   <MenuItem
-                  value={"Hyderabad"}
-                  sx={{
-                    ...RowFlex,
-                    pl: 2.5,
-                    fontWeight: 600,
-                    justifyContent: "flex-start",
-                  }}
-                >
-                  <EmojiTransportation sx={{ mr: 1 }} />
-                  Hyderabad
-                </MenuItem>
+                    value={"Hyderabad"}
+                    sx={{
+                      ...RowFlex,
+                      pl: 2.5,
+                      fontWeight: 600,
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    <EmojiTransportation sx={{ mr: 1 }} />
+                    Hyderabad
+                  </MenuItem>
                 </Select>
               </FormControl>
             </Box>
@@ -441,7 +441,7 @@ function Appbar() {
                       );
                     })
                   ) : (
-                    <MenuItem value={"No Driver"}>No Driver</MenuItem>
+                    <MenuItem value={"No Driver"}>No Driver Available</MenuItem>
                   )}
                 </Select>
               </FormControl>

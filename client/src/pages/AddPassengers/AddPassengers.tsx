@@ -344,7 +344,7 @@ function AddPassengers() {
             // src={
             //   routeState?.typeOfRoute === "pickup"
             //     ? "/images/pickup-dark.png"
-            //     : "/images/drop-dark.png" 
+            //     : "/images/drop-dark.png"
             // }
             src={
               routeState?.typeOfRoute === "pickup"
@@ -434,19 +434,29 @@ function AddPassengers() {
                 onChange={handleChangeDepartment}
                 label="Department"
               >
-                <MenuItem value={"BD"}>BD</MenuItem>
-                <MenuItem value={"BD-SD"}>BD-SD</MenuItem>
-                <MenuItem value={"BD-SES2"}>BD-SES2</MenuItem>
-                <MenuItem value={"Civil-SES2"}>Civil-SES2</MenuItem>
-                <MenuItem value={"Cyber"}>Cyber</MenuItem>
-                <MenuItem value={"L&D"}>L&D</MenuItem>
-                <MenuItem value={"Marketing"}>Marketing</MenuItem>
-                <MenuItem value={"PD"}>PD</MenuItem>
-                <MenuItem value={"PSD"}>PSD</MenuItem>
-                <MenuItem value={"S&S (HR)"}>S&S (HR)</MenuItem>
-                <MenuItem value={"S&S (IT)"}>S&S (IT)</MenuItem>
-                <MenuItem value={"S&S (OPS)"}>S&S (OPS)</MenuItem>
-                <MenuItem value={"Software"}>Software</MenuItem>
+                <MenuItem value={"Business Development"}>
+                  Business Development
+                </MenuItem>
+                <MenuItem value={"Customer Success"}>Customer Success</MenuItem>
+                <MenuItem value={"HR"}>HR</MenuItem>
+                <MenuItem value={"IT"}>IT</MenuItem>
+                <MenuItem value={"iQuasar Cyber"}>iQuasar Cyber</MenuItem>
+                <MenuItem value={"Learning & Development"}>
+                  Learning & Development
+                </MenuItem>
+                <MenuItem value={"Operations"}>Operations</MenuItem>
+                <MenuItem value={"Professional Services"}>
+                  Professional Services
+                </MenuItem>
+                <MenuItem value={"Proposal Development"}>
+                  Proposal Development
+                </MenuItem>
+                <MenuItem value={"Software Development"}>
+                  Software Development
+                </MenuItem>
+                <MenuItem value={"Sterling Engineering Support Services"}>
+                  Sterling Engineering Support Services
+                </MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -727,7 +737,11 @@ function AddPassengers() {
                               "rgba(10.59%, 38.04%, 98.82%, 0.8)",
                           }}
                         >
-                          <Typography fontWeight={600} variant="body1" color={"white"}>
+                          <Typography
+                            fontWeight={600}
+                            variant="body1"
+                            color={"white"}
+                          >
                             {index + 1}
                           </Typography>
                         </Avatar>{" "}
