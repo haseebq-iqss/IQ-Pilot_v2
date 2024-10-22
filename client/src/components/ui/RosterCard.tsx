@@ -97,9 +97,10 @@ const RosterCard = ({
       <Box
         sx={{
           ...ColFlex,
-          minWidth: "30.5vw",
-          maxWidth: "32vw",
-          height: "100%",
+          // minWidth: "30.5vw",
+          // maxWidth: "32vw",
+          width: "100%",
+          height: "65%",
           flexDirection: "column",
           p: "20px",
           borderRadius: "15px",
@@ -107,7 +108,7 @@ const RosterCard = ({
           color: "text.primary",
           transition: "all 1s",
           justifyContent: "flex-start",
-          border: "5px solid #2997FC",
+          // border: "5px solid #2997FC",
           gap: "0.5rem",
           ":hover": {
             minWidth: "32.5vw",
@@ -133,141 +134,153 @@ const RosterCard = ({
           sensors={sensors}
         > */}
         <Box
-          sx={{
-            ...RowFlex,
-            gap: "1rem",
-            justifyContent: "start",
-            width: "100%",
-          }}
+          sx={{ ...RowFlex, width: "100%", justifyContent: "space-between" }}
         >
-          <Box>
-            <Avatar src={baseURL + cabDriverDetails?.profilePicture}></Avatar>
-          </Box>
-          <Box sx={{ ...ColFlex, alignItems: "flex-start" }}>
+          <Box
+            sx={{
+              ...RowFlex,
+              gap: "1rem",
+              justifyContent: "start",
+              width: "100%",
+            }}
+          >
             <Box>
-              <Typography variant="h6" fontWeight={600}>
-                {cabDriverDetails?.fname + " " + cabDriverDetails?.lname}
-              </Typography>
+              <Avatar src={baseURL + cabDriverDetails?.profilePicture}></Avatar>
             </Box>
-            <Box
-              sx={{
-                ...RowFlex,
-                justifyContent: "space-between",
-                width: "100%",
-                gap: 2.5,
-              }}
-            >
-              <Typography
+            <Box sx={{ ...ColFlex, alignItems: "flex-start" }}>
+              <Box>
+                <Typography
+                  variant="h6"
+                  fontWeight={600}
+                  sx={{ fontSize: "1rem" }}
+                >
+                  {cabDriverDetails?.fname + " " + cabDriverDetails?.lname}
+                </Typography>
+              </Box>
+              <Box
                 sx={{
-                  fontSize: "1rem",
-                  display: "flex",
-                  alignItems: "center",
-                  color: "orange",
+                  ...RowFlex,
+                  justifyContent: "space-between",
+                  width: "100%",
+                  gap: 2.5,
                 }}
-                fontWeight={500}
               >
-                <TagIcon
+                <Typography
                   sx={{
-                    width: "20px",
-                    height: "20px",
-                    mr: "2px",
+                    fontSize: "1rem",
+                    display: "flex",
+                    alignItems: "center",
                     color: "orange",
                   }}
-                />
-                {column?.cab?.cabNumber}
-              </Typography>
+                  fontWeight={500}
+                >
+                  <TagIcon
+                    sx={{
+                      width: "20px",
+                      height: "20px",
+                      mr: "2px",
+                      color: "orange",
+                    }}
+                  />
+                  {column?.cab?.cabNumber}
+                </Typography>
 
-              <Typography
-                sx={{
-                  fontSize: "1rem",
-                  display: "flex",
-                  alignItems: "center",
-                  color: "primary.main",
-                }}
-                fontWeight={500}
-              >
-                <Groups2Icon
+                <Typography
                   sx={{
-                    width: "20px",
-                    height: "20px",
-                    mr: "2px",
+                    fontSize: "1rem",
+                    display: "flex",
+                    alignItems: "center",
                     color: "primary.main",
                   }}
-                />
-                {column?.cab?.seatingCapacity}
-              </Typography>
-              <Typography
-                sx={{
-                  fontSize: "1rem",
-                  display: "flex",
-                  alignItems: "center",
-                  color: "green",
-                }}
-                fontWeight={500}
-              >
-                <FormatColorFillIcon
+                  fontWeight={500}
+                >
+                  <Groups2Icon
+                    sx={{
+                      width: "20px",
+                      height: "20px",
+                      mr: "2px",
+                      color: "primary.main",
+                    }}
+                  />
+                  {column?.cab?.seatingCapacity}
+                </Typography>
+                <Typography
                   sx={{
-                    width: "20px",
-                    height: "20px",
-                    mr: "2px",
+                    fontSize: "1rem",
+                    display: "flex",
+                    alignItems: "center",
                     color: "green",
                   }}
-                />
-                {column?.cab?.carColor}
-              </Typography>
-              <Typography
-                sx={{
-                  fontSize: "1rem",
-                  display: "flex",
-                  alignItems: "center",
-                  color: "text.primary",
-                }}
-                fontWeight={500}
-              >
-                <DirectionsCarIcon
+                  fontWeight={500}
+                >
+                  <FormatColorFillIcon
+                    sx={{
+                      width: "20px",
+                      height: "20px",
+                      mr: "2px",
+                      color: "green",
+                    }}
+                  />
+                  {column?.cab?.carColor}
+                </Typography>
+                <Typography
                   sx={{
-                    width: "20px",
-                    height: "20px",
-                    mr: "2px",
+                    fontSize: "1rem",
+                    display: "flex",
+                    alignItems: "center",
                     color: "text.primary",
                   }}
-                />
-                {column?.cab?.numberPlate}
-              </Typography>
+                  fontWeight={500}
+                >
+                  <DirectionsCarIcon
+                    sx={{
+                      width: "20px",
+                      height: "20px",
+                      mr: "2px",
+                      color: "text.primary",
+                    }}
+                  />
+                  {column?.cab?.numberPlate}
+                </Typography>
+              </Box>
             </Box>
           </Box>
-        </Box>
-        <Box sx={{ ...ColFlex, width: "100%", my: 2, gap: "0.8rem" }}>
-          <Typography fontSize={24} fontWeight={600}>
-            <span
-              style={{
-                color:
-                  passengerDetails?.length !== column?.cab?.seatingCapacity
-                    ? "crimson"
-                    : "#2997FC",
-              }}
-            >
-              {passengerDetails?.length + " " + "out of 6"}
-            </span>{" "}
-            Seats Used
-          </Typography>
-          <hr
-            style={{
-              border: "2px solid #D8D8D8",
-              width: "40%",
-              borderRadius: 100,
+          <Box
+            sx={{
+              ...ColFlex,
+              width: "100%",
+              alignItems: "end",
+              my: 2,
+              mb: 0,
+              gap: "0.8rem",
             }}
-          />
+          >
+            <Typography fontSize={20} fontWeight={600} sx={{ mr: 2.5 }}>
+              <span
+                style={{
+                  color:
+                    passengerDetails?.length !== column?.cab?.seatingCapacity
+                      ? "crimson"
+                      : "#2997FC",
+                }}
+              >
+                {passengerDetails?.length + " " + "out of 6"}
+              </span>{" "}
+              Seats Used
+            </Typography>
+          </Box>
         </Box>
-
         <Box
           className="child-scroll"
           sx={{
             ...ColFlex,
+            flexDirection: "row",
+            mt: 2.5,
+            flexWrap: "wrap",
             alignItems: "flex-start",
             width: "100%",
             gap: 1.5,
-            justifyContent: "flex-start",
+            justifyContent: "space-between",
             overflowY: "auto",
             px: 1.5,
             py: 1,

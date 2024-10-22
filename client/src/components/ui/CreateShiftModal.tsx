@@ -123,7 +123,14 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
           height: 5,
         }}
       />
-      <Box sx={{ ...RowFlex, width: "100%", height: "100%", padding: "1rem" }}>
+      <Box
+        sx={{
+          ...RowFlex,
+          width: "100%",
+          height: "100%",
+          padding: "1rem",
+        }}
+      >
         {/* LS */}
         <Box
           sx={{
@@ -381,7 +388,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               artificialDelay ? (
                 <CircularProgress
                   size={"1rem"}
-                  sx={{ ml: 2.5, color:"text.primary" }}
+                  sx={{ ml: 2.5, color: "text.primary" }}
                 />
               ) : (
                 <RouteIcon />

@@ -31,7 +31,7 @@ const ReserveModal = ({ passengerDetails, column }) => {
         ...ColFlex,
         minWidth: "27.5vw",
         maxWidth: "27.5vw",
-        height: "36.5rem",
+        height: "100%",
         flexDirection: "column",
         p: "20px",
         borderRadius: "15px",

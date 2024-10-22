@@ -66,7 +66,7 @@ const ReservedPassengersTab = ({
           ...ColFlex,
           justifyContent: "flex-start",
           width: "100%",
-          height: "4.5rem",
+          height: "6rem",
           minHeight: "4rem",
           backgroundColor: "background.default",
           padding: "8px",
@@ -90,7 +90,7 @@ const ReservedPassengersTab = ({
           <Box
             sx={{
               ...RowFlex,
-              width: "80%",
+              width: "90%",
               justifyContent: "flex-start",
               gap: "10px",
             }}
@@ -105,10 +105,12 @@ const ReservedPassengersTab = ({
               </Typography>
               <Typography
                 sx={{
+                  width: "100%", // Adjust width if needed
                   fontSize: "0.8rem",
-                  display: "flex",
-                  alignItems: "center",
                   color: "grey",
+                  wordWrap: "break-word", // Enable word wrapping
+                  whiteSpace: "normal", // Allow text to wrap to the next line
+                  overflowWrap: "break-word", // Break words if necessary
                 }}
                 fontWeight={500}
               >
@@ -120,9 +122,7 @@ const ReservedPassengersTab = ({
                     color: "primary.main",
                   }}
                 />
-                {(passenger?.pickUp?.address as string)?.length > 30
-                  ? (passenger?.pickUp?.address as string).slice(0, 30) + "..."
-                  : (passenger?.pickUp?.address as string)}
+                {passenger?.pickUp?.address}
               </Typography>
             </Box>
           </Box>

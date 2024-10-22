@@ -35,7 +35,7 @@ import { SnackBarContextTypes } from "../../types/SnackbarTypes.ts";
 function CreateShift() {
   const location = useLocation();
   const routeState = location?.state;
-  console.log(routeState)
+  console.log(routeState);
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
@@ -108,7 +108,6 @@ function CreateShift() {
     },
   });
 
-
   // const mapCoordinatesToText = (value: string) => {
   //   switch (value) {
   //     case "[34.07918418861709, 74.76795882716988]":
@@ -152,7 +151,7 @@ function CreateShift() {
       typeOfRoute: routeState?.data?.typeOfRoute,
       daysRouteIsActive: routeState?.data?.daysRouteIsActive,
       activationMode: routeState?.data?.activationMode,
-      nextAvailableStartDate: routeState?.data?.nextAvailableStartDate
+      nextAvailableStartDate: routeState?.data?.nextAvailableStartDate,
     };
     setIsLoaderEnabled(true);
     showLoader();
@@ -401,7 +400,6 @@ function CreateShift() {
 
   // console.log(combinedData)
 
-
   return (
     <DndContext
       onDragOver={onDragOver}
@@ -418,7 +416,8 @@ function CreateShift() {
           height: "100vh",
           flexDirection: "column",
           gap: "15px",
-          backgroundColor:"background.default", color:"text.primary"
+          backgroundColor: "background.default",
+          color: "text.primary",
         }}
       >
         <Box
@@ -434,12 +433,17 @@ function CreateShift() {
         >
           <Box sx={{ ...ColFlex, alignItems: "flex-start", width: "60%" }}>
             <Typography variant="h4" fontWeight={600}>
+              {routeState?.data?.typeOfRoute == "pickup"
+                ? "Pickup for "
+                : "Drop for "}
               {routeState?.data?.workLocation}
             </Typography>
             <Typography variant="body1" fontWeight={500}>
-              {routeState?.data?.activationMode === "immediate" ? "Route Activation - Today" : "Route Activation - Tomorrow" +
-                " --> " +
-                ConvertShiftTimeTo12HrFormat(routeState?.data?.currentShift)}
+              {routeState?.data?.activationMode === "immediate"
+                ? "Route Activation - Today"
+                : "Route Activation - Tomorrow" +
+                  " --> " +
+                  ConvertShiftTimeTo12HrFormat(routeState?.data?.currentShift)}
             </Typography>
           </Box>
 
@@ -517,7 +521,11 @@ function CreateShift() {
             >
               <Typography
                 variant="h5"
-                sx={{ fontStyle: "italic", fontWeight: "700", color:"text.primary" }}
+                sx={{
+                  fontStyle: "italic",
+                  fontWeight: "700",
+                  color: "text.primary",
+                }}
               >
                 DEPLOY
               </Typography>
@@ -583,7 +591,7 @@ function CreateShift() {
                 ))}
               </SortableContext>
             </Box>
-            <Box sx={{ mx: 2 }}>
+            <Box sx={{ mx: 2, height: "100%" }}>
               <SortableContext
                 items={reservedColumn.map((column) => column.id)}
               >

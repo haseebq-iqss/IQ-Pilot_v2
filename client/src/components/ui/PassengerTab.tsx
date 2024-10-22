@@ -46,7 +46,7 @@ const PassengerTab = ({
           minHeight: "20px",
           alignItems: "center",
           display: "flex",
-          width: "100%",
+          width: "47.5%",
           textAlign: "left",
           borderRadius: "0.75rem",
           borderWidth: "2px",
@@ -64,7 +64,7 @@ const PassengerTab = ({
         sx={{
           ...ColFlex,
           justifyContent: "flex-start",
-          width: "100%",
+          width: "47.5%",
           height: "4.5rem",
           minHeight: "4rem",
           backgroundColor: "background.default",
@@ -90,7 +90,7 @@ const PassengerTab = ({
           <Box
             sx={{
               ...RowFlex,
-              width: "80%",
+              width: "90%",
               justifyContent: "flex-start",
               gap: "10px",
             }}
@@ -105,10 +105,12 @@ const PassengerTab = ({
               </Typography>
               <Typography
                 sx={{
+                  width: "100%", // Adjust width if needed
                   fontSize: "0.8rem",
-                  display: "flex",
-                  alignItems: "center",
                   color: "grey",
+                  wordWrap: "break-word", // Enable word wrapping
+                  whiteSpace: "normal", // Allow text to wrap to the next line
+                  overflowWrap: "break-word", // Break words if necessary
                 }}
                 fontWeight={500}
               >
@@ -120,9 +122,7 @@ const PassengerTab = ({
                     color: "primary.main",
                   }}
                 />
-                {(passenger?.pickUp?.address as string)?.length > 30
-                  ? (passenger?.pickUp?.address as string).slice(0, 30) + "..."
-                  : (passenger?.pickUp?.address as string)}
+                {passenger?.pickUp?.address}
               </Typography>
             </Box>
           </Box>
