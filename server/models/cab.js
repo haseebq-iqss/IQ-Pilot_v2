@@ -48,6 +48,10 @@ const cabSchema = new mongoose.Schema({
     required: [true, "Please confirm if the AC is installed in the cab."],
     default: false,
   },
+  typeOfCab: {
+    type: String,
+    default: "personal", // personal or vendor
+  }
 });
 
 const Cab = mongoose.model("Cab", cabSchema);
