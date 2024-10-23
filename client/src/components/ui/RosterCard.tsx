@@ -45,46 +45,6 @@ const RosterCard = ({
     return passengerDetails.map((passenger) => passenger.id);
   }, [passengerDetails]);
 
-  // const {
-  //   setNodeRef,
-  //   attributes,
-  //   listeners,
-  //   transform,
-  //   transition,
-  //   isDragging,
-  // } = useSortable({
-  //   id: column?.id,
-  //   data: {
-  //     type: "Column",
-  //     column: { ...column, passengers: passengerDetails },
-  //   },
-  // });
-
-  // const style = {
-  //   transition,
-  //   transform: CSS.Transform.toString(transform),
-  // };
-  // if (isDragging) {
-  //   return (
-  //     <div
-  //       ref={setNodeRef}
-  //       style={{
-  //         ...style,
-  //         backgroundColor: "grey",
-  //         opacity: 0.4,
-  //         borderWidth: "2px",
-  //         borderColor: "#D946EF",
-  //         borderStyle: "solid",
-  //         width: "27.5vw",
-  //         height: "90rem",
-  //         maxHeight: "90%",
-  //         borderRadius: "0.375rem",
-  //         display: "flex",
-  //         flexDirection: "column",
-  //       }}
-  //     ></div>
-  //   );
-  // }
   const { setNodeRef } = useDroppable({
     id: column?.id,
     data: {
@@ -100,15 +60,24 @@ const RosterCard = ({
           // minWidth: "30.5vw",
           // maxWidth: "32vw",
           width: "100%",
-          height: "65%",
+          height: "50%",
           flexDirection: "column",
           p: "20px",
           borderRadius: "15px",
           backgroundColor: "background.default",
+          boxShadow:
+            passengerDetails?.length !== column?.cab?.seatingCapacity
+              ? "0px 9px 10px rgba(227 0 0 / 0.30)"
+              : "none",
+
+          scale: "0.975",
           color: "text.primary",
           transition: "all 1s",
           justifyContent: "flex-start",
-          // border: "5px solid #2997FC",
+          border:
+            passengerDetails?.length === column?.cab?.seatingCapacity
+              ? "none"
+              : "3px solid rgba(255 0 0 / 0.66)",
           gap: "0.5rem",
           ":hover": {
             minWidth: "32.5vw",
@@ -167,7 +136,7 @@ const RosterCard = ({
               >
                 <Typography
                   sx={{
-                    fontSize: "1rem",
+                    fontSize: "0.75rem",
                     display: "flex",
                     alignItems: "center",
                     color: "orange",
@@ -176,8 +145,8 @@ const RosterCard = ({
                 >
                   <TagIcon
                     sx={{
-                      width: "20px",
-                      height: "20px",
+                      width: "15px",
+                      height: "15px",
                       mr: "2px",
                       color: "orange",
                     }}
@@ -187,7 +156,7 @@ const RosterCard = ({
 
                 <Typography
                   sx={{
-                    fontSize: "1rem",
+                    fontSize: "0.75rem",
                     display: "flex",
                     alignItems: "center",
                     color: "primary.main",
@@ -196,8 +165,8 @@ const RosterCard = ({
                 >
                   <Groups2Icon
                     sx={{
-                      width: "20px",
-                      height: "20px",
+                      width: "15px",
+                      height: "15px",
                       mr: "2px",
                       color: "primary.main",
                     }}
@@ -206,26 +175,28 @@ const RosterCard = ({
                 </Typography>
                 <Typography
                   sx={{
-                    fontSize: "1rem",
+                    fontSize: "0.75rem",
                     display: "flex",
                     alignItems: "center",
-                    color: "green",
+                    color: column?.cab?.carColor,
+                    textShadow:
+                      "#FFF 0px 0px 10px, #FF2D95 0px 0px 40px, -24px 5px 3px rgba(206,89,55,0);",
                   }}
                   fontWeight={500}
                 >
                   <FormatColorFillIcon
                     sx={{
-                      width: "20px",
-                      height: "20px",
+                      width: "15px",
+                      height: "15px",
                       mr: "2px",
-                      color: "green",
+                      color: column?.cab?.carColor,
                     }}
                   />
                   {column?.cab?.carColor}
                 </Typography>
                 <Typography
                   sx={{
-                    fontSize: "1rem",
+                    fontSize: "0.75rem",
                     display: "flex",
                     alignItems: "center",
                     color: "text.primary",
@@ -234,8 +205,8 @@ const RosterCard = ({
                 >
                   <DirectionsCarIcon
                     sx={{
-                      width: "20px",
-                      height: "20px",
+                      width: "15px",
+                      height: "15px",
                       mr: "2px",
                       color: "text.primary",
                     }}
@@ -255,7 +226,7 @@ const RosterCard = ({
               gap: "0.8rem",
             }}
           >
-            <Typography fontSize={20} fontWeight={600} sx={{ mr: 2.5 }}>
+            <Typography fontSize={18} fontWeight={600} sx={{ mr: 2.5 }}>
               <span
                 style={{
                   color:
@@ -264,7 +235,10 @@ const RosterCard = ({
                       : "#2997FC",
                 }}
               >
-                {passengerDetails?.length + " " + "out of 6"}
+                {passengerDetails?.length +
+                  " " +
+                  "out of " +
+                  column?.cab?.seatingCapacity}
               </span>{" "}
               Seats Used
             </Typography>
@@ -275,12 +249,12 @@ const RosterCard = ({
           sx={{
             ...ColFlex,
             flexDirection: "row",
-            mt: 2.5,
+            mt: 1,
             flexWrap: "wrap",
             alignItems: "flex-start",
             width: "100%",
-            gap: 1.5,
-            justifyContent: "space-between",
+            gap: 1,
+            justifyContent: "flex-start",
             overflowY: "auto",
             px: 1.5,
             py: 1,

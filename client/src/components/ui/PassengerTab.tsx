@@ -46,7 +46,7 @@ const PassengerTab = ({
           minHeight: "20px",
           alignItems: "center",
           display: "flex",
-          width: "47.5%",
+          minWidth: "32%",
           textAlign: "left",
           borderRadius: "0.75rem",
           borderWidth: "2px",
@@ -64,13 +64,14 @@ const PassengerTab = ({
         sx={{
           ...ColFlex,
           justifyContent: "flex-start",
-          width: "47.5%",
-          height: "4.5rem",
+          width: "32%",
+          height: "5rem",
           minHeight: "4rem",
           backgroundColor: "background.default",
-          padding: "8px",
+          padding: "4px",
           borderRadius: "1rem",
-          boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+          // boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
+          border: "3px solid rgba(105 105 105 / 0.46)",
           cursor: "grab",
         }}
         ref={setNodeRef}
@@ -82,7 +83,7 @@ const PassengerTab = ({
           sx={{
             ...RowFlex,
             width: "100%",
-            paddingBottom: "4px",
+            // paddingBottom: "4px",
             // borderBottom: "1px solid #BDBDBD",
             height: "100%",
           }}
@@ -100,13 +101,13 @@ const PassengerTab = ({
               src={baseURL + passenger?.profilePicture}
             />
             <Box>
-              <Typography fontSize={15} fontWeight={600}>
+              <Typography fontSize={13} fontWeight={600}>
                 {passenger?.fname + " " + passenger?.lname}
               </Typography>
               <Typography
                 sx={{
                   width: "100%", // Adjust width if needed
-                  fontSize: "0.8rem",
+                  fontSize: "0.7rem",
                   color: "grey",
                   wordWrap: "break-word", // Enable word wrapping
                   whiteSpace: "normal", // Allow text to wrap to the next line
@@ -126,21 +127,6 @@ const PassengerTab = ({
               </Typography>
             </Box>
           </Box>
-          {/* <ButtonBase
-            //   onClick={() => handleRemovePassengersFromCab(employee)}
-            sx={{ ...RowFlex, borderRadius: "100px" }}
-          >
-            <MultipleStopIcon
-              sx={{
-                backgroundColor: "primary.main",
-                borderRadius: "100px",
-                p: 0.5,
-                width: "35px",
-                height: "35px",
-                color:"text.primary",
-              }}
-            />
-          </ButtonBase> */}
         </Box>
       </Box>
     </>

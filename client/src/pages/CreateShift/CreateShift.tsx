@@ -569,7 +569,7 @@ function CreateShift() {
                 width: "70%",
                 // px: 2.5,
                 whiteSpace: "nowrap",
-                gap: "2.5rem",
+                gap: "1rem",
                 justifyContent: "flex-start",
                 overflowY: "auto",
                 // border: "1px solid blue",

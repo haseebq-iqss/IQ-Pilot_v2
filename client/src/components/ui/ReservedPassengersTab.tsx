@@ -67,7 +67,7 @@ const ReservedPassengersTab = ({
           justifyContent: "flex-start",
           width: "100%",
           height: "6rem",
-          minHeight: "4rem",
+          minHeight: "6rem",
           backgroundColor: "background.default",
           padding: "8px",
           borderRadius: "1rem",
