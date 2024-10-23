@@ -32,14 +32,22 @@ import SnackbarContext from "../../context/SnackbarContext.ts";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes.ts";
 import PassengerTab from "../../components/ui/PassengerTab.tsx";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { ArrowForward } from "@mui/icons-material";
+import {
+  ArrowBack,
+  ArrowBackIos,
+  ArrowForward,
+  Height,
+  PushPin,
+  Save,
+  Warning,
+} from "@mui/icons-material";
 import AssignedPassengers from "../../components/ui/AssignedPassengers.tsx";
 
 function AssignedRoutes() {
   const location = useLocation();
   const routeState = location.state;
 
-  console.log("ROUTE STATE ___> ",routeState)
+  // console.log("ROUTE STATE ___> ",routeState)
 
   const [next, setNext] = useState(2);
   const [activeColumn, setActiveColumn] = useState<ShiftTypes | null>(null);
@@ -419,13 +427,6 @@ function AssignedRoutes() {
   };
   return (
     <>
-      {/* // <DndContext
-    //   onDragOver={onDragOver}
-    //   onDragStart={onDragStart}
-    //   onDragEnd={onDragEnd}
-    //   collisionDetection={closestCorners}
-    //   sensors={sensors}
-    // > */}
       <Box
         sx={{
           ...PageFlex,
@@ -434,7 +435,7 @@ function AssignedRoutes() {
           flexDirection: "column",
           gap: "15px",
           backgroundColor: "background.default",
-          color:"text.primary"
+          color: "text.primary",
         }}
       >
         <Box
@@ -446,7 +447,7 @@ function AssignedRoutes() {
             pt: "15px",
             justifyContent: "space-between",
             alignItems: "center",
-            color:"text.primary"
+            color: "text.primary",
           }}
         >
           <Box
@@ -454,19 +455,18 @@ function AssignedRoutes() {
               ...ColFlex,
               alignItems: "flex-start",
               width: "60%",
-              gap: 0.5,
+              gap: 0,
             }}
           >
-            <Typography variant="h4" fontWeight={600}>
-              {`Assigned Routes (${
+            <Typography fontSize={30} fontWeight={500}>
+              {`Current Roster Plan (${
                 routeState?.length ? routeState?.length : 0
               })`}
             </Typography>
-            <Typography fontWeight={600} fontSize={19}>
-              {/* {mapCoordinatesToText(routeState?.centralPoint) +
-                "-->" +
-                ConvertShiftTimeTo12HrFormat(routeState?.data?.currentShift)} */}
-              View or change assigned routes here.
+            <Typography fontSize={15} fontWeight={500}>
+              {`You have created ${
+                routeState?.length ? routeState?.length : 0
+              } Routes.`}
             </Typography>
           </Box>
 
@@ -476,15 +476,16 @@ function AssignedRoutes() {
               width: "40%",
               alignItems: "center",
               justifyContent: "flex-end",
-              gap: 7.5,
+              gap: 3,
             }}
           >
             <Box
               sx={{
-                px: 5,
-                height: "50px",
-                bgcolor: "green",
-                gap: 2.5,
+                px: 3,
+                height: "40px",
+                backgroundColor: "primary.main",
+                ...RowFlex,
+                gap: 1,
                 borderRadius: 1.5,
                 cursor: "pointer",
                 display:
@@ -494,31 +495,36 @@ function AssignedRoutes() {
               }}
               onClick={confirmRoutes}
             >
+              <Save
+                sx={{ color: "text.primary", width: "25px", height: "25px" }}
+              />
               <Typography
-                variant="h5"
-                sx={{ fontStyle: "italic", fontWeight: "700", color:"text.primary" }}
+                fontSize="30"
+                fontWeight={500}
+                sx={{ color: "text.primary" }}
               >
-                SAVE
+                Save Changes
               </Typography>
             </Box>
 
             <Box
               sx={{
-                px: 5,
-                height: "50px",
+                px: 3,
+                height: "40px",
                 backgroundColor: "text.primary",
                 ...RowFlex,
-                gap: 2.5,
+                gap: 1,
                 borderRadius: 1.5,
                 cursor: "pointer",
               }}
               onClick={() => navigate(-1)}
             >
-              <Typography
-                variant="h5"
-                sx={{ fontStyle: "italic", fontWeight: "700", color:"background.default" }}
-              >
-                BACK
+              <ArrowBackIos
+                fontSize="20"
+                sx={{ color: "background.default" }}
+              />
+              <Typography sx={{ color: "background.default" }}>
+                Back to Dashboard
               </Typography>
             </Box>
           </Box>
@@ -550,7 +556,7 @@ function AssignedRoutes() {
                 height: "100%",
                 width: "100%",
                 whiteSpace: "nowrap",
-                gap: "2rem",
+                gap: "1rem",
                 overflowY: "auto",
                 justifyContent: "center",
                 px: 2,
@@ -561,25 +567,6 @@ function AssignedRoutes() {
               <SortableContext
                 items={regularColumns.map((column) => column.id)}
               >
-                {/* <Button
-                  onClick={prevStep}
-                  sx={{
-                    backgroundColor: "primary.main",
-                    color:"text.primary",
-                    borderRadius: "99px",
-                    border: "2px solid white",
-
-                    height: "60px",
-                    width: "50px",
-                    ":hover": {
-                      backgroundColor: "rgba(158, 158, 158, 0.1)",
-                      border: "2px solid #2997FC",
-                      color: "primary.main",
-                    },
-                  }}
-                >
-                  <ArrowBackIcon />
-                </Button> */}
                 {regularColumns.map((shift: ShiftTypes) => {
                   const uniquePassengers = getUniquePassengers(
                     passengers.filter(
@@ -596,30 +583,9 @@ function AssignedRoutes() {
                     />
                   );
                 })}
-                {/* {regularColumns.length > next - 2 && (
-                  // <Button
-                  //   onClick={nextStep}
-                  //   sx={{
-                  //     backgroundColor: "primary.main",
-                  //     color:"text.primary",
-                  //     borderRadius: "99px",
-                  //     border: "2px solid white",
-
-                  //     height: "60px",
-                  //     width: "50px",
-                  //     ":hover": {
-                  //       backgroundColor: "rgba(158, 158, 158, 0.1)",
-                  //       border: "2px solid #2997FC",
-                  //       color: "primary.main",
-                  //     },
-                  //   }}
-                  // >
-                  //   <ArrowForward />
-                  // </Button>
-                )} */}
               </SortableContext>
             </Box>
-            <Box sx={{ mx: 2 }}>
+            <Box sx={{ mx: 2, height: "100%" }}>
               <SortableContext
                 items={reservedColumn.map((column) => column.id)}
               >
@@ -686,12 +652,14 @@ function AssignedRoutes() {
             p: "30px 10px",
             // minHeight: "40vh",
             width: { xs: "90%", lg: "35%" },
-            borderRadius: "15px",
+            borderRadius: "10px",
             gap: 5,
             alignItems: "center",
             textAlign: "center",
             justifyContent: "center",
             backgroundColor: "background.default",
+            boxShadow: "0px 10px 100px rgba(0 255 251 / 0.2)"
+
           }}
         >
           <Box
@@ -703,51 +671,36 @@ function AssignedRoutes() {
               marginTop: "15px",
             }}
           >
+            <Warning sx={{ width: "50px", height: "50px", color: "warning.main" }} />
+
             <Box
               sx={{
                 ...ColFlex,
                 gap: 1,
               }}
             >
-              <Typography variant="h5" fontWeight={600} sx={{ mb: "10px" }}>
+              <Typography
+                variant="h5"
+                fontWeight={600}
+                sx={{ mb: "10px", color: "text.primary" }}
+              >
                 Confirm Your Action
               </Typography>
               <Typography
-                sx={{
-                  width: "100%",
-                  textAlign: "center",
-                  color: "text.secondary",
-                  fontSize: "1rem",
-                  lineHeight: "15px",
-                  fontWeight: 600,
-                }}
-                variant="subtitle2"
-                color={"GrayText"}
+                variant="body1"
+                sx={{ color: "text.secondary", width: "80%" }}
               >
-                Do you want to proceed with updating the routes?
+                Would you like to proceed with updating the routes now? Please
+                confirm if you wish to continue
               </Typography>
             </Box>
 
             <Box sx={{ gap: 5, ...RowFlex }}>
               <Button
                 sx={{
-                  backgroundColor: "green",
-                  color: "background.default",
+                  backgroundColor: "error.dark",
+                  color: "white",
                   padding: "10px 50px",
-                  borderRadius: "100px",
-                }}
-                variant="contained"
-                size="large"
-                onClick={handleUpdateRoute}
-              >
-                Yes
-              </Button>
-              <Button
-                sx={{
-                  backgroundColor: "red",
-                  color: "background.default",
-                  padding: "10px 50px",
-                  borderRadius: "100px",
                 }}
                 variant="contained"
                 size="large"
@@ -755,7 +708,19 @@ function AssignedRoutes() {
                   setSOSEmergency(undefined);
                 }}
               >
-                NO
+                No
+              </Button>
+              <Button
+                sx={{
+                  backgroundColor: "success.dark",
+                  color: "white",
+                  padding: "10px 50px",
+                }}
+                variant="contained"
+                size="large"
+                onClick={handleUpdateRoute}
+              >
+                Yes
               </Button>
             </Box>
           </Box>

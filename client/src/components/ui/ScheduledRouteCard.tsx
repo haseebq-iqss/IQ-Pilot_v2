@@ -1,8 +1,4 @@
-import {
-  Avatar,
-  Box,
-  Typography,
-} from "@mui/material";
+import { Avatar, Box, Menu, MenuItem, Typography } from "@mui/material";
 // import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex.ts";
 import baseURL from "../../utils/baseURL.ts";
@@ -16,14 +12,19 @@ import {
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import { useDroppable } from "@dnd-kit/core";
 import {
-  AccessTime,
-  AirlineSeatReclineNormal,
+  DirectionsCar,
+  FormatColorFill,
+  GroupRemove,
+  Groups2,
   LocationOn,
+  Map,
+  NoTransfer,
+  PersonSearch,
+  Tag,
+  Tune,
 } from "@mui/icons-material";
-import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat.ts";
 import MapComponent from "../Map.tsx";
 import AssignedPassengers from "./AssignedPassengers.tsx";
-
 type RosterCardTypes = {
   passengerDetails: EmployeeTypes[];
   column: ShiftTypes;
@@ -31,7 +32,45 @@ type RosterCardTypes = {
 
 const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
   const [activeRouteCoords, setActiveRouteCoords] = useState<Array<any>>([]);
-  // const [expanded, setExpanded] = useState<string[]>(["map"]); 
+  const [mapVisible, setMapVisible] = useState<boolean>(false);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuIndex, setMenuIndex] = useState<number | null>(null);
+
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    index: number
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setMenuIndex(index);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuIndex(null);
+  };
+
+  console.log(column);
+
+  const handleViewMap = () => {
+    setMapVisible(!mapVisible);
+    handleMenuClose();
+  };
+
+  const handleSearchAndAddTM = () => {
+    // setMapVisible(!mapVisible);
+    handleMenuClose();
+  };
+
+  const handleClearCab = () => {
+    // setMapVisible(!mapVisible);
+    handleMenuClose();
+  };
+
+  const handleRemoveCab = () => {
+    // setMapVisible(!mapVisible);
+    handleMenuClose();
+  };
 
   useEffect(() => {
     const activeRouteCoordinates: any = passengerDetails?.map(
@@ -59,42 +98,32 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
     },
   });
 
-  // const handleAccordionChange =
-  //   (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-  //     setExpanded((prevExpanded) =>
-  //       isExpanded
-  //         ? [...prevExpanded, panel]
-  //         : prevExpanded.filter((item) => item !== panel)
-  //     );
-  //   };
-
-  console.log(column)
-
   return (
     <Box
       sx={{
         ...ColFlex,
-        p: "5px 15px",
-        minWidth: "27vw",
-        maxWidth: "47.5%",
-        height: "100%",
+        // minWidth: "30.5vw",
+        // maxWidth: "32vw",
+        width: "100%",
+        height: mapVisible ? "100%" : "50%",
         flexDirection: "column",
+        p: "20px",
         borderRadius: "15px",
-        justifyContent: "flex-start",
         backgroundColor: "background.default",
-        color:"text.primary",
+        boxShadow:
+          passengerDetails?.length !== column?.cab?.seatingCapacity
+            ? "0px 9px 10px rgba(227 0 0 / 0.30)"
+            : "none",
+
+        scale: "0.975",
+        color: "text.primary",
+        transition: "all 1s",
+        justifyContent: "flex-start",
         border:
-          column?.typeOfRoute === "pickup"
-            ? "8px solid #2997FC"
-            : "8px solid #144B7E",
-        ":hover": {
-          transition: "all 0.4s",
-          transform: "scale(1.025)",
-        },
-        ":not(:hover)": {
-          transition: "all 0.2s",
-          transform: "scale(1)",
-        },
+          passengerDetails?.length === column?.cab?.seatingCapacity
+            ? "none"
+            : "3px solid rgba(255 0 0 / 0.66)",
+        gap: "0.5rem",
       }}
       ref={setNodeRef}
     >
@@ -104,22 +133,19 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
           gap: "1rem",
           justifyContent: "start",
           width: "100%",
-          p: "10px 10px 5px 10px",
         }}
       >
         <Box>
           <Avatar
-            src={
-              baseURL + (column.cab?.cabDriver as EmployeeTypes)?.profilePicture
-            }
-          />
+            src={baseURL + (column.cab?.cabDriver as any)?.profilePicture}
+          ></Avatar>
         </Box>
         <Box sx={{ ...ColFlex, alignItems: "flex-start" }}>
           <Box>
-            <Typography variant="h6" fontWeight={600}>
-              {(column.cab?.cabDriver as EmployeeTypes)?.fname +
+            <Typography variant="h6" fontWeight={600} sx={{ fontSize: "1rem" }}>
+              {(column.cab?.cabDriver as any)?.fname +
                 " " +
-                (column.cab?.cabDriver as EmployeeTypes)?.lname}
+                (column.cab?.cabDriver as any)?.lname}
             </Typography>
           </Box>
           <Box
@@ -127,101 +153,197 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
               ...RowFlex,
               justifyContent: "space-between",
               width: "100%",
-              gap: 2,
+              gap: 2.5,
             }}
           >
             <Typography
               sx={{
-                fontSize: "0.9rem",
+                fontSize: "0.75rem",
                 display: "flex",
                 alignItems: "center",
-                color:"text.primary"
-                
+                color: "orange",
               }}
-              fontWeight={600}
+              fontWeight={500}
             >
-              <LocationOn
+              <Tag
                 sx={{
-                  width: "17px",
-                  height: "17px",
+                  width: "15px",
+                  height: "15px",
                   mr: "2px",
-                  color: "blue",
+                  color: "orange",
                 }}
               />
-              {column?.workLocation}
+              {column?.cab?.cabNumber}
             </Typography>
 
             <Typography
               sx={{
-                fontSize: "0.9rem",
+                fontSize: "0.75rem",
                 display: "flex",
                 alignItems: "center",
-                color: column?.typeOfRoute === "pickup" ? "#2997FC" : "orange",
+                color: "primary.main",
               }}
               fontWeight={500}
             >
-              <AirlineSeatReclineNormal
+              <Groups2
                 sx={{
-                  width: "17px",
-                  height: "17px",
+                  width: "15px",
+                  height: "15px",
                   mr: "2px",
-                  color:
-                    column?.typeOfRoute === "pickup" ? "#2997FC" : "orange",
+                  color: "primary.main",
                 }}
               />
-              {column?.typeOfRoute &&
-                column.typeOfRoute[0].toUpperCase() +
-                  column.typeOfRoute.slice(1, column.typeOfRoute.length)}
+              {column?.cab?.seatingCapacity}
             </Typography>
             <Typography
               sx={{
-                fontSize: "0.9rem",
+                fontSize: "0.75rem",
                 display: "flex",
                 alignItems: "center",
-                color:"text.primary"
+                color: column?.cab?.carColor,
+                textShadow:
+                  "#FFF 0px 0px 10px, #FF2D95 0px 0px 40px, -24px 5px 3px rgba(206,89,55,0);",
               }}
               fontWeight={500}
             >
-              <AccessTime
+              <FormatColorFill
                 sx={{
-                  width: "17px",
-                  height: "17px",
+                  width: "15px",
+                  height: "15px",
                   mr: "2px",
-                  color:"text.primary"
+                  color: column?.cab?.carColor,
                 }}
               />
-              {ConvertShiftTimeTo12HrFormat(
-                column?.currentShift as string,
-                column?.typeOfRoute
-              )}
+              {column?.cab?.carColor}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: "0.75rem",
+                display: "flex",
+                alignItems: "center",
+                color: "text.primary",
+              }}
+              fontWeight={500}
+            >
+              <DirectionsCar
+                sx={{
+                  width: "15px",
+                  height: "15px",
+                  mr: "2px",
+                  color: "text.primary",
+                }}
+              />
+              {column?.cab?.numberPlate}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: "0.75rem",
+                display: "flex",
+                alignItems: "center",
+                color: "text.primary",
+              }}
+              fontWeight={500}
+            >
+              <LocationOn
+                sx={{
+                  width: "15px",
+                  height: "15px",
+                  mr: "2px",
+                  color: "secondary.main",
+                }}
+              />
+              {column?.workLocation}
             </Typography>
           </Box>
+        </Box>
+        <Box
+          sx={{
+            ...RowFlex,
+            justifyContent: "flex-end",
+            width: "100%",
+            alignItems: "end",
+            my: 2,
+            mb: 0,
+            gap: "0.8rem",
+          }}
+        >
+          <Typography fontSize={18} fontWeight={600} sx={{ mr: 2.5 }}>
+            <span
+              style={{
+                color:
+                  passengerDetails?.length !== column?.cab?.seatingCapacity
+                    ? "crimson"
+                    : "#2997FC",
+              }}
+            >
+              {passengerDetails?.length +
+                " " +
+                "out of " +
+                column?.cab?.seatingCapacity}
+            </span>{" "}
+            Seats Used
+          </Typography>
+          <Tune
+            sx={{ cursor: "pointer" }}
+            onClick={(e: any) => handleMenuOpen(e, 12)}
+          />
+          <Menu
+            key={column?.cab?._id}
+            elevation={1}
+            anchorEl={anchorEl}
+            open={menuIndex as any}
+            onClose={handleMenuClose}
+            MenuListProps={{
+              "aria-labelledby": "basic-button",
+            }}
+          >
+            <MenuItem
+              sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
+              onClick={handleViewMap}
+            >
+              <Map sx={{ color: "primary.main", mr: 1 }} />
+              {mapVisible ? "Hide Map" : "View Map"}
+            </MenuItem>
+            <MenuItem
+              sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
+              onClick={handleSearchAndAddTM}
+            >
+              <PersonSearch sx={{ color: "info.main", mr: 1 }} />
+              Search and Add TM
+            </MenuItem>
+            <MenuItem
+              sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
+              onClick={handleClearCab}
+            >
+              <GroupRemove sx={{ color: "warning.main", mr: 1 }} />
+              Clear Cab
+            </MenuItem>
+            <MenuItem
+              sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
+              onClick={handleRemoveCab}
+            >
+              <NoTransfer sx={{ color: "error.main", mr: 1 }} />
+              Remove Cab
+            </MenuItem>
+          </Menu>
         </Box>
       </Box>
 
       <Box
         sx={{
           width: "100%",
+          // height: "100%",
           borderRadius: "10px",
           border: "none",
         }}
       >
-        <Typography
-          sx={{
-            color:"text.primary",
-            marginBottom: "8px",
-          }}
-          fontWeight={600}
-        >
-          Passengers ({passengerDetails.length})
-        </Typography>
         <Box
           className="child-scroll"
           sx={{
             ...RowFlex,
             alignItems: "flex-start",
             width: "100%",
-            height: "7rem",
+            height: "100%",
             gap: 1.5,
             justifyContent: "flex-start",
             overflowY: "auto",
@@ -229,7 +351,7 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
             py: 1.2,
             borderRadius: "1rem",
             transition: "all 0.5s ease-in",
-            backgroundColor:"primary.main",
+            // backgroundColor: "primary.main",
             flexWrap: "wrap",
           }}
         >
@@ -244,30 +366,30 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
         </Box>
       </Box>
 
-      <Box
-            className="child-scroll"
-            sx={{
-              ...ColFlex,
-              mt:2.5,
-              borderRadius:2,
-              alignItems: "flex-start",
-              width: "100%",
-              height: "100%",
-              justifyContent: "flex-start",
-              overflowY: "auto",
-            }}
-          >
-            <MapComponent
-              mode="route-view"
-              activeRoute={
-                column.workLocation === "Rangreth"
-                  ? [...activeRouteCoords, [33.996807, 74.79202]]
-                  : [...activeRouteCoords, [34.173415, 74.808653]]
-              }
-              zoom={11}
-              center={routesCentralPoint}
-            />
-          </Box>
+      {mapVisible && <Box
+        className="child-scroll"
+        sx={{
+          ...ColFlex,
+          mt: 2.5,
+          borderRadius: 2,
+          alignItems: "flex-start",
+          width: "100%",
+          height: "100%",
+          justifyContent: "flex-start",
+          overflowY: "auto",
+        }}
+      >
+        <MapComponent
+          mode="route-view"
+          activeRoute={
+            column.workLocation === "Rangreth"
+              ? [...activeRouteCoords, [33.996807, 74.79202]]
+              : [...activeRouteCoords, [34.173415, 74.808653]]
+          }
+          zoom={11}
+          center={routesCentralPoint}
+        />
+      </Box>}
     </Box>
   );
 };
