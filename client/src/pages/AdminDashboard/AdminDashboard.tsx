@@ -302,7 +302,7 @@ function AdminDashboard() {
               }}
               variant="subtitle2"
             >
-              Routes Assigned
+              Active Cabs
             </Typography>
           </Box>
           <Box sx={{ ...ColFlex, gap: "5px" }}>
@@ -328,7 +328,7 @@ function AdminDashboard() {
               }}
               variant="subtitle2"
             >
-              Available Cabs
+              Inactive Cabs
             </Typography>
           </Box>
           <Box

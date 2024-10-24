@@ -3,7 +3,7 @@ import { Avatar, Box, Menu, MenuItem, Typography } from "@mui/material";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex.ts";
 import baseURL from "../../utils/baseURL.ts";
 import EmployeeTypes from "./../../types/EmployeeTypes";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -25,6 +25,7 @@ import {
 } from "@mui/icons-material";
 import MapComponent from "../Map.tsx";
 import AssignedPassengers from "./AssignedPassengers.tsx";
+import { SlideInOut } from "../../animations/transition.tsx";
 type RosterCardTypes = {
   passengerDetails: EmployeeTypes[];
   column: ShiftTypes;
@@ -42,6 +43,7 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
     index: number
   ) => {
     setAnchorEl(event.currentTarget);
+    console.log(event);
     setMenuIndex(index);
   };
 
@@ -50,7 +52,7 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
     setMenuIndex(null);
   };
 
-  console.log(column);
+  // console.log(column);
 
   const handleViewMap = () => {
     setMapVisible(!mapVisible);
@@ -98,6 +100,20 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
     },
   });
 
+  const cardRef = useRef(null);
+  const handleRightClick = (event: any) => {
+    event.preventDefault(); // Prevent the default right-click menu
+
+    // Simulate the event object using the cardRef
+    console.log(cardRef.current);
+    if (cardRef.current) {
+      const simulatedEvent: any = { currentTarget: cardRef.current };
+      handleMenuOpen(simulatedEvent, 12);
+    } else {
+      console.warn("Card reference is not available.");
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -124,9 +140,21 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
             ? "none"
             : "3px solid rgba(255 0 0 / 0.66)",
         gap: "0.5rem",
+        overflow: "hidden",
       }}
       ref={setNodeRef}
+      onContextMenu={handleRightClick}
     >
+      {/* Center Box for Right Click Menu */}
+      <Box
+        ref={cardRef}
+        sx={{
+          position: "absolute",
+          textAlign: "center",
+          top: "50%",
+          left: "50%",
+        }}
+      />
       <Box
         sx={{
           ...RowFlex,
@@ -291,40 +319,48 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
             key={column?.cab?._id}
             elevation={1}
             anchorEl={anchorEl}
-            open={menuIndex as any}
+            open={Boolean(menuIndex)}
             onClose={handleMenuClose}
             MenuListProps={{
               "aria-labelledby": "basic-button",
             }}
           >
-            <MenuItem
-              sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
-              onClick={handleViewMap}
-            >
-              <Map sx={{ color: "primary.main", mr: 1 }} />
-              {mapVisible ? "Hide Map" : "View Map"}
-            </MenuItem>
-            <MenuItem
-              sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
-              onClick={handleSearchAndAddTM}
-            >
-              <PersonSearch sx={{ color: "info.main", mr: 1 }} />
-              Search and Add TM
-            </MenuItem>
-            <MenuItem
-              sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
-              onClick={handleClearCab}
-            >
-              <GroupRemove sx={{ color: "warning.main", mr: 1 }} />
-              Clear Cab
-            </MenuItem>
-            <MenuItem
-              sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
-              onClick={handleRemoveCab}
-            >
-              <NoTransfer sx={{ color: "error.main", mr: 1 }} />
-              Remove Cab
-            </MenuItem>
+            <SlideInOut duration={0.3} delay={0}>
+              <MenuItem
+                sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
+                onClick={handleViewMap}
+              >
+                <Map sx={{ color: "primary.main", mr: 1 }} />
+                {mapVisible ? "Hide Map" : "View Map"}
+              </MenuItem>
+            </SlideInOut>
+            <SlideInOut duration={0.3} delay={0.15}>
+              <MenuItem
+                sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
+                onClick={handleSearchAndAddTM}
+              >
+                <PersonSearch sx={{ color: "info.main", mr: 1 }} />
+                Search and Add TM
+              </MenuItem>
+            </SlideInOut>
+            <SlideInOut duration={0.3} delay={0.30}>
+              <MenuItem
+                sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
+                onClick={handleClearCab}
+              >
+                <GroupRemove sx={{ color: "warning.main", mr: 1 }} />
+                Clear Cab
+              </MenuItem>
+            </SlideInOut>
+            <SlideInOut duration={0.3} delay={0.45}>
+              <MenuItem
+                sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
+                onClick={handleRemoveCab}
+              >
+                <NoTransfer sx={{ color: "error.main", mr: 1 }} />
+                Remove Cab
+              </MenuItem>
+            </SlideInOut>
           </Menu>
         </Box>
       </Box>
@@ -366,30 +402,32 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
         </Box>
       </Box>
 
-      {mapVisible && <Box
-        className="child-scroll"
-        sx={{
-          ...ColFlex,
-          mt: 2.5,
-          borderRadius: 2,
-          alignItems: "flex-start",
-          width: "100%",
-          height: "100%",
-          justifyContent: "flex-start",
-          overflowY: "auto",
-        }}
-      >
-        <MapComponent
-          mode="route-view"
-          activeRoute={
-            column.workLocation === "Rangreth"
-              ? [...activeRouteCoords, [33.996807, 74.79202]]
-              : [...activeRouteCoords, [34.173415, 74.808653]]
-          }
-          zoom={11}
-          center={routesCentralPoint}
-        />
-      </Box>}
+      {mapVisible && (
+        <Box
+          className="child-scroll"
+          sx={{
+            ...ColFlex,
+            mt: 1,
+            borderRadius: 2,
+            alignItems: "flex-start",
+            width: "100%",
+            height: "50%",
+            justifyContent: "flex-start",
+          }}
+        >
+          <MapComponent
+            // height="100%"
+            mode="route-view"
+            activeRoute={
+              column.workLocation === "Rangreth"
+                ? [...activeRouteCoords, [33.996807, 74.79202]]
+                : [...activeRouteCoords, [34.173415, 74.808653]]
+            }
+            zoom={11}
+            center={routesCentralPoint}
+          />
+        </Box>
+      )}
     </Box>
   );
 };

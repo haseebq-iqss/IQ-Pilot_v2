@@ -459,7 +459,7 @@ function AssignedRoutes() {
             }}
           >
             <Typography fontSize={30} fontWeight={500}>
-              {`Current Roster Plan (${
+              {`Active Cabs (${
                 routeState?.length ? routeState?.length : 0
               })`}
             </Typography>
@@ -488,10 +488,11 @@ function AssignedRoutes() {
                 gap: 1,
                 borderRadius: 1.5,
                 cursor: "pointer",
-                display:
-                  reservedPassengers?.length > 0 || editMode
-                    ? { ...RowFlex }
-                    : "none",
+                display:"inherit"
+                // display:
+                //   reservedPassengers?.length > 0 || editMode
+                //     ? { ...RowFlex }
+                //     : "none",
               }}
               onClick={confirmRoutes}
             >
