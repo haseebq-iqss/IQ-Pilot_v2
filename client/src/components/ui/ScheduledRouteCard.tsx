@@ -11,7 +11,7 @@ import {
 import { ColFlex, RowFlex } from "../../style_extentions/Flex.ts";
 import baseURL from "../../utils/baseURL.ts";
 import EmployeeTypes from "./../../types/EmployeeTypes";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -39,6 +39,8 @@ import GlobalModal from "./Modal";
 import useAxios from "../../api/useAxios.ts";
 import { useQuery } from "@tanstack/react-query";
 import EmployeeTab from "./EmployeeTab.tsx";
+import SnackbarContext from "../../context/SnackbarContext.ts";
+import { SnackBarContextTypes } from "../../types/SnackbarTypes.ts";
 type RosterCardTypes = {
   passengerDetails: EmployeeTypes[];
   column: ShiftTypes;
@@ -52,6 +54,8 @@ const RosterCard = ({
 }: RosterCardTypes) => {
   const [activeRouteCoords, setActiveRouteCoords] = useState<Array<any>>([]);
   const [mapVisible, setMapVisible] = useState<boolean>(false);
+
+  const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
   const [openAddExternalTmModal, setOpenAddExternalTmModal] =
     useState<boolean>(false);
@@ -81,9 +85,22 @@ const RosterCard = ({
   };
 
   const handleSearchAndAddTM = () => {
-    // setMapVisible(!mapVisible);
-    setOpenAddExternalTmModal(true);
-    handleMenuClose();
+    console.log(
+      passengerDetails?.length,
+      (column?.cab as any)?.seatingCapacity
+    );
+    if (passengerDetails?.length >= (column?.cab as any)?.seatingCapacity) {
+      setOpenSnack({
+        open: true,
+        message:
+          "Cab is full! Remove existing passengers to add different TMs.",
+        severity: "warning",
+      });
+      handleMenuClose();
+    } else {
+      setOpenAddExternalTmModal(true);
+      handleMenuClose();
+    }
   };
 
   const handleClearCab = () => {
@@ -169,8 +186,12 @@ const RosterCard = ({
       return (
         teamMember?.fname?.toLowerCase()?.includes(searchtext.toLowerCase()) ||
         teamMember?.lname?.toLowerCase()?.includes(searchtext.toLowerCase()) ||
-        teamMember?.pickUp?.address?.toLowerCase()?.includes(searchtext.toLowerCase()) ||
-        teamMember?.workLocation?.toLowerCase()?.includes(searchtext.toLowerCase())
+        teamMember?.pickUp?.address
+          ?.toLowerCase()
+          ?.includes(searchtext.toLowerCase()) ||
+        teamMember?.workLocation
+          ?.toLowerCase()
+          ?.includes(searchtext.toLowerCase())
       );
     }
   );
@@ -225,7 +246,7 @@ const RosterCard = ({
             sx={{
               ...RowFlex,
               width: "100%",
-              gap:2.5,
+              gap: 2.5,
             }}
           >
             <TextField
@@ -244,9 +265,13 @@ const RosterCard = ({
                 ),
               }}
             />
-            <Box sx={{...ColFlex, width: "20%", alignItems:"flex-start"}}>
-            <Typography sx={{color:"white"}} variant="h5">{filteredTeamMembers?.length} Found</Typography>
-            <Typography sx={{color:"white"}} variant="body2">Unrostered TMs</Typography>
+            <Box sx={{ ...ColFlex, width: "20%", alignItems: "flex-start" }}>
+              <Typography sx={{ color: "white" }} variant="h5">
+                {filteredTeamMembers?.length} Found
+              </Typography>
+              <Typography sx={{ color: "white" }} variant="body2">
+                Unrostered TMs
+              </Typography>
             </Box>
           </Box>
           <Box
@@ -546,7 +571,18 @@ const RosterCard = ({
             justifyContent: "flex-start",
           }}
         >
-          <Typography variant="body2" fontWeight={600} sx={{color:"primary.main", alignSelf:"flex-end", cursor:"pointer"}} onClick={handleViewMap}>Collapse Map</Typography>
+          <Typography
+            variant="body2"
+            fontWeight={600}
+            sx={{
+              color: "primary.main",
+              alignSelf: "flex-end",
+              cursor: "pointer",
+            }}
+            onClick={handleViewMap}
+          >
+            Collapse Map
+          </Typography>
           <MapComponent
             // height="100%"
             mode="route-view"
