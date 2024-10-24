@@ -371,8 +371,7 @@ const DriverProfile = () => {
                         >
                           <AccessTime />
                           {ConvertShiftTimeTo12HrFormat(
-                            route?.currentShift as string,
-                            route?.typeOfRoute
+                            route?.currentShift as string
                           )}
                         </Box>
                       </TableCell>

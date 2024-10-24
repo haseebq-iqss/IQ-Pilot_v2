@@ -228,6 +228,9 @@ function AllTeamMembers() {
                               justifyContent: "flex-start",
                               gap: "10px",
                             }}
+                          onClick={() =>
+                            navigate(`/admin/teamMemberProfile/${employee?._id}`)
+                          }
                           >
                             <VisibilityIcon sx={{}} />
                             View Details
