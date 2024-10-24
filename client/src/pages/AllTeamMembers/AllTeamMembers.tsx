@@ -71,11 +71,11 @@ function AllTeamMembers() {
     },
   });
 
-  const filteredTeamMembers = teamMemberData?.filter(
+  const filteredTeamMembers = pendingPassengers?.filter(
     (teamMember: EmployeeTypes) => {
       return (
-        teamMember?.fname?.toLowerCase()?.includes(searchtext) ||
-        teamMember?.lname?.toLowerCase()?.includes(searchtext)
+        teamMember?.fname?.toLowerCase()?.includes(searchtext.toLowerCase()) ||
+        teamMember?.lname?.toLowerCase()?.includes(searchtext.toLowerCase())
       );
     }
   );
