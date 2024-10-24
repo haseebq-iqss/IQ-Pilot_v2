@@ -1,13 +1,13 @@
 // @ts-nocheck
 import { Box, Typography } from "@mui/material";
-import { useBlocker, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ColFlex, RowFlex, PageFlex } from "../../style_extentions/Flex.ts";
 import LogoImage from "/images/logo.png";
 import RosterCard from "../../components/ui/RosterCard.tsx";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 import Cabtypes from "../../types/CabTypes.ts";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios.ts";
 import {
@@ -31,6 +31,7 @@ import ReservedPassengersTab from "../../components/ui/ReservedPassengersTab.tsx
 import Loading from "../../components/ui/Loading.tsx";
 import SnackbarContext from "../../context/SnackbarContext.ts";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes.ts";
+import { ArrowBackIos } from "@mui/icons-material";
 
 function CreateShift() {
   const location = useLocation();
@@ -453,56 +454,16 @@ function CreateShift() {
               width: "40%",
               alignItems: "center",
               justifyContent: "flex-end",
-              gap: 7.5,
+              gap: 0,
             }}
           >
-            {/* <Box
-              sx={{
-                pl: 2.5,
-                height: "50px",
-                ...RowFlex,
-                justifyContent: "space-between",
-                gap: 2.5,
-                backgroundColor: "background.default",
-                border: "3px solid #2997fc",
-                borderRadius: 1.5,
-                cursor: "pointer",
-                position: "relative",
-              }}
-            >
-              <Typography
-                variant="h5"
-                sx={{
-                  fontStyle: "italic",
-                  fontWeight: "700",
-                  color: "primary.main",
-                }}
-              >
-                RESERVE
-              </Typography>
-              <Box
-                sx={{
-                  ...ColFlex,
-                  width: "100%",
-                  px: 1.75,
-                  height: "100%",
-                  bgcolor: "primary.main",
-                }}
-              >
-                <Typography
-                  sx={{ fontWeight: 700, color:"text.primary", fontStyle: "italic" }}
-                  variant="h5"
-                >
-                  0
-                </Typography>
-              </Box>
-            </Box> */}
             <Box
               sx={{
                 px: 5,
                 height: "50px",
                 bgcolor: "primary.main",
                 ...RowFlex,
+                scale: "0.8",
                 gap: 2.5,
                 borderRadius: 1.5,
                 cursor: "pointer",
@@ -520,20 +481,40 @@ function CreateShift() {
               onClick={handleCreateRoute}
             >
               <Typography
-                variant="h5"
+                variant="h6"
                 sx={{
-                  fontStyle: "italic",
-                  fontWeight: "700",
+                  // fontStyle: "italic",
+                  fontWeight: "600",
                   color: "text.primary",
                 }}
               >
-                DEPLOY
+                Deploy Shift
               </Typography>
               <Box
                 component={"img"}
                 src={LogoImage}
                 sx={{ width: "25px", aspectRatio: 1 }}
               />
+            </Box>
+            <Box
+              sx={{
+                px: 3,
+                height: "40px",
+                backgroundColor: "text.primary",
+                ...RowFlex,
+                gap: 1,
+                borderRadius: 1.5,
+                cursor: "pointer",
+              }}
+              onClick={() => navigate("/admin/")}
+            >
+              <ArrowBackIos
+                fontSize="20"
+                sx={{ color: "background.default" }}
+              />
+              <Typography sx={{ color: "background.default" }}>
+                Back to Dashboard
+              </Typography>
             </Box>
           </Box>
         </Box>
