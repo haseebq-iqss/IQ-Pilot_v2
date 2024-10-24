@@ -49,7 +49,7 @@ function ScheduledRoutes() {
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
 
   const [tableDataView, settableDataView] = useState<
-    "Active" | "Scheduled" | "Completed"
+    "Active" | "Scheduled" | "Completed" | "All"
   >("Active");
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
@@ -89,11 +89,13 @@ function ScheduledRoutes() {
         return IsFutureDate(route.activeOnDate as Date) === true;
       });
       setSelectedRoutes(filtered);
-    } else {
+    } else if (currentView === "Completed") {
       const filtered = routes?.filter((route: RouteTypes) => {
         return route.routeStatus === "completed";
       });
       setSelectedRoutes(filtered);
+    } else {
+      setSelectedRoutes(routes);
     }
   };
 
@@ -167,11 +169,18 @@ function ScheduledRoutes() {
                     {`Viewing Scheduled Routes (${selectedRoutes?.length})`}
                   </Typography>
                 </>
-              ) : (
+              ) : tableDataView == "Completed" ? (
                 <>
                   <EmojiTransportation sx={{ fontSize: "2.5rem" }} />
                   <Typography sx={{ fontWeight: 600 }} variant="h5">
                     {`Viewing Completed Routes (${selectedRoutes?.length})`}
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <EmojiTransportation sx={{ fontSize: "2.5rem" }} />
+                  <Typography sx={{ fontWeight: 600 }} variant="h5">
+                    {`Viewing All Routes (${selectedRoutes?.length})`}
                   </Typography>
                 </>
               )}
@@ -193,6 +202,9 @@ function ScheduledRoutes() {
               </ToggleButton>
               <ToggleButton sx={{ px: 2.5 }} value="Completed">
                 Completed
+              </ToggleButton>
+              <ToggleButton sx={{ px: 2.5 }} value="All">
+                All Routes
               </ToggleButton>
             </ToggleButtonGroup>
           </Box>
