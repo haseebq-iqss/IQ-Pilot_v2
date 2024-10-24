@@ -122,7 +122,14 @@ function AdminStatistics() {
             marginLeft: "50px",
           }}
         >
-          <Box sx={{ ...ColFlex, alignItems: "flex-start", gap: "5px", color: "text.primary", }}>
+          <Box
+            sx={{
+              ...ColFlex,
+              alignItems: "flex-start",
+              gap: "5px",
+              color: "text.primary",
+            }}
+          >
             <Typography variant="h4" fontWeight={700}>
               {GetCurrentMonth()}'s Statistics
             </Typography>
@@ -155,7 +162,7 @@ function AdminStatistics() {
             // }}
           >
             <Typography sx={{ fontWeight: 600 }} variant="h4">
-              {totalShrinkage}
+              {totalShrinkage ? totalShrinkage : 0}
               <Box
                 component={"span"}
                 sx={{ fontSize: "1rem", color: "text.secondary" }}
@@ -184,9 +191,13 @@ function AdminStatistics() {
             sx={{ ...ColFlex, gap: "5px" }}
           >
             <Typography sx={{ fontWeight: 600 }} variant="h4">
-              {BigNumberFormatter(
-                ((totalKilometers / 15) * 100).toFixed(0) as unknown as number
-              )}
+              {totalKilometers?.length
+                ? BigNumberFormatter(
+                    ((totalKilometers / 15) * 100).toFixed(
+                      0
+                    ) as unknown as number
+                  )
+                : 0}
               <Box
                 component={"span"}
                 sx={{ fontSize: "1rem", color: "text.secondary" }}
@@ -219,7 +230,9 @@ function AdminStatistics() {
             }}
           >
             <Typography sx={{ fontWeight: 600 }} variant="h4">
-              {BigNumberFormatter(totalKilometers)}
+              {totalKilometers?.length
+                ? BigNumberFormatter(totalKilometers)
+                : 0}
               <Box
                 component={"span"}
                 sx={{ fontSize: "0.95rem", color: "text.secondary" }}
@@ -269,7 +282,7 @@ function AdminStatistics() {
           }}
         >
           <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            Active Drivers ({allCabs?.length})
+            Active Drivers ({allCabs?.length ? allCabs?.length : 0})
           </Typography>
           <ToggleButtonGroup
             size="small"

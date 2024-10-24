@@ -136,7 +136,7 @@ function ScheduledRoutes() {
         sx={{
           width: "100%",
           height: "50vh",
-          color: "text.primary"
+          color: "text.primary",
         }}
       >
         <Box
@@ -157,7 +157,7 @@ function ScheduledRoutes() {
                 <>
                   <Commute sx={{ fontSize: "2.5rem" }} />{" "}
                   <Typography sx={{ fontWeight: 600 }} variant="h5">
-                    {`Viewing Today's Routes (${selectedRoutes?.length})`}
+                    {`Viewing Today's Routes (${selectedRoutes?.length || 0})`}
                   </Typography>
                 </>
               ) : tableDataView == "Scheduled" ? (
@@ -232,8 +232,7 @@ function ScheduledRoutes() {
                       >
                         <AccessTime />
                         {ConvertShiftTimeTo12HrFormat(
-                          route?.currentShift as string,
-                          route?.typeOfRoute
+                          route?.currentShift as string
                         )}
                       </Box>
                     </TableCell>
