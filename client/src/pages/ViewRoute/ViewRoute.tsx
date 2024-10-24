@@ -99,7 +99,7 @@ function ViewRoute() {
           sx={{
             ...ColFlex,
             width: "100%",
-            height: "20%",
+            height: "25%",
             backgroundColor: "background.default",
             justifyContent: "center",
             alignItems: "flex-start",
@@ -188,7 +188,7 @@ function ViewRoute() {
           sx={{
             ...ColFlex,
             width: "100%",
-            height: "80%",
+            height: "75%",
             backgroundColor: "background.default",
             padding: "15px 20px",
             borderRadius: "15px",
@@ -238,137 +238,139 @@ function ViewRoute() {
               </Typography>
             </Box>
           )}
-          {attendanceData?.length
-            ? attendanceData?.map((attendance: any) => {
-                // console.log(employee);
-                return (
-                  <Box
-                    key={attendance?.ofEmployee?._id}
-                    sx={{ ...RowFlex, width: "100%" }}
-                  >
+          <Box sx={{ ...ColFlex, width: "100%", height:"auto", justifyContent:"flex-start", gap:2.5, overflowY:"auto" }}>
+            {attendanceData?.length
+              ? attendanceData?.map((attendance: any) => {
+                  // console.log(employee);
+                  return (
                     <Box
-                      sx={{
-                        ...RowFlex,
-                        width: "80%",
-                        justifyContent: "flex-start",
-                        gap: "20px",
-                      }}
+                      key={attendance?.ofEmployee?._id}
+                      sx={{ ...RowFlex, width: "100%" }}
                     >
-                      <Avatar
-                        sx={{ width: "40px", height: "40px" }}
-                        src={baseURL + attendance?.ofEmployee?.profilePicture}
-                      />
-                      <Box>
-                        <Typography
-                          sx={{ fontSize: "1.25rem", fontWeight: 500 }}
-                        >
-                          {attendance.ofEmployee?.fname +
-                            " " +
-                            attendance.ofEmployee?.lname}
-                        </Typography>
-                        <Typography
-                          sx={{
-                            fontSize: "0.8rem",
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                        >
-                          <Route
-                            sx={{
-                              width: "15px",
-                              height: "15px",
-                              mr: "5px",
-                              color: "secondary.main",
-                            }}
-                          />
-                          {attendance?.ofEmployee?.pickUp?.address}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Box sx={{ ...RowFlex, width: "20%" }}>
-                      {attendance?.isPresent ? (
-                        <DoneAll
-                          sx={{
-                            backgroundColor: "primary.main",
-                            borderRadius: "100px",
-                            p: 0.5,
-                            width: "40px",
-                            height: "40px",
-                            color: "text.primary",
-                          }}
-                        />
-                      ) : (
-                        <Close
-                          sx={{
-                            backgroundColor: "error.main",
-                            borderRadius: "100px",
-                            p: 0.5,
-                            width: "40px",
-                            height: "40px",
-                            color: "text.primary",
-                          }}
-                        />
-                      )}
-                    </Box>
-                  </Box>
-                );
-              })
-            : routeState?.passengers?.map((employee: any) => {
-                // console.log(employee);
-                return (
-                  <Box key={employee?._id} sx={{ ...RowFlex, width: "100%" }}>
-                    <Box
-                      sx={{
-                        ...RowFlex,
-                        width: "80%",
-                        justifyContent: "flex-start",
-                        gap: "20px",
-                      }}
-                    >
-                      <Avatar
-                        sx={{ width: "40px", height: "40px" }}
-                        src={baseURL + employee.profilePicture}
-                      />
-                      <Box>
-                        <Typography
-                          sx={{ fontSize: "1.25rem", fontWeight: 500 }}
-                        >
-                          {employee.fname + " " + employee.lname}
-                        </Typography>
-                        <Typography
-                          sx={{
-                            fontSize: "0.8rem",
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                        >
-                          <Route
-                            sx={{
-                              width: "15px",
-                              height: "15px",
-                              mr: "5px",
-                              color: "secondary.main",
-                            }}
-                          />
-                          {employee.pickUp?.address}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Box sx={{ ...RowFlex, width: "20%" }}>
-                      <NotListedLocation
+                      <Box
                         sx={{
-                          backgroundColor: "info.main",
-                          borderRadius: "100px",
-                          p: 0.5,
-                          width: "40px",
-                          height: "40px",
-                          color: "text.primary",
+                          ...RowFlex,
+                          width: "80%",
+                          justifyContent: "flex-start",
+                          gap: "20px",
                         }}
-                      />
+                      >
+                        <Avatar
+                          sx={{ width: "40px", height: "40px" }}
+                          src={baseURL + attendance?.ofEmployee?.profilePicture}
+                        />
+                        <Box>
+                          <Typography
+                            sx={{ fontSize: "1.25rem", fontWeight: 500 }}
+                          >
+                            {attendance.ofEmployee?.fname +
+                              " " +
+                              attendance.ofEmployee?.lname}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontSize: "0.8rem",
+                              display: "flex",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Route
+                              sx={{
+                                width: "15px",
+                                height: "15px",
+                                mr: "5px",
+                                color: "secondary.main",
+                              }}
+                            />
+                            {attendance?.ofEmployee?.pickUp?.address}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Box sx={{ ...RowFlex, width: "20%" }}>
+                        {attendance?.isPresent ? (
+                          <DoneAll
+                            sx={{
+                              backgroundColor: "primary.main",
+                              borderRadius: "100px",
+                              p: 0.5,
+                              width: "40px",
+                              height: "40px",
+                              color: "text.primary",
+                            }}
+                          />
+                        ) : (
+                          <Close
+                            sx={{
+                              backgroundColor: "error.main",
+                              borderRadius: "100px",
+                              p: 0.5,
+                              width: "40px",
+                              height: "40px",
+                              color: "text.primary",
+                            }}
+                          />
+                        )}
+                      </Box>
                     </Box>
-                  </Box>
-                );
-              })}
+                  );
+                })
+              : routeState?.passengers?.map((employee: any) => {
+                  // console.log(employee);
+                  return (
+                    <Box key={employee?._id} sx={{ ...RowFlex, width: "100%" }}>
+                      <Box
+                        sx={{
+                          ...RowFlex,
+                          width: "80%",
+                          justifyContent: "flex-start",
+                          gap: "20px",
+                        }}
+                      >
+                        <Avatar
+                          sx={{ width: "40px", height: "40px" }}
+                          src={baseURL + employee.profilePicture}
+                        />
+                        <Box>
+                          <Typography
+                            sx={{ fontSize: "1.25rem", fontWeight: 500 }}
+                          >
+                            {employee.fname + " " + employee.lname}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontSize: "0.8rem",
+                              display: "flex",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Route
+                              sx={{
+                                width: "15px",
+                                height: "15px",
+                                mr: "5px",
+                                color: "secondary.main",
+                              }}
+                            />
+                            {employee.pickUp?.address}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Box sx={{ ...RowFlex, width: "20%" }}>
+                        <NotListedLocation
+                          sx={{
+                            backgroundColor: "info.main",
+                            borderRadius: "100px",
+                            p: 0.5,
+                            width: "40px",
+                            height: "40px",
+                            color: "text.primary",
+                          }}
+                        />
+                      </Box>
+                    </Box>
+                  );
+                })}
+          </Box>
         </Box>
       </Box>
       {/* RS */}
