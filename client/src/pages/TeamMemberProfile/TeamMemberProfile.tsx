@@ -1,15 +1,7 @@
 import { Avatar, Box, Divider, Typography } from "@mui/material";
-import { useLocation, useParams } from "react-router-dom";
-import { ColFlex, RowFlex } from "../../style_extentions/Flex";
-import {
-  AddLocation,
-  Business,
-  Call,
-  Email,
-  LocationOn,
-  Mail,
-  Phone,
-} from "@mui/icons-material";
+import { useLocation } from "react-router-dom";
+import { RowFlex } from "../../style_extentions/Flex";
+import { Call, LocationOn, Mail } from "@mui/icons-material";
 
 function TeamMemberProfile() {
   const location = useLocation();
