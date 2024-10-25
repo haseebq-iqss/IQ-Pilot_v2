@@ -73,7 +73,7 @@ function AssignedRoutes() {
   const [activeReserveTask, setActiveReserveTask] = useState(null);
   const [activeReserveColumn, setActiveReserveColumn] = useState(null);
   const [editMode, setEditMode] = useState(false);
-  const [SOSEmergency, setSOSEmergency] = useState<any>(null);
+  const [openConfirmModal, setOpenConfirmModal] = useState<any>(null);
 
   const navigate = useNavigate();
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
@@ -89,6 +89,9 @@ function AssignedRoutes() {
   });
 
   const regularColumns = columns.filter((column) => column.name !== "reserved");
+
+  // console.log('columns', regularColumns)
+  // console.log('passengers', passengers)
 
   const combinedData: {
     _id: string;
@@ -132,12 +135,13 @@ function AssignedRoutes() {
   });
 
   const confirmRoutes = () => {
-    setSOSEmergency(true);
+    setOpenConfirmModal(true);
   };
   const handleUpdateRoute = () => {
     const dataToDeploy: any = {
       cabEmployeeGroups: combinedData,
     };
+    // console.log(columns)
     mutate(dataToDeploy);
   };
 
@@ -459,9 +463,7 @@ function AssignedRoutes() {
             }}
           >
             <Typography fontSize={30} fontWeight={500}>
-              {`Active Cabs (${
-                routeState?.length ? routeState?.length : 0
-              })`}
+              {`Active Cabs (${routeState?.length ? routeState?.length : 0})`}
             </Typography>
             <Typography fontSize={15} fontWeight={500}>
               {`You have created ${
@@ -488,7 +490,7 @@ function AssignedRoutes() {
                 gap: 1,
                 borderRadius: 1.5,
                 cursor: "pointer",
-                display:"inherit"
+                display: "inherit",
                 // display:
                 //   reservedPassengers?.length > 0 || editMode
                 //     ? { ...RowFlex }
@@ -580,6 +582,7 @@ function AssignedRoutes() {
                     <ScheduledRouteCard
                       key={shift?.id}
                       column={shift}
+                      passengersSetter={setPassengers}
                       passengerDetails={uniquePassengers}
                     />
                   );
@@ -644,8 +647,8 @@ function AssignedRoutes() {
       </Box>
       <Modal
         sx={{ ...ColFlex, width: "100%", height: "100%" }}
-        open={SOSEmergency ? true : false}
-        // onClose={() => setSOSEmergency([])}
+        open={openConfirmModal ? true : false}
+        // onClose={() => setOpenConfirmModal([])}
       >
         <Box
           sx={{
@@ -659,8 +662,7 @@ function AssignedRoutes() {
             textAlign: "center",
             justifyContent: "center",
             backgroundColor: "background.default",
-            boxShadow: "0px 10px 100px rgba(0 255 251 / 0.2)"
-
+            boxShadow: "0px 10px 100px rgba(0 255 251 / 0.2)",
           }}
         >
           <Box
@@ -672,7 +674,9 @@ function AssignedRoutes() {
               marginTop: "15px",
             }}
           >
-            <Warning sx={{ width: "50px", height: "50px", color: "warning.main" }} />
+            <Warning
+              sx={{ width: "50px", height: "50px", color: "warning.main" }}
+            />
 
             <Box
               sx={{
@@ -703,10 +707,11 @@ function AssignedRoutes() {
                   color: "white",
                   padding: "10px 50px",
                 }}
+                color="inherit"
                 variant="contained"
                 size="large"
                 onClick={() => {
-                  setSOSEmergency(undefined);
+                  setOpenConfirmModal(false);
                 }}
               >
                 No

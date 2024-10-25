@@ -1,9 +1,17 @@
-import { Avatar, Box, Menu, MenuItem, Typography } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  TextField,
+  Typography,
+} from "@mui/material";
 // import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex.ts";
 import baseURL from "../../utils/baseURL.ts";
 import EmployeeTypes from "./../../types/EmployeeTypes";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -20,20 +28,37 @@ import {
   Map,
   NoTransfer,
   PersonSearch,
+  Search,
   Tag,
   Tune,
 } from "@mui/icons-material";
 import MapComponent from "../Map.tsx";
 import AssignedPassengers from "./AssignedPassengers.tsx";
 import { SlideInOut } from "../../animations/transition.tsx";
+import GlobalModal from "./Modal";
+import useAxios from "../../api/useAxios.ts";
+import { useQuery } from "@tanstack/react-query";
+import EmployeeTab from "./EmployeeTab.tsx";
+import SnackbarContext from "../../context/SnackbarContext.ts";
+import { SnackBarContextTypes } from "../../types/SnackbarTypes.ts";
 type RosterCardTypes = {
   passengerDetails: EmployeeTypes[];
   column: ShiftTypes;
+  passengersSetter: any;
 };
 
-const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
+const RosterCard = ({
+  passengerDetails,
+  column,
+  passengersSetter,
+}: RosterCardTypes) => {
   const [activeRouteCoords, setActiveRouteCoords] = useState<Array<any>>([]);
   const [mapVisible, setMapVisible] = useState<boolean>(false);
+
+  const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
+
+  const [openAddExternalTmModal, setOpenAddExternalTmModal] =
+    useState<boolean>(false);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
@@ -43,7 +68,7 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
     index: number
   ) => {
     setAnchorEl(event.currentTarget);
-    console.log(event);
+    // console.log(event);
     setMenuIndex(index);
   };
 
@@ -60,8 +85,22 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
   };
 
   const handleSearchAndAddTM = () => {
-    // setMapVisible(!mapVisible);
-    handleMenuClose();
+    console.log(
+      passengerDetails?.length,
+      (column?.cab as any)?.seatingCapacity
+    );
+    if (passengerDetails?.length >= (column?.cab as any)?.seatingCapacity) {
+      setOpenSnack({
+        open: true,
+        message:
+          "Cab is full! Remove existing passengers to add different TMs.",
+        severity: "warning",
+      });
+      handleMenuClose();
+    } else {
+      setOpenAddExternalTmModal(true);
+      handleMenuClose();
+    }
   };
 
   const handleClearCab = () => {
@@ -100,6 +139,32 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
     },
   });
 
+  // ALL PENDING PASSENGERS
+  const getPendingPassengersQF = () => {
+    return useAxios.get("routes/pendingPassengers");
+  };
+
+  const { data: pendingPassengers, status: pendingPassengersStatus } = useQuery(
+    {
+      queryFn: getPendingPassengersQF,
+      queryKey: ["All Pending Passengers"],
+      select: (data) => {
+        return data.data.pending_passengers;
+      },
+    }
+  );
+
+  const handleAddNewPassenger = (newPassenger: EmployeeTypes) => {
+    (newPassenger as any).columnId = column?.id;
+    (newPassenger as any).id = newPassenger?._id;
+    // console.log(newPassenger)
+    setOpenAddExternalTmModal(false);
+    passengersSetter((prevPassengers: any) => [
+      newPassenger,
+      ...prevPassengers,
+    ]);
+  };
+
   const cardRef = useRef(null);
   const handleRightClick = (event: any) => {
     event.preventDefault(); // Prevent the default right-click menu
@@ -113,6 +178,23 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
       console.warn("Card reference is not available.");
     }
   };
+
+  const [searchtext, setSearchText] = useState("");
+
+  const filteredTeamMembers = pendingPassengers?.filter(
+    (teamMember: EmployeeTypes) => {
+      return (
+        teamMember?.fname?.toLowerCase()?.includes(searchtext.toLowerCase()) ||
+        teamMember?.lname?.toLowerCase()?.includes(searchtext.toLowerCase()) ||
+        teamMember?.pickUp?.address
+          ?.toLowerCase()
+          ?.includes(searchtext.toLowerCase()) ||
+        teamMember?.workLocation
+          ?.toLowerCase()
+          ?.includes(searchtext.toLowerCase())
+      );
+    }
+  );
 
   return (
     <Box
@@ -145,6 +227,79 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
       ref={setNodeRef}
       onContextMenu={handleRightClick}
     >
+      {/* ADD TEAM MEMBER MODAL */}
+      <GlobalModal
+        headerText="Search & Add Team Memeber"
+        openModal={openAddExternalTmModal}
+        setOpenModal={setOpenAddExternalTmModal}
+      >
+        <Box
+          sx={{
+            ...ColFlex,
+            width: "100%",
+            justifyContent: "flex-start",
+            height: "100%",
+            padding: "1rem",
+          }}
+        >
+          <Box
+            sx={{
+              ...RowFlex,
+              width: "100%",
+              gap: 2.5,
+            }}
+          >
+            <TextField
+              variant="outlined"
+              size="medium"
+              sx={{ width: "65%" }}
+              onChange={(e) => {
+                setSearchText(e.target.value);
+              }}
+              placeholder="Search Team Members, Work Locations or Addresses"
+              InputProps={{
+                startAdornment: (
+                  <IconButton aria-label="search">
+                    <Search />
+                  </IconButton>
+                ),
+              }}
+            />
+            <Box sx={{ ...ColFlex, width: "20%", alignItems: "flex-start" }}>
+              <Typography sx={{ color: "white" }} variant="h5">
+                {filteredTeamMembers?.length} Found
+              </Typography>
+              <Typography sx={{ color: "white" }} variant="body2">
+                Unrostered TMs
+              </Typography>
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              ...ColFlex,
+              height: "75%",
+              width: "75%",
+              overflowY: "scroll",
+              scrollbarWidth: "none", // For Firefox
+              msOverflowStyle: "none", // For Internet Explorer and Edge
+              justifyContent: "flex-start",
+              gap: "1rem",
+              pt: 2.5,
+            }}
+          >
+            {pendingPassengersStatus === "success" &&
+              filteredTeamMembers?.map((passenger: EmployeeTypes) => {
+                return (
+                  <EmployeeTab
+                    passenger={passenger}
+                    newEmployeeSetter={handleAddNewPassenger}
+                    key={passenger._id}
+                  />
+                );
+              })}
+          </Box>
+        </Box>
+      </GlobalModal>
       {/* Center Box for Right Click Menu */}
       <Box
         ref={cardRef}
@@ -343,8 +498,9 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
                 Search and Add TM
               </MenuItem>
             </SlideInOut>
-            <SlideInOut duration={0.3} delay={0.30}>
+            <SlideInOut duration={0.3} delay={0.3}>
               <MenuItem
+                // onClick={AddNewTM}
                 sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
                 onClick={handleClearCab}
               >
@@ -415,6 +571,18 @@ const RosterCard = ({ passengerDetails, column }: RosterCardTypes) => {
             justifyContent: "flex-start",
           }}
         >
+          <Typography
+            variant="body2"
+            fontWeight={600}
+            sx={{
+              color: "primary.main",
+              alignSelf: "flex-end",
+              cursor: "pointer",
+            }}
+            onClick={handleViewMap}
+          >
+            Collapse Map
+          </Typography>
           <MapComponent
             // height="100%"
             mode="route-view"

@@ -58,6 +58,7 @@ const AssignedPassengers = ({
       />
     );
   }
+
   return (
     <>
       <Box

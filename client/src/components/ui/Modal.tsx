@@ -59,7 +59,7 @@ export default function GlobalModal({
             >
               <Typography
                 color="text.primary"
-                fontWeight={600}
+                fontWeight={500}
                 variant={isXS ? "h5" : "h4"}
               >
                 {headerText}
