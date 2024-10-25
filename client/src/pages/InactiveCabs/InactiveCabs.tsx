@@ -37,21 +37,25 @@ import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 //   drivers: [EmployeeTypes];
 // };
 
-function AllCabDrivers() {
+function InactiveCabs() {
   const [searchtext, setSearchText] = useState("");
   const qc = useQueryClient();
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
   const navigate = useNavigate();
-  const { data: cabDetails } = useQuery({
-    queryKey: ["all-cabs"],
-    queryFn: async () => {
-      const response = await useAxios.get("/cabs/");
-      return response?.data?.data;
-    },
+
+  // ALL AVAILABLE CABS
+  const getAllCabsQF = async () => {
+    const response = await useAxios.get("cabs/availableCabs");
+    return response.data?.data;
+  };
+
+  const { data: allCabs, status: allCabStatus } = useQuery({
+    queryFn: getAllCabsQF,
+    queryKey: ["All Cabs"],
   });
 
-  const filteredCabDrivers = cabDetails?.filter((cab: Cabtypes) => {
+  const filteredCabDrivers = allCabs?.filter((cab: Cabtypes) => {
     return (
       (cab?.cabDriver as EmployeeTypes)?.fname
         ?.toLowerCase()
@@ -103,8 +107,8 @@ function AllCabDrivers() {
   });
   return (
     <PageContainer
-      headerText={`All Cab Drivers (${cabDetails?.length || 0})`}
-      subHeadingText="All cab drivers that are part of your company"
+      headerText={`Inactive / Available Cabs (${allCabs?.length || 0})`}
+      subHeadingText="All available cab drivers that are part of your company"
       parentStyles={{}}
     >
       <Box
@@ -141,11 +145,12 @@ function AllCabDrivers() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredCabDrivers?.map((driver: Cabtypes, index: number) => (
+              {allCabs?.map((driver: Cabtypes, index: number) => (
                 <TableRow
                   key={driver._id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
+                  {console.log(driver?.cabDriver[0])}
                   <TableCell component="th" scope="row">
                     <Box
                       sx={{
@@ -158,13 +163,14 @@ function AllCabDrivers() {
                       <Avatar
                         src={
                           baseURL +
-                          (driver?.cabDriver as EmployeeTypes)?.profilePicture
+                          (driver?.cabDriver[0] as EmployeeTypes)
+                            ?.profilePicture
                         }
                         sx={{ width: "30px", height: "30px" }}
                       />
-                      {(driver?.cabDriver as EmployeeTypes)?.fname +
+                      {(driver?.cabDriver[0] as EmployeeTypes)?.fname +
                         " " +
-                        (driver?.cabDriver as EmployeeTypes)?.lname}
+                        (driver?.cabDriver[0] as EmployeeTypes)?.lname}
                     </Box>
                   </TableCell>
                   <TableCell sx={{ fontWeight: 600 }} align="center">
@@ -252,4 +258,4 @@ function AllCabDrivers() {
   );
 }
 
-export default AllCabDrivers;
+export default InactiveCabs;

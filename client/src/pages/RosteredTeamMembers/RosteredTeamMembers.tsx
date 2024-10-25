@@ -125,6 +125,7 @@ function RosteredTeamMembers() {
         <TableContainer sx={{}}>
           <TextField
             variant="outlined"
+            autoFocus
             size="small"
             onChange={(e) => {
               setSearchText(e.target.value);

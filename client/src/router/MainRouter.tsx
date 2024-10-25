@@ -28,6 +28,7 @@ import LiveDriverTracking from "../pages/LiveDriverTracking/LiveDriverTracking";
 import PendingTeamMembers from "../pages/PendingTeamMembers/PendingTeamMembers";
 import RosteredTeamMembers from "../pages/RosteredTeamMembers/RosteredTeamMembers";
 import TeamMemberProfile from "../pages/TeamMemberProfile/TeamMemberProfile";
+import InactiveCabs from "../pages/InactiveCabs/InactiveCabs";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -73,6 +74,14 @@ function MainRouter() {
                 element={
                   <SlideInOut>
                     <AllCabDrivers />
+                  </SlideInOut>
+                }
+              />
+              <Route
+                path="inactiveCabs"
+                element={
+                  <SlideInOut>
+                    <InactiveCabs />
                   </SlideInOut>
                 }
               />
@@ -169,6 +178,7 @@ function MainRouter() {
                 </SlideInOut>
               }
             />
+
             <Route
               path="admin/viewRoute/:rid"
               element={

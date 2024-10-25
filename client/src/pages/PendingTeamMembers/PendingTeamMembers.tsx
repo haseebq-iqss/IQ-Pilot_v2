@@ -126,6 +126,7 @@ function PendingTeamMembers() {
           <TextField
             variant="outlined"
             size="small"
+            autoFocus
             onChange={(e) => {
               setSearchText(e.target.value);
             }}

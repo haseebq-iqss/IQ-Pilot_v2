@@ -4,6 +4,7 @@ import {
   Hail,
   KeyboardDoubleArrowDown,
   LiveTv,
+  LocalParking,
   LocalTaxi,
   NoCrash,
   QueryStats,
@@ -138,6 +139,12 @@ function Sidebar() {
           text="All Cab Drivers"
           link="allCabDrivers"
           startIcon={<LocalTaxi />}
+          // isActive={false}
+        />
+        <SideBarButton
+          text="Inactive Cabs"
+          link="inactiveCabs"
+          startIcon={<LocalParking />}
           // isActive={false}
         />
         <SideBarButton

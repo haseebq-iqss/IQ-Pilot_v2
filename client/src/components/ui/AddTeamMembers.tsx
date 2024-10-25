@@ -308,6 +308,7 @@ export const AddTeamMembers = () => {
               placeholder="Enter your first name"
               InputLabelProps={{ shrink: true }}
               onChange={handleFullName}
+              autoFocus
             />
             <TextField
               required
