@@ -77,7 +77,7 @@ function AllTeamMembers() {
     },
   });
 
-  const filteredTeamMembers = pendingPassengers?.filter(
+  const filteredTeamMembers = teamMemberData?.filter(
     (teamMember: EmployeeTypes) => {
       return (
         teamMember?.fname?.toLowerCase()?.includes(searchtext.toLowerCase()) ||
