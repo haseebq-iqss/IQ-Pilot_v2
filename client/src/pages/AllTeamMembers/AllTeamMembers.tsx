@@ -56,18 +56,24 @@ function AllTeamMembers() {
   });
 
   // Mark TM Absent
-  const { status, mutate: MarkAsAbsent, data } = useMutation({
+  const {
+    status,
+    mutate: MarkAsAbsent,
+    data,
+  } = useMutation({
     mutationFn: (uid: string) => {
       return useAxios.patch(`/users/cancel-cab/${uid}`);
     },
     onSuccess: (data) => {
       setOpenSnack({
-        open:true,
-        message: `TM marked absent ${data.data.data.isCabCancelled ? "absent" : "present"} successfully`,
+        open: true,
+        message: `TM marked absent ${
+          data.data.data.isCabCancelled ? "absent" : "present"
+        } successfully`,
         severity: !data.data.data.isCabCancelled ? "info" : "warning",
       });
-      qc.invalidateQueries({ queryKey: ["all-teamMembers"] })
-      handleMenuClose()
+      qc.invalidateQueries({ queryKey: ["all-teamMembers"] });
+      handleMenuClose();
     },
   });
 
@@ -79,7 +85,6 @@ function AllTeamMembers() {
       );
     }
   );
-
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
@@ -228,9 +233,12 @@ function AllTeamMembers() {
                               justifyContent: "flex-start",
                               gap: "10px",
                             }}
-                          onClick={() =>
-                            navigate(`/admin/teamMemberProfile/${employee?._id}`)
-                          }
+                            onClick={() =>
+                              navigate(
+                                `/admin/teamMemberProfile/${employee?._id}`,
+                                { state: employee }
+                              )
+                            }
                           >
                             <VisibilityIcon sx={{}} />
                             View Details
