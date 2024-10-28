@@ -508,30 +508,13 @@ function AssignedRoutes() {
           <Box
             sx={{
               ...RowFlex,
-              width: "60%",
+              width: "70%",
+              // backgroundColor:"red",
               alignItems: "center",
               justifyContent: "flex-end",
               gap: 3,
             }}
           >
-            {/* <Box
-              sx={{
-                px: 3,
-                height: "40px",
-                // backgroundColor: expandedLayout ? "secondary.dark" : "secondary.light",
-                // backgroundColor: "secondary.main",
-                ...RowFlex,
-                gap: 1,
-                borderRadius: 1.5,
-                cursor: "pointer",
-                display: "inherit",
-                // display:
-                //   reservedPassengers?.length > 0 || editMode
-                //     ? { ...RowFlex }
-                //     : "none",
-              }}
-              // onClick={handleExpandView}
-            > */}
             <ToggleButtonGroup
               size="medium"
               color="primary"
