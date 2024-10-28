@@ -105,7 +105,7 @@ function ViewRoute() {
             alignItems: "flex-start",
             p: "15px",
             borderRadius: "15px",
-            gap: 1.5,
+            gap: 2.5,
           }}
         >
           {/* L1-R1 */}
@@ -125,8 +125,7 @@ function ViewRoute() {
             >
               <AccessTime sx={{ fontSize: "2rem", mr: 1 }} />
               {ConvertShiftTimeTo12HrFormat(
-                routeState?.currentShift as string,
-                routeState?.typeOfRoute
+                routeState?.currentShift as string
               )}
             </Typography>
             <Box

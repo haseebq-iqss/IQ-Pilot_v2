@@ -24,6 +24,7 @@ import {
   FormatColorFill,
   GroupRemove,
   Groups2,
+  Hail,
   LocationOn,
   Map,
   NoTransfer,
@@ -31,6 +32,7 @@ import {
   Search,
   Tag,
   Tune,
+  WavingHand,
 } from "@mui/icons-material";
 import MapComponent from "../Map.tsx";
 import AssignedPassengers from "./AssignedPassengers.tsx";
@@ -45,12 +47,18 @@ type RosterCardTypes = {
   passengerDetails: EmployeeTypes[];
   column: ShiftTypes;
   passengersSetter: any;
+  reservedColumnSetter: any;
+  expandedLayout: any;
+  setExpandedLayout: any;
 };
 
 const RosterCard = ({
   passengerDetails,
   column,
   passengersSetter,
+  reservedColumnSetter,
+  expandedLayout,
+  setExpandedLayout
 }: RosterCardTypes) => {
   const [activeRouteCoords, setActiveRouteCoords] = useState<Array<any>>([]);
   const [mapVisible, setMapVisible] = useState<boolean>(false);
@@ -80,37 +88,108 @@ const RosterCard = ({
   // console.log(column);
 
   const handleViewMap = () => {
+    if (expandedLayout == "expanded") {
+      setOpenSnack({
+        open: true,
+        message: "Please enable Restricted Layout to hide the map.",
+        severity: "info",
+      })
+    }
     setMapVisible(!mapVisible);
     handleMenuClose();
   };
 
   const handleSearchAndAddTM = () => {
-    console.log(
-      passengerDetails?.length,
-      (column?.cab as any)?.seatingCapacity
-    );
+    // console.log(
+    //   passengerDetails?.length,
+    //   (column?.cab as any)?.seatingCapacity
+    // );
     if (passengerDetails?.length >= (column?.cab as any)?.seatingCapacity) {
       setOpenSnack({
         open: true,
         message:
           "Cab is full! Remove existing passengers to add different TMs.",
-        severity: "warning",
+        severity: "info",
       });
       handleMenuClose();
     } else {
       setOpenAddExternalTmModal(true);
       handleMenuClose();
+      setSearchText("");
     }
   };
 
   const handleClearCab = () => {
-    // setMapVisible(!mapVisible);
+    if (!column) return; // Ensure column is defined
+
+    passengersSetter((prevPassengers: any) => {
+      // Filter out passengers from the current cab
+      const clearedPassengers = prevPassengers.filter(
+        (passenger: any) => passenger.columnId === column.id
+      );
+
+      // Set columnId to "reserved" for cleared passengers
+      const updatedPassengers = prevPassengers.map((passenger: any) =>
+        passenger.columnId === column.id
+          ? { ...passenger, columnId: "reserved" } // Update columnId to "reserved"
+          : passenger
+      );
+
+      // Update the reserved column state
+      reservedColumnSetter((prevReserved: any) => {
+        const updatedReserved = [...prevReserved];
+        const reservedIndex = updatedReserved.findIndex(
+          (col: any) => col.id === "reserved"
+        );
+
+        if (reservedIndex !== -1) {
+          // Append cleared passengers to existing reserved column
+          updatedReserved[reservedIndex].passengers = [
+            ...updatedReserved[reservedIndex].passengers,
+            ...clearedPassengers.map((passenger: EmployeeTypes) => ({
+              ...passenger,
+              columnId: "reserved", // Ensure columnId is set to "reserved"
+            })),
+          ];
+        } else {
+          // Create a new reserved column if it doesn't exist
+          updatedReserved.push({
+            id: "reserved", // Set the column id to "reserved"
+            passengers: clearedPassengers.map((passenger: EmployeeTypes) => ({
+              ...passenger,
+              columnId: "reserved", // Ensure columnId is set to "reserved"
+            })),
+          });
+        }
+
+        return updatedReserved;
+      });
+
+      const removedReserved = updatedPassengers.filter(
+        (passenger: any) => passenger.columnId !== "reserved"
+      );
+
+      return removedReserved;
+    });
+
+    // Optionally close any modals or perform additional actions
+    setOpenAddExternalTmModal(false);
+    setOpenSnack({
+      open: true,
+      message: "Cab has been cleared.",
+      severity: "success",
+    });
     handleMenuClose();
   };
 
   const handleRemoveCab = () => {
-    // setMapVisible(!mapVisible);
+    setExpandedLayout((prevLayout:string) => prevLayout === "expanded" ? "restricted" : "expanded")
     handleMenuClose();
+    setOpenSnack({
+      open: true,
+      message: "This feature has not been implemented yet.",
+      severity: "info",
+    });
   };
 
   useEffect(() => {
@@ -200,10 +279,8 @@ const RosterCard = ({
     <Box
       sx={{
         ...ColFlex,
-        // minWidth: "30.5vw",
-        // maxWidth: "32vw",
         width: "100%",
-        height: mapVisible ? "100%" : "50%",
+        height: mapVisible || (expandedLayout == "expanded") ? "100%" : "50%",
         flexDirection: "column",
         p: "20px",
         borderRadius: "15px",
@@ -437,6 +514,36 @@ const RosterCard = ({
               />
               {column?.workLocation}
             </Typography>
+            <Typography
+              sx={{
+                fontSize: "0.75rem",
+                display: "flex",
+                alignItems: "center",
+                color: "text.primary",
+              }}
+              fontWeight={500}
+            >
+              {column?.typeOfRoute === "pickup" ? (
+                <Hail
+                  sx={{
+                    width: "15px",
+                    height: "15px",
+                    mr: "2.5px",
+                    color: "info.light",
+                  }}
+                />
+              ) : (
+                <WavingHand
+                  sx={{
+                    width: "15px",
+                    height: "15px",
+                    mr: "2.5px",
+                    color: "info.dark",
+                  }}
+                />
+              )}
+              {column?.typeOfRoute === "drop" ? "Drop" : "Pickup"}
+            </Typography>
           </Box>
         </Box>
         <Box
@@ -482,11 +589,12 @@ const RosterCard = ({
           >
             <SlideInOut duration={0.3} delay={0}>
               <MenuItem
+              // disabled={expandedLayout == "expanded"}
                 sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
                 onClick={handleViewMap}
               >
                 <Map sx={{ color: "primary.main", mr: 1 }} />
-                {mapVisible ? "Hide Map" : "View Map"}
+                {mapVisible || (expandedLayout == "expanded") ? "Hide Map" : "View Map"}
               </MenuItem>
             </SlideInOut>
             <SlideInOut duration={0.3} delay={0.15}>
@@ -536,6 +644,7 @@ const RosterCard = ({
             alignItems: "flex-start",
             width: "100%",
             height: "100%",
+            minHeight: "200px",
             gap: 1.5,
             justifyContent: "flex-start",
             overflowY: "auto",
@@ -545,6 +654,7 @@ const RosterCard = ({
             transition: "all 0.5s ease-in",
             // backgroundColor: "primary.main",
             flexWrap: "wrap",
+            // border: "1px solid white",
           }}
         >
           <SortableContext
@@ -558,7 +668,7 @@ const RosterCard = ({
         </Box>
       </Box>
 
-      {mapVisible && (
+      {(mapVisible || expandedLayout) && (
         <Box
           className="child-scroll"
           sx={{
@@ -571,7 +681,7 @@ const RosterCard = ({
             justifyContent: "flex-start",
           }}
         >
-          <Typography
+          {(expandedLayout !== "expanded") && <Typography
             variant="body2"
             fontWeight={600}
             sx={{
@@ -582,7 +692,7 @@ const RosterCard = ({
             onClick={handleViewMap}
           >
             Collapse Map
-          </Typography>
+          </Typography>}
           <MapComponent
             // height="100%"
             mode="route-view"
