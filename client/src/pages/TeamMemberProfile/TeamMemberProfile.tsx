@@ -1,14 +1,60 @@
 import { Avatar, Box, Button, Divider, Typography } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex";
-import { Call, LocationOn, Mail, Person } from "@mui/icons-material";
+import { Call, LocationOn, Mail, Person, Route } from "@mui/icons-material";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import baseURL from "../../utils/baseURL";
 import Convert24To12HourFormat from "../../utils/24HourTo12HourFormat";
+import MapComponent from "../../components/Map";
+import AttendanceCalendar from "../../components/ui/AttendanceCalendar";
+import useAxios from "../../api/useAxios";
+import { useQuery } from "@tanstack/react-query";
+import RouteTypes from "../../types/RouteTypes";
+import { useEffect } from "react";
+import Cabtypes from "./../../types/CabTypes";
+import formatDateString from "../../utils/DateFormatter";
 
 function TeamMemberProfile() {
   const location = useLocation();
   const employee: EmployeeTypes = location?.state;
+
+  const navigate = useNavigate();
+
+  const dates = [
+    "2024-10-03T11:41:36.798000+00:00",
+    "2024-10-07T11:41:36.798000+00:00",
+    "2024-10-13T11:41:36.798000+00:00",
+    "2024-10-26T11:41:36.798000+00:00",
+    "2024-10-27T11:41:36.798000+00:00",
+    "2024-10-31T11:41:36.798000+00:00",
+    "2024-10-11T11:41:36.798000+00:00",
+    "2024-10-05T11:41:36.798000+00:00",
+    "2024-10-15T11:41:36.798000+00:00",
+    "2024-10-23T11:41:36.798000+00:00",
+    "2024-10-20T11:41:36.798000+00:00",
+    "2024-10-02T11:41:36.798000+00:00",
+    "2024-10-01T11:41:36.798000+00:00",
+    "2024-10-06T11:41:36.798000+00:00",
+  ];
+
+  const getEmployeeRoute = () => {
+    return useAxios.get(`cabs/tm/cab/${employee?._id}`);
+  };
+
+  const { data: routeData } = useQuery({
+    queryFn: getEmployeeRoute,
+    queryKey: ["Route Attendance"],
+    select: (data: any) => {
+      if (data.data?.found_route) {
+        return data.data.found_route as RouteTypes;
+      }
+      return undefined;
+    },
+  });
+
+  useEffect(() => {
+    console.log(routeData);
+  }, [routeData]);
 
   return (
     <Box
@@ -20,6 +66,7 @@ function TeamMemberProfile() {
         color: "text.primary",
       }}
     >
+      {/* TOP BOX */}
       <Box
         sx={{
           height: "30vh",
@@ -179,14 +226,203 @@ function TeamMemberProfile() {
             size="large"
             sx={{
               width: "100%",
-              bgcolor: "#9329FC",
+              backgroundColor: "warning.dark",
               color: "white",
               p: "2",
             }}
+            onClick={() => navigate(`/admin/editDetails/${employee?._id}`)}
           >
             <Person sx={{ marginRight: 0.7, fontSize: "1.3rem" }} />
-            {`Change ${employee?.fname + "'s "} Profile`}
+            {`Edit ${employee?.fname + "'s "} Profile`}
           </Button>
+        </Box>
+      </Box>
+      {/* BOTTOM BOX */}
+      <Box
+        sx={{
+          ...RowFlex,
+          width: "100%",
+          height: "65vh",
+          justifyContent: "space-between",
+          p: 2.5,
+        }}
+      >
+        {/* Map Box - LEFT Side */}
+        <Box
+          sx={{
+            height: "100%",
+            width: "40%",
+            borderRadius: "10px",
+            overflow: "hidden",
+          }}
+        >
+          <MapComponent
+            visibleEmployee={employee}
+            center={employee?.pickUp?.coordinates}
+            width="100%"
+            height="100%"
+            mode="route-view"
+            zoom={15}
+          />
+        </Box>
+        {/* Stat Box - RIGHT Side */}
+        <Box
+          sx={{
+            ...RowFlex,
+            height: "100%",
+            width: "57.5%",
+            gap: 1,
+            borderRadius: "10px",
+            // border: "1px solid #E5E5E5",
+          }}
+        >
+          {/* LEFT STATS BOX */}
+          <Box
+            sx={{
+              ...ColFlex,
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              height: "100%",
+              width: "50%",
+              // p: 2.5,
+              borderRadius: "10px",
+              // border: "1px solid #E5E5E5",
+            }}
+          >
+            {/* B1 */}
+            <Box
+              sx={{
+                ...ColFlex,
+                justifyContent: "flex-start",
+                alignItems: "flex-start",
+              }}
+            >
+              <Typography variant="h6" sx={{ color: "text.primary" }}>
+                Assigned Cab
+              </Typography>
+              <Box sx={{ ...RowFlex, gap: 2.5, justifyContent: "flex-start" }}>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 500,
+                    color: "text.primary",
+                    // fontSize: "1.75rem",
+                  }}
+                >
+                  {routeData == undefined
+                    ? "No Assigned Cab"
+                    : ((routeData.cab as Cabtypes)?.cabDriver as EmployeeTypes)
+                        ?.fname +
+                      " " +
+                      ((routeData.cab as Cabtypes)?.cabDriver as EmployeeTypes)
+                        ?.lname}
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{ fontWeight: 200, color: "text.primary" }}
+                >
+                  |
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 500,
+                    color: "text.primary",
+                    // fontSize: "1.75rem",
+                  }}
+                >
+                {routeData == undefined ? "NA" : "Cab " + (routeData.cab as Cabtypes)?.cabNumber as string}
+                </Typography>
+              </Box>
+            </Box>
+            <Button
+              disabled={routeData == undefined}
+              variant="contained"
+              size="large"
+              sx={{
+                width: "80%",
+                backgroundColor: "primary.light",
+                color: "white",
+                // p: "2",
+              }}
+              onClick={() =>
+                navigate(`/admin/viewRoute/${routeData?._id}`, {
+                  state: routeData,
+                })
+              }
+            >
+              <Route sx={{ marginRight: 1, fontSize: "1.3rem" }} />
+              {`View ${employee?.fname + "'s "} Route`}
+            </Button>
+            {/* R1 */}
+            <Box>
+              <Typography variant="h6" sx={{ color: "text.primary" }}>
+                Shrinkage Caused :
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 500,
+                  color: "text.primary",
+                  // fontSize: "1.75rem",
+                }}
+              >
+                4% Overall
+              </Typography>
+            </Box>
+            {/* R2 */}
+            <Box>
+              <Typography variant="h6" sx={{ color: "text.primary" }}>
+                Absent Time :
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 500,
+                  color: "text.primary",
+                  // fontSize: "1.75rem",
+                }}
+              >
+                14 Days
+              </Typography>
+            </Box>
+            {/* R3 */}
+            <Box>
+              <Typography variant="h6" sx={{ color: "text.primary" }}>
+                Member Since :
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 500,
+                  color: "text.primary",
+                  // fontSize: "1.5rem",
+                }}
+              >
+                {formatDateString(employee?.createdAt as any, true)}
+              </Typography>
+            </Box>
+          </Box>
+          {/* Divider */}
+          <Box
+            sx={{
+              width: "2px",
+              height: "50%",
+              alignSelf: "center",
+              backgroundColor: "grey",
+            }}
+          />
+          {/* RIGHT ATTENDANCE BOX */}
+          <Box sx={{ ...ColFlex, width: "50%", height: "100%" }}>
+            {/* R1 */}
+            <Box sx={{ width: "100%" }}>
+              <Typography variant="h5" sx={{ color: "text.primary" }}>
+                {employee?.fname + "'s "} Attendance
+              </Typography>
+            </Box>
+            {/* <DateCalendar sx={{ width: "100%", height: "100%" }} /> */}
+            <AttendanceCalendar highlightDates={dates} />
+          </Box>
         </Box>
       </Box>
     </Box>

@@ -553,13 +553,11 @@ function AssignedRoutes() {
               }}
               onClick={confirmRoutes}
             >
-              <Save
-                sx={{ color: "text.primary", width: "25px", height: "25px" }}
-              />
+              <Save sx={{ color: "white", width: "25px", height: "25px" }} />
               <Typography
                 fontSize="30"
                 fontWeight={500}
-                sx={{ color: "text.primary" }}
+                sx={{ color: "white" }}
               >
                 Save Changes
               </Typography>
@@ -642,7 +640,7 @@ function AssignedRoutes() {
                       passengersSetter={setPassengers}
                       passengerDetails={uniquePassengers}
                       expandedLayout={expandedLayout}
-                      setExpandedLayout={setExpandedLayout}
+                      // setExpandedLayout={setExpandedLayout}
                     />
                   );
                 })}

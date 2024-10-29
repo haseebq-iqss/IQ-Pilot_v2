@@ -49,7 +49,6 @@ type RosterCardTypes = {
   passengersSetter: any;
   reservedColumnSetter: any;
   expandedLayout: any;
-  setExpandedLayout: any;
 };
 
 const RosterCard = ({
@@ -57,8 +56,7 @@ const RosterCard = ({
   column,
   passengersSetter,
   reservedColumnSetter,
-  expandedLayout,
-  setExpandedLayout
+  expandedLayout
 }: RosterCardTypes) => {
   const [activeRouteCoords, setActiveRouteCoords] = useState<Array<any>>([]);
   const [mapVisible, setMapVisible] = useState<boolean>(false);
@@ -183,7 +181,7 @@ const RosterCard = ({
   };
 
   const handleRemoveCab = () => {
-    setExpandedLayout((prevLayout:string) => prevLayout === "expanded" ? "restricted" : "expanded")
+    // setExpandedLayout((prevLayout:string) => prevLayout === "expanded" ? "restricted" : "expanded")
     handleMenuClose();
     setOpenSnack({
       open: true,

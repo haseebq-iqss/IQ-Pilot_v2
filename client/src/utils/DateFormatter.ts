@@ -11,11 +11,11 @@ function getOrdinalSuffix(day: number) {
 function isToday(date: Date) {
     const today = new Date();
     return date.getDate() === today.getDate() &&
-           date.getMonth() === today.getMonth() &&
-           date.getFullYear() === today.getFullYear();
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear();
 }
 
-function formatDateString(dateString: string) {
+function formatDateString(dateString: string, withYear?: boolean) {
     const date = new Date(dateString);
 
     if (isToday(date)) {
@@ -27,7 +27,10 @@ function formatDateString(dateString: string) {
     const day = date.getDate(); // e.g., 17
     const dayWithSuffix = `${day}${getOrdinalSuffix(day)}`; // e.g., "17th"
 
-    return `${dayName}, ${dayWithSuffix} of ${monthName}`;
+    // Construct the return string conditionally based on withYear
+    return withYear
+        ? `${dayName}, ${dayWithSuffix} of ${monthName} - ${date.getFullYear().toString()}` // e.g., "Tue, 17th of May 24"
+        : `${dayName}, ${dayWithSuffix} of ${monthName}`; // e.g., "Tue, 17th of May"
 }
 
 export default formatDateString;

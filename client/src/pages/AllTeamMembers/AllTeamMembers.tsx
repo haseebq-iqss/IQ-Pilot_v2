@@ -54,8 +54,6 @@ function AllTeamMembers() {
     },
   });
 
-  console.log(teamMemberData);
-
   // Mark TM Absent
   const {
     status,

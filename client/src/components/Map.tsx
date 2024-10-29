@@ -55,6 +55,7 @@ type MapTypes = {
   clusterRadiusValue?: number;
   unrosteredTms?: [any];
   closeAction?: boolean;
+  visibleEmployee?: EmployeeTypes;
   visibleOffice?:
     | "All"
     | "Rangreth"
@@ -80,6 +81,7 @@ const MapComponent = ({
   unrosteredTms,
   visibleOffice = "All",
   closeAction = false,
+  visibleEmployee,
 }: MapTypes) => {
   // const [driversPosition, setDriversPosition] = useState<any>();
 
@@ -823,6 +825,32 @@ const MapComponent = ({
               );
             })}
           </>
+        )}
+
+        {visibleEmployee && (
+          <Marker
+            icon={empIcon}
+            key={visibleEmployee?.lname}
+            position={visibleEmployee?.pickUp?.coordinates as LatLngExpression}
+          >
+            <Tooltip
+              className="employee-tooltip"
+              direction="top"
+              offset={[0, -40]}
+              permanent
+            >
+              <span>{visibleEmployee.fname + " " + visibleEmployee.lname}</span>
+            </Tooltip>
+            <Circle
+              key={visibleEmployee?.lname}
+              center={visibleEmployee?.pickUp?.coordinates as LatLngExpression}
+              radius={250}
+              fillOpacity={0.25}
+              // color={"rgb(26 135 244)"}
+              color={"#9329fc"}
+              stroke={true}
+            />
+          </Marker>
         )}
 
         {activeDrivers &&
