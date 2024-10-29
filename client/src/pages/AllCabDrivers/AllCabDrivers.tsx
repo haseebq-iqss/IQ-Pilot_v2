@@ -62,6 +62,8 @@ function AllCabDrivers() {
     );
   });
 
+  console.log(cabDetails);
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
 

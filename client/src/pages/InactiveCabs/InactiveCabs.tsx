@@ -57,12 +57,12 @@ function InactiveCabs() {
 
   const filteredCabDrivers = allCabs?.filter((cab: Cabtypes) => {
     return (
-      (cab?.cabDriver as EmployeeTypes)?.fname
+      (cab?.cabDriver[0] as EmployeeTypes)?.fname
         ?.toLowerCase()
-        ?.includes(searchtext) ||
-      (cab?.cabDriver as EmployeeTypes)?.lname
+        ?.includes(searchtext?.toLowerCase()) ||
+      (cab?.cabDriver[0] as EmployeeTypes)?.lname
         ?.toLowerCase()
-        ?.includes(searchtext)
+        ?.includes(searchtext?.toLowerCase())
     );
   });
 
@@ -145,12 +145,11 @@ function InactiveCabs() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {allCabs?.map((driver: Cabtypes, index: number) => (
+              {filteredCabDrivers?.map((driver: Cabtypes, index: number) => (
                 <TableRow
-                  key={driver._id}
+                  key={driver?.cabDriver[0]._id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  {console.log(driver?.cabDriver[0])}
                   <TableCell component="th" scope="row">
                     <Box
                       sx={{

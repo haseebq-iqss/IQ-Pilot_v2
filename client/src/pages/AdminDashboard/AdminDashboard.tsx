@@ -1,7 +1,7 @@
 import { Call, Close, Warning } from "@mui/icons-material";
 import { Box, Button, Modal, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import useAxios from "../../api/useAxios";
 import MapComponent from "../../components/Map";
@@ -12,6 +12,8 @@ import TodayFullDateString from "../../utils/TodayFullDateString";
 import baseURL from "../../utils/baseURL";
 // import SOSAudio from "../../assets/sounds/emergency.mp3";
 import { AnimatedCounter } from "react-animated-counter";
+import SnackbarContext from "../../context/SnackbarContext";
+import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 
 const socket = io(baseURL);
 
@@ -19,6 +21,8 @@ function AdminDashboard() {
   const [SOSEmergency, setSOSEmergency] = useState<any>(null);
   const audioRef = useRef<any>();
   const navigate = useNavigate();
+
+  const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
   // const emergencyAudio = new Audio(SOSAudio);
 
@@ -112,6 +116,18 @@ function AdminDashboard() {
       return data.data.data;
     },
   });
+
+  const handleActiveCabs = (compLength: number, route: string, state: any) => {
+    if (compLength > 0) {
+      navigate(route, state && { state });
+    } else {
+      setOpenSnack({
+        open: true,
+        message: "There are no items here",
+        severity: "info",
+      });
+    }
+  };
 
   return (
     <Box
@@ -273,7 +289,7 @@ function AdminDashboard() {
           <Box
             sx={{ ...ColFlex, gap: "5px", cursor: "pointer" }}
             onClick={() => {
-              navigate("assignedRoutes", { state: allRoutes });
+              handleActiveCabs(allRoutes?.length, "assignedRoutes", allRoutes);
             }}
           >
             <Typography
@@ -307,7 +323,9 @@ function AdminDashboard() {
           </Box>
           <Box
             sx={{ ...ColFlex, gap: "5px", cursor: "pointer" }}
-            onClick={() => navigate("inactiveCabs")}
+            onClick={() => {
+              handleActiveCabs(allCabs?.length, "inactiveCabs", allCabs);
+            }}
           >
             <Typography
               sx={{ fontWeight: 500, color: "text.primary" }}
@@ -336,7 +354,13 @@ function AdminDashboard() {
           </Box>
           <Box
             sx={{ ...ColFlex, gap: "5px", cursor: "pointer" }}
-            onClick={() => navigate("rosteredTeamMembers")}
+            onClick={() => {
+              handleActiveCabs(
+                rosteredPassengers?.length,
+                "rosteredTeamMembers",
+                rosteredPassengers
+              );
+            }}
           >
             <Typography
               sx={{ fontWeight: 500, color: "text.primary" }}
@@ -369,7 +393,13 @@ function AdminDashboard() {
           </Box>
           <Box
             sx={{ ...ColFlex, gap: "5px", cursor: "pointer" }}
-            onClick={() => navigate("pendingTeamMembers")}
+            onClick={() => {
+              handleActiveCabs(
+                pendingPassengers?.length,
+                "pendingTeamMembers",
+                pendingPassengers
+              );
+            }}
           >
             <Typography
               sx={{ fontWeight: 500, color: "text.primary" }}
