@@ -30,7 +30,6 @@ import { useNavigate } from "react-router-dom";
 import useAxios from "../../api/useAxios";
 import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
-import ConfirmationModal from "../../components/ui/ConfirmationModal";
 
 function PendingTeamMembers() {
   const qc = useQueryClient();
@@ -316,13 +315,6 @@ function PendingTeamMembers() {
           </Table>
         </TableContainer>
       </Box>
-      <ConfirmationModal
-        headerText="Confirm Your Action?"
-        subHeaderText="Deleting this TM is permanent and cannot be undone. Please confirm if you wish to continue."
-        openConfirmModal={openConfirmModal}
-        setOpenConfirmModal={setOpenConfirmModal}
-        triggerFunction={handleDeleteEmployee}
-      />
     </PageContainer>
   );
 }
