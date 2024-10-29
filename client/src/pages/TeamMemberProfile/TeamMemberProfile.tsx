@@ -2,7 +2,6 @@ import { Avatar, Box, Button, Divider, Typography } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import { Call, LocationOn, Mail, Person } from "@mui/icons-material";
-import MapComponent from "../../components/Map";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import baseURL from "../../utils/baseURL";
 import Convert24To12HourFormat from "../../utils/24HourTo12HourFormat";
