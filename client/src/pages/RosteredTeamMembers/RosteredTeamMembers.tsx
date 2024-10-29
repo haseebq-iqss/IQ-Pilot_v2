@@ -19,7 +19,6 @@ import {
   Avatar,
   Menu,
   MenuItem,
-  Divider,
 } from "@mui/material";
 import PageContainer from "../../components/ui/PageContainer";
 import { RowFlex } from "../../style_extentions/Flex";
@@ -226,11 +225,18 @@ function RosteredTeamMembers() {
                               justifyContent: "flex-start",
                               gap: "10px",
                             }}
+                            onClick={() =>
+                              navigate(
+                                `/admin/teamMemberProfile/${
+                                  employee?.fname + "-" + employee?.lname
+                                }`,
+                                { state: employee }
+                              )
+                            }
                           >
                             <Visibility sx={{}} />
                             View Details
                           </MenuItem>
-                          <Divider />
                           <MenuItem
                             sx={{
                               ...RowFlex,
@@ -246,7 +252,6 @@ function RosteredTeamMembers() {
                             <EditLocation sx={{}} />
                             Edit Details
                           </MenuItem>
-                          <Divider />
                           <MenuItem
                             sx={{
                               ...RowFlex,
@@ -268,7 +273,6 @@ function RosteredTeamMembers() {
                               ? "Mark Present"
                               : "Mark Absent"}
                           </MenuItem>
-                          <Divider />
                           <MenuItem
                             sx={{
                               ...RowFlex,

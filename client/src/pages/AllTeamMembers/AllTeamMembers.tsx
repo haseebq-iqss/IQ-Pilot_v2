@@ -11,7 +11,6 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
   Avatar,
   Box,
-  Divider,
   IconButton,
   Menu,
   MenuItem,
@@ -236,7 +235,9 @@ function AllTeamMembers() {
                             }}
                             onClick={() =>
                               navigate(
-                                `/admin/teamMemberProfile/${employee?._id}`,
+                                `/admin/teamMemberProfile/${
+                                  employee?.fname + "-" + employee?.lname
+                                }`,
                                 { state: employee }
                               )
                             }
@@ -244,7 +245,6 @@ function AllTeamMembers() {
                             <VisibilityIcon sx={{}} />
                             View Details
                           </MenuItem>
-                          <Divider />
                           <MenuItem
                             sx={{
                               ...RowFlex,
@@ -260,7 +260,6 @@ function AllTeamMembers() {
                             <EditLocation sx={{}} />
                             Edit Details
                           </MenuItem>
-                          <Divider />
                           <MenuItem
                             sx={{
                               ...RowFlex,
@@ -282,7 +281,6 @@ function AllTeamMembers() {
                               ? "Mark Present"
                               : "Mark Absent"}
                           </MenuItem>
-                          <Divider />
                           <MenuItem
                             sx={{
                               ...RowFlex,

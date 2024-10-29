@@ -1,7 +1,6 @@
 import {
   Avatar,
   Box,
-  Divider,
   Menu,
   MenuItem,
   Table,
@@ -444,7 +443,6 @@ function AdminStatistics() {
                               <Visibility sx={{}} />
                               View Details
                             </MenuItem>
-                            <Divider />
                             <MenuItem
                               sx={{
                                 ...RowFlex,
@@ -464,7 +462,6 @@ function AdminStatistics() {
                               <EditLocation sx={{}} />
                               Edit Details
                             </MenuItem>
-                            <Divider />
                             <MenuItem
                               sx={{
                                 ...RowFlex,

@@ -8,7 +8,6 @@ import {
 import {
   Avatar,
   Box,
-  Divider,
   IconButton,
   Menu,
   MenuItem,
@@ -208,7 +207,6 @@ function AllCabDrivers() {
                         <VisibilityIcon sx={{}} />
                         View Details
                       </MenuItem>
-                      <Divider />
                       <MenuItem
                         sx={{
                           ...RowFlex,
@@ -226,7 +224,6 @@ function AllCabDrivers() {
                         <EditLocation sx={{}} />
                         Edit Details
                       </MenuItem>
-                      <Divider />
                       <MenuItem
                         sx={{
                           ...RowFlex,

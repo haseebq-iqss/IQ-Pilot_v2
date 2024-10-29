@@ -10,7 +10,6 @@ import {
 } from "@mui/icons-material";
 import {
   Box,
-  Divider,
   Menu,
   MenuItem,
   Table,
@@ -332,7 +331,6 @@ function ScheduledRoutes() {
                           <Visibility sx={{}} />
                           View Route
                         </MenuItem>
-                        <Divider />
                         <MenuItem
                           sx={{
                             ...RowFlex,
@@ -345,7 +343,6 @@ function ScheduledRoutes() {
                           <EditLocation sx={{}} />
                           Edit Route
                         </MenuItem>
-                        <Divider />
                         <MenuItem
                           sx={{
                             ...RowFlex,
