@@ -54,6 +54,8 @@ function AllTeamMembers() {
     },
   });
 
+  console.log(teamMemberData);
+
   // Mark TM Absent
   const {
     status,
@@ -80,7 +82,13 @@ function AllTeamMembers() {
     (teamMember: EmployeeTypes) => {
       return (
         teamMember?.fname?.toLowerCase()?.includes(searchtext.toLowerCase()) ||
-        teamMember?.lname?.toLowerCase()?.includes(searchtext.toLowerCase())
+        teamMember?.lname?.toLowerCase()?.includes(searchtext.toLowerCase()) ||
+        teamMember?.workLocation
+          ?.toLowerCase()
+          ?.includes(searchtext.toLowerCase()) ||
+        teamMember?.pickUp?.address
+          ?.toLowerCase()
+          ?.includes(searchtext.toLowerCase())
       );
     }
   );
@@ -131,13 +139,16 @@ function AllTeamMembers() {
       <Box sx={{ width: "100%", height: "50vh" }}>
         <TableContainer sx={{}}>
           <TextField
+            sx={{
+              width: "40%",
+            }}
             variant="outlined"
             size="small"
             autoFocus
             onChange={(e) => {
               setSearchText(e.target.value);
             }}
-            placeholder="Search TMs"
+            placeholder="Search TMs, Address, Work Location..."
             InputProps={{
               startAdornment: (
                 <IconButton aria-label="search">
@@ -153,6 +164,7 @@ function AllTeamMembers() {
                 <TableCell align="center">Email</TableCell>
                 <TableCell align="center">Cab</TableCell>
                 <TableCell align="center">Location</TableCell>
+                <TableCell align="center">Office Location</TableCell>
                 <TableCell align="center">Status</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
@@ -168,7 +180,7 @@ function AllTeamMembers() {
                       key={employee._id}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <TableCell component="th" scope="row">
+                      <TableCell width={"20%"} component="th" scope="row">
                         <Box
                           sx={{
                             display: "flex",
@@ -199,7 +211,11 @@ function AllTeamMembers() {
                       <TableCell align="center">
                         {employee.pickUp?.address}
                       </TableCell>
+                      <TableCell width={"10%"} align="center">
+                        {employee.workLocation}
+                      </TableCell>
                       <TableCell
+                        width={"10%"}
                         sx={{
                           color: employee.isCabCancelled
                             ? "error.main"

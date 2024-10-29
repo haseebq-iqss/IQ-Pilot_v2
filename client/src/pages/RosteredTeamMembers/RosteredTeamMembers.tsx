@@ -5,6 +5,7 @@ import {
   DeleteForever,
   Visibility,
   ExitToApp,
+  Warning,
 } from "@mui/icons-material";
 import {
   Box,
@@ -19,9 +20,12 @@ import {
   Avatar,
   Menu,
   MenuItem,
+  Button,
+  Modal,
+  Typography,
 } from "@mui/material";
 import PageContainer from "../../components/ui/PageContainer";
-import { RowFlex } from "../../style_extentions/Flex";
+import { ColFlex, RowFlex } from "../../style_extentions/Flex";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import baseURL from "../../utils/baseURL";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
@@ -74,7 +78,13 @@ function RosteredTeamMembers() {
     (teamMember: EmployeeTypes) => {
       return (
         teamMember?.fname?.toLowerCase()?.includes(searchtext) ||
-        teamMember?.lname?.toLowerCase()?.includes(searchtext)
+        teamMember?.lname?.toLowerCase()?.includes(searchtext) ||
+        teamMember?.workLocation
+          ?.toLowerCase()
+          ?.includes(searchtext.toLowerCase()) ||
+        teamMember?.pickUp?.address
+          ?.toLowerCase()
+          ?.includes(searchtext.toLowerCase())
       );
     }
   );
@@ -123,13 +133,16 @@ function RosteredTeamMembers() {
       <Box sx={{ width: "100%", height: "50vh" }}>
         <TableContainer sx={{}}>
           <TextField
+            sx={{
+              width: "40%",
+            }}
             variant="outlined"
             autoFocus
             size="small"
             onChange={(e) => {
               setSearchText(e.target.value);
             }}
-            placeholder="Search TMs"
+            placeholder="Search TMs, Address, Work Location..."
             InputProps={{
               startAdornment: (
                 <IconButton aria-label="search">
@@ -145,6 +158,7 @@ function RosteredTeamMembers() {
                 <TableCell align="center">Email</TableCell>
                 <TableCell align="center">Cab</TableCell>
                 <TableCell align="center">Location</TableCell>
+                <TableCell align="center">Office Location</TableCell>
                 <TableCell align="center">Status</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
@@ -160,7 +174,7 @@ function RosteredTeamMembers() {
                       key={employee._id}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <TableCell component="th" scope="row">
+                      <TableCell width={"20%"} component="th" scope="row">
                         <Box
                           sx={{
                             display: "flex",
@@ -191,7 +205,11 @@ function RosteredTeamMembers() {
                       <TableCell align="center">
                         {employee.pickUp?.address}
                       </TableCell>
+                      <TableCell width={"10%"} align="center">
+                        {employee.workLocation}
+                      </TableCell>
                       <TableCell
+                        width={"10%"}
                         sx={{
                           color: employee.isCabCancelled
                             ? "error.main"
@@ -298,6 +316,93 @@ function RosteredTeamMembers() {
           </Table>
         </TableContainer>
       </Box>
+      <Modal
+        sx={{ ...ColFlex, width: "100%", height: "100%" }}
+        open={openConfirmModal ? true : false}
+        // onClose={() => setOpenConfirmModal([])}
+      >
+        <Box
+          sx={{
+            ...ColFlex,
+            p: "30px 10px",
+            // minHeight: "40vh",
+            width: { xs: "90%", lg: "35%" },
+            borderRadius: "10px",
+            gap: 5,
+            alignItems: "center",
+            textAlign: "center",
+            justifyContent: "center",
+            backgroundColor: "background.default",
+            boxShadow: "0px 10px 100px rgba(0 255 251 / 0.2)",
+          }}
+        >
+          <Box
+            sx={{
+              ...ColFlex,
+              width: "100%",
+              textAlign: "center",
+              gap: "2rem",
+              marginTop: "15px",
+            }}
+          >
+            <Warning
+              sx={{ width: "50px", height: "50px", color: "warning.main" }}
+            />
+
+            <Box
+              sx={{
+                ...ColFlex,
+                gap: 1,
+              }}
+            >
+              <Typography
+                variant="h5"
+                fontWeight={600}
+                sx={{ mb: "10px", color: "text.primary" }}
+              >
+                Confirm Your Action
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{ color: "text.secondary", width: "80%" }}
+              >
+                Would you like to proceed with updating the routes now? Please
+                confirm if you wish to continue
+              </Typography>
+            </Box>
+
+            <Box sx={{ gap: 5, ...RowFlex }}>
+              <Button
+                sx={{
+                  backgroundColor: "error.dark",
+                  color: "white",
+                  padding: "10px 50px",
+                }}
+                color="inherit"
+                variant="contained"
+                size="large"
+                onClick={() => {
+                  setOpenConfirmModal(false);
+                }}
+              >
+                No
+              </Button>
+              <Button
+                sx={{
+                  backgroundColor: "success.dark",
+                  color: "white",
+                  padding: "10px 50px",
+                }}
+                variant="contained"
+                size="large"
+                onClick={handleUpdateRoute}
+              >
+                Yes
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      </Modal>
     </PageContainer>
   );
 }
