@@ -4,7 +4,7 @@
     "short_name": "Pilot v2",
     "description": "Route Planning App for optimizing industrial cost and travel operations efficiently.",
     "start_url": "/",
-    "display": "standalone",
+    "display": "minimal-ui",
     "background_color": "#1E375B",
     "theme_color": "#1E375B",
     "icons": [

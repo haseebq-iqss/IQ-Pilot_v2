@@ -1,11 +1,18 @@
 // @ts-nocheck
-import { Box, Button, Modal, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Modal,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ColFlex, RowFlex, PageFlex } from "../../style_extentions/Flex.ts";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 import Cabtypes from "../../types/CabTypes.ts";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
   DndContext,
   DragEndEvent,
@@ -39,6 +46,8 @@ import {
   Height,
   PushPin,
   Save,
+  UnfoldLess,
+  UnfoldMore,
   Warning,
 } from "@mui/icons-material";
 import AssignedPassengers from "../../components/ui/AssignedPassengers.tsx";
@@ -48,6 +57,10 @@ function AssignedRoutes() {
   const routeState = location.state;
 
   // console.log("ROUTE STATE ___> ",routeState)
+
+  const [expandedLayout, setExpandedLayout] = useState<
+    "expanded" | "restricted"
+  >("expanded");
 
   const [next, setNext] = useState(2);
   const [activeColumn, setActiveColumn] = useState<ShiftTypes | null>(null);
@@ -74,6 +87,17 @@ function AssignedRoutes() {
   const [activeReserveColumn, setActiveReserveColumn] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [openConfirmModal, setOpenConfirmModal] = useState<any>(null);
+
+  // -> WORKS BUT BREAKS DND FUNCTIONALITY
+
+  useEffect(() => {
+    console.log(reservedColumn);
+
+    setEditMode(true);
+    setReservedPassengers(() =>
+      reservedColumn.flatMap((column) => column.passengers)
+    );
+  }, [reservedColumn]);
 
   const navigate = useNavigate();
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
@@ -383,7 +407,6 @@ function AssignedRoutes() {
       });
     }
   }
-
   function onDragStart(event: DragStartEvent) {
     if (event.active.data.current?.type === "Column") {
       setActiveColumn(event.active.data.current.column);
@@ -429,6 +452,16 @@ function AssignedRoutes() {
       return !duplicate;
     });
   };
+
+  const handleExpandView = (
+    _event: React.MouseEvent<HTMLElement>,
+    newAlignment: "expanded" | "restricted" | null
+  ) => {
+    if (newAlignment != null) {
+      setExpandedLayout(newAlignment);
+    }
+  };
+
   return (
     <>
       <Box
@@ -475,12 +508,34 @@ function AssignedRoutes() {
           <Box
             sx={{
               ...RowFlex,
-              width: "40%",
+              width: "70%",
+              // backgroundColor:"red",
               alignItems: "center",
               justifyContent: "flex-end",
               gap: 3,
             }}
           >
+            <ToggleButtonGroup
+              size="medium"
+              color="primary"
+              value={expandedLayout}
+              exclusive
+              onChange={handleExpandView}
+            >
+              <ToggleButton
+                sx={{ px: 2.5, py: 1, borderRadius: "5px" }}
+                value="expanded"
+              >
+                Expanded
+              </ToggleButton>
+              <ToggleButton
+                sx={{ px: 2.5, py: 1, borderRadius: "5px" }}
+                value="restricted"
+              >
+                Restricted
+              </ToggleButton>
+            </ToggleButtonGroup>
+            {/* </Box> */}
             <Box
               sx={{
                 px: 3,
@@ -556,6 +611,7 @@ function AssignedRoutes() {
               sx={{
                 ...RowFlex,
                 flexWrap: "wrap",
+                minHeight: "100%",
                 height: "100%",
                 width: "100%",
                 whiteSpace: "nowrap",
@@ -582,8 +638,11 @@ function AssignedRoutes() {
                     <ScheduledRouteCard
                       key={shift?.id}
                       column={shift}
+                      reservedColumnSetter={setReservedColumn}
                       passengersSetter={setPassengers}
                       passengerDetails={uniquePassengers}
+                      expandedLayout={expandedLayout}
+                      setExpandedLayout={setExpandedLayout}
                     />
                   );
                 })}
