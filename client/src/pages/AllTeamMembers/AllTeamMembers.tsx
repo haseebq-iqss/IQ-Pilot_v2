@@ -5,7 +5,6 @@ import {
   ExitToApp,
   MoreHoriz,
   Search,
-  Visibility,
 } from "@mui/icons-material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
@@ -30,15 +29,17 @@ import { RowFlex } from "../../style_extentions/Flex";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios";
 import { useNavigate } from "react-router-dom";
-import { QueryClient } from "@tanstack/react-query";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 import SnackbarContext from "../../context/SnackbarContext";
+import ConfirmationModal from "../../components/ui/ConfirmationModal";
 
 function AllTeamMembers() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [searchtext, setSearchText] = useState("");
   const [cabNumersArray, setCabNumersArray] = useState<Array<string>>([]);
+  const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<string>("");
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
@@ -117,8 +118,16 @@ function AllTeamMembers() {
     },
   });
 
-  const handleDeleteEmployee = (employeeId: string) => {
-    deleteEmpMf(employeeId);
+  const handleOpenDeleteModal = (employeeId: string) => {
+    setSelectedEmployee(employeeId);
+    setOpenConfirmModal(true);
+    setMenuIndex(null);
+  };
+
+  const handleDeleteEmployee = () => {
+    // deleteEmpMf(selectedEmployee);
+    console.log("employee deleted");
+    setOpenConfirmModal(false);
   };
 
   useEffect(() => {
@@ -304,7 +313,7 @@ function AllTeamMembers() {
                               gap: "10px",
                             }}
                             onClick={() =>
-                              handleDeleteEmployee(employee._id as string)
+                              handleOpenDeleteModal(employee._id as string)
                             }
                           >
                             <DeleteForever sx={{}} />
@@ -320,6 +329,13 @@ function AllTeamMembers() {
           </Table>
         </TableContainer>
       </Box>
+      <ConfirmationModal
+        headerText="Confirm Your Action?"
+        subHeaderText="Deleting this TM is permanent and cannot be undone. Please confirm if you wish to continue."
+        openConfirmModal={openConfirmModal}
+        setOpenConfirmModal={setOpenConfirmModal}
+        triggerFunction={handleDeleteEmployee}
+      />
     </PageContainer>
   );
 }
