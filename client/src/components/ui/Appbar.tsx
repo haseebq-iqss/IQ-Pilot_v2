@@ -9,6 +9,8 @@ import {
   LightMode,
   Notifications,
   Route,
+  ScheduleSend,
+  Send,
   Settings,
   Timelapse,
 } from "@mui/icons-material";
@@ -48,6 +50,8 @@ function Appbar() {
   const [selectedDriver, setSelectedDriver] = useState<any>({});
   const [routeType, setRouteType] = useState<"pickup" | "drop">("pickup");
   const [office, setOffice] = useState("");
+  const [activationMode, setActivationMode] = useState<any>();
+
   // const qc = useQueryClient();
 
   // const drivers = (qc.getQueryData(["All Cabs"]) as any)?.data?.drivers;
@@ -90,6 +94,7 @@ function Appbar() {
         daysRouteIsActive: activeDays,
         typeOfRoute: routeType,
         office,
+        activationMode,
       };
       // console.log(routeStateData);
       navigate("/admin/addPassengers", { state: routeStateData });
@@ -367,6 +372,42 @@ function Appbar() {
                       })}
                 </Select>
               </FormControl>
+              {/* Immediate Shift */}
+              <FormControl sx={{ width: "50%" }}>
+              <InputLabel id="central-point-label">Activation Mode</InputLabel>
+              <Select
+                labelId="central-point-label"
+                id="central-point-label"
+                value={activationMode}
+                label="central-point-label"
+                onChange={(e) => setActivationMode(e.target.value)}
+              >
+                <MenuItem
+                  value={"immediate"}
+                  sx={{
+                    ...RowFlex,
+                    pl: 2.5,
+                    fontWeight: 600,
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <Send sx={{ mr: 1 }} />
+                  Immediate (Shift will activate right now)
+                </MenuItem>
+                <MenuItem
+                  value={"next-day"}
+                  sx={{
+                    ...RowFlex,
+                    pl: 2.5,
+                    fontWeight: 600,
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <ScheduleSend sx={{ mr: 1 }} />
+                  Next Day (Shift will activate on the next day's start)
+                </MenuItem>
+              </Select>
+            </FormControl>
               {/* Active for days */}
               <FormControl sx={{ width: "50%" }}>
                 <InputLabel id="pickup-or-drop-label">

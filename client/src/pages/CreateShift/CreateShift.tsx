@@ -107,6 +107,13 @@ function CreateShift() {
     onSettled: () => {
       qc.invalidateQueries({ queryKey: ["all-routes"] });
     },
+    onError: () => {
+      setOpenSnack({
+        open: true,
+        message: "Error creating route",
+        severity: "error",
+      });
+    }
   });
 
   // const mapCoordinatesToText = (value: string) => {

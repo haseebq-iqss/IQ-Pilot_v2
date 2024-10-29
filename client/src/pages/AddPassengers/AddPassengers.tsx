@@ -265,24 +265,27 @@ function AddPassengers() {
     // RMDataPromise.then((res: any) => {
     //   setDistNtime(res);
 
-    const combinedData: {
-      cab: Cabtypes;
-      passengers: EmployeeTypes[];
-      availableCapacity: number;
-    }[] = [];
-
-    combinedData.push({
-      cab: routeState?.driver,
-      passengers: selectedPassengers,
-    });
+    const combinedData = routeState?.driver ? [
+      {
+        cab: routeState.driver,
+        passengers: selectedPassengers,
+        availableCapacity: Math.max(routeState.driver.seatingCapacity - selectedPassengers.length, 0),
+      },
+    ] : [];
+    
+    // Optional: Map through columns to generate multiple cabEmployeeGroups if needed
     // columns.forEach((column: ShiftTypes) => {
     //   const columnPassengers = passengers.filter(
     //     (passenger: EmployeeTypes) => passenger.columnId === column.id
     //   );
+    //   combinedData.push({
+    //     cab: column.cab,
+    //     passengers: columnPassengers,
+    //     availableCapacity: Math.max(column.cab.seatingCapacity - columnPassengers.length, 0),
+    //   });
     // });
-
+    
     const routeData = {
-      // ...routeState,
       cabEmployeeGroups: combinedData,
       estimatedTime: distNtime?.totalMinutes,
       totalDistance: distNtime?.distanceInKilometers,
@@ -290,12 +293,13 @@ function AddPassengers() {
       currentShift: routeState?.currentShift,
       typeOfRoute: routeState?.typeOfRoute,
       daysRouteIsActive: routeState?.daysRouteIsActive,
+      activationMode: routeState?.activationMode
     };
-
+    
     console.log(routeData);
     mutate(routeData);
-    // });
   }
+    
 
   if (!routeState) {
     navigate(-1);
