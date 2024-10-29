@@ -30,12 +30,15 @@ import { useNavigate } from "react-router-dom";
 import useAxios from "../../api/useAxios";
 import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
+import ConfirmationModal from "../../components/ui/ConfirmationModal";
 
 function PendingTeamMembers() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [searchtext, setSearchText] = useState("");
   const [cabNumersArray, setCabNumersArray] = useState<Array<string>>([]);
+  const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<string>("");
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
@@ -111,8 +114,16 @@ function PendingTeamMembers() {
     },
   });
 
-  const handleDeleteEmployee = (employeeId: string) => {
-    deleteEmpMf(employeeId);
+  const handleOpenDeleteModal = (employeeId: string) => {
+    setSelectedEmployee(employeeId);
+    setOpenConfirmModal(true);
+    setMenuIndex(null);
+  };
+
+  const handleDeleteEmployee = () => {
+    // deleteEmpMf(selectedEmployee);
+    console.log("employee deleted");
+    setOpenConfirmModal(false);
   };
 
   useEffect(() => {
@@ -299,7 +310,7 @@ function PendingTeamMembers() {
                               gap: "10px",
                             }}
                             onClick={() =>
-                              handleDeleteEmployee(employee._id as string)
+                              handleOpenDeleteModal(employee._id as string)
                             }
                           >
                             <DeleteForever sx={{}} />
@@ -315,6 +326,13 @@ function PendingTeamMembers() {
           </Table>
         </TableContainer>
       </Box>
+      <ConfirmationModal
+        headerText="Confirm Your Action?"
+        subHeaderText="Deleting this TM is permanent and cannot be undone. Please confirm if you wish to continue."
+        openConfirmModal={openConfirmModal}
+        setOpenConfirmModal={setOpenConfirmModal}
+        triggerFunction={handleDeleteEmployee}
+      />
     </PageContainer>
   );
 }

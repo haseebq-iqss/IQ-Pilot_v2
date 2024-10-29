@@ -31,6 +31,7 @@ import Cabtypes from "../../types/CabTypes";
 import { useNavigate } from "react-router-dom";
 import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
+import ConfirmationModal from "../../components/ui/ConfirmationModal";
 
 // type driverTypes = {
 //   drivers: [EmployeeTypes];
@@ -40,6 +41,8 @@ function AllCabDrivers() {
   const [searchtext, setSearchText] = useState("");
   const qc = useQueryClient();
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
+  const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<string>("");
 
   const navigate = useNavigate();
   const { data: cabDetails } = useQuery({
@@ -61,8 +64,6 @@ function AllCabDrivers() {
     );
   });
 
-  console.log(cabDetails);
-
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
 
@@ -83,9 +84,18 @@ function AllCabDrivers() {
     navigate(`/admin/driverProfile/${driverID}`);
   };
 
-  const handleDeleteEmployee = (employeeId: string) => {
-    deleteEmpMf(employeeId);
+  const handleOpenDeleteModal = (employeeId: string) => {
+    setSelectedEmployee(employeeId);
+    setOpenConfirmModal(true);
+    setMenuIndex(null);
   };
+
+  const handleDeleteEmployee = () => {
+    // deleteEmpMf(selectedEmployee);
+    console.log("employee deleted");
+    setOpenConfirmModal(false);
+  };
+
   const { mutate: deleteEmpMf } = useMutation({
     mutationKey: ["delete-driver"],
     mutationFn: async (driverID: string) => {
@@ -233,7 +243,7 @@ function AllCabDrivers() {
                           gap: "10px",
                         }}
                         onClick={() =>
-                          handleDeleteEmployee(driver._id as string)
+                          handleOpenDeleteModal(driver._id as string)
                         }
                       >
                         <DeleteForever sx={{}} />
@@ -247,6 +257,13 @@ function AllCabDrivers() {
           </Table>
         </TableContainer>
       </Box>
+      <ConfirmationModal
+        headerText="Confirm Your Action?"
+        subHeaderText="Deleting this TM is permanent and cannot be undone. Please confirm if you wish to continue."
+        openConfirmModal={openConfirmModal}
+        setOpenConfirmModal={setOpenConfirmModal}
+        triggerFunction={handleDeleteEmployee}
+      />
     </PageContainer>
   );
 }

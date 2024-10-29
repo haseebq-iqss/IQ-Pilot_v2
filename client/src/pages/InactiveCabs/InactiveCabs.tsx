@@ -8,7 +8,6 @@ import {
 import {
   Avatar,
   Box,
-  Divider,
   IconButton,
   Menu,
   MenuItem,
@@ -32,6 +31,7 @@ import Cabtypes from "../../types/CabTypes";
 import { useNavigate } from "react-router-dom";
 import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
+import ConfirmationModal from "../../components/ui/ConfirmationModal";
 
 // type driverTypes = {
 //   drivers: [EmployeeTypes];
@@ -41,6 +41,8 @@ function InactiveCabs() {
   const [searchtext, setSearchText] = useState("");
   const qc = useQueryClient();
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
+  const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<string>("");
 
   const navigate = useNavigate();
 
@@ -86,9 +88,18 @@ function InactiveCabs() {
     navigate(`/admin/driverProfile/${driverID}`);
   };
 
-  const handleDeleteEmployee = (employeeId: string) => {
-    deleteEmpMf(employeeId);
+  const handleOpenDeleteModal = (employeeId: string) => {
+    setSelectedEmployee(employeeId);
+    setOpenConfirmModal(true);
+    setMenuIndex(null);
   };
+
+  const handleDeleteEmployee = () => {
+    // deleteEmpMf(selectedEmployee);
+    console.log("employee deleted");
+    setOpenConfirmModal(false);
+  };
+
   const { mutate: deleteEmpMf } = useMutation({
     mutationKey: ["delete-driver"],
     mutationFn: async (driverID: string) => {
@@ -211,7 +222,6 @@ function InactiveCabs() {
                         <VisibilityIcon sx={{}} />
                         View Details
                       </MenuItem>
-                      <Divider />
                       <MenuItem
                         sx={{
                           ...RowFlex,
@@ -229,7 +239,6 @@ function InactiveCabs() {
                         <EditLocation sx={{}} />
                         Edit Details
                       </MenuItem>
-                      <Divider />
                       <MenuItem
                         sx={{
                           ...RowFlex,
@@ -239,7 +248,7 @@ function InactiveCabs() {
                           gap: "10px",
                         }}
                         onClick={() =>
-                          handleDeleteEmployee(driver._id as string)
+                          handleOpenDeleteModal(driver._id as string)
                         }
                       >
                         <DeleteForever sx={{}} />
@@ -253,6 +262,13 @@ function InactiveCabs() {
           </Table>
         </TableContainer>
       </Box>
+      <ConfirmationModal
+        headerText="Confirm Your Action?"
+        subHeaderText="Deleting this TM is permanent and cannot be undone. Please confirm if you wish to continue."
+        openConfirmModal={openConfirmModal}
+        setOpenConfirmModal={setOpenConfirmModal}
+        triggerFunction={handleDeleteEmployee}
+      />
     </PageContainer>
   );
 }
