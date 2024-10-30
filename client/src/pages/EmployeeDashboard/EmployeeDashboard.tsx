@@ -255,7 +255,7 @@ function EmployeeDashboard() {
             <Box
               component={"img"}
               src="/images/logo-blue.png"
-              sx={{ width: "35px", aspectRatio: 1, m:0.5 }}
+              sx={{ width: "35px", aspectRatio: 1, m: 0.5 }}
             />
             <Close
               sx={{ width: 30, height: 30 }}
@@ -289,6 +289,7 @@ function EmployeeDashboard() {
           {/* OPTIONS/ACTIONS */}
           <Box sx={{ ...ColFlex, width: "100%" }}>
             <Button
+            onClick={() => navigate(`profile/${userData?._id}`, {state: userData})}
               sx={{
                 justifyContent: "flex-start",
                 p: "15px",
@@ -324,7 +325,7 @@ function EmployeeDashboard() {
               sx={{
                 borderRadius: "10px",
                 p: "15px",
-                color:"white"
+                color: "white",
               }}
               color={"warning"}
               fullWidth

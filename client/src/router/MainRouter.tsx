@@ -255,6 +255,14 @@ function MainRouter() {
         {userData?.role === "employee" && (
           <>
             <Route path="/employee" element={<EmployeeDashboard />} />
+            <Route
+              path="employee/profile/:id"
+              element={
+                <SlideInOut>
+                  <TeamMemberProfile />
+                </SlideInOut>
+              }
+            />
           </>
         )}
       </Routes>

@@ -1,7 +1,14 @@
 import { Avatar, Box, Button, Divider, Typography } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ColFlex, RowFlex } from "../../style_extentions/Flex";
-import { Call, LocationOn, Mail, Person, Route } from "@mui/icons-material";
+import {
+  ArrowBackIos,
+  Call,
+  LocationOn,
+  Mail,
+  Person,
+  Route,
+} from "@mui/icons-material";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import baseURL from "../../utils/baseURL";
 import Convert24To12HourFormat from "../../utils/24HourTo12HourFormat";
@@ -13,12 +20,14 @@ import RouteTypes from "../../types/RouteTypes";
 import { useEffect } from "react";
 import Cabtypes from "./../../types/CabTypes";
 import formatDateString from "../../utils/DateFormatter";
+import isXSmall from "./../../utils/isXSmall";
 
 function TeamMemberProfile() {
   const location = useLocation();
   const employee: EmployeeTypes = location?.state;
 
   const navigate = useNavigate();
+  const { isXS } = isXSmall();
 
   const dates = [
     "2024-10-03T11:41:36.798000+00:00",
@@ -60,28 +69,50 @@ function TeamMemberProfile() {
     <Box
       sx={{
         width: "100%",
-        height: "100vh",
+        height: isXS ? "auto" : "100vh",
         p: 2.5,
         backgroundColor: "background.default",
         color: "text.primary",
       }}
     >
+      {/* MOBILE ONLY TOOLBAR */}
+      {isXS && <Box
+        sx={{
+          ...RowFlex,
+          width: "100%",
+          justifyContent: "space-between",
+          gap: 2.5,
+          mb: 5,
+        }}
+      >
+        <ArrowBackIos
+        onClick={() => navigate(-1)}
+          sx={{
+            fontSize: 40,
+            color: "text.primary",
+            pl: "10px",
+            border: "2px solid white",
+            borderRadius: "10px",
+          }}
+        />
+        <Typography variant="h5">Your Profile</Typography>
+      </Box>}
       {/* TOP BOX */}
       <Box
         sx={{
-          height: "30vh",
-          ...RowFlex,
+          height: isXS ? "auto" : "30vh",
+          ...(isXS ? ColFlex : RowFlex),
           width: "100%",
-          alignItems: "center",
+          alignItems: isXS ? "flex-start" : "center",
           justifyContent: "space-between",
           gap: "1rem",
-          p: 3,
+          p: isXS ? 1 : 3,
         }}
       >
         <Box
           sx={{
             borderRadius: 2,
-            ...RowFlex,
+            ...(isXS ? ColFlex : RowFlex),
             gap: 2.5,
           }}
         >
@@ -93,9 +124,9 @@ function TeamMemberProfile() {
                 : "/images/default_user.png"
             }
             style={{
-              width: "10.5rem",
-              height: "10.5rem",
-              borderRadius: "20px",
+              width: isXS ? "7.5rem" : "10.5rem",
+              height: isXS ? "7.5rem" : "10.5rem",
+              borderRadius: isXS ? "100px" : "20px",
               objectFit: "cover",
               aspectRatio: "1.5",
             }}
@@ -103,11 +134,21 @@ function TeamMemberProfile() {
           <Box>
             <Typography
               variant="h4"
-              sx={{ fontWeight: "bold", color: "text.primary" }}
+              sx={{
+                fontWeight: "bold",
+                color: "text.primary",
+                textAlign: isXS ? "center" : "start",
+              }}
             >
               {employee?.fname + " " + employee?.lname}
             </Typography>
-            <Box sx={{ ...RowFlex, gap: 2, justifyContent: "flex-start" }}>
+            <Box
+              sx={{
+                ...(isXS ? ColFlex : RowFlex),
+                gap: 2,
+                justifyContent: "flex-start",
+              }}
+            >
               <Typography
                 // variant="h5"
                 fontWeight={500}
@@ -115,13 +156,23 @@ function TeamMemberProfile() {
               >
                 {employee?.department}
               </Typography>
-              <Typography
-                // variant="h5"
-                fontWeight={500}
-                sx={{ color: "text.primary", mb: 2, fontSize: "1.4rem" }}
-              >
-                |
-              </Typography>
+              {!isXS ? (
+                <Typography
+                  // variant="h5"
+                  fontWeight={500}
+                  sx={{ color: "text.primary", mb: 2, fontSize: "1.4rem" }}
+                >
+                  |
+                </Typography>
+              ) : (
+                <Typography
+                  // variant="h5"
+                  fontWeight={500}
+                  sx={{ color: "text.primary", fontSize: "1rem" }}
+                >
+                  Work Location
+                </Typography>
+              )}
               <Typography
                 fontWeight={500}
                 sx={{ color: "text.primary", mb: 2, fontSize: "1.4rem" }}
@@ -133,7 +184,7 @@ function TeamMemberProfile() {
             <Divider sx={{ mb: 2 }} />
             <Box
               sx={{
-                ...RowFlex,
+                ...(isXS ? ColFlex : RowFlex),
                 gap: 5,
                 justifyContent: "start",
               }}
@@ -142,7 +193,7 @@ function TeamMemberProfile() {
                 sx={{
                   mb: 1,
                   fontSize: "1rem",
-                  ...RowFlex,
+                  ...(isXS ? ColFlex : RowFlex),
                   gap: "6px",
                   color: "text.primary",
                 }}
@@ -162,7 +213,7 @@ function TeamMemberProfile() {
                   mb: 1,
                   fontSize: "1rem",
                   color: "text.primary",
-                  ...RowFlex,
+                  ...(isXS ? ColFlex : RowFlex),
                   gap: "6px",
                 }}
               >
@@ -173,7 +224,7 @@ function TeamMemberProfile() {
             </Box>
             <Box
               sx={{
-                ...RowFlex,
+                ...(isXS ? ColFlex : RowFlex),
                 justifyContent: "start",
                 gap: 4,
                 alignItems: "flex-start",
@@ -184,7 +235,8 @@ function TeamMemberProfile() {
                   mb: 1,
                   fontSize: "1rem",
                   color: "text.primary",
-                  ...RowFlex,
+                  textAlign: isXS ? "center" : "start",
+                  ...(isXS ? ColFlex : RowFlex),
                   gap: "6px",
                 }}
               >
@@ -195,16 +247,33 @@ function TeamMemberProfile() {
             </Box>
           </Box>
         </Box>
+        {isXS && (
+          <Divider
+            sx={{
+              width: "100%",
+              height: "1px",
+              backgroundColor: "grey",
+              my: isXS ? 2.5 : 0,
+            }}
+          />
+        )}
         <Box
           sx={{
             ...ColFlex,
             height: "10rem",
-            alignItems: "end",
+            alignItems: isXS ? "center" : "end",
+            width: isXS ? "100%" : "auto",
             gap: 1,
             justifyContent: "space-between",
           }}
         >
-          <Box sx={{ ...ColFlex, gap: 0, alignItems: "flex-end" }}>
+          <Box
+            sx={{
+              ...ColFlex,
+              gap: 0,
+              alignItems: isXS ? "center" : "flex-end",
+            }}
+          >
             <Typography
               variant="h4"
               sx={{ fontWeight: "bold", color: "text.primary", m: 0, p: 0 }}
@@ -233,16 +302,16 @@ function TeamMemberProfile() {
             onClick={() => navigate(`/admin/editDetails/${employee?._id}`)}
           >
             <Person sx={{ marginRight: 0.7, fontSize: "1.3rem" }} />
-            {`Edit ${employee?.fname + "'s "} Profile`}
+            {isXS ? "Edit Profile" : `Edit ${employee?.fname + "'s "} Profile`}
           </Button>
         </Box>
       </Box>
       {/* BOTTOM BOX */}
       <Box
         sx={{
-          ...RowFlex,
+          ...(isXS ? ColFlex : RowFlex),
           width: "100%",
-          height: "65vh",
+          height: isXS ? "auto" : "65vh",
           justifyContent: "space-between",
           p: 2.5,
         }}
@@ -250,8 +319,8 @@ function TeamMemberProfile() {
         {/* Map Box - LEFT Side */}
         <Box
           sx={{
-            height: "100%",
-            width: "40%",
+            height: isXS ? "30vh" : "100%",
+            width: isXS ? "100%" : "40%",
             borderRadius: "10px",
             overflow: "hidden",
           }}
@@ -268,9 +337,9 @@ function TeamMemberProfile() {
         {/* Stat Box - RIGHT Side */}
         <Box
           sx={{
-            ...RowFlex,
+            ...(isXS ? ColFlex : RowFlex),
             height: "100%",
-            width: "57.5%",
+            width: isXS ? "100%" : "57.5%",
             gap: 1,
             borderRadius: "10px",
             // border: "1px solid #E5E5E5",
@@ -281,9 +350,10 @@ function TeamMemberProfile() {
             sx={{
               ...ColFlex,
               justifyContent: "space-between",
-              alignItems: "flex-start",
+              alignItems: isXS ? "center" : "flex-start",
               height: "100%",
-              width: "50%",
+              width: isXS ? "100%" : "50%",
+              mt: isXS ? 2.5 : 0,
               // p: 2.5,
               borderRadius: "10px",
               // border: "1px solid #E5E5E5",
@@ -293,14 +363,23 @@ function TeamMemberProfile() {
             <Box
               sx={{
                 ...ColFlex,
-                justifyContent: "flex-start",
-                alignItems: "flex-start",
+                justifyContent: isXS ? "center" : "flex-start",
+                alignItems: isXS ? "center" : "flex-start",
+                mt: isXS ? 2.5 : 0,
               }}
             >
               <Typography variant="h6" sx={{ color: "text.primary" }}>
                 Assigned Cab
               </Typography>
-              <Box sx={{ ...RowFlex, gap: 2.5, justifyContent: "flex-start" }}>
+              <Box
+                sx={{
+                  ...(isXS ? ColFlex : RowFlex),
+                  // width:isXS ? "100%" : "auto",
+                  gap: 2.5,
+                  justifyContent: isXS ? "center" : "flex-start",
+                  textAlign: isXS ? "center" : "start",
+                }}
+              >
                 <Typography
                   variant="h5"
                   sx={{
@@ -317,12 +396,14 @@ function TeamMemberProfile() {
                       ((routeData.cab as Cabtypes)?.cabDriver as EmployeeTypes)
                         ?.lname}
                 </Typography>
-                <Typography
-                  variant="h5"
-                  sx={{ fontWeight: 200, color: "text.primary" }}
-                >
-                  |
-                </Typography>
+                {!isXS && (
+                  <Typography
+                    variant="h5"
+                    sx={{ fontWeight: 200, color: "text.primary" }}
+                  >
+                    |
+                  </Typography>
+                )}
                 <Typography
                   variant="h5"
                   sx={{
@@ -331,7 +412,10 @@ function TeamMemberProfile() {
                     // fontSize: "1.75rem",
                   }}
                 >
-                {routeData == undefined ? "NA" : "Cab " + (routeData.cab as Cabtypes)?.cabNumber as string}
+                  {routeData == undefined
+                    ? "NA"
+                    : (("Cab " +
+                        (routeData.cab as Cabtypes)?.cabNumber) as string)}
                 </Typography>
               </Box>
             </Box>
@@ -341,21 +425,29 @@ function TeamMemberProfile() {
               size="large"
               sx={{
                 width: "80%",
+                mt: isXS ? 2.5 : 0,
                 backgroundColor: "primary.light",
                 color: "white",
+                mb: isXS ? 2.5 : 0,
                 // p: "2",
               }}
               onClick={() =>
-                navigate(`/admin/viewRoute/${routeData?._id}`, {
+                isXS ? navigate(-1) : navigate(`/admin/viewRoute/${routeData?._id}`, {
                   state: routeData,
                 })
               }
             >
               <Route sx={{ marginRight: 1, fontSize: "1.3rem" }} />
-              {`View ${employee?.fname + "'s "} Route`}
+              {isXS ? "View Route" : `View ${employee?.fname + "'s "} Route`}
             </Button>
             {/* R1 */}
-            <Box>
+            <Box
+              sx={{
+                ...ColFlex,
+                alignItems: isXS ? "center" : "flex-start",
+                mb: isXS ? 2 : 0,
+              }}
+            >
               <Typography variant="h6" sx={{ color: "text.primary" }}>
                 Shrinkage Caused :
               </Typography>
@@ -371,7 +463,13 @@ function TeamMemberProfile() {
               </Typography>
             </Box>
             {/* R2 */}
-            <Box>
+            <Box
+              sx={{
+                ...ColFlex,
+                alignItems: isXS ? "center" : "flex-start",
+                mb: isXS ? 2 : 0,
+              }}
+            >
               <Typography variant="h6" sx={{ color: "text.primary" }}>
                 Absent Time :
               </Typography>
@@ -387,7 +485,13 @@ function TeamMemberProfile() {
               </Typography>
             </Box>
             {/* R3 */}
-            <Box>
+            <Box
+              sx={{
+                ...ColFlex,
+                alignItems: isXS ? "center" : "flex-start",
+                mb: isXS ? 2 : 0,
+              }}
+            >
               <Typography variant="h6" sx={{ color: "text.primary" }}>
                 Member Since :
               </Typography>
@@ -413,9 +517,11 @@ function TeamMemberProfile() {
             }}
           />
           {/* RIGHT ATTENDANCE BOX */}
-          <Box sx={{ ...ColFlex, width: "50%", height: "100%" }}>
+          <Box
+            sx={{ ...ColFlex, width: isXS ? "100%" : "50%", height: "100%" }}
+          >
             {/* R1 */}
-            <Box sx={{ width: "100%" }}>
+            <Box sx={{ width: "100%", textAlign: isXS ? "center" : "start" }}>
               <Typography variant="h5" sx={{ color: "text.primary" }}>
                 {employee?.fname + "'s "} Attendance
               </Typography>
