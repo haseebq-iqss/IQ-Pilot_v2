@@ -60,7 +60,11 @@ function AllCabDrivers() {
         ?.includes(searchtext) ||
       (cab?.cabDriver as EmployeeTypes)?.lname
         ?.toLowerCase()
-        ?.includes(searchtext)
+        ?.includes(searchtext) ||
+      cab?.cabNumber
+        // ?.toLowerCase()
+        ?.includes(searchtext) ||
+      cab?.numberPlate?.toLowerCase()?.includes(searchtext)
     );
   });
 
@@ -126,13 +130,16 @@ function AllCabDrivers() {
       >
         <TableContainer sx={{}}>
           <TextField
+            sx={{
+              width: "40%",
+            }}
             variant="outlined"
             autoFocus
             size="small"
             onChange={(e) => {
               setSearchText(e.target.value);
             }}
-            placeholder="Search Drivers"
+            placeholder="Search Drivers, Cab Number & Number Plate"
             InputProps={{
               startAdornment: (
                 <IconButton aria-label="search">
