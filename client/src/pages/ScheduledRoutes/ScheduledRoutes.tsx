@@ -37,6 +37,7 @@ import formatDateString from "../../utils/DateFormatter";
 import RouteTypes from "../../types/RouteTypes";
 import IsToday from "../../utils/IsToday";
 import IsFutureDate from "../../utils/IsFutureDate";
+import ConfirmationModal from "../../components/ui/ConfirmationModal";
 
 // type routeCacheTypes = {
 //   nonActiveroutes: [RouteTypes];
@@ -46,6 +47,8 @@ function ScheduledRoutes() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
+  const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false);
+  const [selectedRoute, setSelectedRoute] = useState<string>("");
 
   const [tableDataView, settableDataView] = useState<
     "Active" | "Scheduled" | "Completed" | "All"
@@ -102,6 +105,12 @@ function ScheduledRoutes() {
     ExtractSelectedRouteTypes(tableDataView);
   }, [routes]);
 
+  const handleOpenDeleteModal = (routeId: string) => {
+    setSelectedRoute(routeId);
+    setOpenConfirmModal(true);
+    setMenuIndex(null);
+  };
+
   const handlerDeleteRoute = async (route_id: string) => {
     try {
       await useAxios.delete(`/routes/${route_id}`);
@@ -115,6 +124,12 @@ function ScheduledRoutes() {
     } catch (error) {
       console.error("Error deleting document: ", error);
     }
+  };
+
+  const handleDeleteRoute = () => {
+    handlerDeleteRoute(selectedRoute);
+    console.log("route deleted");
+    setOpenConfirmModal(false);
   };
 
   const HandleChangeTabletableDataView = (
@@ -351,7 +366,7 @@ function ScheduledRoutes() {
                             justifyContent: "flex-start",
                             gap: "10px",
                           }}
-                          onClick={() => handlerDeleteRoute(route?._id)}
+                          onClick={() => handleOpenDeleteModal(route?._id)}
                         >
                           <DeleteForever sx={{}} />
                           Delete Route
@@ -373,6 +388,13 @@ function ScheduledRoutes() {
           </Table>
         </TableContainer>
       </Box>
+      <ConfirmationModal
+        headerText="Confirm Your Action?"
+        subHeaderText="Deleting this route is permanent and cannot be undone. Please confirm if you wish to continue."
+        openConfirmModal={openConfirmModal}
+        setOpenConfirmModal={setOpenConfirmModal}
+        triggerFunction={handleDeleteRoute}
+      />
     </PageContainer>
   );
 }
