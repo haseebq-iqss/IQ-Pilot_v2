@@ -175,6 +175,14 @@ function Appbar() {
     refetch(); // Manually trigger the query to fetch the XLSX file
   };
 
+  const handleViewNotifications = () => {
+    setOpenSnack({
+      open: true,
+      message: "Notifications feature coming soon!",
+      severity: "info",
+    });
+  };
+
   return (
     <Box
       sx={{
@@ -374,40 +382,42 @@ function Appbar() {
               </FormControl>
               {/* Immediate Shift */}
               <FormControl sx={{ width: "50%" }}>
-              <InputLabel id="central-point-label">Activation Mode</InputLabel>
-              <Select
-                labelId="central-point-label"
-                id="central-point-label"
-                value={activationMode}
-                label="central-point-label"
-                onChange={(e) => setActivationMode(e.target.value)}
-              >
-                <MenuItem
-                  value={"immediate"}
-                  sx={{
-                    ...RowFlex,
-                    pl: 2.5,
-                    fontWeight: 600,
-                    justifyContent: "flex-start",
-                  }}
+                <InputLabel id="central-point-label">
+                  Activation Mode
+                </InputLabel>
+                <Select
+                  labelId="central-point-label"
+                  id="central-point-label"
+                  value={activationMode}
+                  label="central-point-label"
+                  onChange={(e) => setActivationMode(e.target.value)}
                 >
-                  <Send sx={{ mr: 1 }} />
-                  Immediate (Shift will activate right now)
-                </MenuItem>
-                <MenuItem
-                  value={"next-day"}
-                  sx={{
-                    ...RowFlex,
-                    pl: 2.5,
-                    fontWeight: 600,
-                    justifyContent: "flex-start",
-                  }}
-                >
-                  <ScheduleSend sx={{ mr: 1 }} />
-                  Next Day (Shift will activate on the next day's start)
-                </MenuItem>
-              </Select>
-            </FormControl>
+                  <MenuItem
+                    value={"immediate"}
+                    sx={{
+                      ...RowFlex,
+                      pl: 2.5,
+                      fontWeight: 600,
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    <Send sx={{ mr: 1 }} />
+                    Immediate (Shift will activate right now)
+                  </MenuItem>
+                  <MenuItem
+                    value={"next-day"}
+                    sx={{
+                      ...RowFlex,
+                      pl: 2.5,
+                      fontWeight: 600,
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    <ScheduleSend sx={{ mr: 1 }} />
+                    Next Day (Shift will activate on the next day's start)
+                  </MenuItem>
+                </Select>
+              </FormControl>
               {/* Active for days */}
               <FormControl sx={{ width: "50%" }}>
                 <InputLabel id="pickup-or-drop-label">
@@ -508,7 +518,16 @@ function Appbar() {
       </GlobalModal>
 
       {themeMode === "light" ? (
-        <Box onClick={() => setThemeMode("dark")}>
+        <Box
+          onClick={() => {
+            setThemeMode("dark");
+            setOpenSnack({
+              open: true,
+              message: "Dark mode enabled!",
+              severity: "info",
+            });
+          }}
+        >
           <LightMode
             sx={{
               width: "30px",
@@ -529,7 +548,16 @@ function Appbar() {
           />
         </Box>
       ) : (
-        <Box onClick={() => setThemeMode("light")}>
+        <Box
+          onClick={() => {
+            setThemeMode("light");
+            setOpenSnack({
+              open: true,
+              message: "Light mode enabled!",
+              severity: "info",
+            });
+          }}
+        >
           <DarkMode
             sx={{
               width: "30px",
@@ -552,6 +580,7 @@ function Appbar() {
       )}
 
       <Notifications
+        onClick={() => handleViewNotifications()}
         sx={{
           width: "30px",
           height: "30px",
@@ -570,6 +599,7 @@ function Appbar() {
       />
 
       <Settings
+        onClick={() => navigate("settings")}
         sx={{
           width: "30px",
           height: "30px",
@@ -587,13 +617,6 @@ function Appbar() {
           },
         }}
       />
-
-      {/* <Box sx={{ ...RowFlex, gap:1,backgroundColor: "text.primary",  borderRadius:"100px", py:0.75, px:2.5 }}>
-        <Typography sx={{ color:"text.primary" }} fontWeight={600} variant="body2">
-          Create a Custom Route
-        </Typography>
-        <Route sx={{ color:"text.primary", p:0.25 }} />
-      </Box> */}
 
       <Button
         className="HoverButton"

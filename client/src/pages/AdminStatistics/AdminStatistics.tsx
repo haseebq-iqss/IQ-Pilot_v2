@@ -292,10 +292,10 @@ function AdminStatistics() {
             aria-label="View"
           >
             <ToggleButton sx={{ px: 2.5 }} value="tiles">
-              <GridView /> Tiles
+              <GridView sx={{mr:1.5}} /> Tiles
             </ToggleButton>
             <ToggleButton sx={{ px: 2.5 }} value="table">
-              <TableRows /> Table
+              <TableRows sx={{mr:1.5}} /> Table
             </ToggleButton>
           </ToggleButtonGroup>
         </Box>

@@ -29,6 +29,7 @@ import PendingTeamMembers from "../pages/PendingTeamMembers/PendingTeamMembers";
 import RosteredTeamMembers from "../pages/RosteredTeamMembers/RosteredTeamMembers";
 import TeamMemberProfile from "../pages/TeamMemberProfile/TeamMemberProfile";
 import InactiveCabs from "../pages/InactiveCabs/InactiveCabs";
+import Settings from "../pages/Settings/Settings";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -146,6 +147,14 @@ function MainRouter() {
                 element={
                   <SlideInOut>
                     <AdminStatistics />
+                  </SlideInOut>
+                }
+              />
+              <Route
+                path="settings"
+                element={
+                  <SlideInOut>
+                    <Settings />
                   </SlideInOut>
                 }
               />

@@ -696,7 +696,7 @@ const RosterCard = ({
             mode="route-view"
             activeRoute={
               column.workLocation === "Rangreth"
-                ? [...activeRouteCoords, [33.996807, 74.79202]]
+                ? [...activeRouteCoords, [34.00098208925866, 74.7934441780845]]
                 : [...activeRouteCoords, [34.173415, 74.808653]]
             }
             zoom={11}

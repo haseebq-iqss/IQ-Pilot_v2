@@ -9,6 +9,7 @@ import {
   NoCrash,
   QueryStats,
   Route,
+  Settings,
 } from "@mui/icons-material";
 import {
   Avatar,
@@ -169,6 +170,12 @@ function Sidebar() {
           text="Live Driver Tracking"
           startIcon={<LiveTv />}
           link="live-driver-tracking"
+          // isActive={false}
+        />
+        <SideBarButton
+          text="Settings"
+          startIcon={<Settings />}
+          link="settings"
           // isActive={false}
         />
       </Box>

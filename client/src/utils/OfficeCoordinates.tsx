@@ -1,7 +1,7 @@
 const coordData: any = [
     {
       name: "Rangreth",
-      latLon: [33.996807, 74.79202],
+      latLon: [34.00098208925866, 74.7934441780845],
     },
     {
       name: "Zaira Tower",

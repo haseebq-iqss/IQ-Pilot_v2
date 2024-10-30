@@ -54,7 +54,7 @@ function AddPassengers() {
   const { setSelectedEmps } = useContext(SelectedEmpsContext);
   const [filteredEmployees, setFilteredEmployees] = useState<EmployeeTypes[]>();
 
-  const rangreth = [33.996807, 74.79202];
+  const rangreth = [34.00098208925866, 74.7934441780845];
   const zaira = [34.173415, 74.808653];
   const karanagar = [34.081357, 74.799716];
   const zirakpur = [30.633014690428567, 76.8251843278478];
