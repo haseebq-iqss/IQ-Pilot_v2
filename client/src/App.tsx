@@ -13,10 +13,15 @@ import useAxios from "./api/useAxios";
 import { useNavigate } from "react-router-dom";
 import SelectedEmpsContext from "./context/SelectedEmpsContext";
 import { registerServiceWorker } from "./serviceWorkerRegistration";
+import DefaultSnackPositionContext from "./context/DefaultSnackPositionContext";
+import useLocalStorage from "./hooks/useLocalStorage";
+import DefaultCabViewMode from "./context/DefaultCabViewModeContext";
+import DefaultMapStyleContext from "./context/DefaultMapStyleContext";
 
 function App() {
-
   registerServiceWorker();
+
+  const { getItem } = useLocalStorage();
 
   const navigate = useNavigate();
   const [userData, setUserData] = useState<EmployeeTypes>();
@@ -27,6 +32,15 @@ function App() {
     severity: "success",
   });
   const [selectedEmps, setSelectedEmps] = useState<EmployeeTypes[]>([]);
+  const [defaultSnackbarPosition, setDefaultSnackbarPosition] = useState(
+    () => getItem("defaultSnackbarPosition") || "top center"
+  );
+  const [defaultCabView, setDefaultCabView] = useState(
+    () => getItem("defaultCabView") || "expanded"
+  );
+  const [defaultMapStyle, setDefaultMapStyle] = useState(
+    () => getItem("defaultMapStyle") || "vanilla"
+  );
 
   const isBaseRoute: boolean =
     !location.pathname.includes("admin") &&
@@ -41,7 +55,7 @@ function App() {
           let user: EmployeeTypes = res.data.data;
           setUserData(user);
           // if (res.data.currentUser?.role) {
-            // console.log(res.data)
+          // console.log(res.data)
           isBaseRoute && navigate(`/${user.role}`);
           // }
         })
@@ -52,15 +66,27 @@ function App() {
   return (
     <ThemeProvider theme={ProjectTheme(themeMode)}>
       <SelectedEmpsContext.Provider value={{ selectedEmps, setSelectedEmps }}>
-        <SnackbarContext.Provider value={{ openSnack, setOpenSnack }}>
-          <GlobalSnackbar value={{ openSnack, setOpenSnack }} />
-          <ThemeModeContext.Provider value={{ themeMode, setThemeMode }}>
-            <UserDataContext.Provider value={{ userData, setUserData }}>
-              <MainRouter />
-              <ReactQueryDevtools />
-            </UserDataContext.Provider>
-          </ThemeModeContext.Provider>
-        </SnackbarContext.Provider>
+        <DefaultSnackPositionContext.Provider
+          value={{ defaultSnackbarPosition, setDefaultSnackbarPosition }}
+        >
+          <SnackbarContext.Provider value={{ openSnack, setOpenSnack }}>
+            <GlobalSnackbar value={{ openSnack, setOpenSnack }} />
+            <ThemeModeContext.Provider value={{ themeMode, setThemeMode }}>
+              <UserDataContext.Provider value={{ userData, setUserData }}>
+                <DefaultCabViewMode.Provider
+                  value={{ defaultCabView, setDefaultCabView }}
+                >
+                  <DefaultMapStyleContext.Provider
+                    value={{ defaultMapStyle, setDefaultMapStyle }}
+                  >
+                    <MainRouter />
+                  </DefaultMapStyleContext.Provider>
+                </DefaultCabViewMode.Provider>
+                <ReactQueryDevtools />
+              </UserDataContext.Provider>
+            </ThemeModeContext.Provider>
+          </SnackbarContext.Provider>
+        </DefaultSnackPositionContext.Provider>
       </SelectedEmpsContext.Provider>
     </ThemeProvider>
   );

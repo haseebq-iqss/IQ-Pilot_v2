@@ -51,16 +51,17 @@ import {
   Warning,
 } from "@mui/icons-material";
 import AssignedPassengers from "../../components/ui/AssignedPassengers.tsx";
+import DefaultCabViewMode from "../../context/DefaultCabViewModeContext.tsx";
 
 function AssignedRoutes() {
   const location = useLocation();
   const routeState = location.state;
 
-  // console.log("ROUTE STATE ___> ",routeState)
+  const { defaultCabView }: any = useContext(DefaultCabViewMode);
 
   const [expandedLayout, setExpandedLayout] = useState<
     "expanded" | "restricted"
-  >("expanded");
+  >(defaultCabView) || "expanded";
 
   const [next, setNext] = useState(2);
   const [activeColumn, setActiveColumn] = useState<ShiftTypes | null>(null);

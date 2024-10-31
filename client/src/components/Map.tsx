@@ -37,6 +37,7 @@ import CabJoinSound from "../assets/sounds/cab-joined.mp3";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar } from "@mui/material";
+import DefaultMapStyleContext from "../context/DefaultMapStyleContext";
 
 type MapTypes = {
   width?: string;
@@ -91,6 +92,8 @@ const MapComponent = ({
   const location = useLocation();
 
   const { userData }: UserContextTypes = useContext(UserDataContext);
+
+  const { defaultMapStyle }: any = useContext(DefaultMapStyleContext);
 
   const { selectedEmps } = useContext(SelectedEmpsContext);
   const [mapDataView, setMapDataView] = useState<
@@ -676,10 +679,19 @@ const MapComponent = ({
         <TileLayer
           // url="https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.png" // WORLD IMAGERY MAP  >>>REQUIRES DOMAIN SETUP<<<       --- MOST REALISTIC
           // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"   // VANILLA MAP STYLE
-          url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png" // FRANCE HOT MAP         --- MOST CONSISTENT
+          // url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png" // FRANCE HOT MAP         --- MOST CONSISTENT
           // url="https://tile.osm.ch/switzerland/{z}/{x}/{y}.png"   // SWISS MAP STYLE (SLOW TO LOAD)
           // url="https://tile.openstreetmap.de/{z}/{x}/{y}.png"   // DUTCH MAP STYLE
 
+          url={
+            defaultMapStyle == "france-hot"
+              ? "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+              : defaultMapStyle == "swiss"
+              ? "https://tile.osm.ch/switzerland/{z}/{x}/{y}.png"
+              : defaultMapStyle == "dutch"
+              ? "https://tile.openstreetmap.de/{z}/{x}/{y}.png"
+              : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          }
           // ---> PAID MAP TILES
           // url="https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c"   // OPENCYCLE MAP STYLE      --- MOST BASIC
           // url="https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=1c139e6291de42898b06158aeff2c60c" // TRANSPORT MAP STYLE     --- MOST CLEAN
