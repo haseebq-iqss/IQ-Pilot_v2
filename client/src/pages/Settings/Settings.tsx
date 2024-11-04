@@ -42,6 +42,9 @@ function Settings() {
 
   // App Settings Logic
 
+  const { defaultSnackbarPosition, setDefaultSnackbarPosition }: any =
+    useContext(DefaultSnackPositionContext);
+
   const [snackbarPosition, setSnackbarPosition] = useState(
     () => getItem("defaultSnackbarPosition") || defaultSnackbarPosition
   );
@@ -89,9 +92,6 @@ function Settings() {
 
   // Admin Profile Logic
 
-  const { defaultSnackbarPosition, setDefaultSnackbarPosition }: any =
-    useContext(DefaultSnackPositionContext);
-
   const { userData }: UserContextTypes = useContext(UserDataContext);
 
   console.log(userData);
@@ -110,6 +110,8 @@ function Settings() {
     e.preventDefault();
     const currentTarget = e.currentTarget as HTMLFormElement;
 
+    // USING PARTIALS
+    // const teamMemberData: Partial<EmployeeTypes> = {
     const teamMemberData: EmployeeTypes = {
       fname: currentTarget.firstName.value,
       lname: currentTarget.lastName.value,
