@@ -42,7 +42,7 @@ const RosterCard = ({
     : undefined;
 
   const tasksIds = useMemo(() => {
-    return passengerDetails.map((passenger) => passenger.id);
+    return passengerDetails.map((passenger) => passenger.id || "");
   }, [passengerDetails]);
 
   const { setNodeRef } = useDroppable({
