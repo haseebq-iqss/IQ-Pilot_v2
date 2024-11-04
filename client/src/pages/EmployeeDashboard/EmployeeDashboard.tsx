@@ -289,7 +289,9 @@ function EmployeeDashboard() {
           {/* OPTIONS/ACTIONS */}
           <Box sx={{ ...ColFlex, width: "100%" }}>
             <Button
-            onClick={() => navigate(`profile/${userData?._id}`, {state: userData})}
+              onClick={() =>
+                navigate(`profile/${userData?._id}`, { state: userData })
+              }
               sx={{
                 justifyContent: "flex-start",
                 p: "15px",

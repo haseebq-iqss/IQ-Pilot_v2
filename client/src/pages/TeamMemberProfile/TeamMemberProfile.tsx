@@ -17,14 +17,17 @@ import AttendanceCalendar from "../../components/ui/AttendanceCalendar";
 import useAxios from "../../api/useAxios";
 import { useQuery } from "@tanstack/react-query";
 import RouteTypes from "../../types/RouteTypes";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import Cabtypes from "./../../types/CabTypes";
 import formatDateString from "../../utils/DateFormatter";
 import isXSmall from "./../../utils/isXSmall";
+import { UserContextTypes } from "../../types/UserContextTypes";
+import UserDataContext from "../../context/UserDataContext";
 
 function TeamMemberProfile() {
   const location = useLocation();
   const employee: EmployeeTypes = location?.state;
+  const { userData }: UserContextTypes = useContext(UserDataContext);
 
   const navigate = useNavigate();
   const { isXS } = isXSmall();
@@ -76,27 +79,29 @@ function TeamMemberProfile() {
       }}
     >
       {/* MOBILE ONLY TOOLBAR */}
-      {isXS && <Box
-        sx={{
-          ...RowFlex,
-          width: "100%",
-          justifyContent: "space-between",
-          gap: 2.5,
-          mb: 5,
-        }}
-      >
-        <ArrowBackIos
-        onClick={() => navigate(-1)}
+      {isXS && (
+        <Box
           sx={{
-            fontSize: 40,
-            color: "text.primary",
-            pl: "10px",
-            border: "2px solid white",
-            borderRadius: "10px",
+            ...RowFlex,
+            width: "100%",
+            justifyContent: "space-between",
+            gap: 2.5,
+            mb: 5,
           }}
-        />
-        <Typography variant="h5">Your Profile</Typography>
-      </Box>}
+        >
+          <ArrowBackIos
+            onClick={() => navigate(-1)}
+            sx={{
+              fontSize: 40,
+              color: "text.primary",
+              pl: "10px",
+              border: "2px solid white",
+              borderRadius: "10px",
+            }}
+          />
+          <Typography variant="h5">Your Profile</Typography>
+        </Box>
+      )}
       {/* TOP BOX */}
       <Box
         sx={{
@@ -299,7 +304,13 @@ function TeamMemberProfile() {
               color: "white",
               p: "2",
             }}
-            onClick={() => navigate(`/admin/editDetails/${employee?._id}`)}
+            onClick={() =>
+              userData?.role === "admin"
+                ? navigate(`/admin/editDetails/${employee?._id}`)
+                : navigate(`/employee/editProfile/${employee?._id}`, {
+                    state: employee,
+                  })
+            }
           >
             <Person sx={{ marginRight: 0.7, fontSize: "1.3rem" }} />
             {isXS ? "Edit Profile" : `Edit ${employee?.fname + "'s "} Profile`}
@@ -432,9 +443,11 @@ function TeamMemberProfile() {
                 // p: "2",
               }}
               onClick={() =>
-                isXS ? navigate(-1) : navigate(`/admin/viewRoute/${routeData?._id}`, {
-                  state: routeData,
-                })
+                isXS
+                  ? navigate(-1)
+                  : navigate(`/admin/viewRoute/${routeData?._id}`, {
+                      state: routeData,
+                    })
               }
             >
               <Route sx={{ marginRight: 1, fontSize: "1.3rem" }} />
