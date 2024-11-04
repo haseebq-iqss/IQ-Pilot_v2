@@ -21,7 +21,7 @@ const ReservedPassengersTab = ({
     transition,
     isDragging,
   } = useSortable({
-    id: passenger.id,
+    id: passenger.id || "",
     data: {
       type: "Reserved-Task",
       reservedTask: passenger,

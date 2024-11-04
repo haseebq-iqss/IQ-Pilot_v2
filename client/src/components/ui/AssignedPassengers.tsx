@@ -21,7 +21,7 @@ const AssignedPassengers = ({
     transition,
     isDragging,
   } = useSortable({
-    id: passenger.id,
+    id: passenger.id || "",
     data: {
       type: "Task",
       task: passenger,

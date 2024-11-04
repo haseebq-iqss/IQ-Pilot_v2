@@ -205,7 +205,7 @@ const RosterCard = ({
   const routesCentralPoint: any = routesCP.at(-1);
 
   const tasksIds = useMemo(() => {
-    return passengerDetails.map((passenger) => passenger.id);
+    return passengerDetails.map((passenger) => passenger.id || "");
   }, [passengerDetails]);
 
   const { setNodeRef } = useDroppable({
