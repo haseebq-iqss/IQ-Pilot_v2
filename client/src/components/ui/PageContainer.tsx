@@ -30,7 +30,8 @@ function PageContainer({
       sx={{
         ...ColFlex,
         width: "100%",
-        height: "100%",
+        height: "80vh",
+        minHeight: "100%",
         justifyContent: "flex-start",
         alignItems: "flex-start",
         backgroundColor: "background.default",

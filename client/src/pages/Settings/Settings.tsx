@@ -1,9 +1,11 @@
 import {
   Box,
+  Button,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
+  TextField,
   Typography,
 } from "@mui/material";
 import PageContainer from "../../components/ui/PageContainer";
@@ -13,14 +15,16 @@ import {
   AlignVerticalBottom,
   AlignVerticalCenter,
   AlignVerticalTop,
+  Done,
   NewReleases,
+  Photo,
   Place,
   Style,
   UnfoldLess,
   UnfoldMore,
   ViewInAr,
 } from "@mui/icons-material";
-import { useContext, useState } from "react";
+import { FormEvent, useContext, useState } from "react";
 import MapComponent from "../../components/Map";
 import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
@@ -28,13 +32,15 @@ import useLocalStorage from "../../hooks/useLocalStorage";
 import DefaultSnackPositionContext from "../../context/DefaultSnackPositionContext";
 import DefaultCabViewModeContext from "../../context/DefaultCabViewModeContext";
 import DefaultMapStyleContext from "../../context/DefaultMapStyleContext";
+import EmployeeTypes from "../../types/EmployeeTypes";
+import UserDataContext from "../../context/UserDataContext";
+import { UserContextTypes } from "../../types/UserContextTypes";
 
 function Settings() {
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
   const { getItem, setItem } = useLocalStorage();
 
-  const { defaultSnackbarPosition, setDefaultSnackbarPosition }: any =
-    useContext(DefaultSnackPositionContext);
+  // App Settings Logic
 
   const [snackbarPosition, setSnackbarPosition] = useState(
     () => getItem("defaultSnackbarPosition") || defaultSnackbarPosition
@@ -80,6 +86,72 @@ function Settings() {
     setDefaultMapStyleValue((event.target as HTMLSelectElement).value);
     setSetDefaultMapStyle((event.target as HTMLSelectElement).value);
   };
+
+  // Admin Profile Logic
+
+  const { defaultSnackbarPosition, setDefaultSnackbarPosition }: any =
+    useContext(DefaultSnackPositionContext);
+
+  const { userData }: UserContextTypes = useContext(UserDataContext);
+
+  console.log(userData);
+
+  const [workLocation, setWorkLocation] = useState(userData?.workLocation);
+  const handleWorkLocation = (event: any) => {
+    setWorkLocation(event.target.value);
+  };
+
+  const [department, setDepartment] = useState(userData?.department);
+  const handleChangeDepartment = (event: any) => {
+    setDepartment(event.target.value);
+  };
+
+  function HandleEditAdminProfile(e: FormEvent) {
+    e.preventDefault();
+    const currentTarget = e.currentTarget as HTMLFormElement;
+
+    const teamMemberData: EmployeeTypes = {
+      fname: currentTarget.firstName.value,
+      lname: currentTarget.lastName.value,
+      email: currentTarget.email.value,
+      phone: currentTarget.phone.value,
+      address: currentTarget.address.value,
+      profilePicture: currentTarget.profilePicture.files[0],
+      workLocation: workLocation,
+      department: department,
+    };
+
+    const formData = new FormData();
+
+    for (const key in teamMemberData) {
+      if (teamMemberData.hasOwnProperty(key)) {
+        const value = teamMemberData[key as keyof EmployeeTypes];
+        if (key === "profilePicture") {
+          formData.append(key, value as File);
+        } else if (typeof value === "object") {
+          formData.append(
+            "pickUp[coordinates][]",
+            teamMemberData.pickUp!.coordinates[0].toString()
+          );
+          formData.append(
+            "pickUp[coordinates][]",
+            teamMemberData.pickUp!.coordinates[1].toString()
+          );
+          formData.append("pickUp[address]", teamMemberData.pickUp!.address);
+          // console.log(key, value);
+          // console.log(JSON.stringify(value));
+        } else {
+          formData.append(key, String(value));
+        }
+      }
+    }
+
+    // Display the key/value pairs
+    for (var pair of formData.entries()) {
+      console.log(pair[0] + ", " + pair[1]);
+    }
+    // AddTeamMember(formData);
+  }
 
   return (
     <PageContainer
@@ -354,6 +426,214 @@ function Settings() {
         <Typography color={"GrayText"} variant="body1">
           Edit your account settings and preferences.
         </Typography>
+
+        {/* Profile Box */}
+        <Box sx={{ ...ColFlex, width: "100%", height: "auto", mt: 7.5 }}>
+          {/* FORM */}
+          <Box
+            component={"form"}
+            sx={{
+              ...ColFlex,
+              gap: "20px",
+              width: "100%",
+              // py: "5%",
+              // my: "2.5%",
+            }}
+            onSubmit={HandleEditAdminProfile}
+          >
+            {/* f & lname */}
+            <Box
+              sx={{
+                ...RowFlex,
+                width: "100%",
+                justifyContent: "space-between",
+                gap: "15px",
+              }}
+            >
+              <TextField
+                required
+                fullWidth
+                name="firstName"
+                label="first name"
+                type="text"
+                placeholder="Enter your first name"
+                InputLabelProps={{ shrink: true }}
+                defaultValue={userData?.fname}
+                autoFocus
+              />
+              <TextField
+                required
+                fullWidth
+                name="lastName"
+                label="last name"
+                type="text"
+                placeholder="Enter your last name"
+                InputLabelProps={{ shrink: true }}
+                defaultValue={userData?.lname}
+                // onChange={handleFullName}
+              />
+            </Box>
+            {/* email , phone */}
+            <Box
+              sx={{
+                ...RowFlex,
+                width: "100%",
+                justifyContent: "space-between",
+                gap: "15px",
+              }}
+            >
+              <TextField
+                required
+                fullWidth
+                name="email"
+                label="email"
+                type="email"
+                placeholder="Enter your email"
+                InputLabelProps={{ shrink: true }}
+                defaultValue={userData?.email}
+              />
+              <TextField
+                required
+                fullWidth
+                name="phone"
+                label="phone"
+                type="number"
+                placeholder="Enter your phone number"
+                InputLabelProps={{ shrink: true }}
+                defaultValue={userData?.phone}
+              />
+            </Box>
+            {/* department, Change DP */}
+            <Box
+              sx={{
+                ...RowFlex,
+                width: "100%",
+                justifyContent: "space-between",
+                gap: "15px",
+              }}
+            >
+              <FormControl fullWidth>
+                <InputLabel
+                  sx={{ lineHeight: "10px", fontSize: "0.8rem" }}
+                  id="department-label"
+                >
+                  Department
+                </InputLabel>
+                <Select
+                  // size="small"
+                  labelId="department-label"
+                  id="department-select"
+                  value={department}
+                  onChange={handleChangeDepartment}
+                  label="Department"
+                >
+                  <MenuItem value={"BD"}>BD</MenuItem>
+                  <MenuItem value={"BD-SD"}>BD-SD</MenuItem>
+                  <MenuItem value={"BD-SES2"}>BD-SES2</MenuItem>
+                  <MenuItem value={"Civil-SES2"}>Civil-SES2</MenuItem>
+                  <MenuItem value={"Cyber"}>Cyber</MenuItem>
+                  <MenuItem value={"L&D"}>L&D</MenuItem>
+                  <MenuItem value={"Marketing"}>Marketing</MenuItem>
+                  <MenuItem value={"PD"}>PD</MenuItem>
+                  <MenuItem value={"PSD"}>PSD</MenuItem>
+                  <MenuItem value={"S&S (HR)"}>S&S (HR)</MenuItem>
+                  <MenuItem value={"S&S (IT)"}>S&S (IT)</MenuItem>
+                  <MenuItem value={"S&S (OPS)"}>S&S (OPS)</MenuItem>
+                  <MenuItem value={"Operations"}>Operations</MenuItem>
+                  <MenuItem value={"Software"}>Software</MenuItem>
+                </Select>
+              </FormControl>
+              <Button
+                variant="contained"
+                component="label"
+                sx={{
+                  width: "50%",
+                  height: "3.4rem",
+                  bgcolor: "#9329FC",
+                  color: "white",
+                  p: "0",
+                }}
+              >
+                <Photo sx={{ mr: "0.5rem" }} />
+                Change Profile Photp
+                <input
+                  type="file"
+                  accept="image/png, image/gif, image/jpeg"
+                  hidden
+                  name="profilePicture"
+                />
+              </Button>
+            </Box>
+            {/* work location and address */}
+            <Box
+              sx={{
+                ...RowFlex,
+                width: "100%",
+                justifyContent: "space-between",
+                gap: "15px",
+              }}
+            >
+              <FormControl fullWidth>
+                <InputLabel
+                  sx={{ lineHeight: "10px", fontSize: "0.8rem" }}
+                  id="worklocation-label"
+                >
+                  Work Location
+                </InputLabel>
+                <Select
+                  // size="small"
+                  labelId="worklocation-label"
+                  id="worklocation-select"
+                  value={workLocation}
+                  onChange={handleWorkLocation}
+                  label="worklocation"
+                >
+                  <MenuItem value={"Rangreth"}>Rangreth</MenuItem>
+                  <MenuItem value={"Zaira Tower"}>Zaira Tower</MenuItem>
+                  <MenuItem value={"Karanagar"}>Karanagar</MenuItem>
+                  <MenuItem value={"Zirakpur"}>Zirakpur</MenuItem>
+                  <MenuItem value={"Hyderabad"}>Hyderabad</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                required
+                fullWidth
+                name="address"
+                label="address"
+                type="text"
+                placeholder="Enter your address"
+                InputLabelProps={{ shrink: true }}
+                defaultValue={userData?.pickUp?.address}
+              />
+            </Box>
+            {/* Submit Button */}
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                mt: "1rem",
+              }}
+            >
+              <Button
+                sx={{
+                  width: "49.3%",
+                  padding: "0.3rem",
+                  height: "3rem",
+                  alignSelf: "flex-end",
+                  // marginTop: "1.2rem",
+                }}
+                type="submit"
+                // disabled={loginStatus === "pending"}
+                color="primary"
+                variant="contained"
+              >
+                <Done sx={{ mr: "0.5rem" }} />
+                Confirm & Save Changes
+              </Button>
+            </Box>
+          </Box>
+        </Box>
       </Box>
     </PageContainer>
   );
