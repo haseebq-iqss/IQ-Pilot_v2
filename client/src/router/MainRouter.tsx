@@ -30,6 +30,7 @@ import RosteredTeamMembers from "../pages/RosteredTeamMembers/RosteredTeamMember
 import TeamMemberProfile from "../pages/TeamMemberProfile/TeamMemberProfile";
 import InactiveCabs from "../pages/InactiveCabs/InactiveCabs";
 import Settings from "../pages/Settings/Settings";
+import EditTMDetails from "../pages/EditTMDetails/EditTMDetails";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -260,6 +261,14 @@ function MainRouter() {
               element={
                 <SlideInOut>
                   <TeamMemberProfile />
+                </SlideInOut>
+              }
+            />
+            <Route
+              path="employee/editProfile/:id"
+              element={
+                <SlideInOut>
+                  <EditTMDetails />
                 </SlideInOut>
               }
             />

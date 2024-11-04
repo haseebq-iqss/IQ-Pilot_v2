@@ -153,8 +153,13 @@ function DriverDashboard() {
                 sx={{
                   width: "100%",
                   backgroundColor:
-                    isRouteSelected == route ? "background.default" : "text.primary",
-                  color: isRouteSelected == route ? "text.primary" : "background.default",
+                    isRouteSelected == route
+                      ? "background.default"
+                      : "text.primary",
+                  color:
+                    isRouteSelected == route
+                      ? "text.primary"
+                      : "background.default",
                 }}
                 onClick={() => setIsRouteSelected(route)}
                 elevation={1}
@@ -163,7 +168,10 @@ function DriverDashboard() {
                   expandIcon={
                     <ExpandMore
                       sx={{
-                        color: isRouteSelected == route ? "text.primary" : "background.default",
+                        color:
+                          isRouteSelected == route
+                            ? "text.primary"
+                            : "background.default",
                       }}
                     />
                   }
@@ -277,6 +285,7 @@ function DriverDashboard() {
                                   // onClick={() => handleRemovePassengersFromCab(employee)}
                                   sx={{
                                     ...RowFlex,
+                                    justifyContent: "flex-end",
                                     width: "20%",
                                     borderRadius: "100px",
                                   }}
