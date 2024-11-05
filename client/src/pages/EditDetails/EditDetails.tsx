@@ -169,7 +169,10 @@ export const EditDetails = () => {
         }
       }
     }
-    console.log("hi");
+    // console.log("hi");
+    // for (var pair of formData.entries()) {
+    //   console.log(pair[0] + ", " + pair[1]);
+    // }
     EditCabDriver(formData as CabDriverType);
   }
   const handleFullName: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -381,7 +384,7 @@ export const EditDetails = () => {
                 width: "50%",
                 height: "3.4rem",
                 bgcolor: "#9329FC",
-                color:"text.primary",
+                color: "text.primary",
                 p: "0",
               }}
             >

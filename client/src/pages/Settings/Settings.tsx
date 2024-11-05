@@ -35,6 +35,9 @@ import DefaultMapStyleContext from "../../context/DefaultMapStyleContext";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import UserDataContext from "../../context/UserDataContext";
 import { UserContextTypes } from "../../types/UserContextTypes";
+import { useMutation } from "@tanstack/react-query";
+import useAxios from "../../api/useAxios";
+import { useNavigate } from "react-router-dom";
 
 function Settings() {
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
@@ -92,9 +95,8 @@ function Settings() {
 
   // Admin Profile Logic
 
-  const { userData }: UserContextTypes = useContext(UserDataContext);
-
-  console.log(userData);
+  const { userData, setUserData }: UserContextTypes =
+    useContext(UserDataContext);
 
   const [workLocation, setWorkLocation] = useState(userData?.workLocation);
   const handleWorkLocation = (event: any) => {
@@ -105,6 +107,33 @@ function Settings() {
   const handleChangeDepartment = (event: any) => {
     setDepartment(event.target.value);
   };
+
+  const navigate = useNavigate();
+
+  const editAdminProfile = (adminProfileData: any) => {
+    return useAxios.patch(`/users/tm/${userData?._id}`, adminProfileData);
+  };
+
+  const { mutate: EditAdminMutation } = useMutation({
+    mutationFn: editAdminProfile,
+    onSuccess: (data) => {
+      setOpenSnack({
+        open: true,
+        message: "Profile was Updated!",
+        severity: "success",
+      });
+      // console.log(data)
+      setUserData!(data.data.data);
+      navigate(-1);
+    },
+    onError: (err: any) => {
+      setOpenSnack({
+        open: true,
+        message: err?.response?.data?.message,
+        severity: "warning",
+      });
+    },
+  });
 
   function HandleEditAdminProfile(e: FormEvent) {
     e.preventDefault();
@@ -118,7 +147,7 @@ function Settings() {
       email: currentTarget.email.value,
       phone: currentTarget.phone.value,
       address: currentTarget.address.value,
-      profilePicture: currentTarget.profilePicture.files[0],
+      profilePicture: currentTarget.profilePicture.files[0], // DIsabled due to no integration found!
       workLocation: workLocation,
       department: department,
     };
@@ -149,10 +178,10 @@ function Settings() {
     }
 
     // Display the key/value pairs
-    // for (var pair of formData.entries()) {
-    //   console.log(pair[0] + ", " + pair[1]);
-    // }
-    // AddTeamMember(formData);
+    for (var pair of formData.entries()) {
+      console.log(pair[0] + ", " + pair[1]);
+    }
+    EditAdminMutation(formData);
   }
 
   return (
@@ -461,7 +490,6 @@ function Settings() {
                 placeholder="Enter your first name"
                 InputLabelProps={{ shrink: true }}
                 defaultValue={userData?.fname}
-                autoFocus
               />
               <TextField
                 required
