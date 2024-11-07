@@ -142,6 +142,30 @@ const updatePassword = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+// Change Password with old password
+const changePassword = catchAsync(async (req, res, next) => {
+  const newPassword = req.body.newPassword;
+  const oldPassword = req.body.oldPassword;
+  const userId = req.user._id;
+
+  const user = await User.findById(userId).select("+password");
+
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  const isMatch = await user.checkPassword(oldPassword);
+  if (!isMatch) {
+    return next(new AppError("Incorrect old password", 400));
+  }
+
+  user.password = newPassword;
+
+  await user.save()
+    .then(() => res.status(200).json({ message: "Password updated successfully" }))
+    .catch((err) => next(new AppError(err.message, 400)));
+});
+
 module.exports = {
   signup,
   login,
@@ -150,4 +174,5 @@ module.exports = {
   logout,
   autologin,
   updatePassword,
+  changePassword
 };
