@@ -61,6 +61,7 @@ function EditTMDetails() {
   };
 
   const updatePassword = (passwordData: {
+    user: EmployeeTypes;
     oldPassword: string;
     newPassword: string;
   }) => {
@@ -90,6 +91,7 @@ function EditTMDetails() {
     // const { oldPassword, newPassword } = e.target as any;
     const formTarget = e.target as any;
     const passwordData = {
+      user: userData as EmployeeTypes,
       oldPassword: formTarget.oldPassword.value,
       newPassword: formTarget.newPassword.value,
     };

@@ -108,7 +108,7 @@ function TeamMemberProfile() {
           height: isXS ? "auto" : "30vh",
           ...(isXS ? ColFlex : RowFlex),
           width: "100%",
-          alignItems: isXS ? "flex-start" : "center",
+          alignItems: "center",
           justifyContent: "space-between",
           gap: "1rem",
           p: isXS ? 1 : 3,
@@ -238,9 +238,10 @@ function TeamMemberProfile() {
               <Typography
                 sx={{
                   mb: 1,
+                  width: isXS ? "100%" : "auto",
                   fontSize: "1rem",
                   color: "text.primary",
-                  textAlign: isXS ? "center" : "start",
+                  textAlign: "center",
                   ...(isXS ? ColFlex : RowFlex),
                   gap: "6px",
                 }}
