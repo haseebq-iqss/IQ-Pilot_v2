@@ -2,8 +2,10 @@ import {
   Box,
   Button,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
+  OutlinedInput,
   Select,
   TextField,
   Typography,
@@ -16,13 +18,17 @@ import {
   AlignVerticalCenter,
   AlignVerticalTop,
   Done,
+  ExpandLess,
+  ExpandMore,
   NewReleases,
+  Password,
   Photo,
   Place,
   Style,
   UnfoldLess,
   UnfoldMore,
   ViewInAr,
+  Visibility,
 } from "@mui/icons-material";
 import { FormEvent, useContext, useState } from "react";
 import MapComponent from "../../components/Map";
@@ -183,6 +189,58 @@ function Settings() {
     }
     EditAdminMutation(formData);
   }
+
+  const [oldPassword, setOldPassword] = useState<string>("");
+  const [oldPasswordVisibility, setOldPasswordVisibility] =
+    useState<boolean>(false);
+  const [newPassword, setNewPassword] = useState<string>("");
+  const [newPasswordVisibility, setNewPasswordVisibility] =
+    useState<boolean>(false);
+  const [expanded, setExpanded] = useState(false);
+
+  const updatePassword = (passwordData: {
+    user: EmployeeTypes;
+    oldPassword: string;
+    newPassword: string;
+  }) => {
+    return useAxios.put("auth/change-password", passwordData);
+  };
+
+  const { mutate: updatePasswordMutation } = useMutation({
+    mutationFn: updatePassword,
+    onSuccess: () => {
+      setOpenSnack({
+        open: true,
+        message: "Password updated successfully!",
+        severity: "success",
+      });
+    },
+    onError: (err: any) => {
+      setOpenSnack({
+        open: true,
+        message: err?.response?.data?.message || "Password update failed",
+        severity: "warning",
+      });
+    },
+  });
+
+  const handlePasswordChange = () => {
+    // const { oldPassword, newPassword } = e.target as any;
+    if (oldPassword.length > 4 && newPassword.length > 4) {
+      const passwordData = {
+        user: userData as EmployeeTypes,
+        oldPassword,
+        newPassword,
+      };
+      updatePasswordMutation(passwordData);
+    } else {
+      setOpenSnack({
+        open: true,
+        message: "Please enter both old and new password",
+        severity: "warning",
+      });
+    }
+  };
 
   return (
     <PageContainer
@@ -662,6 +720,112 @@ function Settings() {
                 Confirm & Save Changes
               </Button>
             </Box>
+            <Box
+              onClick={() => setExpanded(!expanded)}
+              sx={{
+                ...RowFlex,
+                width: "100%",
+                justifyContent: "space-between",
+                gap: 1,
+                // mt: 5,
+                cursor: "pointer",
+              }}
+            >
+              <Typography variant="h5">Password Change</Typography>
+              <IconButton onClick={() => setExpanded(!expanded)}>
+                {expanded ? <ExpandLess /> : <ExpandMore />}
+              </IconButton>
+            </Box>
+            {expanded && (
+              <Box
+                // component={"form"}
+                // onSubmit={(e) => handlePasswordChange(e)}
+                sx={{ ...ColFlex, gap: 1, width: "100%" }}
+              >
+                <Box sx={{ ...RowFlex, width: "100%", gap: 1, mt: 1 }}>
+                  <Box
+                    sx={{
+                      width: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 1,
+                      alignItems: "start",
+                    }}
+                  >
+                    <Typography variant="body1">Old Password</Typography>
+                    <OutlinedInput
+                      required
+                      fullWidth
+                      name="oldPassword"
+                      type={oldPasswordVisibility ? "text" : "password"}
+                      endAdornment={
+                        <Visibility
+                          onClick={() =>
+                            setOldPasswordVisibility(!oldPasswordVisibility)
+                          }
+                        />
+                      }
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.target.value)}
+                    />
+                  </Box>
+                  <Box
+                    sx={{
+                      width: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 1,
+                      alignItems: "start",
+                    }}
+                  >
+                    <Typography variant="body1">New Password</Typography>
+                    <OutlinedInput
+                      required
+                      endAdornment={
+                        <Visibility
+                          onClick={() =>
+                            setNewPasswordVisibility(!newPasswordVisibility)
+                          }
+                        />
+                      }
+                      fullWidth
+                      name="newPassword"
+                      type={newPasswordVisibility ? "text" : "password"}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                    />
+                  </Box>
+                </Box>
+                <Box
+                  sx={{
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1,
+                    alignItems: "start",
+                    mt: 1,
+                  }}
+                >
+                  <Button
+                    onClick={() => handlePasswordChange()}
+                    sx={{
+                      width: "49.3%",
+                      padding: "0.3rem",
+                      height: "3rem",
+                      alignSelf: "flex-end",
+                      // marginTop: "1.2rem",
+                    }}
+                    // type="submit"
+                    // disabled={loginStatus === "pending"}
+                    color="primary"
+                    variant="contained"
+                  >
+                    <Password sx={{ mr: "0.5rem" }} />
+                    Confirm Change Password
+                  </Button>
+                </Box>
+              </Box>
+            )}
           </Box>
         </Box>
       </Box>
