@@ -6,18 +6,25 @@ import useAxios from "../api/useAxios";
 import SnackbarContext from "../context/SnackbarContext";
 import UserDataContext from "../context/UserDataContext";
 import { SnackBarContextTypes } from "../types/SnackbarTypes";
-import { ColFlex, PageFlex } from "../style_extentions/Flex";
+import { ColFlex, PageFlex, RowFlex } from "../style_extentions/Flex";
 import EmployeeTypes from "../types/EmployeeTypes";
 import { FadeIn } from "../animations/transition";
 import UserAuthTypes from "../types/UserAuthTypes";
 import { UserContextTypes } from "../types/UserContextTypes";
+import GlobalModal from "../components/ui/Modal";
+import { AdminPanelSettings, HdrStrong, Person } from "@mui/icons-material";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 function Index() {
   const [screenClicked, setScreenClicked] = useState(false);
+  const { setItem } = useLocalStorage();
 
   const navigate = useNavigate();
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
-  const { setUserData }: UserContextTypes = useContext(UserDataContext);
+  const { userData, setUserData }: UserContextTypes =
+    useContext(UserDataContext);
+
+  const [openModal, setOpenModal] = useState<boolean>(false);
 
   const loginMF = (loginData: UserAuthTypes) => {
     return useAxios.post("auth/login", loginData);
@@ -27,14 +34,19 @@ function Index() {
     mutationFn: loginMF,
     onSuccess: (data) => {
       // console.log(data)
-      setOpenSnack({
-        open: true,
-        message: "Welcome back",
-        severity: "success",
-      });
       const user: EmployeeTypes = data.data.user;
-      setUserData?.(data.data.user);
-      navigate(`/${user?.role}`);
+      if (data.data.user.role == "admin") {
+        setOpenModal(true);
+        setUserData?.(data.data.user);
+      } else {
+        setUserData?.(data.data.user);
+        navigate(`/${user?.role}`);
+        setOpenSnack({
+          open: true,
+          message: "Welcome back, " + user?.fname,
+          severity: "success",
+        });
+      }
     },
     onError: (err) => {
       setOpenSnack({
@@ -63,6 +75,18 @@ function Index() {
     return () => clearTimeout(timeout);
   }, [setScreenClicked]);
 
+  function handleSelectiveLogin(role: "admin" | "employee" | "driver") {
+    userData!.role = role;
+    setUserData!(userData);
+    setItem("defaultAdminLogin", role);
+    navigate(`/${userData?.role}`);
+    setOpenSnack({
+      open: true,
+      message: "Welcome back, " + userData?.fname,
+      severity: "success",
+    });
+  }
+
   return (
     <Box
       sx={{
@@ -72,6 +96,60 @@ function Index() {
         color: "text.primary",
       }}
     >
+      <GlobalModal
+        headerText={"Select your login profile"}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+      >
+        <Box
+          sx={{
+            ...ColFlex,
+            width: "100%",
+            justifyContent: "space-evenly",
+            height: "100%",
+            padding: "1rem",
+          }}
+        >
+          <Box
+            sx={{ ...RowFlex, width: "100%", justifyContent: "space-between" }}
+          >
+            <Typography
+              sx={{ fontSize: "1.25rem", color: "text.primary", ...RowFlex }}
+            >
+              <HdrStrong sx={{ color: "secondary.main", mr: 2.5 }} />
+              Continue as Admin (default)
+            </Typography>
+            <Button
+              size="large"
+              color="secondary"
+              startIcon={<AdminPanelSettings />}
+              variant="contained"
+              onClick={() => handleSelectiveLogin("admin")}
+            >
+              Admin
+            </Button>
+          </Box>
+          <Box
+            sx={{ ...RowFlex, width: "100%", justifyContent: "space-between" }}
+          >
+            <Typography
+              sx={{ fontSize: "1.25rem", color: "text.primary", ...RowFlex }}
+            >
+              <HdrStrong sx={{ color: "primary.main", mr: 2.5 }} />
+              Continue as Employee
+            </Typography>
+            <Button
+              size="large"
+              color="primary"
+              startIcon={<Person />}
+              variant="contained"
+              onClick={() => handleSelectiveLogin("employee")}
+            >
+              Employee
+            </Button>
+          </Box>
+        </Box>
+      </GlobalModal>
       <Box
         onClick={() => setScreenClicked(!screenClicked)}
         sx={{

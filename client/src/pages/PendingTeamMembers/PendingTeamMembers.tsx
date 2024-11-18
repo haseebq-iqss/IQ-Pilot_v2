@@ -122,8 +122,8 @@ function PendingTeamMembers() {
   };
 
   const handleDeleteEmployee = () => {
-    // deleteEmpMf(selectedEmployee);
-    console.log("employee deleted");
+    deleteEmpMf(selectedEmployee);
+    // console.log("employee deleted");
     setOpenConfirmModal(false);
   };
 

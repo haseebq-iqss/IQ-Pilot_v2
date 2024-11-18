@@ -53,11 +53,18 @@ function App() {
         .post("auth/autologin", {})
         .then((res) => {
           let user: EmployeeTypes = res.data.data;
-          setUserData(user);
-          // if (res.data.currentUser?.role) {
-          // console.log(res.data)
-          isBaseRoute && navigate(`/${user.role}`);
-          // }
+          console.log(user)
+          const defaultAdminLogin = getItem("defaultAdminLogin") || "admin";
+          if (user.role == "admin") {
+            user.role = defaultAdminLogin as any 
+            setUserData(user);
+            console.log(defaultAdminLogin)
+            isBaseRoute && navigate(`/${defaultAdminLogin}`);
+          }
+          else {
+            setUserData(user);
+            isBaseRoute && navigate(`/${user.role}`);
+          }
         })
         .catch(() => navigate("/"));
     }

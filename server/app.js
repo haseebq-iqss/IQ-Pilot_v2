@@ -9,6 +9,8 @@ const usersRoutes = require("./routes/usersRoutes");
 const routeRouter = require("./routes/routeRoute");
 // const cronJob = require("./utils/cronJob");
 const attendanceRouter = require("./routes/attendanceRoutes");
+// const mongoose = require("mongoose");
+require("dotenv").config({ path: "./config.env" });
 const app = express();
 
 // Middlewares
@@ -33,6 +35,11 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // UPLOADS
 app.use(express.static(`${__dirname}/public/images/profileImages/`));
 
+// SERVER HEALTH PINGER
+app.get("/ping", (req, res) => {
+  res.status(200).json({ message: "Server is up and running" });
+})
+
 // ROUTES
 app.use("/api/v2/auth", authRoutes);
 app.use("/api/v2/users", usersRoutes);
@@ -49,4 +56,5 @@ app.all("*", (req, res, next) => {
 // Global Error Controller
 app.use(globalErrorController);
 // cronJob.run();
+
 module.exports = app;
