@@ -3,6 +3,8 @@ import {
   ArrowRight,
   Call,
   Close,
+  DarkMode,
+  LightMode,
   MeetingRoom,
   Person,
   Settings,
@@ -36,6 +38,7 @@ import GetArrivalTime from "../../utils/ReturnPickupTime";
 import GetOfficeCoordinates from "../../utils/OfficeCoordinates";
 import EmployeeTypes from "./../../types/EmployeeTypes";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
+import ThemeModeContext from "../../context/ThemeModeContext";
 
 const socket = io(baseURL, {
   reconnection: true,
@@ -56,6 +59,7 @@ function EmployeeDashboard() {
     useContext(UserDataContext);
 
   const { setSelectedEmps } = useContext(SelectedEmpsContext);
+  const { themeMode, setThemeMode }: any = useContext(ThemeModeContext);
 
   const navigate = useNavigate();
 
@@ -317,6 +321,22 @@ function EmployeeDashboard() {
               // variant={"outlined"}
             >
               Settings
+            </Button>
+            <Button
+              onClick={() =>
+                setThemeMode(themeMode === "light" ? "dark" : "light")
+              }
+              sx={{
+                justifyContent: "flex-start",
+                p: "15px",
+                pl: "20px",
+                color: "text.primary",
+              }}
+              fullWidth
+              startIcon={themeMode == "dark" ? <DarkMode /> : <LightMode />}
+              // variant={"outlined"}
+            >
+              {themeMode == "dark" ? "Dark Mode" : "Light Mode"}
             </Button>
           </Box>
           {/* LOGOUT AND SOS */}
