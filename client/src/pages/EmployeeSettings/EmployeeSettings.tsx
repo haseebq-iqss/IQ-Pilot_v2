@@ -59,32 +59,29 @@ function EmployeeSettings() {
         // height: "100vh",
         backgroundColor: "background.default",
         color: "text.primary",
-        px: 4,
-        py: 2,
+        p:2.5
       }}
     >
       <Box
+      onClick={() => navigate(-1)}
         sx={{
           ...RowFlex,
           width: "100%",
           justifyContent: "flex-start",
           alignItems: "center",
           gap: 1.5,
+          // p:0.5
         }}
       >
         <ArrowBackIos
-          onClick={() => navigate(-1)}
           sx={{
-            fontSize: 26,
+            fontSize: 20,
             color: "text.primary",
           }}
         />
         <Box sx={{ ...ColFlex, alignItems: "flex-start" }}>
-          <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+          <Typography variant="h5" sx={{ fontWeight: "bold" }}>
             Settings
-          </Typography>
-          <Typography color="GrayText">
-            Personalize your app and set defaults
           </Typography>
         </Box>
       </Box>
@@ -95,7 +92,8 @@ function EmployeeSettings() {
           width: "100%",
           height: "100%",
           alignItems: "flex-start",
-          gap: 4,
+          gap: 3,
+          mt:2.5
         }}
       >
         {/* Notifications Section */}
@@ -141,6 +139,7 @@ function EmployeeSettings() {
                 </Typography>
               </Box>
               <Switch
+              sx={{p:0.5, borderRadius:"100px !important"}}
                 checked={notificationsEnabled}
                 onChange={handleNotificationToggle}
                 color="primary"

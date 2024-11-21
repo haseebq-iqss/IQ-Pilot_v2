@@ -43,7 +43,11 @@ function DriverDashboard() {
     return useAxios.get(`routes/driverRoute/${userData?._id}`);
   };
 
-  const { data: DriverRoutes, status: routesStatus } = useQuery({
+  const {
+    data: DriverRoutes,
+    status: routesStatus,
+    failureReason,
+  } = useQuery({
     queryFn: getAllDriverRoutes,
     queryKey: ["All Driver's Routes"],
     select: (data: any) => {
@@ -127,6 +131,10 @@ function DriverDashboard() {
                 : 0}{" "}
               Routes
             </Typography>{" "}
+          </Typography>
+        ) : (failureReason as any)?.response?.status == 404 ? (
+          <Typography variant="h6" sx={{ fontWeight: 500, mt: 2.5 }}>
+            No Routes Assigned Yet
           </Typography>
         ) : (
           <CircularProgress sx={{ marginTop: 5 }} />

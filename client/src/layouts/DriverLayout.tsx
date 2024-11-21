@@ -1,5 +1,7 @@
 import {
   Close,
+  DarkMode,
+  LightMode,
   MeetingRoom,
   Person,
   Settings,
@@ -16,6 +18,7 @@ import SnackbarContext from "../context/SnackbarContext";
 import { SnackBarContextTypes } from "../types/SnackbarTypes";
 import { UserContextTypes } from "../types/UserContextTypes";
 import { PageFlex, ColFlex, RowFlex } from "./../style_extentions/Flex";
+import ThemeModeContext from "../context/ThemeModeContext";
 
 const socket = io(baseURL);
 
@@ -23,6 +26,7 @@ function DriverLayout() {
   const { userData, setUserData }: UserContextTypes =
     useContext(UserDataContext);
 
+  const { themeMode, setThemeMode }: any = useContext(ThemeModeContext);
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
@@ -65,6 +69,7 @@ function DriverLayout() {
       // console.log(sosData);
     });
   };
+  
 
   return (
     <Box
@@ -169,6 +174,20 @@ function DriverLayout() {
             >
               Settings
             </Button>
+            <Button
+              onClick={() => setThemeMode(themeMode === "light" ? "dark" : "light")}
+              sx={{
+                justifyContent: "flex-start",
+                p: "15px",
+                pl: "20px",
+                color: "text.primary",
+              }}
+              fullWidth
+              startIcon={themeMode == "dark" ? <DarkMode /> : <LightMode />}
+              // variant={"outlined"}
+            >
+              {themeMode == "dark" ? "Dark Mode" : "Light Mode"}
+            </Button>
           </Box>
           {/* LOGOUT AND SOS */}
           <Box
@@ -179,6 +198,7 @@ function DriverLayout() {
               sx={{
                 borderRadius: "10px",
                 p: "15px",
+                color: "white",
               }}
               color={"warning"}
               fullWidth

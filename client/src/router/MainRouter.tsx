@@ -260,15 +260,15 @@ function MainRouter() {
                   </SlideInOut>
                 }
               />
-              <Route
-                path="settings"
-                element={
-                  <SlideInOut>
-                    <DriverSettings />
-                  </SlideInOut>
-                }
-              />
             </Route>
+            <Route
+              path="/driver/settings"
+              element={
+                <SlideInOut>
+                  <DriverSettings />
+                </SlideInOut>
+              }
+            />
           </>
         )}
         {userData?.role === "employee" && (

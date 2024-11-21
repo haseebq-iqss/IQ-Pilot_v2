@@ -208,9 +208,6 @@ function InactiveCabs() {
                       anchorEl={anchorEl}
                       open={menuIndex === index}
                       onClose={handleMenuClose}
-                      MenuListProps={{
-                        "aria-labelledby": "basic-button",
-                      }}
                     >
                       <MenuItem
                         sx={{

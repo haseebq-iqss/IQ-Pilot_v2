@@ -48,11 +48,15 @@ exports.getCabByDriver = catchAsync(async (req, res, next) => {
 
 exports.getCabByID = catchAsync(async (req, res, next) => {
   const id = req.params.id;
+  try {
 
-  const cab = await Cab.findById(id).populate("cabDriver");
-  if (cab.length === 0)
-    return next(new AppError(`No cab for this driver...`, 404));
-  res.status(200).json({ status: "Success", data: cab });
+    const cab = await Cab.findById(id).populate("cabDriver");
+    if (cab.length === 0)
+      return next(new AppError(`No cab for this driver...`, 404));
+    res.status(200).json({ status: "Success", data: cab });
+  } catch (err) {
+    return next(new AppError(`No cab with this id...`, 404));
+  }
 });
 
 exports.getEmployeeCab = catchAsync(async (req, res, next) => {
