@@ -35,10 +35,12 @@ import EmployeeTypes from "../../types/EmployeeTypes";
 import { useEffect, useState } from "react";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
 import formatDateString from "../../utils/DateFormatter";
+import isXSmall from "./../../utils/isXSmall";
 
 const DriverProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isXS } = isXSmall();
 
   const [allDriverRoutes, setAllDriverRoutes] = useState<any>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -111,20 +113,20 @@ const DriverProfile = () => {
   return (
     <Box
       sx={{
-        maxWidth: "100%",
+        width: "100%",
         p: 2.5,
         backgroundColor: "background.default",
         color: "text.primary",
-        minHeight:"100vh"
+        height: isXS ? "auto" : "100vh",
       }}
     >
       <Box sx={{}}>
         <Box
           sx={{
             borderRadius: 2,
-            ...RowFlex,
+            ...(isXS ? ColFlex : RowFlex),
             gap: 5,
-            p: 2.5,
+            p: isXS ? 1 : 2.5,
             justifyContent: "start",
           }}
         >
@@ -132,18 +134,23 @@ const DriverProfile = () => {
             alt={driverDetails?.cabDriver?.fname}
             src={baseURL + driverDetails?.cabDriver?.profilePicture}
             style={{
-              width: "12rem",
-              height: "12rem",
-              borderRadius: 10,
+              width: isXS ? "8rem" : "12rem",
+              height: isXS ? "8rem" : "12rem",
+              borderRadius: isXS ? 100 : 10,
               objectFit: "cover",
               aspectRatio: "1.5",
             }}
           />
           <Box>
             <Typography
-              variant="h4"
+              variant={isXS ? "h6" : "h4"}
               component="h1"
-              sx={{ fontWeight: "bold", mb: 2, color: "text.primary" }}
+              sx={{
+                fontWeight: "bold",
+                mb: 2,
+                color: "text.primary",
+                textAlign: isXS ? "center" : "start",
+              }}
             >
               {driverDetails?.cabDriver?.fname +
                 " " +
@@ -152,58 +159,60 @@ const DriverProfile = () => {
             <Divider sx={{ mb: 2 }} />
             <Box
               sx={{
-                ...RowFlex,
-                gap: 5,
+                ...(isXS ? ColFlex : RowFlex),
+                gap: isXS ? 1 : 5,
                 justifyContent: "start",
               }}
             >
               <Typography
                 sx={{
                   mb: 1,
-                  fontSize: "1.2rem",
-                  ...RowFlex,
+                  fontSize: isXS ? "1rem" : "1.2rem",
+                  ...(isXS ? ColFlex : RowFlex),
                   gap: "6px",
                   color: "text.primary",
                 }}
               >
-                <MailOutlineIcon sx={{ fontSize: "1.5rem", fontWeight: 600 }} />
+                <MailOutlineIcon
+                  sx={{ fontSize: isXS ? "1.2rem" : "1.5rem", fontWeight: 600 }}
+                />
                 <span style={{ fontWeight: 600 }}>Email: </span>
                 {driverDetails?.cabDriver?.email}
               </Typography>
               <Typography
                 sx={{
                   mb: 1,
-                  fontSize: "1.2rem",
+                  fontSize: isXS ? "1rem" : "1.2rem",
                   color: "text.primary",
-                  ...RowFlex,
+                  ...(isXS ? ColFlex : RowFlex),
                   gap: "6px",
                 }}
               >
-                <Call sx={{ fontSize: "1.5rem" }} />
+                <Call sx={{ fontSize: isXS ? "1.2rem" : "1.5rem" }} />
                 <span style={{ fontWeight: 700 }}>Phone Number: </span>
                 +91-{driverDetails?.cabDriver?.phone}
               </Typography>
             </Box>
             <Box
               sx={{
-                ...RowFlex,
+                ...(isXS ? ColFlex : RowFlex),
                 justifyContent: "start",
-                gap: 4,
-                alignItems: "flex-start",
+                gap: isXS ? 1 : 4,
+                alignItems: isXS ? "center" : "flex-start",
               }}
             >
               <Typography
                 sx={{
                   mb: 1,
-                  fontSize: "1.2rem",
+                  fontSize: isXS ? "1rem" : "1.2rem",
                   color: "text.primary",
-                  ...RowFlex,
+                  ...(isXS ? ColFlex : RowFlex),
                   gap: "6px",
                 }}
               >
                 <TagIcon
                   sx={{
-                    fontSize: "1.4rem",
+                    fontSize: isXS ? "1.2rem" : "1.4rem",
                   }}
                 />
                 <span style={{ fontWeight: 700 }}>Cab Number: </span>
@@ -212,15 +221,15 @@ const DriverProfile = () => {
               <Typography
                 sx={{
                   mb: 1,
-                  fontSize: "1.2rem",
+                  fontSize: isXS ? "1rem" : "1.2rem",
                   color: "text.primary",
-                  ...RowFlex,
+                  ...(isXS ? ColFlex : RowFlex),
                   gap: "6px",
                 }}
               >
                 <DirectionsCarIcon
                   sx={{
-                    fontSize: "1.4rem",
+                    fontSize: isXS ? "1.2rem" : "1.4rem",
                   }}
                 />
                 <span style={{ fontWeight: 700 }}>Number Plate: </span>{" "}
@@ -229,16 +238,16 @@ const DriverProfile = () => {
               <Typography
                 sx={{
                   mb: 1,
-                  fontSize: "1.2rem",
+                  fontSize: isXS ? "1rem" : "1.2rem",
                   textTransform: "capitalize",
                   color: "text.primary",
-                  ...RowFlex,
+                  ...(isXS ? ColFlex : RowFlex),
                   gap: "6px",
                 }}
               >
                 <FormatColorFillIcon
                   sx={{
-                    fontSize: "1.4rem",
+                    fontSize: isXS ? "1.2rem" : "1.4rem",
                   }}
                 />
                 <span style={{ fontWeight: 700 }}>Cab Color: </span>
@@ -247,14 +256,18 @@ const DriverProfile = () => {
             </Box>
             <Box
               sx={{
-                ...RowFlex,
+                ...(isXS ? ColFlex : RowFlex),
                 justifyContent: "start",
-                gap: 4,
-                alignItems: "flex-start",
+                gap: isXS ? 1 : 4,
+                alignItems: isXS ? "center" : "flex-start",
               }}
             >
               <Typography
-                sx={{ mb: 1, fontSize: "1.2rem", color: "text.primary" }}
+                sx={{
+                  mb: 1,
+                  fontSize: isXS ? "1rem" : "1.2rem",
+                  color: "text.primary",
+                }}
               >
                 <span style={{ fontWeight: 700 }}>Cab Model: </span>{" "}
                 {driverDetails?.carModel}
@@ -262,15 +275,15 @@ const DriverProfile = () => {
               <Typography
                 sx={{
                   mb: 1,
-                  fontSize: "1.2rem",
+                  fontSize: isXS ? "1rem" : "1.2rem",
                   color: "text.primary",
-                  ...RowFlex,
+                  ...(isXS ? ColFlex : RowFlex),
                   gap: "6px",
                 }}
               >
                 <Groups2Icon
                   sx={{
-                    fontSize: "1.4rem",
+                    fontSize: isXS ? "1.2rem" : "1.4rem",
                   }}
                 />
                 <span style={{ fontWeight: 700 }}>Seating Capacity: </span>
@@ -282,8 +295,9 @@ const DriverProfile = () => {
         <Box
           sx={{
             mt: "1.5rem",
-            ...RowFlex,
+            ...(isXS ? ColFlex : RowFlex),
             justifyContent: "space-around",
+            alignItems: "center",
           }}
         >
           <Typography
@@ -293,31 +307,55 @@ const DriverProfile = () => {
               // borderRight: "1px solid lightGray"
             }}
           >
-            <span style={{ fontWeight: 500, fontSize: 20 }}>
+            <span
+              style={{
+                fontWeight: 500,
+                fontSize: 20,
+              }}
+            >
               Total Amount (INR)
             </span>
 
-            <span style={{ fontSize: 38, fontWeight: 600 }}>
+            <span
+              style={{
+                fontSize: isXS ? 30 : 38,
+                fontWeight: 600,
+              }}
+            >
               <span>&#8377;</span> {((totalDistance / 15) * 100).toFixed(0)}
             </span>
           </Typography>
           <Typography variant="body1" sx={{ ...ColFlex }}>
-            <span style={{ fontWeight: 500, fontSize: 20 }}>
+            <span
+              style={{
+                fontWeight: 500,
+                fontSize: 20,
+                marginTop: isXS ? 8 : 0,
+              }}
+            >
               Kilometers Traveled
             </span>
-            <span style={{ fontSize: 38, fontWeight: 600 }}>
+            <span style={{ fontSize: isXS ? 30 : 38, fontWeight: 600 }}>
               {totalDistance.toFixed(2)}km
             </span>
           </Typography>
           <Typography variant="body1" sx={{ ...ColFlex }}>
-            <span style={{ fontWeight: 500, fontSize: 20 }}>Total Routes</span>
-            <span style={{ fontSize: 38, fontWeight: 600 }}>
+            <span
+              style={{ fontWeight: 500, fontSize: 20, marginTop: isXS ? 8 : 0 }}
+            >
+              Total Routes
+            </span>
+            <span style={{ fontSize: isXS ? 30 : 38, fontWeight: 600 }}>
               {allDriverRoutes?.length || 0}
             </span>
           </Typography>
           <Typography variant="body1" sx={{ ...ColFlex }}>
-            <span style={{ fontWeight: 500, fontSize: 20 }}>Time Spent</span>
-            <span style={{ fontSize: 38, fontWeight: 600 }}>
+            <span
+              style={{ fontWeight: 500, fontSize: 20, marginTop: isXS ? 8 : 0 }}
+            >
+              Time Spent
+            </span>
+            <span style={{ fontSize: isXS ? 30 : 38, fontWeight: 600 }}>
               {totalTimeSpent.toFixed(0)}mins
             </span>
           </Typography>
@@ -325,10 +363,12 @@ const DriverProfile = () => {
         <Box
           sx={{
             px: 10,
-            backgroundColor:"background.default", color:"text.primary",
+            backgroundColor: "background.default",
+            color: "text.primary",
             py: 4,
             borderRadius: 2,
-            marginTop: 5,
+            marginTop: isXS ? 1 : 5,
+            textAlign: isXS ? "center" : "start",
           }}
         >
           <Typography

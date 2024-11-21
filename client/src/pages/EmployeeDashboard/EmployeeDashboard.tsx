@@ -305,6 +305,7 @@ function EmployeeDashboard() {
               Profile
             </Button>
             <Button
+              onClick={() => navigate("settings")}
               sx={{
                 justifyContent: "flex-start",
                 p: "15px",

@@ -23,7 +23,7 @@ router
 router.route("/availableCabs").get(restrictTo("admin"), availableCabs);
 router
   .route("/:id")
-  .get(restrictTo("admin"), getCabByID)
+  .get(restrictTo("admin", "driver"), getCabByID)
   .patch(restrictTo("admin"), updateCab)
   .delete(restrictTo("admin"), deleteCab);
 

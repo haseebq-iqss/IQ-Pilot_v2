@@ -1,4 +1,10 @@
-import { Close, MeetingRoom, Person, Settings, Warning } from "@mui/icons-material";
+import {
+  Close,
+  MeetingRoom,
+  Person,
+  Settings,
+  Warning,
+} from "@mui/icons-material";
 import { Avatar, Box, Button, Drawer, Modal, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -24,7 +30,6 @@ function DriverLayout() {
 
   const [openModal, setOpenModal] = useState<boolean>(false);
   // const [currPos, setCurrPos] = useState<Array<number>>([]);
-
   function Logout() {
     useAxios
       .post("auth/logout", {})
@@ -137,6 +142,7 @@ function DriverLayout() {
           {/* OPTIONS/ACTIONS */}
           <Box sx={{ ...ColFlex, width: "100%" }}>
             <Button
+              onClick={() => navigate(`/driver/profile/${userData?._id}`)}
               sx={{
                 justifyContent: "flex-start",
                 p: "15px",
@@ -150,6 +156,7 @@ function DriverLayout() {
               Profile
             </Button>
             <Button
+              onClick={() => navigate("settings")}
               sx={{
                 justifyContent: "flex-start",
                 p: "15px",

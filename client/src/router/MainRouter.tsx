@@ -31,6 +31,8 @@ import TeamMemberProfile from "../pages/TeamMemberProfile/TeamMemberProfile";
 import InactiveCabs from "../pages/InactiveCabs/InactiveCabs";
 import Settings from "../pages/Settings/Settings";
 import EditTMDetails from "../pages/EditTMDetails/EditTMDetails";
+import DriverSettings from "../pages/DriverSettings/DriverSettings";
+import EmployeeSettings from "../pages/EmployeeSettings/EmployeeSettings";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -250,6 +252,22 @@ function MainRouter() {
                   </SlideInOut>
                 }
               />
+              <Route
+                path="profile/:id"
+                element={
+                  <SlideInOut>
+                    <DriverProfile />
+                  </SlideInOut>
+                }
+              />
+              <Route
+                path="settings"
+                element={
+                  <SlideInOut>
+                    <DriverSettings />
+                  </SlideInOut>
+                }
+              />
             </Route>
           </>
         )}
@@ -269,6 +287,14 @@ function MainRouter() {
               element={
                 <SlideInOut>
                   <EditTMDetails />
+                </SlideInOut>
+              }
+            />
+            <Route
+              path="employee/settings"
+              element={
+                <SlideInOut>
+                  <EmployeeSettings />
                 </SlideInOut>
               }
             />
