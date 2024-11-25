@@ -1,6 +1,7 @@
 import {
   Close,
   DarkMode,
+  Home,
   LightMode,
   MeetingRoom,
   Person,
@@ -146,6 +147,20 @@ function DriverLayout() {
           </Box>
           {/* OPTIONS/ACTIONS */}
           <Box sx={{ ...ColFlex, width: "100%" }}>
+            <Button
+              onClick={() => navigate(`/driver`)}
+              sx={{
+                justifyContent: "flex-start",
+                p: "15px",
+                pl: "20px",
+                color: "text.primary",
+              }}
+              fullWidth
+              startIcon={<Home />}
+              // variant={"outlined"}
+            >
+              Home
+            </Button>
             <Button
               onClick={() => navigate(`/driver/profile/${userData?._id}`)}
               sx={{

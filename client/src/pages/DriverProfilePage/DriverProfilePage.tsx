@@ -49,7 +49,7 @@ const DriverProfile = () => {
   const { data: driverDetails } = useQuery({
     queryKey: [`driver-details ${id}`],
     queryFn: async () => {
-      const response = await useAxios.get(`/cabs/${id}`);
+      const response = await useAxios.get(`/cabs/getDriverCab/${id}`);
       return response?.data?.data;
     },
   });
