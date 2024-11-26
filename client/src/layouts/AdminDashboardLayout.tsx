@@ -3,8 +3,12 @@ import { Outlet } from "react-router-dom";
 import Appbar from "../components/ui/Appbar";
 import Sidebar from "../components/ui/Sidebar";
 import { ColFlex, RowFlex } from "../style_extentions/Flex";
+import isXSmall from "../utils/isXSmall";
 
 function AdminDashboardLayout() {
+
+  const {isSM,isMD} = isXSmall()
+
   return (
     <Box
       sx={{
@@ -12,7 +16,7 @@ function AdminDashboardLayout() {
         width: "100%",
         height: "100vh",
         alignItems: "flex-start",
-        justifyContent: "flex-start",
+        justifyContent: isSM || isMD ? "center"  : "flex-start",
         p: "15px",
         gap: "15px",
         backgroundColor: "#1E375B",
@@ -24,7 +28,7 @@ function AdminDashboardLayout() {
         sx={{
           ...ColFlex,
           justifyContent: "flex-start",
-          width: "80%",
+          width: isSM || isMD ? "90%" :"80%",
           height: "100%",
           gap: "15px",
           // p:"15px"

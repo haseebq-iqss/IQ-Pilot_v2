@@ -7,6 +7,7 @@ import {
   LocalParking,
   LocalTaxi,
   NoCrash,
+  PowerSettingsNew,
   QueryStats,
   Route,
   Settings,
@@ -27,6 +28,7 @@ import { ColFlex } from "../../style_extentions/Flex";
 import useAxios from "../../api/useAxios";
 import baseURL from "../../utils/baseURL";
 import { UserContextTypes } from "../../types/UserContextTypes";
+import isXSmall from "../../utils/isXSmall";
 
 interface SidebarButtonPropTypes extends ButtonProps {
   text: string;
@@ -40,6 +42,8 @@ function Sidebar() {
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { isSM, isMD } = isXSmall();
 
   function Logout() {
     useAxios
@@ -66,7 +70,7 @@ function Sidebar() {
           borderRadius: "100px",
           backgroundColor: isActive ? "text.primary" : "inherit",
           color: !isActive ? "text.primary" : "background.default",
-          width: "90%",
+          width: isSM || isMD ? "10%" : "90%",
           py: "10px",
           justifyContent: "flex-start",
           gap: "10px",
@@ -77,7 +81,7 @@ function Sidebar() {
         {...rest}
         size="small"
       >
-        {text}
+        {isSM || isMD ? "" : text}
       </Button>
     );
   };
@@ -86,7 +90,7 @@ function Sidebar() {
     <Box
       sx={{
         backgroundColor: "background.default",
-        width: "20%",
+        width: isSM || isMD ? "10%" : "20%",
         height: "100%",
         borderRadius: "15px",
       }}
@@ -96,7 +100,7 @@ function Sidebar() {
         <Box
           component={"img"}
           src="/images/logo_new.png"
-          sx={{ width: "75px", aspectRatio: 0.95 }}
+          sx={{ width: isSM || isMD ? "50px" : "75px", aspectRatio: 0.95 }}
         />
       </Box>
 
@@ -116,9 +120,13 @@ function Sidebar() {
           scrollbarWidth: "none",
         }}
       >
-        <Box sx={{ position: "absolute", left: "17.5%", bottom: "27.5%" }}>
-          <KeyboardDoubleArrowDown sx={{ color: "text.primary" }} />
-        </Box>
+        {isSM || isMD ? (
+          <></>
+        ) : (
+          <Box sx={{ position: "absolute", left: "17.5%", bottom: "27.5%" }}>
+            <KeyboardDoubleArrowDown sx={{ color: "text.primary" }} />
+          </Box>
+        )}
         <SideBarButton
           text="Dashboard"
           link="/admin"
@@ -191,11 +199,15 @@ function Sidebar() {
           ...ColFlex,
           width: "100%",
           height: "25%",
-          justifyContent: "flex-start",
+          justifyContent: isSM || isMD ? "flex-end" : "flex-start",
         }}
       >
         <Avatar
-          sx={{ width: "60px", height: "60px", mb: "10px" }}
+          sx={{
+            width: isSM || isMD ? "30px" : "60px",
+            height: isSM || isMD ? "30px" : "60px",
+            mb: "10px",
+          }}
           src={baseURL + userData?.profilePicture}
         />
         <Typography
@@ -203,34 +215,48 @@ function Sidebar() {
           fontWeight={600}
           sx={{ color: "text.primary" }}
         >
-          {userData?.fname + " " + userData?.lname![0] + "."}
+          {isSM || isMD
+            ? (userData as any)?.fname[0] + " . " + (userData as any)?.lname[0]
+            : userData?.fname + " " + userData?.lname![0] + "."}
         </Typography>
-        <Typography
-          sx={{
-            color: "text.secondary",
-            fontWeight: 600,
-            mb: "20px",
-            fontSize: "0.65rem",
-          }}
-          variant="subtitle2"
-        >
-          {userData?.email}
-        </Typography>
-        <Button
-          onClick={Logout}
-          sx={{
-            borderRadius: "100px",
-            width: "35%",
-            p: "1px",
-            fontSize: "0.7rem",
-          }}
-          size="small"
-          variant="contained"
-          color="error"
-          // startIcon={<Dashboard />}
-        >
-          LOG OUT
-        </Button>
+        {isSM || isMD ? (
+          <></>
+        ) : (
+          <Typography
+            sx={{
+              color: "text.secondary",
+              fontWeight: 600,
+              mb: "20px",
+              fontSize: "0.65rem",
+            }}
+            variant="subtitle2"
+          >
+            {userData?.email}
+          </Typography>
+        )}
+        {isSM || isMD ? (
+          <Button sx={{ width: "100%", aspectRatio: 1, borderRadius: "20px" }}>
+            <PowerSettingsNew
+              sx={{ fontSize: "1.5rem", color: "error.main" }}
+            />
+          </Button>
+        ) : (
+          <Button
+            onClick={Logout}
+            sx={{
+              borderRadius: "100px",
+              width: "35%",
+              p: "1px",
+              fontSize: "0.7rem",
+            }}
+            size="small"
+            variant="contained"
+            color="error"
+            // startIcon={<PowerSettingsNew />}
+          >
+            {isSM || isMD ? "" : "LOG OUT"}
+          </Button>
+        )}
       </Box>
     </Box>
   );

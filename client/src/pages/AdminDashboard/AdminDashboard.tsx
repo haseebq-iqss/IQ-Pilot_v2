@@ -14,6 +14,7 @@ import baseURL from "../../utils/baseURL";
 import { AnimatedCounter } from "react-animated-counter";
 import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
+import isXSmall from "../../utils/isXSmall";
 
 const socket = io(baseURL);
 
@@ -21,6 +22,8 @@ function AdminDashboard() {
   const [SOSEmergency, setSOSEmergency] = useState<any>(null);
   const audioRef = useRef<any>();
   const navigate = useNavigate();
+
+  const {isSM,isMD} = isXSmall()
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
@@ -239,37 +242,43 @@ function AdminDashboard() {
       <Box
         sx={{
           ...RowFlex,
+          flexDirection: isSM || isMD ? "column" : "row",
           width: "100%",
-          height: "20%",
+          height: isSM || isMD ? "auto" : "20%",
           backgroundColor: "background.default",
           borderRadius: "15px",
           justifyContent: "space-between",
+          py:isSM || isMD ? 2.5 : 0
         }}
       >
         {/* section-1 */}
         <Box
           sx={{
             ...RowFlex,
-            width: "40%",
-            height: "20%",
+            width: isSM || isMD ? "75%" :"40%",
+            height: isSM || isMD ? "auto" : "20%",
             backgroundColor: "background.default",
             borderRadius: "15px",
-            justifyContent: "flex-start",
-            marginLeft: "50px",
+            justifyContent: isSM || isMD ? "center" : "flex-start",
+            marginLeft: isSM || isMD ? 0 : "50px",
+            mb:isSM || isMD ? 4 : 0
           }}
         >
           <Box
             sx={{
               ...ColFlex,
               alignItems: "flex-start",
+              justifyContent: "center",
+              width: isSM || isMD ? "100%" : "auto",
               gap: "5px",
               color: "text.primary",
+              textAlign:isSM || isMD ? 'center' : 'start'
             }}
           >
-            <Typography variant="h4" fontWeight={600}>
+            <Typography sx={{width:isSM || isMD ? "100%" : "auto"}} variant="h4" fontWeight={600}>
               Today's Plan
             </Typography>
-            <Typography sx={{ color: "text.secondary" }} variant="body1">
+            <Typography sx={{ color: "text.secondary",width:"100%" }} variant="body1">
               It’s{" "}
               <span style={{ fontWeight: 600 }}>{TodayFullDateString()}</span>
             </Typography>
@@ -279,8 +288,8 @@ function AdminDashboard() {
         <Box
           sx={{
             ...RowFlex,
-            width: "60%",
-            height: "20%",
+            width: isSM || isMD ? "100%" : "60%",
+            height: isSM || isMD ? "auto" : "20%",
             backgroundColor: "background.default",
             borderRadius: "15px",
             justifyContent: "space-evenly",
