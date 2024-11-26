@@ -14,15 +14,14 @@ import RouteTypes from "../../types/RouteTypes";
 import baseURL from "../../utils/baseURL";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import { ColFlex, RowFlex } from "./../../style_extentions/Flex";
-import { useContext, useEffect, useState } from "react";
-import ThemeModeContext from "../../context/ThemeModeContext";
+import { useEffect, useState } from "react";
 
 function RouteCompleted() {
   const location = useLocation();
   const navigate = useNavigate();
   const route = location.state as RouteTypes;
 
-  const { themeMode }: any = useContext(ThemeModeContext);
+  // const { themeMode }: any = useContext(ThemeModeContext);
 
   // console.log(route);
 
