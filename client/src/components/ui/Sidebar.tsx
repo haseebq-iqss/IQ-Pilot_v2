@@ -235,7 +235,7 @@ function Sidebar() {
           </Typography>
         )}
         {isSM || isMD ? (
-          <Button sx={{ width: "100%", aspectRatio: 1, borderRadius: "20px" }}>
+          <Button onClick={Logout} sx={{ width: "100%", aspectRatio: 1, borderRadius: "20px" }}>
             <PowerSettingsNew
               sx={{ fontSize: "1.5rem", color: "error.main" }}
             />

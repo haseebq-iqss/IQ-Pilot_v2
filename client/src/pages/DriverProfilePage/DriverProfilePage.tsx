@@ -362,7 +362,7 @@ const DriverProfile = () => {
         </Box>
         <Box
           sx={{
-            px: 10,
+            px: 2.5,
             backgroundColor: "background.default",
             color: "text.primary",
             py: 4,
@@ -380,7 +380,7 @@ const DriverProfile = () => {
           </Typography>
           <Divider sx={{ mb: 2 }} />
           <TableContainer sx={{}}>
-            <Table sx={{ minWidth: 650 }} aria-label="routes table">
+            <Table sx={{ minWidth: 800 }} aria-label="routes table">
               <TableHead>
                 <TableRow>
                   <TableCell align="left">Shift time</TableCell>
@@ -470,6 +470,7 @@ const DriverProfile = () => {
                           }}
                         >
                           <MenuItem
+                          disabled
                             sx={{
                               ...RowFlex,
                               color: "info.main",
@@ -488,6 +489,7 @@ const DriverProfile = () => {
                           </MenuItem>
                           <Divider />
                           <MenuItem
+                          disabled
                             sx={{
                               ...RowFlex,
                               color: "warning.main",

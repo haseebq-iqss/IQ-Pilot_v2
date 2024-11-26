@@ -14,12 +14,15 @@ import RouteTypes from "../../types/RouteTypes";
 import baseURL from "../../utils/baseURL";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import { ColFlex, RowFlex } from "./../../style_extentions/Flex";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import ThemeModeContext from "../../context/ThemeModeContext";
 
 function RouteCompleted() {
   const location = useLocation();
   const navigate = useNavigate();
   const route = location.state as RouteTypes;
+
+  const { themeMode }: any = useContext(ThemeModeContext);
 
   // console.log(route);
 
@@ -119,7 +122,7 @@ function RouteCompleted() {
           padding: "15px",
           gap: "40px",
           color:"text.primary",
-          backgroundColor: "text.primary",
+          backgroundColor: "background.default",
           borderRadius: "15px",
         }}
       >
