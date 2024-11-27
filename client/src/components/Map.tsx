@@ -57,12 +57,7 @@ type MapTypes = {
   unrosteredTms?: [any];
   closeAction?: boolean;
   visibleEmployee?: EmployeeTypes;
-  visibleOffice?:
-    | "All"
-    | "Rangreth"
-    | "Zaira Tower"
-    | "Karanagar"
-    | "Hyderabad";
+  visibleOffice?: "All" | "Rangreth" | "Zaira Tower" | "Karanagar";
 };
 
 const MapComponent = ({
@@ -112,7 +107,6 @@ const MapComponent = ({
   const zaira = [34.173415, 74.808653];
   const karanagar = [34.081357, 74.799716];
   const zirakpur = [30.633014690428567, 76.8251843278478];
-  const hyderabad = [17.438853001366205, 78.34823513646229];
 
   const generateDistinctColors = (count: number) => {
     const colors = [];
@@ -1105,37 +1099,8 @@ const MapComponent = ({
                 <span>{"Zirakpur Office"}</span>
               </Tooltip>
             </Marker>
-            <Marker
-              icon={officeIcon}
-              key={"hyderabadOffice"}
-              position={hyderabad as LatLngExpression}
-            >
-              <Tooltip
-                className="office-tooltip"
-                direction="top"
-                offset={[0, -40]}
-                permanent
-              >
-                <span>{"Hyderabad Office"}</span>
-              </Tooltip>
-            </Marker>
           </>
         ) : visibleOffice === "Rangreth" ? (
-          <Marker
-            icon={officeIcon}
-            key={"rangrethOffice"}
-            position={rangreth as LatLngExpression}
-          >
-            <Tooltip
-              className="office-tooltip"
-              direction="top"
-              offset={[0, -40]}
-              permanent
-            >
-              <span>{"Rangreth Office"}</span>
-            </Tooltip>
-          </Marker>
-        ) : visibleOffice === "Hyderabad" ? (
           <Marker
             icon={officeIcon}
             key={"rangrethOffice"}

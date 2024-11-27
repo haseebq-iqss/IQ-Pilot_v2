@@ -58,7 +58,6 @@ function AddPassengers() {
   const zaira = [34.173415, 74.808653];
   const karanagar = [34.081357, 74.799716];
   const zirakpur = [30.633014690428567, 76.8251843278478];
-  const hyderabad = [17.438853001366205, 78.34823513646229];
 
   const routeState = location?.state;
   // console.log(routeState);
@@ -228,8 +227,6 @@ function AddPassengers() {
         ? karanagar
         : routeState?.office === "Zirakpur"
         ? zirakpur
-        : routeState?.office === "Hyderabad"
-        ? hyderabad
         : [],
     ]);
 

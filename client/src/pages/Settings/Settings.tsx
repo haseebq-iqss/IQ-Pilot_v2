@@ -680,7 +680,6 @@ function Settings() {
                   <MenuItem value={"Zaira Tower"}>Zaira Tower</MenuItem>
                   <MenuItem value={"Karanagar"}>Karanagar</MenuItem>
                   <MenuItem value={"Zirakpur"}>Zirakpur</MenuItem>
-                  <MenuItem value={"Hyderabad"}>Hyderabad</MenuItem>
                 </Select>
               </FormControl>
               <TextField

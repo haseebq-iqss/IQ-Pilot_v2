@@ -61,7 +61,7 @@ const userSchema = new mongoose.Schema(
     },
     workLocation: {
       type: String,
-      enum: ["Zaira Tower", "Rangreth", "Karanagar", "Zirakpur", "Hyderabad"],
+      enum: ["Zaira Tower", "Rangreth", "Karanagar", "Zirakpur"],
     },
   },
   { timestamps: true }
