@@ -164,7 +164,7 @@ function AllTeamMembers() {
               ),
             }}
           />
-          <Table sx={{ minWidth: 650 }} aria-label="TM's table">
+          <Table sx={{ minWidth: {xs: "200%",lg:650} }} aria-label="TM's table">
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>

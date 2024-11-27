@@ -292,10 +292,10 @@ function AdminStatistics() {
             aria-label="View"
           >
             <ToggleButton sx={{ px: 2.5 }} value="tiles">
-              <GridView sx={{mr:1.5}} /> Tiles
+              <GridView sx={{ mr: 1.5 }} /> Tiles
             </ToggleButton>
             <ToggleButton sx={{ px: 2.5 }} value="table">
-              <TableRows sx={{mr:1.5}} /> Table
+              <TableRows sx={{ mr: 1.5 }} /> Table
             </ToggleButton>
           </ToggleButtonGroup>
         </Box>
@@ -304,11 +304,15 @@ function AdminStatistics() {
           sx={{
             ...RowFlex,
             width: "100%",
-            maxHeight: "50vh",
+            maxHeight: { sm: "60vh", md: "60vh", lg: "50vh" },
             flexWrap: "wrap",
             gap: 2,
             overflowY: "scroll",
-            justifyContent: "flex-start",
+            justifyContent: {
+              sm: "space-evenly",
+              md: "space-evenly",
+              lg: "flex-start",
+            },
           }}
         >
           {dataView === "tiles" ? (

@@ -5,6 +5,7 @@ import { ColFlex, RowFlex } from "../../style_extentions/Flex.ts";
 import { Route } from "@mui/icons-material";
 import baseURL from "../../utils/baseURL.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
+import isXSmall from "../../utils/isXSmall.ts";
 
 const AssignedPassengers = ({
   // id,
@@ -13,6 +14,9 @@ const AssignedPassengers = ({
   // id: string;
   passenger: EmployeeTypes;
 }) => {
+
+  const {isSM, isMD} = isXSmall()
+
   const {
     setNodeRef,
     attributes,
@@ -65,9 +69,8 @@ const AssignedPassengers = ({
         sx={{
           ...ColFlex,
           justifyContent: "flex-start",
-          width: "32%",
-          height: "5rem",
-          minHeight: "4rem",
+          width: isSM || isMD ? "47.5%" :"32%",
+          height: isSM || isMD ? "7rem" : "5rem",
           backgroundColor: "background.default",
           padding: "4px",
           borderRadius: "1rem",

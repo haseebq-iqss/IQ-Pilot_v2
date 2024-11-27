@@ -52,16 +52,17 @@ import {
 } from "@mui/icons-material";
 import AssignedPassengers from "../../components/ui/AssignedPassengers.tsx";
 import DefaultCabViewMode from "../../context/DefaultCabViewModeContext.tsx";
+import isXSmall from "../../utils/isXSmall.ts";
 
 function AssignedRoutes() {
   const location = useLocation();
   const routeState = location.state;
+  const { isSM, isMD } = isXSmall();
 
   const { defaultCabView }: any = useContext(DefaultCabViewMode);
 
-  const [expandedLayout, setExpandedLayout] = useState<
-    "expanded" | "restricted"
-  >(defaultCabView) || "expanded";
+  const [expandedLayout, setExpandedLayout] =
+    useState<"expanded" | "restricted">(defaultCabView) || "expanded";
 
   const [next, setNext] = useState(2);
   const [activeColumn, setActiveColumn] = useState<ShiftTypes | null>(null);
@@ -479,12 +480,13 @@ function AssignedRoutes() {
         <Box
           sx={{
             ...RowFlex,
+            flexDirection: isSM || isMD ? "column" : "row",
             width: "100%",
             height: "10%",
             px: "25px",
             pt: "15px",
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: isSM || isMD ? "flex-start" : "center",
             color: "text.primary",
           }}
         >
@@ -496,23 +498,27 @@ function AssignedRoutes() {
               gap: 0,
             }}
           >
-            <Typography fontSize={30} fontWeight={500}>
+            <Typography fontSize={isSM || isMD ? 25 : 30} fontWeight={500}>
               {`Active Cabs (${routeState?.length ? routeState?.length : 0})`}
             </Typography>
-            <Typography fontSize={15} fontWeight={500}>
-              {`You have created ${
-                routeState?.length ? routeState?.length : 0
-              } Routes.`}
-            </Typography>
+            {isSM || isMD ? (
+              <></>
+            ) : (
+              <Typography fontSize={isSM || isMD ? 10 : 15} fontWeight={500}>
+                {`You have created ${
+                  routeState?.length ? routeState?.length : 0
+                } Routes.`}
+              </Typography>
+            )}
           </Box>
 
           <Box
             sx={{
               ...RowFlex,
-              width: "70%",
+              width: isSM || isMD ? "100%" : "70%",
               // backgroundColor:"red",
               alignItems: "center",
-              justifyContent: "flex-end",
+              justifyContent: isSM || isMD ? "flex-start" : "flex-end",
               gap: 3,
             }}
           >

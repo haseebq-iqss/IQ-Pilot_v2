@@ -5,6 +5,7 @@ import { ColFlex, RowFlex } from "../../style_extentions/Flex.ts";
 import { Route } from "@mui/icons-material";
 import baseURL from "../../utils/baseURL.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
+import isXSmall from "../../utils/isXSmall.ts";
 
 const PassengerTab = ({
   // id,
@@ -13,6 +14,9 @@ const PassengerTab = ({
   // id: string;
   passenger: EmployeeTypes;
 }) => {
+
+  const {isSM, isMD} = isXSmall()
+
   const {
     setNodeRef,
     attributes,
@@ -64,8 +68,8 @@ const PassengerTab = ({
         sx={{
           ...ColFlex,
           justifyContent: "flex-start",
-          width: "32%",
-          height: "5rem",
+          width: isSM || isMD ? "47.5%" :"32%",
+          height: isSM || isMD ? "7rem" : "5rem",
           minHeight: "4rem",
           backgroundColor: "background.default",
           padding: "4px",

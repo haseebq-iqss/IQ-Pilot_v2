@@ -103,7 +103,7 @@ const RosterCard = ({
           sensors={sensors}
         > */}
         <Box
-          sx={{ ...RowFlex, width: "100%", justifyContent: "space-between" }}
+          sx={{ ...RowFlex, flexDirection: {xs: "column", lg:"row"}, width: "100%", justifyContent: "space-between" }}
         >
           <Box
             sx={{

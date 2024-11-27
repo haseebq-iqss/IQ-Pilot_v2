@@ -20,6 +20,7 @@ import {
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import { useDroppable } from "@dnd-kit/core";
 import {
+  AccessTime,
   DirectionsCar,
   FormatColorFill,
   GroupRemove,
@@ -43,6 +44,7 @@ import { useQuery } from "@tanstack/react-query";
 import EmployeeTab from "./EmployeeTab.tsx";
 import SnackbarContext from "../../context/SnackbarContext.ts";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes.ts";
+import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat.ts";
 type RosterCardTypes = {
   passengerDetails: EmployeeTypes[];
   column: ShiftTypes;
@@ -56,7 +58,7 @@ const RosterCard = ({
   column,
   passengersSetter,
   reservedColumnSetter,
-  expandedLayout
+  expandedLayout,
 }: RosterCardTypes) => {
   const [activeRouteCoords, setActiveRouteCoords] = useState<Array<any>>([]);
   const [mapVisible, setMapVisible] = useState<boolean>(false);
@@ -91,7 +93,7 @@ const RosterCard = ({
         open: true,
         message: "Please enable Restricted Layout to hide the map.",
         severity: "info",
-      })
+      });
     }
     setMapVisible(!mapVisible);
     handleMenuClose();
@@ -278,7 +280,7 @@ const RosterCard = ({
       sx={{
         ...ColFlex,
         width: "100%",
-        height: mapVisible || (expandedLayout == "expanded") ? "100%" : "50%",
+        height: mapVisible || expandedLayout == "expanded" ? "100%" : "50%",
         flexDirection: "column",
         p: "20px",
         borderRadius: "15px",
@@ -502,6 +504,25 @@ const RosterCard = ({
               }}
               fontWeight={500}
             >
+              <AccessTime
+                sx={{
+                  width: "15px",
+                  height: "15px",
+                  mr: "2.5px",
+                  color: "warning.light",
+                }}
+              />
+              {ConvertShiftTimeTo12HrFormat(column?.currentShift as string)}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: "0.75rem",
+                display: "flex",
+                alignItems: "center",
+                color: "text.primary",
+              }}
+              fontWeight={500}
+            >
               <LocationOn
                 sx={{
                   width: "15px",
@@ -587,12 +608,14 @@ const RosterCard = ({
           >
             <SlideInOut duration={0.3} delay={0}>
               <MenuItem
-              // disabled={expandedLayout == "expanded"}
+                // disabled={expandedLayout == "expanded"}
                 sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
                 onClick={handleViewMap}
               >
                 <Map sx={{ color: "primary.main", mr: 1 }} />
-                {mapVisible || (expandedLayout == "expanded") ? "Hide Map" : "View Map"}
+                {mapVisible || expandedLayout == "expanded"
+                  ? "Hide Map"
+                  : "View Map"}
               </MenuItem>
             </SlideInOut>
             <SlideInOut duration={0.3} delay={0.15}>
@@ -679,18 +702,20 @@ const RosterCard = ({
             justifyContent: "flex-start",
           }}
         >
-          {(expandedLayout !== "expanded") && <Typography
-            variant="body2"
-            fontWeight={600}
-            sx={{
-              color: "primary.main",
-              alignSelf: "flex-end",
-              cursor: "pointer",
-            }}
-            onClick={handleViewMap}
-          >
-            Collapse Map
-          </Typography>}
+          {expandedLayout !== "expanded" && (
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              sx={{
+                color: "primary.main",
+                alignSelf: "flex-end",
+                cursor: "pointer",
+              }}
+              onClick={handleViewMap}
+            >
+              Collapse Map
+            </Typography>
+          )}
           <MapComponent
             // height="100%"
             mode="route-view"

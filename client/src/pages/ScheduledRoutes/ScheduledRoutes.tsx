@@ -162,10 +162,12 @@ function ScheduledRoutes() {
           <Box
             sx={{
               ...RowFlex,
+              flexDirection: {xs:"column",sm:"column",md:"column",lg:"row"},
               width: "100%",
-              alignItems: "center",
+              alignItems: {xs:"flex-start",sm:"flex-start",md:"flex-start",lg:"center"},
               justifyContent: "space-between",
               mb: 2,
+              gap:{xs:2.5,sm:2.5,md:2.5,lg: 0}
             }}
           >
             <Box sx={{ ...RowFlex, gap: 2 }}>

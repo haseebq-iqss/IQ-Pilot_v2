@@ -32,11 +32,13 @@ import Loading from "../../components/ui/Loading.tsx";
 import SnackbarContext from "../../context/SnackbarContext.ts";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes.ts";
 import { ArrowBackIos } from "@mui/icons-material";
+import isXSmall from "../../utils/isXSmall.ts";
 
 function CreateShift() {
   const location = useLocation();
   const routeState = location?.state;
   console.log(routeState);
+  const {isSM, isMD} = isXSmall()
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
@@ -439,14 +441,14 @@ function CreateShift() {
             alignItems: "center",
           }}
         >
-          <Box sx={{ ...ColFlex, alignItems: "flex-start", width: "60%" }}>
-            <Typography variant="h4" fontWeight={600}>
+          <Box sx={{ ...ColFlex, alignItems: "flex-start", width: isSM || isMD ? "50%" :"60%" }}>
+            <Typography variant={isSM || isMD ? "h5" :"h4"}  fontWeight={600}>
               {routeState?.data?.typeOfRoute == "pickup"
                 ? "Pickup for "
                 : "Drop for "}
               {routeState?.data?.workLocation}
             </Typography>
-            <Typography variant="body1" fontWeight={500}>
+            <Typography variant={isSM || isMD ? "body2" : "body1"} fontWeight={500}>
               {routeState?.data?.activationMode === "immediate"
                 ? "Route Activation - Today"
                 : "Route Activation - Tomorrow" +
@@ -458,7 +460,7 @@ function CreateShift() {
           <Box
             sx={{
               ...RowFlex,
-              width: "40%",
+              width: isSM || isMD ? "100%" :"40%",
               alignItems: "center",
               justifyContent: "flex-end",
               gap: 0,
@@ -532,7 +534,7 @@ function CreateShift() {
             ...RowFlex,
             alignItems: "flex-start",
             // justifyItems: "start",
-            p: 2,
+            p: isSM || isMD ? 1 : 2,
             height: "100%",
             width: "100vw",
             overflowY: "hidden",
