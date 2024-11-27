@@ -46,18 +46,31 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
   const navigate = useNavigate();
 
   const pickupTimings = [
+    { t4Time: "09:00", t2Time: "09:00 AM" },
     { t4Time: "10:00", t2Time: "10:00 AM" },
+    { t4Time: "11:00", t2Time: "11:00 AM" },
+    { t4Time: "12:00", t2Time: "12:00 PM" },
+    { t4Time: "13:00", t2Time: "01:00 PM" },
     { t4Time: "14:00", t2Time: "02:00 PM" },
+    { t4Time: "15:00", t2Time: "03:00 PM" },
+    { t4Time: "15:00", t2Time: "03:00 PM" },
     { t4Time: "16:00", t2Time: "04:00 PM" },
-  ];
-
-  const dropTimings = [
     { t4Time: "17:00", t2Time: "05:00 PM" },
+  ];
+  
+  const dropTimings = [
+    { t4Time: "13:00", t2Time: "01:00 PM" },
+    { t4Time: "17:00", t2Time: "05:00 PM" },
+    { t4Time: "17:30", t2Time: "05:30 PM" },
     { t4Time: "18:00", t2Time: "06:00 PM" },
+    { t4Time: "18:30", t2Time: "06:30 PM" },
+    { t4Time: "20:00", t2Time: "08:00 PM" },
     { t4Time: "20:30", t2Time: "08:30 PM" },
+    { t4Time: "22:00", t2Time: "10:00 PM" },
+    { t4Time: "22:30", t2Time: "10:30 PM" },
     { t4Time: "23:00", t2Time: "11:00 PM" },
     { t4Time: "01:00", t2Time: "01:00 AM" },
-  ];
+  ];  
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 

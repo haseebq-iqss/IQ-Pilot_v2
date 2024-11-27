@@ -19,7 +19,7 @@ export default function GlobalModal({
   subHeading,
   children,
 }: ModalPropTypes) {
-  const { isXS } = isXSmall();
+  const { isXS, isSM, isMD } = isXSmall();
   return (
     <>
       <Modal
@@ -31,7 +31,7 @@ export default function GlobalModal({
           sx={{
             ...ColFlex,
             p: { xs: 1, lg: 2.5 },
-            minHeight: "50vh",
+            minHeight: isSM || isMD ? "35vh" : "50vh",
             width: { xs: "100%", lg: "60%" },
             borderRadius: "5px",
             gap: 1,
