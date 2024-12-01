@@ -643,7 +643,7 @@ function Settings() {
                 }}
               >
                 <Photo sx={{ mr: "0.5rem" }} />
-                Change Profile Photp
+                Change Profile Photo
                 <input
                   type="file"
                   accept="image/png, image/gif, image/jpeg"
