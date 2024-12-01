@@ -163,6 +163,14 @@ export const AddTeamMembers = () => {
   function HandleAddTM(e: FormEvent) {
     e.preventDefault();
     const currentTarget = e.currentTarget as HTMLFormElement;
+    
+    // if (!currentTarget.profilePicture.files) {
+    //   return setOpenSnack({
+    //     open: true,
+    //     message: "Please upload a profile picture",
+    //     severity: "error",
+    //   })
+    // }
 
     const teamMemberData: EmployeeTypes = {
       fname: currentTarget.firstName.value,
@@ -170,7 +178,7 @@ export const AddTeamMembers = () => {
       email: currentTarget.email.value,
       phone: currentTarget.phone.value,
       address: currentTarget.address.value,
-      profilePicture: currentTarget.profilePicture.files[0],
+      // profilePicture: currentTarget.profilePicture.files[0],
       pickUp: {
         coordinates: currentTarget.coordinates.value.split(",").map(Number) as [
           number,
@@ -455,6 +463,8 @@ export const AddTeamMembers = () => {
                 >
                   <MenuItem value={"Rangreth"}>Rangreth</MenuItem>
                   <MenuItem value={"Zaira Tower"}>Zaira Tower</MenuItem>
+                  <MenuItem value={"Karanagar"}>Karanagar</MenuItem>
+                  <MenuItem value={"Zirakpur"}>Zirakpur</MenuItem>
                 </Select>
               </FormControl>
             )}

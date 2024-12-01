@@ -31,7 +31,7 @@ const cabSchema = new mongoose.Schema({
     required: [true, "Please provide the car color"],
   },
   mileage: {
-    type: String,
+    type: Number,
     required: [true, "Please provide the mileage of the cab"],
     unique: false,
   },
