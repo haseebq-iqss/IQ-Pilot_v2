@@ -32,9 +32,12 @@ import baseURL from "../../utils/baseURL";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import { useNavigate } from "react-router-dom";
 import BigNumberFormatter from "../../utils/BigNumberFormatter";
+import isXSmall from "../../utils/isXSmall";
 
 function AdminStatistics() {
   const navigate = useNavigate();
+
+  const {isSM, isMD} = isXSmall()
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
@@ -113,7 +116,7 @@ function AdminStatistics() {
         <Box
           sx={{
             ...RowFlex,
-            width: "40%",
+            width: isSM || isMD ? "50%" : "40%",
             height: "20%",
             backgroundColor: "background.default",
             borderRadius: "15px",
@@ -129,7 +132,7 @@ function AdminStatistics() {
               color: "text.primary",
             }}
           >
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant={isSM || isMD ? "h4" :"h4"} fontWeight={700}>
               {GetCurrentMonth()}'s Statistics
             </Typography>
             <Typography color={"GrayText"} variant="body1">

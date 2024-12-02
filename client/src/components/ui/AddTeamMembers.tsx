@@ -147,7 +147,12 @@ export const AddTeamMembers = () => {
         }
       }
     }
-    // console.log(formData);
+    const obj = {}
+    for (const [key, value] of formData.entries()) {
+      obj[key] = value
+    }
+    // console.log(obj);
+    // console.log(formData.keys());
     AddCabDriver(formData as CabDriverType);
   }
 
