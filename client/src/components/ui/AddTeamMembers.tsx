@@ -53,7 +53,6 @@ export const AddTeamMembers = () => {
     // console.log(cabDriverData);
     return useAxios.post("auth/signup", cabDriverData);
   };
-
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
   const { mutate: AddTeamMember } = useMutation({
     mutationFn: addTMMF,
@@ -163,7 +162,7 @@ export const AddTeamMembers = () => {
   function HandleAddTM(e: FormEvent) {
     e.preventDefault();
     const currentTarget = e.currentTarget as HTMLFormElement;
-    
+
     // if (!currentTarget.profilePicture.files) {
     //   return setOpenSnack({
     //     open: true,
@@ -690,37 +689,39 @@ export const AddTeamMembers = () => {
             </Button>
           </Box>
           {/* BULK UPLOAD */}
-          <Button
-            variant="contained"
-            component="label"
-            sx={{
-              width: "50%",
-              height: "3.4rem",
-              bgcolor: "warning.dark",
-              color: "white",
-              p: "0",
-              mt: 5,
-            }}
-            startIcon={
-              bulkUploadStatus === "pending" ? (
-                <CircularProgress size={20} sx={{ mr: 1, color: "white" }} />
-              ) : (
-                <CloudUpload sx={{ mr: 1 }} />
-              )
-            }
-            disabled={bulkUploadStatus === "pending"}
-          >
-            {bulkUploadStatus === "pending"
-              ? "Uploading"
-              : "Upload an Excel file"}
-            <input
-              onChange={BulkUploader}
-              type="file"
-              // accept="image/png, image/gif, image/jpeg"
-              hidden
-              name="profilePicture"
-            />
-          </Button>
+          {!location.pathname.includes("/admin/addCabDrivers") && (
+            <Button
+              variant="contained"
+              component="label"
+              sx={{
+                width: "50%",
+                height: "3.4rem",
+                bgcolor: "warning.dark",
+                color: "white",
+                p: "0",
+                mt: 5,
+              }}
+              startIcon={
+                bulkUploadStatus === "pending" ? (
+                  <CircularProgress size={20} sx={{ mr: 1, color: "white" }} />
+                ) : (
+                  <CloudUpload sx={{ mr: 1 }} />
+                )
+              }
+              disabled={bulkUploadStatus === "pending"}
+            >
+              {bulkUploadStatus === "pending"
+                ? "Uploading"
+                : "Upload an Excel file"}
+              <input
+                onChange={BulkUploader}
+                type="file"
+                // accept="image/png, image/gif, image/jpeg"
+                hidden
+                name="profilePicture"
+              />
+            </Button>
+          )}
         </Box>
       </Box>
     </PageContainer>
