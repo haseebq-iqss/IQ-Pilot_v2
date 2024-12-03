@@ -29,6 +29,7 @@ import useAxios from "../../api/useAxios";
 import baseURL from "../../utils/baseURL";
 import { UserContextTypes } from "../../types/UserContextTypes";
 import isXSmall from "../../utils/isXSmall";
+import axios from "axios";
 
 interface SidebarButtonPropTypes extends ButtonProps {
   text: string;
@@ -46,8 +47,10 @@ function Sidebar() {
   const { isSM, isMD } = isXSmall();
 
   function Logout() {
-    useAxios
-      .post("auth/logout", {})
+    axios
+      .post(baseURL + "api/v2/auth/logout", {}, {
+        withCredentials: true
+      })
       .then(() => {
         navigate("/");
         // document.cookie = "jwt" + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
