@@ -95,8 +95,8 @@ function AllCabDrivers() {
   };
 
   const handleDeleteEmployee = () => {
-    // deleteEmpMf(selectedEmployee);
-    console.log("employee deleted");
+    deleteEmpMf(selectedEmployee);
+    // console.log("employee deleted");
     setOpenConfirmModal(false);
   };
 
@@ -254,7 +254,7 @@ function AllCabDrivers() {
                         }
                       >
                         <DeleteForever sx={{}} />
-                        Remove Employee
+                        Remove Driver
                       </MenuItem>
                     </Menu>
                   </TableCell>

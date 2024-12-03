@@ -32,15 +32,18 @@ import TagIcon from "@mui/icons-material/Tag";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import EmployeeTypes from "../../types/EmployeeTypes";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ConvertShiftTimeTo12HrFormat from "../../utils/12HourFormat";
 import formatDateString from "../../utils/DateFormatter";
 import isXSmall from "./../../utils/isXSmall";
+import UserDataContext from "../../context/UserDataContext";
+import { UserContextTypes } from "../../types/UserContextTypes";
 
 const DriverProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isXS } = isXSmall();
+  const { userData }: UserContextTypes = useContext(UserDataContext);
 
   const [allDriverRoutes, setAllDriverRoutes] = useState<any>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -49,7 +52,12 @@ const DriverProfile = () => {
   const { data: driverDetails } = useQuery({
     queryKey: [`driver-details ${id}`],
     queryFn: async () => {
-      const response = await useAxios.get(`/cabs/getDriverCab/${id}`);
+      // const response = await useAxios.get(`/cabs/getDriverCab/${id}`);
+      // const response = await useAxios.get(`/cabs/${id}`);
+      const response =
+        userData?.role == "admin"
+          ? await useAxios.get(`/cabs/${id}`)
+          : await useAxios.get(`/cabs/getDriverCab/${id}`);
       return response?.data?.data;
     },
   });
@@ -470,7 +478,7 @@ const DriverProfile = () => {
                           }}
                         >
                           <MenuItem
-                          disabled
+                            disabled
                             sx={{
                               ...RowFlex,
                               color: "info.main",
@@ -489,7 +497,7 @@ const DriverProfile = () => {
                           </MenuItem>
                           <Divider />
                           <MenuItem
-                          disabled
+                            disabled
                             sx={{
                               ...RowFlex,
                               color: "warning.main",
