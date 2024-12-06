@@ -23,9 +23,6 @@ import {
   Hail,
   Home,
   LightMode,
-  ScheduleSend,
-  Send,
-  Timelapse,
 } from "@mui/icons-material";
 
 type CreateShiftModalProps = {
@@ -39,8 +36,8 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
   const [typeOfRoute, settypeOfRoute] = useState<"pickup" | "drop">("pickup");
   const [workLocation, setworkLocation] = useState("");
   const [currentShift, setcurrentShift] = useState("");
-  const [activationMode, setActivationMode] = useState<any>();
-  const [activeDays, setActiveDays] = useState<number>(1);
+  // const [activationMode, setActivationMode] = useState<any>();
+  // const [activeDays, setActiveDays] = useState<number>(1);
   const [artificialDelay, setArtificialDelay] = useState<boolean>(false);
 
   const navigate = useNavigate();
@@ -265,7 +262,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               gap: "30px",
             }}
           >
-            <FormControl sx={{ width: "50%" }}>
+            <FormControl sx={{ width: "100%" }}>
               <InputLabel id="shift-currentShift-label">
                 Current Shift
               </InputLabel>
