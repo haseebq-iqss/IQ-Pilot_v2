@@ -640,7 +640,17 @@ const MapComponent = ({
               borderRadius: "10px",
             }}
           >
-            <div style={{ display: "flex", gap: "10px" }}>
+            <div
+              style={{ display: "flex", gap: "10px", cursor:"pointer" }}
+              onClick={() =>
+                navigate(
+                  `/admin/teamMemberProfile/${
+                    empCard?.fname + "-" + empCard?.lname
+                  }`,
+                  { state: empCard }
+                )
+              }
+            >
               <Avatar
                 // src={
                 //   baseURL + empCard?.profilePicture ||
@@ -657,10 +667,15 @@ const MapComponent = ({
                 {(empCard?.fname as any)[0]}
               </Avatar>
               <div>
-                <h2>{empCard?.fname + " " + empCard?.lname}</h2>
-                <h3>Department : {empCard?.department}</h3>
-                <h4>{empCard?.pickUp?.address}</h4>
-                <h4>Phone: {empCard?.phone}</h4>
+                <h2 style={{ fontWeight: 500 }}>
+                  {empCard?.fname + " " + empCard?.lname}
+                </h2>
+                <h3 style={{ fontWeight: 600 }}>{empCard?.department}</h3>
+                <h4 style={{ fontWeight: 500 }}>{empCard?.pickUp?.address}</h4>
+                <div style={{display:"flex", alignItems:"center", justifyContent:"space-between"}}>
+                  <h4 style={{ fontWeight: 500 }}>{empCard?.phone}</h4>
+                  <h4 style={{ fontWeight: 500, textDecoration:"underline" }}>view profile</h4>
+                </div>
               </div>
             </div>
             <Close

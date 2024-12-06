@@ -365,7 +365,7 @@ function AdminDashboard() {
             sx={{ ...ColFlex, gap: "5px", cursor: "pointer" }}
             onClick={() => {
               handleActiveCabs(
-                rosteredPassengers?.length,
+                rosteredPassengers?.rostered_passengers.length,
                 "rosteredTeamMembers",
                 rosteredPassengers
               );
