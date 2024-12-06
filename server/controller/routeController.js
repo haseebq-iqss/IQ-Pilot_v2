@@ -371,6 +371,7 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
         workLocation,
         currentShift,
         typeOfRoute,
+        scheduledForDate: workLocation === "pickup" ? date_active : present_day,
       });
     }
   );
@@ -402,7 +403,7 @@ exports.createRoute = catchAsync(async (req, res, next) => {
     typeOfRoute,
     workLocation,
     currentShift,
-    activeOnDate: date_active,
+    activeOnDate: typeOfRoute === "pickup" ? date_active : baseDate,
   });
 
   if (existing_routes.length !== 0) {
