@@ -8,7 +8,14 @@ const routeSchema = new mongoose.Schema({
   },
   workLocation: {
     type: String,
-    enum: ["Zaira Tower", "Rangreth", "Karanagar", "Zirakpur"],
+    enum: [
+      "Zaira Tower",
+      "Rangreth",
+      "Karanagar",
+      "Zirakpur",
+      "Chennai",
+      "Hyderabad",
+    ],
   },
   currentShift: String,
   passengers: [

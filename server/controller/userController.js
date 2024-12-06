@@ -1,6 +1,5 @@
 const fs = require("node:fs");
 const Cab = require("../models/cab");
-const Route = require("../models/route");
 const User = require("../models/user");
 const AppError = require("../utils/appError");
 const { catchAsync } = require("../utils/catchAsync");
@@ -58,7 +57,6 @@ const getTM = catchAsync(async (req, res, next) => {
 const getDriver = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const driver = await User.findById(id);
-  console.log(driver);
   if (!driver) {
     return next(new AppError(`No document found with this id`, 404));
   }
@@ -116,9 +114,6 @@ const deleteUser = catchAsync(async (req, res, next) => {
 });
 
 // Cancel Cab
-// const cancelCab = catchAsync(async (req, res, next) => {
-//   const id = req.params.id;
-// });
 const cancelCab = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const user = await User.findById(id);
@@ -141,10 +136,7 @@ const cancelCab = catchAsync(async (req, res, next) => {
 
 const bulkUserUpload = catchAsync(async (req, res, next) => {
   const data = req.body;
-  console.log('asdasdad')
-  // console.log(data)
   for (const item of data) {
-    console.log(item.phone)
     // const hashedPassword = await bcrypt.hash("password", 12);
     const user = new User({
       fname: item.fname,
@@ -167,10 +159,66 @@ const bulkUserUpload = catchAsync(async (req, res, next) => {
       currentShift: item.currentShift,
       workLocation: item.workLocation,
       role: "employee",
+      hasCabService: item.hasCabService === "Yes",
     });
     await user.save();
   }
   res.status(200).json({ status: "Success" });
+});
+
+const uploadEmplLeaveSheets = catchAsync(async (req, res, next) => {
+  if (!req.file)
+    return next(new AppError(`File not Uploaded Successfully`, 401));
+
+  const file_path = req.file.path;
+
+  // console.log(file_path);
+
+  const work_book = xlsx.readFile(file_path);
+  const sheet_name = work_book.SheetNames[0];
+  const data = xlsx.utils.sheet_to_json(work_book.Sheets[sheet_name]);
+
+  const invalid_rows = data.filter(
+    (row) => !row.email || !row.name || !row.status || !row.cabService
+  );
+
+  if (invalid_rows.length > 0) {
+    fs.unlink(file_path, (err) => {
+      if (err) console.log(`Failed to delete a file...`);
+      else console.log(`File deleted Successfully`);
+    });
+    return next(
+      new AppError(
+        `Invalid rows found in the uploaded file. Check your data.`,
+        400
+      )
+    );
+  }
+
+  const updates = data.map((row) => ({
+    updateOne: {
+      filter: {
+        email: row.email,
+      },
+      update: {
+        $set: {
+          isCabCancelled: row.status === "Absent",
+          hasCabService: row.cabService === "Yes",
+        },
+      },
+    },
+  }));
+
+  await User.bulkWrite(updates);
+  console.log("Database updated successfully!");
+
+  fs.unlink(file_path, (err) => {
+    if (err) {
+      console.log(`Failed to delete file: ${file_path}`, err);
+    } else console.log(`File deleted: ${file_path}`);
+  });
+
+  res.status(200).json({ message: "File processed and user status updated!" });
 });
 
 module.exports = {
@@ -182,6 +230,7 @@ module.exports = {
   updateUser,
   deleteUser,
   cancelCab,
-  bulkUserUpload
+  bulkUserUpload,
   // uploadTmsExcelSheet,
+  uploadEmplLeaveSheets,
 };

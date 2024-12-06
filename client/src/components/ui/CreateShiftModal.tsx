@@ -57,7 +57,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
     { t4Time: "16:00", t2Time: "04:00 PM" },
     { t4Time: "17:00", t2Time: "05:00 PM" },
   ];
-  
+
   const dropTimings = [
     { t4Time: "13:00", t2Time: "01:00 PM" },
     { t4Time: "17:00", t2Time: "05:00 PM" },
@@ -70,7 +70,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
     { t4Time: "22:30", t2Time: "10:30 PM" },
     { t4Time: "23:00", t2Time: "11:00 PM" },
     { t4Time: "01:00", t2Time: "01:00 AM" },
-  ];  
+  ];
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
@@ -96,11 +96,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
     },
   });
   const HandleProceedToCreateShiftPage = () => {
-    if (
-      workLocation?.length &&
-      currentShift?.length &&
-      activationMode?.length
-    ) {
+    if (workLocation?.length && currentShift?.length) {
       setArtificialDelay(!artificialDelay);
       setTimeout(() => {
         setArtificialDelay(!artificialDelay);
@@ -108,8 +104,8 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
           typeOfRoute,
           workLocation,
           currentShift,
-          daysRouteIsActive: activeDays,
-          activationMode,
+          // daysRouteIsActive: activeDays,
+          // activationMode,
         };
         createShiftMutation(shiftData);
       }, 2000);
@@ -306,7 +302,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
               </Select>
             </FormControl>
 
-            <FormControl sx={{ width: "50%" }}>
+            {/* <FormControl sx={{ width: "50%" }}>
               <InputLabel id="central-point-label">Activation Mode</InputLabel>
               <Select
                 labelId="central-point-label"
@@ -340,8 +336,8 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
                   Next Day (Shift will activate on the next day's start)
                 </MenuItem>
               </Select>
-            </FormControl>
-            <FormControl sx={{ width: "50%" }}>
+            </FormControl> */}
+            {/* <FormControl sx={{ width: "50%" }}>
               <InputLabel id="pickup-or-drop-label">Active for Days</InputLabel>
               <Select
                 labelId="active-time"
@@ -367,7 +363,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
                   );
                 })}
               </Select>
-            </FormControl>
+            </FormControl> */}
           </Box>
           <Button
             sx={{

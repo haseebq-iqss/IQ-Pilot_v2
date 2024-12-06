@@ -19,9 +19,11 @@ const createSendToken = function (user, statusCode, res) {
     ),
     httpOnly: true,
     secure: false,
-    sameSite: "none",
   };
-  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+  if (process.env.NODE_ENV === "production") {
+    cookieOptions.secure = true;
+    cookieOptions.sameSite = "none";
+  }
 
   res.cookie("jwt", jwt_token, cookieOptions);
   user.password = undefined;
@@ -29,46 +31,40 @@ const createSendToken = function (user, statusCode, res) {
 };
 
 const signup = catchAsync(async (req, res, next) => {
-  try {
-    const user = await User.create({
-      ...req.body,
-      profilePicture: req.file?.filename || "dummy.jpg",
+  const user = await User.create({
+    ...req.body,
+    profilePicture: req.file?.filename || "dummy.jpg",
+  });
+  if (user.role === "driver") {
+    await Cab.create({
+      cabDriver: user._id,
+      cabNumber: req.body.cabNumber,
+      seatingCapacity: req.body.seatingCapacity,
+      numberPlate: req.body.numberPlate,
+      carModel: req.body.carModel,
+      carColor: req.body.carColor,
+      mileage: req.body.mileage,
+      acInstalled: req.body.acInstalled,
+      typeOfCab: req.body.typeOfCab,
+      androidSetup: req.body.androidSetup,
     });
-    if (user.role === "driver") {
-      await Cab.create({
-        cabDriver: user._id,
-        cabNumber: req.body.cabNumber,
-        seatingCapacity: req.body.seatingCapacity,
-        numberPlate: req.body.numberPlate,
-        carModel: req.body.carModel,
-        carColor: req.body.carColor,
-        mileage: req.body.mileage,
-        acInstalled: req.body.acInstalled,
-      });
-    }
-    // createSendToken(user, 201, res);
-    res
-      .status(201)
-      .json({ status: "Success", message: "Created Successfully", user });
-  } catch (err) {
-    res.status(400).json({ status: "Error", message: err.message })
   }
+  // createSendToken(user, 201, res);
+  res
+    .status(201)
+    .json({ status: "Success", message: "Created Successfully", user });
 });
 
 const login = catchAsync(async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return next(new AppError("Please provide email and password", 400));
-    }
-    const user = await User.findOne({ email }).select("+password");
-    if (!user || !(await user.checkPassword(password))) {
-      return next(new AppError("Incorrect email or password", 401));
-    }
-    createSendToken(user, 200, res);
-  } catch (err) {
-    res.status(400).json({ message: err })
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return next(new AppError("Please provide email and password", 400));
   }
+  const user = await User.findOne({ email }).select("+password");
+  if (!user || !(await user.checkPassword(password))) {
+    return next(new AppError("Incorrect email or password", 401));
+  }
+  createSendToken(user, 200, res);
 });
 
 // Authentication
@@ -110,12 +106,13 @@ const restrictTo = (...roles) => {
 const logout = (req, res, next) => {
   let token = req.cookies.jwt;
   if (token) {
+    // res.cookie("jwt", "");
     res.clearCookie("jwt", {
       httpOnly: true,
       sameSite: "none",
       secure: process.env.NODE_ENV === "production",
     });
-    res.setHeader("Cache-Control", "no-store");
+
     res.status(200).json({ status: "Success", message: "User logged out" });
   } else return next(new AppError(`No JWT cookie found`, 400));
 };
@@ -170,8 +167,11 @@ const changePassword = catchAsync(async (req, res, next) => {
 
   user.password = newPassword;
 
-  await user.save()
-    .then(() => res.status(200).json({ message: "Password updated successfully" }))
+  await user
+    .save()
+    .then(() =>
+      res.status(200).json({ message: "Password updated successfully" })
+    )
     .catch((err) => next(new AppError(err.message, 400)));
 });
 
@@ -183,5 +183,5 @@ module.exports = {
   logout,
   autologin,
   updatePassword,
-  changePassword
+  changePassword,
 };

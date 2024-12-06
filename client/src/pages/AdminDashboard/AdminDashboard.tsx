@@ -23,7 +23,7 @@ function AdminDashboard() {
   const audioRef = useRef<any>();
   const navigate = useNavigate();
 
-  const {isSM,isMD} = isXSmall()
+  const { isSM, isMD } = isXSmall();
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
@@ -248,20 +248,20 @@ function AdminDashboard() {
           backgroundColor: "background.default",
           borderRadius: "15px",
           justifyContent: "space-between",
-          py:isSM || isMD ? 2.5 : 0
+          py: isSM || isMD ? 2.5 : 0,
         }}
       >
         {/* section-1 */}
         <Box
           sx={{
             ...RowFlex,
-            width: isSM || isMD ? "75%" :"40%",
+            width: isSM || isMD ? "75%" : "40%",
             height: isSM || isMD ? "auto" : "20%",
             backgroundColor: "background.default",
             borderRadius: "15px",
             justifyContent: isSM || isMD ? "center" : "flex-start",
             marginLeft: isSM || isMD ? 0 : "50px",
-            mb:isSM || isMD ? 4 : 0
+            mb: isSM || isMD ? 4 : 0,
           }}
         >
           <Box
@@ -272,13 +272,20 @@ function AdminDashboard() {
               width: isSM || isMD ? "100%" : "auto",
               gap: "5px",
               color: "text.primary",
-              textAlign:isSM || isMD ? 'center' : 'start'
+              textAlign: isSM || isMD ? "center" : "start",
             }}
           >
-            <Typography sx={{width:isSM || isMD ? "100%" : "auto"}} variant="h4" fontWeight={600}>
+            <Typography
+              sx={{ width: isSM || isMD ? "100%" : "auto" }}
+              variant="h4"
+              fontWeight={600}
+            >
               Today's Plan
             </Typography>
-            <Typography sx={{ color: "text.secondary",width:"100%" }} variant="body1">
+            <Typography
+              sx={{ color: "text.secondary", width: "100%" }}
+              variant="body1"
+            >
               It’s{" "}
               <span style={{ fontWeight: 600 }}>{TodayFullDateString()}</span>
             </Typography>
@@ -327,7 +334,7 @@ function AdminDashboard() {
               }}
               variant="subtitle2"
             >
-              Active Cabs
+              Active Routes
             </Typography>
           </Box>
           <Box

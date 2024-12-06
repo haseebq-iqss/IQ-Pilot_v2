@@ -41,17 +41,16 @@ const cabSchema = new mongoose.Schema({
       true,
       "Please confirm if the Android setup is installed in the cab.",
     ],
-    default: false,
   },
   acInstalled: {
     type: Boolean,
-    required: [true, "Please confirm if the AC is installed in the cab."],
     default: false,
   },
   typeOfCab: {
     type: String,
-    default: "personal", // personal or vendor
-  }
+    required: [true, "Please provide the type of cab."],
+    enum: ["inHouse", "vendor"],
+  },
 });
 
 const Cab = mongoose.model("Cab", cabSchema);

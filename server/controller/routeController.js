@@ -1,4 +1,3 @@
-const path = require("path");
 const Cab = require("../models/cab");
 const User = require("../models/user");
 const Route = require("../models/route");
@@ -78,23 +77,32 @@ function kmeansPlusPlusInitialization(data, k) {
   return centroids;
 }
 
-const assignCabToEmployees = async (currentShift, employees, cabs) => {
-  if (!employees.length || !cabs.length) {
-    console.log("No employees or cabs available for this shift.");
-    return [];
-  }
-
-  const remaining_employees = [...employees];
-  const groups = [];
-  const shuffled_cabs = shuffleArray(cabs);
-  const assigned_employees = new Set();
-
-  for (const cab of shuffled_cabs) {
+function assignCabs(
+  cabs,
+  remaining_employees,
+  currentShift,
+  assigned_employees,
+  groups
+) {
+  for (const cab of cabs) {
     if (remaining_employees.length === 0) break;
 
-    if (cab.routes.length === 2) {
-      console.log(`Cab has already been assigned with two routes`);
-      continue;
+    // if (cab.routes.length === 2) {
+    //   console.log(`Cab has already been assigned with two routes`);
+    //   continue;
+    // }
+
+    if (cab.routes.length > 1) {
+      const flag = cab.routes.some((route) => {
+        // console.log(
+        //   parseInt(currentShift) - parseInt(route.currentShift.split(":")[0])
+        // );
+        return (
+          parseInt(currentShift) - parseInt(route.currentShift.split(":")[0]) <=
+          1
+        );
+      });
+      if (flag) continue;
     }
 
     // CHECK FOR CONFLICTING ROUTES
@@ -114,24 +122,78 @@ const assignCabToEmployees = async (currentShift, employees, cabs) => {
       passengers: [],
       availableCapacity: cab.seatingCapacity,
     };
-    for (
-      let i = 0;
-      i < remaining_employees.length && group.availableCapacity > 0;
-      i++
-    ) {
+    // for (
+    //   let i = 0;
+    //   i < remaining_employees.length && group.availableCapacity > 0;
+    //   i++
+    // ) {
+    //   const employee = remaining_employees[i];
+    //   if (!assigned_employees.has(employee._id.toString())) {
+    //     group.passengers.push(employee);
+    //     group.availableCapacity--;
+    //     assigned_employees.add(employee._id.toString());
+    //     remaining_employees.splice(i, 1);
+
+    //     i--;
+    //   }
+    // }
+    let i = 0;
+    while (i < remaining_employees.length && group.availableCapacity > 0) {
       const employee = remaining_employees[i];
       if (!assigned_employees.has(employee._id.toString())) {
         group.passengers.push(employee);
         group.availableCapacity--;
         assigned_employees.add(employee._id.toString());
-        remaining_employees.splice(i, 1);
-        i--;
+        remaining_employees.splice(i, 1); // Mutates the array
+        // console.log(`✅ Assigned Employee ${employee._id} to Cab ${cab._id}`);
+      } else {
+        i++;
       }
     }
     if (group.passengers.length > 0) {
       groups.push(group);
-    } else console.log(`No passengers assigned to cab ${cab._id}`);
+    }
+    // } else console.log(`No passengers assigned to cab ${cab._id}`);
   }
+  // console.log(remaining_employees.length);
+}
+
+const assignCabToEmployees = async (currentShift, employees, cabs) => {
+  if (!Array.isArray(employees) || !Array.isArray(cabs))
+    throw new AppError(`Invalid input: employees and cabs must be arrays.`);
+
+  if (!employees.length || !cabs.length) {
+    // console.log("No employees or cabs available for this shift.");
+    return [];
+  }
+
+  const remaining_employees = [...employees];
+  const groups = [];
+
+  const assigned_employees = new Set();
+  const shuffled_cabs = shuffleArray(cabs);
+
+  const in_house_cabs = shuffled_cabs.filter(
+    (cab) => cab.typeOfCab === "inHouse"
+  );
+  const vendor_cabs = shuffled_cabs.filter((cab) => cab.typeOfCab === "vendor");
+
+  assignCabs(
+    in_house_cabs,
+    remaining_employees,
+    currentShift,
+    assigned_employees,
+    groups
+  );
+
+  if (remaining_employees.length > 0)
+    assignCabs(
+      vendor_cabs,
+      remaining_employees,
+      currentShift,
+      assigned_employees,
+      groups
+    );
   return groups;
 };
 
@@ -143,22 +205,33 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
       new Date().getUTCDate()
     )
   );
-  let nextAvailableStartDate;
-  // const RADIUS = 1000;
 
-  const {
+  const { workLocation, currentShift, typeOfRoute } = req.body;
+
+  const date_active = new Date(present_day);
+  date_active.setUTCDate(present_day.getUTCDate() + 1);
+
+  let existing_routes = await Route.find({
+    typeOfRoute,
     workLocation,
     currentShift,
-    typeOfRoute,
-    daysRouteIsActive,
-    activationMode,
-  } = req.body;
+    activeOnDate: typeOfRoute === "pickup" ? date_active : present_day,
+  });
+
+  if (existing_routes.length !== 0) {
+    return next(
+      new AppError(
+        `A ${typeOfRoute} route already exists for shift ${currentShift} and workLocation: ${workLocation} on ${date_active.toISOString()}`
+      )
+    );
+  }
 
   const employees = await User.aggregate([
     {
       $match: {
         workLocation,
         isCabCancelled: { $eq: false },
+        hasCabService: { $eq: true },
         $expr: {
           $cond: {
             if: { $eq: [typeOfRoute, "pickup"] },
@@ -190,26 +263,6 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
   const employeesPickUpCoordinates = employees.map(
     (employee) => employee.pickUp.coordinates
   );
-
-  const routes = await Route.find({});
-  if (routes.length >= 1) {
-    const active_routes = await getActiveRoutes(routes);
-    const filter_active_routes = active_routes.filter(
-      (route) =>
-        route.typeOfRoute === typeOfRoute &&
-        route.workLocation === workLocation &&
-        currentShift === route.currentShift
-    );
-
-    let latest_active_routes;
-    if (filter_active_routes.length != 0) {
-      latest_active_routes = filter_active_routes.sort(
-        (a, b) => b.activeOnDate - a.activeOnDate
-      );
-      nextAvailableStartDate = new Date(latest_active_routes[0].activeOnDate);
-      nextAvailableStartDate.setDate(nextAvailableStartDate.getDate() + 1);
-    }
-  }
 
   const numOfClusters = Math.ceil(employees.length / 6);
   const initialCentroids = kmeansPlusPlusInitialization(
@@ -259,6 +312,7 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
 
         employeesSortedByPickCoords.push(...sortedCluster);
       }
+
       if (employeesSortedByPickCoords.length === 0)
         return next(
           new AppError(
@@ -289,34 +343,20 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
         return next(new AppError(`No cabs available as of now...`, 404));
 
       // NOT TO PUSH NON-ACTIVE ROUTES ROUTES ARRAY IN EACH CABS(FILTERING OF CABS)
-      for (const cab of cabs) {
-        cab.routes = cab.routes
-          .map((route) => {
-            const route_created = new Date(
-              Date.UTC(
-                route.createdAt.getUTCFullYear(),
-                route.createdAt.getUTCMonth(),
-                route.createdAt.getUTCDate()
-              )
-            );
-            const end_date = new Date(
-              Date.UTC(
-                route.createdAt.getUTCFullYear(),
-                route.createdAt.getUTCMonth(),
-                route.createdAt.getUTCDate() + route.daysRouteIsActive
-              )
-            );
-            // check this condition
-            if (
-              end_date.getTime() < present_day.getTime() ||
-              (nextAvailableStartDate &&
-                present_day.getTime() < nextAvailableStartDate.getTime())
-            )
-              return null;
-            return route;
-          })
-          .filter((val) => val !== null);
-      }
+      // for (const cab of cabs) {
+      //   cab.routes = cab.routes
+      //     .map((route) => {
+      //       const route_active_on_date = route.activeOnDate;
+      //       // check this condition
+      //       if (route_active_on_date.getTime() < present_day.getTime())
+      //         return null;
+      //       return route;
+      //     })
+      //     .filter((val) => val !== null);
+      // }
+      cabs.routes = cabs.routes?.filter((route) => {
+        return route.activeOnDate.getTime() >= present_day.getTime();
+      });
 
       const groups = await assignCabToEmployees(
         currentShift,
@@ -331,93 +371,74 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
         workLocation,
         currentShift,
         typeOfRoute,
-        daysRouteIsActive,
-        activationMode,
-        nextAvailableStartDate,
       });
     }
   );
 });
 
 exports.createRoute = catchAsync(async (req, res, next) => {
-  const {
-    cabEmployeeGroups,
-    workLocation,
-    currentShift,
-    typeOfRoute,
-    daysRouteIsActive,
-    activationMode,
-    nextAvailableStartDate,
-  } = req.body;
+  const { cabEmployeeGroups, workLocation, currentShift, typeOfRoute } =
+    req.body;
 
   if (!Array.isArray(cabEmployeeGroups) || cabEmployeeGroups.length === 0) {
     return next(new AppError(`Invalid or empty cabEmployeeGroups`, 400));
   }
 
-  if (typeof daysRouteIsActive !== "number" || daysRouteIsActive <= 0) {
+  let baseDate = new Date(
+    Date.UTC(
+      new Date().getUTCFullYear(),
+      new Date().getUTCMonth(),
+      new Date().getUTCDate(),
+      0,
+      0,
+      0,
+      0
+    )
+  );
+  const date_active = new Date(baseDate);
+  date_active.setUTCDate(baseDate.getUTCDate() + 1);
+
+  let existing_routes = await Route.find({
+    typeOfRoute,
+    workLocation,
+    currentShift,
+    activeOnDate: date_active,
+  });
+
+  if (existing_routes.length !== 0) {
     return next(
-      new AppError("daysRouteIsActive must be a positive number", 400)
-    );
-  }
-
-  let baseDate;
-  if (nextAvailableStartDate) {
-    const parsedDate = new Date(nextAvailableStartDate);
-    if (isNaN(parsedDate.getTime())) {
-      return next(new AppError("Invalid nextAvailableStartDate format", 400));
-    }
-
-    baseDate = new Date(
-      Date.UTC(
-        parsedDate.getUTCFullYear(),
-        parsedDate.getUTCMonth(),
-        parsedDate.getUTCDate()
-      )
-    );
-  } else {
-    baseDate = new Date(
-      Date.UTC(
-        new Date().getUTCFullYear(),
-        new Date().getUTCMonth(),
-        new Date().getUTCDate()
+      new AppError(
+        `A ${typeOfRoute} route already exists for shift ${currentShift} and workLocation: ${workLocation} on ${date_active.toISOString()}`
       )
     );
   }
-
-  const routesToCreate = [];
 
   for (const group of cabEmployeeGroups) {
     const { cab, passengers, availableCapacity } = group;
 
-    if (!cab || !passengers || typeof availableCapacity !== "number") {
+    if (
+      !cab ||
+      !Array.isArray(passengers) ||
+      typeof availableCapacity !== "number"
+    ) {
       return next(new AppError(`Invalid data in cabEmployeeGroups`, 400));
     }
 
-    for (let i = 0; i < daysRouteIsActive; i++) {
-      const dateActive = new Date(baseDate);
-      dateActive.setUTCDate(
-        baseDate.getUTCDate() + (activationMode === "immediate" ? i : i + 1)
-      );
-
-      routesToCreate.push({
-        cab,
-        passengers,
-        workLocation,
-        currentShift,
-        typeOfRoute,
-        availableCapacity,
-        daysRouteIsActive,
-        activeOnDate: dateActive,
-      });
-    }
+    const route_created = await Route.create({
+      cab,
+      passengers,
+      workLocation,
+      currentShift,
+      typeOfRoute,
+      availableCapacity,
+      activeOnDate: typeOfRoute === "drop" ? baseDate : date_active,
+    });
   }
-
-  // Insert all routes at once
-  await Route.insertMany(routesToCreate);
 
   res.status(201).json({
     status: "Success",
     message: "Shifts confirmed and routes created successfully",
+    scheduledForDate: typeOfRoute === "drop" ? baseDate : date_active,
   });
 });
 
@@ -476,7 +497,11 @@ exports.getTodayRoute = catchAsync(async (req, res, next) => {
     Date.UTC(
       new Date().getUTCFullYear(),
       new Date().getUTCMonth(),
-      new Date().getUTCDate()
+      new Date().getUTCDate(),
+      0,
+      0,
+      0,
+      0
     )
   );
   const todayRoute = await Route.find({

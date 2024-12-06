@@ -1,12 +1,5 @@
 const AppError = require("../utils/appError");
 
-function sendDevError(err, res) {
-  return res.status(err.statusCode).json({
-    message: err.message,
-    error: err,
-    stack: err.stack,
-  });
-}
 function handleDBDuplicateError(error) {
   const name = Object.keys(error.keyValue);
   const message = `Duplicate field name ${name}. Please provide another value.`;
@@ -22,17 +15,33 @@ function handleDBValidationError(error) {
   const errors = error.errors;
   const errorMessages = Object.values(errors);
   const message = errorMessages.map((err) => err.message).join(" ");
-  return new AppError(`ERROR: ${message}`, 400);
+  return new AppError(message, 400);
+}
+
+function handleJWTError() {
+  return new AppError(`Invalid JWT token...Please log in again`, 401);
+}
+
+function handleJWTExpiredError() {
+  return new AppError(`Your token has Expired! Please log in again`, 401);
+}
+
+function sendDevError(err, res) {
+  return res.status(err.statusCode).json({
+    message: err.message,
+    error: err,
+    stack: err.stack,
+  });
 }
 
 function sendProdError(err, res) {
-  console.log(err);
   if (err.isOperational) {
     return res.status(err.statusCode).json({
       status: err.status,
-      message: err.message,
+      message: err.errmsg || err.message,
     });
   } else {
+    console.error("Error ***: ", err);
     return res.status(500).json({
       status: "ERROR",
       message: "Something went wrong...",
@@ -41,22 +50,28 @@ function sendProdError(err, res) {
 }
 
 module.exports = (err, req, res, next) => {
-  // console.log(err);
   err.statusCode = err.statusCode || 500;
-  err.status = err.status || "fail";
+  err.status = err.status || "error";
 
   if (process.env.NODE_ENV === "development") {
     sendDevError(err, res);
   } else if (process.env.NODE_ENV === "production") {
-    if (err.name === "CastError") {
-      err = handleDBCastError(err);
+    let error = { ...err };
+    error.name = err.name;
+    error.errmsg = err.message;
+
+    if (error.name === "CastError") {
+      error = handleDBCastError(err);
     }
-    if (err.code === 11000) {
-      err = handleDBDuplicateError(err);
+    if (error.code === 11000) {
+      error = handleDBDuplicateError(err);
     }
-    if (err.code === "ValidationError") {
-      err = handleDBValidationError(err);
+    if (error.name === "ValidationError") {
+      error = handleDBValidationError(err);
     }
-    sendProdError(err, res);
+    if (error.name === "JsonWebTokenError") error = handleJWTError();
+    if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
+
+    sendProdError(error, res);
   }
 };

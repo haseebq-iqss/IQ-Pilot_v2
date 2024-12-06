@@ -38,7 +38,7 @@ function CreateShift() {
   const location = useLocation();
   const routeState = location?.state;
   console.log(routeState);
-  const {isSM, isMD} = isXSmall()
+  const { isSM, isMD } = isXSmall();
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
@@ -115,7 +115,7 @@ function CreateShift() {
         message: "Error creating route",
         severity: "error",
       });
-    }
+    },
   });
 
   // const mapCoordinatesToText = (value: string) => {
@@ -159,9 +159,9 @@ function CreateShift() {
       workLocation: routeState?.data?.workLocation,
       currentShift: routeState?.data?.currentShift,
       typeOfRoute: routeState?.data?.typeOfRoute,
-      daysRouteIsActive: routeState?.data?.daysRouteIsActive,
-      activationMode: routeState?.data?.activationMode,
-      nextAvailableStartDate: routeState?.data?.nextAvailableStartDate,
+      // daysRouteIsActive: routeState?.data?.daysRouteIsActive,
+      // activationMode: routeState?.data?.activationMode,
+      // nextAvailableStartDate: routeState?.data?.nextAvailableStartDate,
     };
     setIsLoaderEnabled(true);
     showLoader();
@@ -441,14 +441,23 @@ function CreateShift() {
             alignItems: "center",
           }}
         >
-          <Box sx={{ ...ColFlex, alignItems: "flex-start", width: isSM || isMD ? "50%" :"60%" }}>
-            <Typography variant={isSM || isMD ? "h5" :"h4"}  fontWeight={600}>
+          <Box
+            sx={{
+              ...ColFlex,
+              alignItems: "flex-start",
+              width: isSM || isMD ? "50%" : "60%",
+            }}
+          >
+            <Typography variant={isSM || isMD ? "h5" : "h4"} fontWeight={600}>
               {routeState?.data?.typeOfRoute == "pickup"
                 ? "Pickup for "
                 : "Drop for "}
               {routeState?.data?.workLocation}
             </Typography>
-            <Typography variant={isSM || isMD ? "body2" : "body1"} fontWeight={500}>
+            <Typography
+              variant={isSM || isMD ? "body2" : "body1"}
+              fontWeight={500}
+            >
               {routeState?.data?.activationMode === "immediate"
                 ? "Route Activation - Today"
                 : "Route Activation - Tomorrow" +
@@ -460,7 +469,7 @@ function CreateShift() {
           <Box
             sx={{
               ...RowFlex,
-              width: isSM || isMD ? "100%" :"40%",
+              width: isSM || isMD ? "100%" : "40%",
               alignItems: "center",
               justifyContent: "flex-end",
               gap: 0,

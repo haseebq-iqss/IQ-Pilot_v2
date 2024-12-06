@@ -499,7 +499,9 @@ function AssignedRoutes() {
             }}
           >
             <Typography fontSize={isSM || isMD ? 25 : 30} fontWeight={500}>
-              {`Active Cabs (${routeState?.length ? routeState?.length : 0})`}
+              {`Today's Routes (${
+                routeState?.length ? routeState?.length : 0
+              })`}
             </Typography>
             {isSM || isMD ? (
               <></>
