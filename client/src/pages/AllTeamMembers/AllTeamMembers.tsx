@@ -20,8 +20,11 @@ import {
   TableHead,
   TableRow,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
 } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PageContainer from "../../components/ui/PageContainer";
 import EmployeeTypes from "../../types/EmployeeTypes";
 import baseURL from "../../utils/baseURL";
@@ -77,21 +80,6 @@ function AllTeamMembers() {
     },
   });
 
-  const filteredTeamMembers = teamMemberData?.filter(
-    (teamMember: EmployeeTypes) => {
-      return (
-        teamMember?.fname?.toLowerCase()?.includes(searchtext.toLowerCase()) ||
-        teamMember?.lname?.toLowerCase()?.includes(searchtext.toLowerCase()) ||
-        teamMember?.workLocation
-          ?.toLowerCase()
-          ?.includes(searchtext.toLowerCase()) ||
-        teamMember?.pickUp?.address
-          ?.toLowerCase()
-          ?.includes(searchtext.toLowerCase())
-      );
-    }
-  );
-
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
 
@@ -137,6 +125,43 @@ function AllTeamMembers() {
       .catch((err) => console.log(err));
   }, []);
 
+  const [usingCab, setUsingCab] = useState<string | null>("all");
+
+  function handleUsingCab(
+    _event: React.MouseEvent<HTMLElement>,
+    newState: string
+  ) {
+    if (newState !== null) {
+      setUsingCab(newState);
+    }
+  }
+
+  const filteredTeamMembers = teamMemberData?.filter(
+    (teamMember: EmployeeTypes) => {
+      // Basic filtering logic based on search text
+      const matchesSearch =
+        teamMember?.fname?.toLowerCase()?.includes(searchtext.toLowerCase()) ||
+        teamMember?.lname?.toLowerCase()?.includes(searchtext.toLowerCase()) ||
+        teamMember?.workLocation
+          ?.toLowerCase()
+          ?.includes(searchtext.toLowerCase()) ||
+        teamMember?.pickUp?.address
+          ?.toLowerCase()
+          ?.includes(searchtext.toLowerCase());
+
+      // Filtering logic based on cab usage
+      const matchesUsingCab =
+        usingCab === "using"
+          ? teamMember?.hasCabService // Adjust property name as per your data structure
+          : usingCab === "notUsing"
+          ? !teamMember?.hasCabService
+          : true; // Show all if `usingCab` is `null`
+
+      // Combine both conditions
+      return matchesSearch && matchesUsingCab;
+    }
+  );
+
   return (
     <PageContainer
       headerText={`All Team Members (${teamMemberData?.length || 0})`}
@@ -145,26 +170,123 @@ function AllTeamMembers() {
     >
       <Box sx={{ width: "100%", height: "50vh" }}>
         <TableContainer sx={{}}>
-          <TextField
+          <Box
             sx={{
-              width: "40%",
+              ...RowFlex,
+              flexDirection: { xs: "column", lg: "row" },
+              justifyContent: "space-between",
+              gap: 2.5,
+              width: "100%",
+              alignItems: "center",
+              mb: 2.5,
             }}
-            variant="outlined"
-            size="small"
-            autoFocus
-            onChange={(e) => {
-              setSearchText(e.target.value);
-            }}
-            placeholder="Search TMs, Address, Work Location..."
-            InputProps={{
-              startAdornment: (
-                <IconButton aria-label="search">
-                  <Search />
-                </IconButton>
-              ),
-            }}
-          />
-          <Table sx={{ minWidth: {xs: "200%",lg:650} }} aria-label="TM's table">
+          >
+            <TextField
+              sx={{
+                width: "40%",
+              }}
+              variant="outlined"
+              size="small"
+              autoFocus
+              onChange={(e) => {
+                setSearchText(e.target.value);
+              }}
+              placeholder="Search TMs, Address, Work Location..."
+              InputProps={{
+                startAdornment: (
+                  <IconButton aria-label="search">
+                    <Search />
+                  </IconButton>
+                ),
+              }}
+            />
+            <ToggleButtonGroup
+              size="medium"
+              color="primary"
+              value={usingCab}
+              exclusive
+              onChange={handleUsingCab}
+            >
+              <ToggleButton
+                size={usingCab === "all" ? "medium" : "small"}
+                sx={{
+                  px: 2.5,
+                  py: 1,
+                  borderRadius: "5px",
+                  backgroundColor:
+                    usingCab === "all" ? "primary.main" : "transparent", // Default state
+                  color: usingCab === "all" ? "white" : "inherit", // Adjust text color
+                  "&.Mui-selected": {
+                    backgroundColor: "primary.main", // Active state background
+                    color: "white", // Active state text color
+                    "&:hover": {
+                      backgroundColor: "primary.dark", // Change on hover when active
+                    },
+                  },
+                }}
+                value="all"
+              >
+                All Team Members{" "}
+                <Typography sx={{ color: "inherit", fontWeight: 500, ml: 1 }}>
+                  {usingCab === "all" && `(${filteredTeamMembers?.length})`}
+                </Typography>
+              </ToggleButton>
+
+              <ToggleButton
+                size={usingCab === "using" ? "medium" : "small"}
+                sx={{
+                  px: 2.5,
+                  py: 1,
+                  borderRadius: "5px",
+                  backgroundColor:
+                    usingCab === "using" ? "primary.main" : "transparent", // Default state
+                  color: usingCab === "using" ? "white" : "inherit", // Adjust text color
+                  "&.Mui-selected": {
+                    backgroundColor: "primary.main", // Active state background
+                    color: "white", // Active state text color
+                    "&:hover": {
+                      backgroundColor: "primary.dark", // Change on hover when active
+                    },
+                  },
+                }}
+                value="using"
+              >
+                Using Cab Service{" "}
+                <Typography sx={{ color: "white", fontWeight: 500, ml: 1 }}>
+                  {usingCab === "using" && `(${filteredTeamMembers?.length})`}
+                </Typography>
+              </ToggleButton>
+              <ToggleButton
+                size={usingCab === "notUsing" ? "medium" : "small"}
+                sx={{
+                  px: 2.5,
+                  py: 1,
+                  borderRadius: "5px",
+                  backgroundColor:
+                    usingCab === "notUsing" ? "primary.main" : "transparent", // Default state
+                  color: usingCab === "notUsing" ? "white" : "inherit", // Adjust text color
+                  "&.Mui-selected": {
+                    backgroundColor: "primary.main", // Active state background
+                    color: "white", // Active state text color
+                    "&:hover": {
+                      backgroundColor: "primary.dark", // Change on hover when active
+                    },
+                  },
+                }}
+                value="notUsing"
+              >
+                Not Using Cab Service
+                <Typography sx={{ color: "white", fontWeight: 500, ml: 1 }}>
+                  {usingCab === "notUsing" &&
+                    `(${filteredTeamMembers?.length})`}
+                </Typography>
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+          <Table
+            sx={{ minWidth: { xs: "200%", lg: 650 } }}
+            aria-label="TM's table"
+          >
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
@@ -173,6 +295,7 @@ function AllTeamMembers() {
                 <TableCell align="center">Location</TableCell>
                 <TableCell align="center">Office Location</TableCell>
                 <TableCell align="center">Status</TableCell>
+                <TableCell align="center">Cab Service</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -232,6 +355,18 @@ function AllTeamMembers() {
                         align="center"
                       >
                         {!employee.isCabCancelled ? "In Office" : "On Leave"}
+                      </TableCell>
+                      <TableCell
+                        width={"10%"}
+                        sx={{
+                          color: !employee.hasCabService
+                            ? "error.main"
+                            : "success.main",
+                          fontWeight: 600,
+                        }}
+                        align="center"
+                      >
+                        {employee.hasCabService ? "Yes" : "No"}
                       </TableCell>
                       <TableCell align="center" sx={{ position: "relative" }}>
                         <MoreHoriz
