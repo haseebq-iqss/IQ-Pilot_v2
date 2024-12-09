@@ -1,13 +1,14 @@
 import { Upload } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import useAxios from "../api/useAxios";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
 import SnackbarContext from "./../context/SnackbarContext";
 import { SnackBarContextTypes } from "../types/SnackbarTypes";
 // import * as XLSX from "xlsx";
 
 function UploadNewTMDataButton() {
+  const qc = useQueryClient();
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
   const bulkUploadMF = (bulkUploadData: any) => {
@@ -24,6 +25,8 @@ function UploadNewTMDataButton() {
           message: data.data.message,
           severity: "success",
         });
+        qc.invalidateQueries({ queryKey: ["all-teamMembers"] });
+        // ["all-teamMembers"]
         // navigate(-1);
       },
       onError: () => {
