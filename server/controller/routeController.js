@@ -343,20 +343,20 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
         return next(new AppError(`No cabs available as of now...`, 404));
 
       // NOT TO PUSH NON-ACTIVE ROUTES ROUTES ARRAY IN EACH CABS(FILTERING OF CABS)
-      // for (const cab of cabs) {
-      //   cab.routes = cab.routes
-      //     .map((route) => {
-      //       const route_active_on_date = route.activeOnDate;
-      //       // check this condition
-      //       if (route_active_on_date.getTime() < present_day.getTime())
-      //         return null;
-      //       return route;
-      //     })
-      //     .filter((val) => val !== null);
-      // }
-      cabs.routes = cabs.routes?.filter((route) => {
-        return route.activeOnDate.getTime() >= present_day.getTime();
-      });
+      for (const cab of cabs) {
+        cab.routes = cab.routes
+          .map((route) => {
+            const route_active_on_date = route.activeOnDate;
+            // check this condition
+            if (route_active_on_date.getTime() < present_day.getTime())
+              return null;
+            return route;
+          })
+          .filter((val) => val !== null);
+      }
+      // cabs.routes = cabs.routes?.filter((route) => {
+      //   return route.activeOnDate.getTime() >= present_day.getTime();
+      // });
 
       const groups = await assignCabToEmployees(
         currentShift,
@@ -371,7 +371,7 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
         workLocation,
         currentShift,
         typeOfRoute,
-        scheduledForDate: workLocation === "pickup" ? date_active : present_day,
+        scheduledForDate: typeOfRoute === "pickup" ? date_active : present_day,
       });
     }
   );
