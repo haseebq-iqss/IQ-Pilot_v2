@@ -20,6 +20,13 @@ const router = express.Router();
 
 router.use(protect);
 
+router.post(
+  "/upload-emp-leave-excel",
+  restrictTo("admin"),
+  upload_emps_leave_status,
+  uploadEmplLeaveSheets
+);
+
 router.get("/", restrictTo("admin"), getAllUsers);
 router.get("/tms", restrictTo("admin"), getAllTMS);
 router.get("/drivers", restrictTo("admin"), getAllDrivers);
@@ -40,12 +47,7 @@ router
   .route("/cancel-cab/:id")
   .patch(restrictTo("admin", "employee"), cancelCab);
 
-router.post(
-  "/upload-emp-leave-excel",
-  restrictTo("admin"),
-  upload_emps_leave_status,
-  uploadEmplLeaveSheets
-);
+
 router.route("/bulk-upload").post(restrictTo("admin"), bulkUserUpload);
 
 module.exports = router;

@@ -202,8 +202,8 @@ const uploadEmplLeaveSheets = catchAsync(async (req, res, next) => {
       },
       update: {
         $set: {
-          isCabCancelled: row.status === "Absent",
-          hasCabService: row.cabService === "Yes",
+          isCabCancelled: row.status.toLowerCase() === "absent",
+          hasCabService: row.cabService.toLowerCase() === "yes",
         },
       },
     },

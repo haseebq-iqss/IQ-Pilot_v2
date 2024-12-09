@@ -5,6 +5,7 @@ import PageHeader from "./PageHeader";
 import { AddCircleOutline } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import UploadNewTMDataButton from "../UploadNewTMDataButton";
 
 type PageContainerPropTypes = {
   children: ReactNode;
@@ -67,6 +68,10 @@ function PageContainer({
           </Typography>
         </Box>
 
+        {options && location.pathname.includes("/admin/allTeamMembers") && (
+          <UploadNewTMDataButton/>
+        )}
+
         {options && !location.pathname.includes("/admin/scheduledRoutes") && (
           <Button
             sx={{
@@ -98,7 +103,7 @@ function PageContainer({
           >
             {`${
               location.pathname.includes("/admin/allTeamMembers")
-                ? "Add Team Member"
+                ? "Add TMs"
                 : location.pathname.includes("/admin/addTeamMembers") ||
                   location.pathname.includes("/admin/addCabDrivers") ||
                   location.pathname.includes("/admin/editDetails")
