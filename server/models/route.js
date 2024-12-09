@@ -46,10 +46,6 @@ const routeSchema = new mongoose.Schema({
     default: [],
     select: false,
   },
-  daysRouteIsActive: {
-    type: Number,
-    default: 1,
-  },
   activeOnDate: {
     type: Date,
   },
