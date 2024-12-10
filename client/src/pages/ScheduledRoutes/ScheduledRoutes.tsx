@@ -162,12 +162,22 @@ function ScheduledRoutes() {
           <Box
             sx={{
               ...RowFlex,
-              flexDirection: {xs:"column",sm:"column",md:"column",lg:"row"},
+              flexDirection: {
+                xs: "column",
+                sm: "column",
+                md: "column",
+                lg: "row",
+              },
               width: "100%",
-              alignItems: {xs:"flex-start",sm:"flex-start",md:"flex-start",lg:"center"},
+              alignItems: {
+                xs: "flex-start",
+                sm: "flex-start",
+                md: "flex-start",
+                lg: "center",
+              },
               justifyContent: "space-between",
               mb: 2,
-              gap:{xs:2.5,sm:2.5,md:2.5,lg: 0}
+              gap: { xs: 2.5, sm: 2.5, md: 2.5, lg: 0 },
             }}
           >
             <Box sx={{ ...RowFlex, gap: 2 }}>
@@ -233,6 +243,7 @@ function ScheduledRoutes() {
               <TableRow>
                 <TableCell align="left">Shift time</TableCell>
                 <TableCell align="left">Cab</TableCell>
+                <TableCell align="center">Priority Cab</TableCell>
                 <TableCell align="left">Driver</TableCell>
                 <TableCell align="center">Pickup/Drop</TableCell>
                 <TableCell align="center">Office</TableCell>
@@ -264,11 +275,32 @@ function ScheduledRoutes() {
                         )}
                       </Box>
                     </TableCell>
+
                     <TableCell
                       sx={{ fontWeight: 600, color: "primary.dark" }}
                       align="left"
                     >
                       {(selectedRoutes[index]?.cab as Cabtypes)?.cabNumber}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: 600,
+                        color:
+                          (selectedRoutes[index]?.cab as Cabtypes)
+                            ?.typeOfCab === "inHouse"
+                            ? "success.dark"
+                            : (selectedRoutes[index]?.cab as Cabtypes)
+                                ?.typeOfCab === "vendor"
+                            ? "warning.dark"
+                            : "default",
+                      }}
+                      align="center"
+                    >
+                      {" "}
+                      {(selectedRoutes[index]?.cab as Cabtypes)?.typeOfCab ===
+                      "inHouse"
+                        ? "Yes"
+                        : "No"}
                     </TableCell>
                     <TableCell align="center">
                       <Box

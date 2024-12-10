@@ -8,6 +8,7 @@ type Cabtypes = {
   numberPlate?: string;
   carModel?: string;
   carColor?: string;
+  typeOfCab?: string;
 };
 
 export default Cabtypes;

@@ -33,6 +33,8 @@ import SnackbarContext from "../../context/SnackbarContext.ts";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes.ts";
 import { ArrowBackIos } from "@mui/icons-material";
 import isXSmall from "../../utils/isXSmall.ts";
+import NoticeModal from "../../components/ui/NoticeModal.tsx";
+import formatDateString from "../../utils/DateFormatter.ts";
 
 function CreateShift() {
   const location = useLocation();
@@ -41,6 +43,7 @@ function CreateShift() {
   const { isSM, isMD } = isXSmall();
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
+  const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false);
 
   const [activeColumn, setActiveColumn] = useState<ShiftTypes | null>(null);
   const [isLoaderEnabled, setIsLoaderEnabled] = useState<boolean>(false);
@@ -176,10 +179,16 @@ function CreateShift() {
       setIsLoaderEnabled(false);
       setOpenSnack({
         open: true,
-        message: "Shift Generation was Successful 🎉",
+        message: `Shift Generation for ${formatDateString(
+          routeState?.data?.scheduledForDate
+        )} was Successful. 🎉`,
         severity: "success",
       });
     }, 3000);
+  };
+
+  const confirmRoute = () => {
+    setOpenConfirmModal(true);
   };
 
   const sensors = useSensors(
@@ -496,7 +505,7 @@ function CreateShift() {
                   transition: "all 1s ease",
                 },
               }}
-              onClick={handleCreateRoute}
+              onClick={confirmRoute}
             >
               <Typography
                 variant="h6"
@@ -634,6 +643,15 @@ function CreateShift() {
           </DndContext>
         </Box>
       </Box>
+      <NoticeModal
+        headerText="Shift Schedule"
+        subHeaderText={`This shift has been scheduled for ${formatDateString(
+          routeState?.data?.scheduledForDate
+        )}.`}
+        openConfirmModal={openConfirmModal}
+        setOpenConfirmModal={setOpenConfirmModal}
+        triggerFunction={handleCreateRoute}
+      />
     </DndContext>
   );
 }

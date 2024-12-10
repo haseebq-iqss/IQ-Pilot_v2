@@ -199,6 +199,7 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
       carModel: cab.carModel,
       carColor: cab.carColor,
       cabDriver: cab.cabDriver,
+      typeOfCab: cab.typeOfCab,
       occupiedShifts: [],
     };
     cab.routes.forEach((route) => {

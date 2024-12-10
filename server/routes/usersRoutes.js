@@ -13,6 +13,7 @@ const {
   cancelCab,
   bulkUserUpload,
   uploadEmplLeaveSheets,
+  toggleCabService,
 } = require("../controller/userController");
 const { protect, restrictTo } = require("../controller/authController");
 
@@ -45,7 +46,10 @@ router
 
 router
   .route("/cancel-cab/:id")
-  .patch(restrictTo("admin", "employee"), cancelCab);
+  .patch(restrictTo("admin", "employee"), cancelCab)
+router
+  .route("/toggle-cab-service/:id")
+  .patch(restrictTo("admin", "employee"), toggleCabService);
 
 
 router.route("/bulk-upload").post(restrictTo("admin"), bulkUserUpload);

@@ -127,6 +127,25 @@ const cancelCab = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: "Success", data: user });
 });
 
+//pause/resume cab service
+const toggleCabService = catchAsync(async (req, res, next) => {
+  const id = req.params.id;
+  const user = await User.findById(id);
+
+  if (!user) {
+    return next(
+      new AppError(`User document with this id:${id} not found!`, 404)
+    );
+  }
+
+  user.hasCabService = !user.hasCabService;
+
+  await user.save();
+
+  res.status(200).json({ status: "Success", data: user });
+});
+
+
 // const uploadTmsExcelSheet = catchAsync(async (req, res, next) => {
 //   const file = req.file;
 //   if (!file) return next(new AppError(`No file uploaded`, 400));
@@ -233,4 +252,5 @@ module.exports = {
   bulkUserUpload,
   // uploadTmsExcelSheet,
   uploadEmplLeaveSheets,
+  toggleCabService
 };
