@@ -118,6 +118,7 @@ function InactiveCabs() {
       qc.invalidateQueries({ queryKey: ["all-cabs"] });
     },
   });
+
   return (
     <PageContainer
       headerText={`Inactive / Available Cabs (${allCabs?.length || 0})`}
