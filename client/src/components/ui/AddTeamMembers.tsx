@@ -28,6 +28,7 @@ export const AddTeamMembers = () => {
   const [workLocation, setWorkLocation] = useState("");
   const [androidSetup, setAndroidSetup] = useState(true);
   const [typeOfCab, setTypeOfCab] = useState("vendor");
+  const [hasCabService, setHasCabService] = useState("true");
 
   const navigate = useNavigate();
 
@@ -147,9 +148,9 @@ export const AddTeamMembers = () => {
         }
       }
     }
-    const obj = {}
+    const obj = {};
     for (const [key, value] of formData.entries()) {
-      obj[key] = value
+      obj[key] = value;
     }
     // console.log(obj);
     // console.log(formData.keys());
@@ -194,6 +195,7 @@ export const AddTeamMembers = () => {
       workLocation: workLocation,
       department: department,
       role: "employee",
+      hasCabService,
     };
 
     const formData = new FormData();
@@ -495,8 +497,7 @@ export const AddTeamMembers = () => {
             {!driverPath && (
               <TextField
                 required
-                //   fullWidth
-                sx={{ width: "50%" }}
+                fullWidth
                 name="coordinates"
                 label="Coordinates"
                 type="string"
@@ -504,6 +505,42 @@ export const AddTeamMembers = () => {
                 InputLabelProps={{ shrink: true }}
               />
             )}
+            {!driverPath && (
+              <FormControl fullWidth>
+                <InputLabel
+                  sx={{ lineHeight: "10px", fontSize: "0.8rem" }}
+                  id="hasCabService-label"
+                >
+                  Cab Service
+                </InputLabel>
+
+                <Select
+                  // size="small"
+                  sx={{ width: "100%" }}
+                  labelId="hasCabService"
+                  id="hasCabService"
+                  value={hasCabService}
+                  onChange={(e) => {
+                    setHasCabService(e.target.value);
+                    console.log(e.target.value);
+                  }}
+                  label="Cab Service"
+                >
+                  <MenuItem value={"true"}>True</MenuItem>
+                  <MenuItem value={"false"}>False </MenuItem>
+                </Select>
+              </FormControl>
+            )}
+          </Box>
+          <Box
+            sx={{
+              ...RowFlex,
+              width: "100%",
+              justifyContent: "space-between",
+              gap: "15px",
+            }}
+          >
+            {" "}
             <Button
               variant="contained"
               component="label"

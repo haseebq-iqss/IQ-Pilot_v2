@@ -4,6 +4,8 @@ import {
   EditLocation,
   ExitToApp,
   MoreHoriz,
+  Pause,
+  PlayArrow,
   Search,
 } from "@mui/icons-material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -161,6 +163,27 @@ function AllTeamMembers() {
       return matchesSearch && matchesUsingCab;
     }
   );
+
+  // Play/Resume cab service
+  const { mutate: ToggleCabService, data: toggleCabServiceData } = useMutation({
+    mutationKey: ["toggle-cab-service"],
+    mutationFn: async (uid: string) => {
+      const response = await useAxios.patch(`/users/toggle-cab-service/${uid}`);
+      console.log(response?.data?.data);
+      return response?.data?.data;
+    },
+    onSuccess: (data) => {
+      setOpenSnack({
+        open: true,
+        message: `TM's cab service has been ${
+          data.hasCabService ? "resumed" : "paused"
+        } successfully`,
+      });
+
+      qc.invalidateQueries({ queryKey: ["all-teamMembers"] });
+      handleMenuClose();
+    },
+  });
 
   return (
     <PageContainer
@@ -439,6 +462,31 @@ function AllTeamMembers() {
                               ? "Mark Present"
                               : "Mark Absent"}
                           </MenuItem>
+                          <MenuItem
+                            sx={{
+                              ...RowFlex,
+                              color: employee?.hasCabService
+                                ? "warning.light"
+                                : "success.main",
+                              fontWeight: 600,
+                              justifyContent: "flex-start",
+                              gap: "10px",
+                            }}
+                            onClick={() =>
+                              ToggleCabService(employee?._id as string)
+                            }
+                          >
+                            {employee?.hasCabService ? (
+                              <Pause sx={{}} />
+                            ) : (
+                              <PlayArrow sx={{}} />
+                            )}
+
+                            {employee?.hasCabService
+                              ? "Pause Service"
+                              : "Resume Service"}
+                          </MenuItem>
+
                           <MenuItem
                             sx={{
                               ...RowFlex,

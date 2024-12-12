@@ -24,6 +24,8 @@ export const EditDetails = () => {
   const navigate = useNavigate();
   const [department, setDepartment] = useState("");
   const [workLocation, setWorkLocation] = useState("");
+  const [currentShift, setcurrentShift] = useState("");
+  const [typeOfRoute, settypeOfRoute] = useState("");
   const [fullName, setFullName] = useState({
     firstName: "",
     lastName: "",
@@ -35,6 +37,40 @@ export const EditDetails = () => {
     phone: "",
     address: "",
     coordinates: "",
+    workLocation: "",
+    currentShift: "",
+  });
+
+  const pickupTimings = [
+    { t4Time: "09:00", t2Time: "09:00 AM" },
+    { t4Time: "10:00", t2Time: "10:00 AM" },
+    { t4Time: "11:00", t2Time: "11:00 AM" },
+    { t4Time: "12:00", t2Time: "12:00 PM" },
+    { t4Time: "13:00", t2Time: "01:00 PM" },
+    { t4Time: "14:00", t2Time: "02:00 PM" },
+    { t4Time: "15:00", t2Time: "03:00 PM" },
+    { t4Time: "15:00", t2Time: "03:00 PM" },
+    { t4Time: "16:00", t2Time: "04:00 PM" },
+    { t4Time: "17:00", t2Time: "05:00 PM" },
+  ];
+
+  const dropTimings = [
+    { t4Time: "13:00", t2Time: "01:00 PM" },
+    { t4Time: "17:00", t2Time: "05:00 PM" },
+    { t4Time: "17:30", t2Time: "05:30 PM" },
+    { t4Time: "18:00", t2Time: "06:00 PM" },
+    { t4Time: "18:30", t2Time: "06:30 PM" },
+    { t4Time: "20:00", t2Time: "08:00 PM" },
+    { t4Time: "20:30", t2Time: "08:30 PM" },
+    { t4Time: "22:00", t2Time: "10:00 PM" },
+    { t4Time: "22:30", t2Time: "10:30 PM" },
+    { t4Time: "23:00", t2Time: "11:00 PM" },
+    { t4Time: "01:00", t2Time: "01:00 AM" },
+  ];
+
+  const combinedTimings = pickupTimings.map((pickup, index) => {
+    const drop = dropTimings[index];
+    return `${pickup.t4Time}-${drop.t4Time}`;
   });
 
   const location = useLocation();
@@ -105,6 +141,8 @@ export const EditDetails = () => {
         phone: editTMDetails?.phone,
         address: editTMDetails?.pickUp?.address,
         coordinates: editTMDetails?.pickUp?.coordinates,
+        workLocation: editTMDetails?.workLocation,
+        currentShift: initialData.currentShift,
       };
     });
   }, [editTMDetails, editDriverData]);
@@ -201,6 +239,8 @@ export const EditDetails = () => {
         ],
         address: currentTarget.address.value as string,
       },
+      workLocation: currentTarget.workLocation.value,
+      currentShift: initialData.currentShift,
     };
 
     const formData = new FormData();
@@ -367,6 +407,64 @@ export const EditDetails = () => {
                 />
               )}
             </Box>
+          </Box>
+          <Box
+            sx={{
+              ...RowFlex,
+              width: "100%",
+              justifyContent: "space-between",
+              gap: "15px",
+            }}
+          >
+            {employeePath && (
+              <FormControl fullWidth>
+                <InputLabel
+                  sx={{ lineHeight: "10px", fontSize: "0.8rem" }}
+                  id="worklocation-label"
+                >
+                  Work Location
+                </InputLabel>
+                <Select
+                  name="workLocation"
+                  label="workLocation"
+                  type="string"
+                  placeholder="workLocation"
+                  InputLabelProps={{ shrink: true }}
+                  value={initialData?.workLocation}
+                  onChange={(e) =>
+                    setInitialData({ workLocation: e.target.value })
+                  }
+                >
+                  <MenuItem value={"Rangreth"}>Rangreth</MenuItem>
+                  <MenuItem value={"Zaira Tower"}>Zaira Tower</MenuItem>
+                  <MenuItem value={"Karanagar"}>Karanagar</MenuItem>
+                  <MenuItem value={"Zirakpur"}>Zirakpur</MenuItem>
+                </Select>
+              </FormControl>
+            )}
+            {employeePath && (
+              <FormControl sx={{ width: "100%" }}>
+                <InputLabel id="currentShift">currentShift</InputLabel>
+                <Select
+                  labelId="currentShift"
+                  id="currentShift"
+                  value={initialData?.currentShift}
+                  label="currentShift"
+                  onChange={(e) => {
+                    setInitialData({
+                      ...initialData,
+                      currentShift: e.target.value,
+                    });
+                  }}
+                >
+                  {combinedTimings.map((timeSlot, index) => (
+                    <MenuItem key={index} value={timeSlot}>
+                      {timeSlot}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
           </Box>
           <Box
             full

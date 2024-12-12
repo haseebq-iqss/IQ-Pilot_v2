@@ -16,6 +16,7 @@ import {
 import PassengerTab from "./PassengerTab.tsx";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import { useDroppable } from "@dnd-kit/core";
+import { TaxiAlert } from "@mui/icons-material";
 
 type RosterCardTypes = {
   passengerDetails: EmployeeTypes[];
@@ -103,7 +104,12 @@ const RosterCard = ({
           sensors={sensors}
         > */}
         <Box
-          sx={{ ...RowFlex, flexDirection: {xs: "column", lg:"row"}, width: "100%", justifyContent: "space-between" }}
+          sx={{
+            ...RowFlex,
+            flexDirection: { xs: "column", lg: "row" },
+            width: "100%",
+            justifyContent: "space-between",
+          }}
         >
           <Box
             sx={{
@@ -129,7 +135,6 @@ const RosterCard = ({
               <Box
                 sx={{
                   ...RowFlex,
-                  justifyContent: "space-between",
                   width: "100%",
                   gap: 2.5,
                 }}
@@ -212,6 +217,32 @@ const RosterCard = ({
                     }}
                   />
                   {column?.cab?.numberPlate}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: "0.75rem",
+                    fontWeight: "bold",
+                    display: "flex",
+                    alignItems: "center",
+                    color:
+                      column?.cab?.typeOfCab === "inHouse"
+                        ? "success.dark"
+                        : "warning.dark",
+                  }}
+                  fontWeight={500}
+                >
+                  <TaxiAlert
+                    sx={{
+                      width: "15px",
+                      height: "15px",
+                      mr: "3px",
+                      color:
+                        column?.cab?.typeOfCab === "inHouse"
+                          ? "success.dark"
+                          : "warning.dark",
+                    }}
+                  />
+                  {column?.cab?.typeOfCab}
                 </Typography>
               </Box>
             </Box>

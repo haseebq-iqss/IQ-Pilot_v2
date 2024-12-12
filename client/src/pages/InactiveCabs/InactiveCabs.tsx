@@ -118,6 +118,7 @@ function InactiveCabs() {
       qc.invalidateQueries({ queryKey: ["all-cabs"] });
     },
   });
+
   return (
     <PageContainer
       headerText={`Inactive / Available Cabs (${allCabs?.length || 0})`}
@@ -156,6 +157,7 @@ function InactiveCabs() {
                 <TableCell>Driver</TableCell>
                 <TableCell align="center">Cab Number</TableCell>
                 <TableCell align="center">Number Plate</TableCell>
+                <TableCell align="center">Cab Type</TableCell>
                 <TableCell align="center">Status</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
@@ -192,6 +194,20 @@ function InactiveCabs() {
                     {driver?.cabNumber}
                   </TableCell>
                   <TableCell align="center">{driver?.numberPlate}</TableCell>
+                  <TableCell
+                    sx={{
+                      fontWeight: 600,
+                      color:
+                        driver?.typeOfCab === "inHouse"
+                          ? "success.dark"
+                          : driver?.typeOfCab === "vendor"
+                          ? "warning.dark"
+                          : "default",
+                    }}
+                    align="center"
+                  >
+                    {driver?.typeOfCab}
+                  </TableCell>
                   <TableCell align="center">
                     {!(driver?.cabDriver as EmployeeTypes)?.isCabCancelled
                       ? "Active"

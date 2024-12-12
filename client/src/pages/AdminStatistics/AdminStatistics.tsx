@@ -37,7 +37,7 @@ import isXSmall from "../../utils/isXSmall";
 function AdminStatistics() {
   const navigate = useNavigate();
 
-  const {isSM, isMD} = isXSmall()
+  const { isSM, isMD } = isXSmall();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
@@ -132,7 +132,7 @@ function AdminStatistics() {
               color: "text.primary",
             }}
           >
-            <Typography variant={isSM || isMD ? "h4" :"h4"} fontWeight={700}>
+            <Typography variant={isSM || isMD ? "h4" : "h4"} fontWeight={700}>
               {GetCurrentMonth()}'s Statistics
             </Typography>
             <Typography color={"GrayText"} variant="body1">
