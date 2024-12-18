@@ -124,9 +124,7 @@ function ViewRoute() {
               fontWeight={600}
             >
               <AccessTime sx={{ fontSize: "2rem", mr: 1 }} />
-              {ConvertShiftTimeTo12HrFormat(
-                routeState?.currentShift as string
-              )}
+              {ConvertShiftTimeTo12HrFormat(routeState?.currentShift as string)}
             </Typography>
             <Box
               sx={{
@@ -175,10 +173,7 @@ function ViewRoute() {
               color={"GrayText"}
             >
               <DateRange sx={{ fontSize: "1.5rem", mr: 1 }} />
-              {DaysTillActive(
-                routeState?.createdAt as any,
-                routeState?.daysRouteIsActive as any
-              )}
+              {DaysTillActive(routeState?.createdAt as any)}
             </Typography>
           </Box>
         </Box>
@@ -237,7 +232,16 @@ function ViewRoute() {
               </Typography>
             </Box>
           )}
-          <Box sx={{ ...ColFlex, width: "100%", height:"auto", justifyContent:"flex-start", gap:2.5, overflowY:"auto" }}>
+          <Box
+            sx={{
+              ...ColFlex,
+              width: "100%",
+              height: "auto",
+              justifyContent: "flex-start",
+              gap: 2.5,
+              overflowY: "auto",
+            }}
+          >
             {attendanceData?.length
               ? attendanceData?.map((attendance: any) => {
                   // console.log(employee);

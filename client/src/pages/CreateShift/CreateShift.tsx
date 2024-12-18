@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Box, Typography } from "@mui/material";
+import { Box, IconButton, TextField, Typography } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ColFlex, RowFlex, PageFlex } from "../../style_extentions/Flex.ts";
 import LogoImage from "/images/logo.png";
@@ -31,10 +31,11 @@ import ReservedPassengersTab from "../../components/ui/ReservedPassengersTab.tsx
 import Loading from "../../components/ui/Loading.tsx";
 import SnackbarContext from "../../context/SnackbarContext.ts";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes.ts";
-import { ArrowBackIos } from "@mui/icons-material";
+import { ArrowBackIos, Add, Search } from "@mui/icons-material";
 import isXSmall from "../../utils/isXSmall.ts";
 import NoticeModal from "../../components/ui/NoticeModal.tsx";
 import formatDateString from "../../utils/DateFormatter.ts";
+import GlobalModal from "../../components/ui/Modal.tsx";
 
 function CreateShift() {
   const location = useLocation();
@@ -419,6 +420,10 @@ function CreateShift() {
 
   // console.log(combinedData)
 
+  const [searchtext, setSearchText] = useState("");
+  const [openAddExternalTmModal, setOpenAddExternalTmModal] =
+    useState<boolean>(false);
+
   return (
     <DndContext
       onDragOver={onDragOver}
@@ -484,6 +489,21 @@ function CreateShift() {
               gap: 0,
             }}
           >
+            <Box
+              sx={{
+                px: 3,
+                height: "40px",
+                backgroundColor: "success.main",
+                ...RowFlex,
+                gap: 1,
+                borderRadius: 1.5,
+                cursor: "pointer",
+              }}
+              onClick={() => setOpenAddExternalTmModal(true)}
+            >
+              <Add fontSize="20" sx={{ color: "white" }} />
+              <Typography sx={{ color: "white" }}>Add Cab</Typography>
+            </Box>
             <Box
               sx={{
                 px: 5,
@@ -652,6 +672,79 @@ function CreateShift() {
         setOpenConfirmModal={setOpenConfirmModal}
         triggerFunction={handleCreateRoute}
       />
+      {/* ADD TEAM MEMBER MODAL */}
+      <GlobalModal
+        headerText="Search & Add Available Drivers"
+        openModal={openAddExternalTmModal}
+        setOpenModal={setOpenAddExternalTmModal}
+      >
+        <Box
+          sx={{
+            ...ColFlex,
+            width: "100%",
+            justifyContent: "flex-start",
+            height: "100%",
+            padding: "1rem",
+          }}
+        >
+          <Box
+            sx={{
+              ...RowFlex,
+              width: "100%",
+              gap: 2.5,
+            }}
+          >
+            <TextField
+              variant="outlined"
+              size="medium"
+              sx={{ width: "65%" }}
+              onChange={(e) => {
+                setSearchText(e.target.value);
+              }}
+              placeholder="Search Drivers, Cab Numbers or Cab Plates"
+              InputProps={{
+                startAdornment: (
+                  <IconButton aria-label="search">
+                    <Search />
+                  </IconButton>
+                ),
+              }}
+            />
+            <Box sx={{ ...ColFlex, width: "20%", alignItems: "flex-start" }}>
+              <Typography sx={{ color: "white" }} variant="h5">
+                {/* {filteredTeamMembers?.length} Found */}0
+              </Typography>
+              <Typography sx={{ color: "white" }} variant="body2">
+                Available Drivers
+              </Typography>
+            </Box>
+          </Box>
+          {/* <Box
+            sx={{
+              ...ColFlex,
+              height: "75%",
+              width: "75%",
+              overflowY: "scroll",
+              scrollbarWidth: "none", // For Firefox
+              msOverflowStyle: "none", // For Internet Explorer and Edge
+              justifyContent: "flex-start",
+              gap: "1rem",
+              pt: 2.5,
+            }}
+          >
+            {pendingPassengersStatus === "success" &&
+              filteredTeamMembers?.map((passenger: EmployeeTypes) => {
+                return (
+                  <EmployeeTab
+                    passenger={passenger}
+                    // newEmployeeSetter={handleAddNewPassenger}
+                    key={passenger._id}
+                  />
+                );
+              })}
+          </Box> */}
+        </Box>
+      </GlobalModal>
     </DndContext>
   );
 }
