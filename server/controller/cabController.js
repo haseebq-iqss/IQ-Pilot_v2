@@ -49,12 +49,16 @@ exports.getCabByDriver = catchAsync(async (req, res, next) => {
 exports.getCabByID = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   try {
-
     const cab = await Cab.findById(id).populate("cabDriver");
     if (cab.length === 0) {
-      const cabFromDriverId = await Cab.find({ cabDriver: id }).populate("cabDriver");
-      if (!cabFromDriverId) return res.status(400).json({ status: "Error", message: "No cab found for this driver" });
-      console.log(cabFromDriverId)
+      const cabFromDriverId = await Cab.find({ cabDriver: id }).populate(
+        "cabDriver"
+      );
+      if (!cabFromDriverId)
+        return res
+          .status(400)
+          .json({ status: "Error", message: "No cab found for this driver" });
+      console.log(cabFromDriverId);
       return res.status(200).json({ status: "Success", data: cabFromDriverId });
     }
     res.status(200).json({ status: "Success", data: cab });
@@ -67,9 +71,11 @@ exports.getCabByDriverID = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   try {
     const cab = await Cab.findOne({ cabDriver: id }).populate("cabDriver");
-    console.log(cab)
+    console.log(cab);
     if (cab.length === 0) {
-      return res.status(400).json({ status: "Error", message: "No cab found for this driver" });
+      return res
+        .status(400)
+        .json({ status: "Error", message: "No cab found for this driver" });
     }
     res.status(200).json({ status: "Success", data: cab });
   } catch (err) {
@@ -151,6 +157,9 @@ exports.getTMSAssignedCabs = catchAsync(async (req, res, next) => {
 exports.availableCabs = catchAsync(async (req, res, next) => {
   const cabs = await Cab.aggregate([
     {
+      isAvailable: true,
+    },
+    {
       $lookup: {
         from: "routes",
         foreignField: "cab",
@@ -205,12 +214,31 @@ exports.availableCabs = catchAsync(async (req, res, next) => {
     cab.routes.forEach((route) => {
       cabObj.occupiedShifts.push(route.currentShift);
     });
-    cabObj.occupiedShifts.length < 2 && cabsShiftForCurrentDay.push(cabObj);
+    // cabObj.occupiedShifts.length < 2 && cabsShiftForCurrentDay.push(cabObj);
+    cabsShiftForCurrentDay.push(cabObj);
   }
 
   res.status(200).json({
     status: "Success",
     noOfCabsAvailable: cabsShiftForCurrentDay.length,
     data: cabsShiftForCurrentDay,
+  });
+});
+
+exports.toggleCabIsAvailable = catchAsync(async (req, res, next) => {
+  const { cab_id } = req.params;
+
+  if (!cab_id) return next(new AppError(`Invalid cab_id provided...`, 400));
+
+  const cab = await Cab.findById(cab_id);
+
+  if (!cab) return next(new AppError(`Cab not found...`, 404));
+
+  cab.isAvailable = !cab.isAvailable;
+  await cab.save();
+
+  return res.status(200).json({
+    status: "Success",
+    data: { id: cab._id, isAvailable: cab.isAvailable },
   });
 });

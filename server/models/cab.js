@@ -51,6 +51,10 @@ const cabSchema = new mongoose.Schema({
     required: [true, "Please provide the type of cab."],
     enum: ["inHouse", "vendor"],
   },
+  isAvailable: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const Cab = mongoose.model("Cab", cabSchema);

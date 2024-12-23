@@ -3,7 +3,11 @@ const getActiveRoutes = async (all_routes) => {
     Date.UTC(
       new Date().getUTCFullYear(),
       new Date().getUTCMonth(),
-      new Date().getUTCDate()
+      new Date().getUTCDate(),
+      0,
+      0,
+      0,
+      0
     )
   );
   // present_day.setHours(0, 0, 0, 0); // Set present day to midnight

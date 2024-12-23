@@ -8,10 +8,13 @@ const shuffleArray = require("../utils/shuffleArray");
 const setMonthTimeLine = require("../utils/setMonthTimeLine");
 const kmeans = require("node-kmeans");
 const geolib = require("geolib");
+const clustering = require("density-clustering");
+
 const {
   euclidian_distance,
   squaredDistance,
 } = require("../utils/euclidianDistance");
+
 const {
   prepareShiftDataForExport,
   exportShiftDataToExcel,
@@ -76,6 +79,22 @@ function kmeansPlusPlusInitialization(data, k) {
 
   return centroids;
 }
+
+const calculateDynamicEpsilon = (coordinates) => {
+  const distances = [];
+  for (let i = 0; i < coordinates.length; i++) {
+    for (let j = i + 1; j < coordinates.length; j++) {
+      distances.push(
+        geolib.getDistance(
+          { latitude: coordinates[i][1], longitude: coordinates[i][0] },
+          { latitude: coordinates[j][1], longitude: coordinates[j][0] }
+        )
+      );
+    }
+  }
+  distances.sort((a, b) => a - b);
+  return distances[Math.floor(distances.length * 0.1)]; // Use the 10th percentile distance
+};
 
 function assignCabs(
   cabs,
@@ -229,7 +248,7 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
   const employees = await User.aggregate([
     {
       $match: {
-        workLocation,
+        workLocation: { $eq: workLocation },
         isCabCancelled: { $eq: false },
         hasCabService: { $eq: true },
         $expr: {
@@ -264,117 +283,234 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
     (employee) => employee.pickUp.coordinates
   );
 
-  const numOfClusters = Math.ceil(employees.length / 6);
-  const initialCentroids = kmeansPlusPlusInitialization(
+  // Using DBSCAN for grouping employees into clusters.
+  const dbscan = new clustering.DBSCAN();
+  const EPSILON = 1000;
+  const MIN_POINTS = 4;
+  const MAX_CAB_CAPACITY = 6;
+
+  const clusters = dbscan.run(
     employeesPickUpCoordinates,
-    numOfClusters
-  );
-
-  kmeans.clusterize(
-    employeesPickUpCoordinates,
-    { k: numOfClusters, initialize: initialCentroids },
-    async (err, resClusters) => {
-      if (err) {
-        console.error("Clustering error: ", err);
-        return next(new AppError("Clustering error occurred", 500));
-      }
-      let employeesSortedByPickCoords = [];
-      for (const cluster of resClusters) {
-        const clusterCentroid = cluster.centroid;
-        // const sortedCluster = cluster.clusterInd
-        //   .map((ind) => {
-        //     const employee = employees[ind];
-        //     const employeeCoords = employeesPickUpCoordinates[ind];
-        //     // console.log(clusterCentroid[1], clusterCentroid[0]);
-        //     const distance = geolib.getDistance(
-        //       { latitude: clusterCentroid[1], longitude: clusterCentroid[0] },
-        //       { latitude: employeeCoords[1], longitude: employeeCoords[0] }
-        //     );
-        //     // console.log(
-        //     //   `Distance from centroid to employee ${ind}: ${distance} meters`
-        //     // );
-        //     return { employee, distance };
-        //   })
-        //   .filter((entry) => entry.distance <= RADIUS)
-        //   .sort((a, b) => a.distance - b.distance)
-        //   .map((obj) => obj.employee);
-
-        const sortedCluster = cluster.clusterInd
-          .map((ind) => ({
-            employee: employees[ind],
-            distance: euclidian_distance(
-              clusterCentroid,
-              employeesPickUpCoordinates[ind]
-            ),
-          }))
-          .sort((a, b) => a.distance - b.distance)
-          .map((obj) => obj.employee);
-
-        employeesSortedByPickCoords.push(...sortedCluster);
-      }
-
-      if (employeesSortedByPickCoords.length === 0)
-        return next(
-          new AppError(
-            `No employees found as of now for this shift: ${currentShift} and workLocation: ${workLocation}`,
-            404
-          )
-        );
-      const cabs = await Cab.aggregate([
-        {
-          $lookup: {
-            from: "routes",
-            foreignField: "cab",
-            localField: "_id",
-            as: "routes",
-          },
-        },
-        {
-          $lookup: {
-            from: "users",
-            foreignField: "_id",
-            localField: "cabDriver",
-            as: "cabDriver",
-          },
-        },
-      ]);
-
-      if (cabs.length === 0)
-        return next(new AppError(`No cabs available as of now...`, 404));
-
-      // NOT TO PUSH NON-ACTIVE ROUTES ROUTES ARRAY IN EACH CABS(FILTERING OF CABS)
-      for (const cab of cabs) {
-        cab.routes = cab.routes
-          .map((route) => {
-            const route_active_on_date = route.activeOnDate;
-            // check this condition
-            if (route_active_on_date.getTime() < present_day.getTime())
-              return null;
-            return route;
-          })
-          .filter((val) => val !== null);
-      }
-      // cabs.routes = cabs.routes?.filter((route) => {
-      //   return route.activeOnDate.getTime() >= present_day.getTime();
-      // });
-
-      const groups = await assignCabToEmployees(
-        currentShift,
-        employeesSortedByPickCoords,
-        cabs
+    EPSILON,
+    MIN_POINTS,
+    (p1, p2) => {
+      return (
+        geolib.getDistance(
+          { latitude: p1[1], longitude: p1[0] },
+          { latitude: p2[1], longitude: p2[0] }
+        ) * 1.25
       );
-
-      res.status(200).json({
-        message: "Success",
-        results: groups.length,
-        data: groups,
-        workLocation,
-        currentShift,
-        typeOfRoute,
-        scheduledForDate: typeOfRoute === "pickup" ? date_active : present_day,
-      });
     }
   );
+  let employeesSortedByPickCoords = [];
+  for (const cluster of clusters) {
+    const clusterCoords = cluster.map((ind) => employeesPickUpCoordinates[ind]);
+    const clusterEmployees = cluster.map((index) => employees[index]);
+
+    if (cluster.length > MAX_CAB_CAPACITY) {
+      const kmeans = new clustering.KMEANS();
+      const numOfClusters = Math.ceil(cluster.length / MAX_CAB_CAPACITY);
+      const kmeansClusters = kmeans.run(clusterCoords, numOfClusters);
+      for (const subCluster of kmeansClusters) {
+        const sortedSubCluster = subCluster
+          .map((index) => clusterEmployees[index])
+          .sort((a, b) =>
+            geolib.getDistance(
+              {
+                latitude: a.pickUp.coordinates[1],
+                longitude: a.pickUp.coordinates[0],
+              },
+              {
+                latitude: b.pickUp.coordinates[1],
+                longitude: b.pickUp.coordinates[0],
+              }
+            )
+          );
+        employeesSortedByPickCoords.push(...sortedSubCluster);
+      }
+    } else {
+      // For small clusters, sort directly
+      const sortedCluster = clusterEmployees.sort((a, b) =>
+        geolib.getDistance(
+          {
+            latitude: a.pickUp.coordinates[1],
+            longitude: a.pickUp.coordinates[0],
+          },
+          {
+            latitude: b.pickUp.coordinates[1],
+            longitude: b.pickUp.coordinates[0],
+          }
+        )
+      );
+      employeesSortedByPickCoords.push(...sortedCluster);
+    }
+  }
+  const cabs = await Cab.aggregate([
+    {
+      $lookup: {
+        from: "routes",
+        foreignField: "cab",
+        localField: "_id",
+        as: "routes",
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        foreignField: "_id",
+        localField: "cabDriver",
+        as: "cabDriver",
+      },
+    },
+  ]);
+
+  if (cabs.length === 0)
+    return next(new AppError(`No cabs available as of now...`, 404));
+
+  // NOT TO PUSH NON-ACTIVE ROUTES ROUTES ARRAY IN EACH CABS(FILTERING OF CABS)
+  for (const cab of cabs) {
+    cab.routes = cab.routes
+      .map((route) => {
+        const route_active_on_date = route.activeOnDate;
+        // check this condition
+        if (route_active_on_date.getTime() < present_day.getTime()) return null;
+        return route;
+      })
+      .filter((val) => val !== null);
+  }
+  // cabs.routes = cabs.routes?.filter((route) => {
+  //   return route.activeOnDate.getTime() >= present_day.getTime();
+  // });
+
+  const groups = await assignCabToEmployees(
+    currentShift,
+    employeesSortedByPickCoords,
+    cabs
+  );
+
+  res.status(200).json({
+    message: "Success",
+    results: groups.length,
+    data: groups,
+    workLocation,
+    currentShift,
+    typeOfRoute,
+    scheduledForDate: typeOfRoute === "pickup" ? date_active : present_day,
+  });
+
+  // return res.status(200).json({ status: "Success", data: clusters });
+
+  // USING K-MEANS CLUSTERING (OLD WAY).
+  // const numOfClusters = Math.ceil(employees.length / 6);
+  // const initialCentroids = kmeansPlusPlusInitialization(
+  //   employeesPickUpCoordinates,
+  //   numOfClusters
+  // );
+  // kmeans.clusterize(
+  //   employeesPickUpCoordinates,
+  //   { k: numOfClusters, initialize: initialCentroids },
+  //   async (err, resClusters) => {
+  //     if (err) {
+  //       console.error("Clustering error: ", err);
+  //       return next(new AppError("Clustering error occurred", 500));
+  //     }
+  //     let employeesSortedByPickCoords = [];
+  //     for (const cluster of resClusters) {
+  //       const clusterCentroid = cluster.centroid;
+  //       // const sortedCluster = cluster.clusterInd
+  //       //   .map((ind) => {
+  //       //     const employee = employees[ind];
+  //       //     const employeeCoords = employeesPickUpCoordinates[ind];
+  //       //     // console.log(clusterCentroid[1], clusterCentroid[0]);
+  //       //     const distance = geolib.getDistance(
+  //       //       { latitude: clusterCentroid[1], longitude: clusterCentroid[0] },
+  //       //       { latitude: employeeCoords[1], longitude: employeeCoords[0] }
+  //       //     );
+  //       //     // console.log(
+  //       //     //   `Distance from centroid to employee ${ind}: ${distance} meters`
+  //       //     // );
+  //       //     return { employee, distance };
+  //       //   })
+  //       //   .filter((entry) => entry.distance <= RADIUS)
+  //       //   .sort((a, b) => a.distance - b.distance)
+  //       //   .map((obj) => obj.employee);
+
+  //       const sortedCluster = cluster.clusterInd
+  //         .map((ind) => ({
+  //           employee: employees[ind],
+  //           distance: euclidian_distance(
+  //             clusterCentroid,
+  //             employeesPickUpCoordinates[ind]
+  //           ),
+  //         }))
+  //         .sort((a, b) => a.distance - b.distance)
+  //         .map((obj) => obj.employee);
+
+  //       employeesSortedByPickCoords.push(...sortedCluster);
+  //     }
+
+  //     if (employeesSortedByPickCoords.length === 0)
+  //       return next(
+  //         new AppError(
+  //           `No employees found as of now for this shift: ${currentShift} and workLocation: ${workLocation}`,
+  //           404
+  //         )
+  //       );
+  //     const cabs = await Cab.aggregate([
+  //       {
+  //         $lookup: {
+  //           from: "routes",
+  //           foreignField: "cab",
+  //           localField: "_id",
+  //           as: "routes",
+  //         },
+  //       },
+  //       {
+  //         $lookup: {
+  //           from: "users",
+  //           foreignField: "_id",
+  //           localField: "cabDriver",
+  //           as: "cabDriver",
+  //         },
+  //       },
+  //     ]);
+
+  //     if (cabs.length === 0)
+  //       return next(new AppError(`No cabs available as of now...`, 404));
+
+  //     // NOT TO PUSH NON-ACTIVE ROUTES ROUTES ARRAY IN EACH CABS(FILTERING OF CABS)
+  //     for (const cab of cabs) {
+  //       cab.routes = cab.routes
+  //         .map((route) => {
+  //           const route_active_on_date = route.activeOnDate;
+  //           // check this condition
+  //           if (route_active_on_date.getTime() < present_day.getTime())
+  //             return null;
+  //           return route;
+  //         })
+  //         .filter((val) => val !== null);
+  //     }
+  //     // cabs.routes = cabs.routes?.filter((route) => {
+  //     //   return route.activeOnDate.getTime() >= present_day.getTime();
+  //     // });
+
+  //     const groups = await assignCabToEmployees(
+  //       currentShift,
+  //       employeesSortedByPickCoords,
+  //       cabs
+  //     );
+
+  //     res.status(200).json({
+  //       message: "Success",
+  //       results: groups.length,
+  //       data: groups,
+  //       workLocation,
+  //       currentShift,
+  //       typeOfRoute,
+  //       scheduledForDate: typeOfRoute === "pickup" ? date_active : present_day,
+  //     });
+  //   }
+  // );
 });
 
 exports.createRoute = catchAsync(async (req, res, next) => {
@@ -556,6 +692,7 @@ exports.pendingPassengers = catchAsync(async (req, res, next) => {
 
   const passengerIds = active_routes.flatMap((route) => route.passengers);
   const pending_passengers = await User.find({
+    hasCabService: true,
     _id: { $nin: passengerIds },
     role: { $ne: "driver" },
   });

@@ -10,7 +10,7 @@ const pickupSchema = new mongoose.Schema({
   },
   coordinates: {
     type: [Number], // Array of [longitude, latitude]
-    index: "2dsphere", // Create a geospatial index on this field
+    // index: "2dsphere", // Create a geospatial index on this field
   },
   address: String,
   description: String,

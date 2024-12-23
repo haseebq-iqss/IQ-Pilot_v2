@@ -145,7 +145,6 @@ const toggleCabService = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: "Success", data: user });
 });
 
-
 // const uploadTmsExcelSheet = catchAsync(async (req, res, next) => {
 //   const file = req.file;
 //   if (!file) return next(new AppError(`No file uploaded`, 400));
@@ -198,7 +197,14 @@ const uploadEmplLeaveSheets = catchAsync(async (req, res, next) => {
   const data = xlsx.utils.sheet_to_json(work_book.Sheets[sheet_name]);
 
   const invalid_rows = data.filter(
-    (row) => !row.email || !row.name || !row.status || !row.cabService
+    (row) =>
+      !row.email ||
+      !row.workLocation ||
+      !row.currentShift ||
+      !row.status ||
+      !row.cabService ||
+      !row.pickupCoordinates ||
+      !row.address
   );
 
   if (invalid_rows.length > 0) {
@@ -214,19 +220,23 @@ const uploadEmplLeaveSheets = catchAsync(async (req, res, next) => {
     );
   }
 
-  const updates = data.map((row) => ({
-    updateOne: {
-      filter: {
-        email: row.email,
+  const updates = data.map((row) => {
+    let updated_fields = {
+      isCabCancelled: row.status.toLowerCase() === "absent",
+      hasCabService: row.cabService.toLowerCase() === "yes",
+      workLocation: row.workLocation,
+      currentShift: row.currentShift,
+    };
+    const [longitude, latitude] = row.pickupCoordinates.split(",");
+    updated_fields["pickup.coordinates"] = [longitude, latitude];
+    updated_fields["pickup.address"] = row.address;
+
+    return {
+      updateOne: {
+        filter: { email: row.email, update: { $set: updated_fields } },
       },
-      update: {
-        $set: {
-          isCabCancelled: row.status.toLowerCase() === "absent",
-          hasCabService: row.cabService.toLowerCase() === "yes",
-        },
-      },
-    },
-  }));
+    };
+  });
 
   await User.bulkWrite(updates);
   console.log("Database updated successfully!");
@@ -252,5 +262,5 @@ module.exports = {
   bulkUserUpload,
   // uploadTmsExcelSheet,
   uploadEmplLeaveSheets,
-  toggleCabService
+  toggleCabService,
 };

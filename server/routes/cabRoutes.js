@@ -11,6 +11,7 @@ const {
   availableCabs,
   getCabByID,
   getCabByDriverID,
+  toggleCabIsAvailable,
 } = require("../controller/cabController");
 
 const router = express.Router();
@@ -27,13 +28,18 @@ router
   .get(restrictTo("admin"), getCabByID)
   .patch(restrictTo("admin"), updateCab)
   .delete(restrictTo("admin"), deleteCab);
-  
-router.route("/getDriverCab/:id").get(restrictTo("driver"), getCabByDriverID)
 
-router.route("/driver/:id").get(restrictTo("admin"), getCabByDriver)
+router.route("/getDriverCab/:id").get(restrictTo("driver"), getCabByDriverID);
+
+router.route("/driver/:id").get(restrictTo("admin"), getCabByDriver);
 router
   .route("/tm/cab/:id")
   .get(restrictTo("admin", "employee"), getEmployeeCab);
 
+router.patch(
+  "/isAvailable/:cab_id",
+  restrictTo("driver"),
+  toggleCabIsAvailable
+);
 router.route("/tms/assignedCabs").get(getTMSAssignedCabs);
 module.exports = router;
