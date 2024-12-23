@@ -157,7 +157,9 @@ exports.getTMSAssignedCabs = catchAsync(async (req, res, next) => {
 exports.availableCabs = catchAsync(async (req, res, next) => {
   const cabs = await Cab.aggregate([
     {
-      isAvailable: true,
+      $match: {
+        isAvailable: true,
+      },
     },
     {
       $lookup: {
