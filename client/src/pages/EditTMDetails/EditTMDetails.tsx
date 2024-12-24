@@ -294,6 +294,7 @@ function EditTMDetails() {
               name="workLocation"
               value={workLocation}
               onChange={(e) => setWorkLocation(e.target.value)}
+              disabled
             />
           </Box>
           <Box sx={{ width: "100%", ...ColFlex, gap: 1, alignItems: "start" }}>
