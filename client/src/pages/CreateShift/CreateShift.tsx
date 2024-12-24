@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Box, IconButton, TextField, Typography } from "@mui/material";
+import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ColFlex, RowFlex, PageFlex } from "../../style_extentions/Flex.ts";
 import LogoImage from "/images/logo.png";
@@ -8,7 +8,7 @@ import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 import Cabtypes from "../../types/CabTypes.ts";
 import { useContext, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios.ts";
 import {
   DndContext,
@@ -40,7 +40,33 @@ import GlobalModal from "../../components/ui/Modal.tsx";
 function CreateShift() {
   const location = useLocation();
   const routeState = location?.state;
-  console.log(routeState);
+  console.log(routeState.data.data);
+
+  const fetchAvailableDrivers = async () => {
+    try {
+      const response = await useAxios.get("/cabs/availableCabs");
+      return response.data.data;
+    } catch (error) {
+      console.error("Error fetching available drivers:", error);
+    }
+  };
+  const { data: getDrivers } = useQuery({
+    queryKey: ["all-drivers"],
+    queryFn: fetchAvailableDrivers,
+  });
+
+  const unoccupiedDrivers = getDrivers.filter((item) => {
+    const driverId = item?.cabDriver?.[0]?._id;
+    return (
+      driverId &&
+      !routeState.data.data.some((occupiedItem) => {
+        return occupiedItem?.cab?.cabDriver?.[0]?._id === driverId;
+      })
+    );
+  });
+
+  const handleNewCab = () => {};
+
   const { isSM, isMD } = isXSmall();
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
@@ -560,7 +586,7 @@ function CreateShift() {
                 sx={{ color: "background.default" }}
               />
               <Typography sx={{ color: "background.default" }}>
-                Back to Dashboard
+                Cancel
               </Typography>
             </Box>
           </Box>
@@ -687,6 +713,7 @@ function CreateShift() {
             padding: "1rem",
           }}
         >
+          {/* Search Bar */}
           <Box
             sx={{
               ...RowFlex,
@@ -699,7 +726,7 @@ function CreateShift() {
               size="medium"
               sx={{ width: "65%" }}
               onChange={(e) => {
-                setSearchText(e.target.value);
+                setSearchText(e.target.value.toLowerCase());
               }}
               placeholder="Search Drivers, Cab Numbers or Cab Plates"
               InputProps={{
@@ -712,37 +739,70 @@ function CreateShift() {
             />
             <Box sx={{ ...ColFlex, width: "20%", alignItems: "flex-start" }}>
               <Typography sx={{ color: "white" }} variant="h5">
-                {/* {filteredTeamMembers?.length} Found */}0
+                {unoccupiedDrivers?.length}
               </Typography>
               <Typography sx={{ color: "white" }} variant="body2">
                 Available Drivers
               </Typography>
             </Box>
           </Box>
-          {/* <Box
+
+          {/* List of Drivers */}
+          <Box
             sx={{
               ...ColFlex,
               height: "75%",
-              width: "75%",
-              overflowY: "scroll",
-              scrollbarWidth: "none", // For Firefox
-              msOverflowStyle: "none", // For Internet Explorer and Edge
+              width: "100%",
+              overflowY: "auto",
               justifyContent: "flex-start",
               gap: "1rem",
-              pt: 2.5,
+              mt: 2.5,
             }}
           >
-            {pendingPassengersStatus === "success" &&
-              filteredTeamMembers?.map((passenger: EmployeeTypes) => {
-                return (
-                  <EmployeeTab
-                    passenger={passenger}
-                    // newEmployeeSetter={handleAddNewPassenger}
-                    key={passenger._id}
-                  />
-                );
-              })}
-          </Box> */}
+            {unoccupiedDrivers
+              ?.filter(
+                (driver) =>
+                  (driver?.cabDriver[0] as EmployeeTypes)?.fname
+                    ?.toLowerCase()
+                    ?.includes(searchtext) ||
+                  (driver?.cabDriver[0] as EmployeeTypes)?.lname
+                    ?.toLowerCase()
+                    ?.includes(searchtext)
+              )
+              .map((driver) => (
+                <Box
+                  key={driver.id}
+                  sx={{
+                    ...RowFlex,
+                    justifyContent: "space-between",
+                    padding: "1rem",
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 1.5,
+                    width: "100%",
+                    cursor: "pointer",
+                    backgroundColor: "background.paper",
+                    "&:hover": {
+                      backgroundColor: "action.hover",
+                    },
+                  }}
+                  // onClick={() => handleAddDriver(driver)}
+                >
+                  <Box>
+                    <Typography
+                      variant="body1"
+                      fontWeight={500}
+                      color="text.secondary"
+                    >
+                      {driver?.cabDriver[0]?.fname +
+                        " " +
+                        driver?.cabDriver[0]?.lname}
+                    </Typography>
+                  </Box>
+                  <Button onClick={handleNewCab}>+</Button>
+                </Box>
+              ))}
+          </Box>
         </Box>
       </GlobalModal>
     </DndContext>
