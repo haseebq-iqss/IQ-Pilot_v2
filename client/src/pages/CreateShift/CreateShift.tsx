@@ -36,8 +36,9 @@ import isXSmall from "../../utils/isXSmall.ts";
 import NoticeModal from "../../components/ui/NoticeModal.tsx";
 import formatDateString from "../../utils/DateFormatter.ts";
 import GlobalModal from "../../components/ui/Modal.tsx";
+import DriverCard from "../../components/ui/DriverCard.tsx";
 
-function CreateShift() {
+function CreateShift({ cab }) {
   const location = useLocation();
   const routeState = location?.state;
   console.log(routeState.data.data);
@@ -64,8 +65,6 @@ function CreateShift() {
       })
     );
   });
-
-  const handleNewCab = () => {};
 
   const { isSM, isMD } = isXSmall();
 
@@ -122,9 +121,11 @@ function CreateShift() {
   });
 
   const regularColumns = columns.filter((column) => column.name !== "reserved");
+  console.log(columns);
 
   const qc = useQueryClient();
   const navigate = useNavigate();
+
   const { mutate } = useMutation({
     mutationFn: async (data) => {
       try {
@@ -450,6 +451,17 @@ function CreateShift() {
   const [openAddExternalTmModal, setOpenAddExternalTmModal] =
     useState<boolean>(false);
 
+  const addNewCab = (cabData) => {
+    setColumns((prevColumns) => [
+      ...prevColumns,
+      {
+        cab: cabData,
+        passengers: [],
+        availableCapacity: cabData.seatingCapacity,
+      },
+    ]);
+  };
+
   return (
     <DndContext
       onDragOver={onDragOver}
@@ -770,37 +782,7 @@ function CreateShift() {
                     ?.includes(searchtext)
               )
               .map((driver) => (
-                <Box
-                  key={driver.id}
-                  sx={{
-                    ...RowFlex,
-                    justifyContent: "space-between",
-                    padding: "1rem",
-                    border: "1px solid",
-                    borderColor: "divider",
-                    borderRadius: 1.5,
-                    width: "100%",
-                    cursor: "pointer",
-                    backgroundColor: "background.paper",
-                    "&:hover": {
-                      backgroundColor: "action.hover",
-                    },
-                  }}
-                  // onClick={() => handleAddDriver(driver)}
-                >
-                  <Box>
-                    <Typography
-                      variant="body1"
-                      fontWeight={500}
-                      color="text.secondary"
-                    >
-                      {driver?.cabDriver[0]?.fname +
-                        " " +
-                        driver?.cabDriver[0]?.lname}
-                    </Typography>
-                  </Box>
-                  <Button onClick={handleNewCab}>+</Button>
-                </Box>
+                <DriverCard cab={driver} onAddCab={addNewCab} />
               ))}
           </Box>
         </Box>
