@@ -38,10 +38,10 @@ import formatDateString from "../../utils/DateFormatter.ts";
 import GlobalModal from "../../components/ui/Modal.tsx";
 import DriverCard from "../../components/ui/DriverCard.tsx";
 
-function CreateShift({ cab }) {
+function CreateShift() {
   const location = useLocation();
   const routeState = location?.state;
-  console.log(routeState.data.data);
+  // console.log(routeState.data.data);
 
   const fetchAvailableDrivers = async () => {
     try {
@@ -323,6 +323,49 @@ function CreateShift({ cab }) {
       });
     }
 
+        // Move from Reserve column to Task column
+        const updatePassengerAndColumns = (
+          prevReserved,
+          activeId,
+          overId,
+          targetColumnId
+        ) => {
+          const activeIndex = getPassengerPos(activeId, prevReserved);
+          if (activeIndex === -1) return prevReserved; // Handle case where activeId is not found
+    
+          const passenger = prevReserved[activeIndex];
+    
+          // Remove the active passenger from the reserved list
+          const updatedReservedPassengers = prevReserved.filter(
+            (_, index) => index !== activeIndex
+          );
+    
+          // Create an updated passenger object with the new column ID
+          const updatedPassenger = { ...passenger, columnId: targetColumnId };
+    
+          // Update the passengers list with the updated passenger if it's not already present
+          setPassengers((prevPassengers) => {
+            if (!prevPassengers.some((p) => p.id === activeId)) {
+              return [...prevPassengers, updatedPassenger];
+            }
+            return prevPassengers;
+          });
+    
+          // Remove the passenger from the reserved column
+          setReservedColumn((prevColumns) =>
+            prevColumns.map((column) =>
+              column.id === "reserved"
+                ? {
+                    ...column,
+                    passengers: column.passengers.filter((p) => p.id !== activeId),
+                  }
+                : column
+            )
+          );
+    
+          return updatedReservedPassengers;
+        };
+
     // Move from Reserve column to Task column
     if (
       (isActiveAReserveTask &&
@@ -452,14 +495,19 @@ function CreateShift({ cab }) {
     useState<boolean>(false);
 
   const addNewCab = (cabData) => {
+    // console.log(columns);
     setColumns((prevColumns) => [
       ...prevColumns,
       {
+        id: "Roster" + columns?.length,
         cab: cabData,
         passengers: [],
         availableCapacity: cabData.seatingCapacity,
+        currentShift : routeState?.data?.currentShift,
+        workLocation : routeState?.data?.workLocation,
       },
     ]);
+    setOpenAddExternalTmModal(false);
   };
 
   return (
@@ -653,6 +701,10 @@ function CreateShift({ cab }) {
                       (passenger: EmployeeTypes) =>
                         passenger.columnId === shift.id
                     )}
+
+                    reservedColumnSetter={setReservedColumn}
+                    passengersSetter={setPassengers}
+                    // expandedLayout={expandedLayout}
                   />
                 ))}
               </SortableContext>

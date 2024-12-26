@@ -27,6 +27,7 @@ import {
   GpsFixed,
   Groups,
   LocationOff,
+  People,
   Restore,
 } from "@mui/icons-material";
 import MapCenterUpdater from "./MapCenterUpdater";
@@ -574,7 +575,8 @@ const MapComponent = ({
                     : "Disable Live Tracking"}
                 </h3>
               </div>
-              {/* {mapDataView === "TM-View" && (
+              {/* Pending Passengers */}
+              {mapDataView === "TM-View" && (
                 <div
                   onClick={() => setViewUnrosteredTms(!viewUnrosteredTms)}
                   // onClick={() => PlaySound()}
@@ -582,19 +584,21 @@ const MapComponent = ({
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    backgroundColor: "darkgrey",
+                    backgroundColor: "black",
                     color: "white",
                     padding: "7.5px 15px",
                     borderRadius: "100px",
                     border: "2.5px solid white",
+                    cursor: "pointer",
                     gap: 10,
 
                     // cursor:"grabbing"
                   }}
                 >
-                  <h3>🙋🏻‍♀️ {!viewUnrosteredTms ? "Not Rostered" : "All TMs"}</h3>
+                  <People />
+                  <h3>{!viewUnrosteredTms ? "View Pending" : "View All"}</h3>
                 </div>
-              )} */}
+              )}
             </>
           )}
           {/* Reset Routes View */}
@@ -641,7 +645,7 @@ const MapComponent = ({
             }}
           >
             <div
-              style={{ display: "flex", gap: "10px", cursor:"pointer" }}
+              style={{ display: "flex", gap: "10px", cursor: "pointer" }}
               onClick={() =>
                 navigate(
                   `/admin/teamMemberProfile/${
@@ -672,9 +676,17 @@ const MapComponent = ({
                 </h2>
                 <h3 style={{ fontWeight: 600 }}>{empCard?.department}</h3>
                 <h4 style={{ fontWeight: 500 }}>{empCard?.pickUp?.address}</h4>
-                <div style={{display:"flex", alignItems:"center", justifyContent:"space-between"}}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <h4 style={{ fontWeight: 500 }}>{empCard?.phone}</h4>
-                  <h4 style={{ fontWeight: 500, textDecoration:"underline" }}>view profile</h4>
+                  <h4 style={{ fontWeight: 500, textDecoration: "underline" }}>
+                    view profile
+                  </h4>
                 </div>
               </div>
             </div>

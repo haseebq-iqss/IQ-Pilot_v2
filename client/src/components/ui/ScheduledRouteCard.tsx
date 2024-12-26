@@ -62,6 +62,7 @@ const RosterCard = ({
 }: RosterCardTypes) => {
   const [activeRouteCoords, setActiveRouteCoords] = useState<Array<any>>([]);
   const [mapVisible, setMapVisible] = useState<boolean>(false);
+  console.log(column)
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
