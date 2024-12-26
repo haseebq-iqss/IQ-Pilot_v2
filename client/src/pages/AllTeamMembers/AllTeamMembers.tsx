@@ -435,7 +435,9 @@ function AllTeamMembers() {
                               gap: "10px",
                             }}
                             onClick={() =>
-                              navigate(`/admin/editDetails/${employee?._id}`)
+                              navigate(`/admin/editDetails/${employee?._id}`, {
+                                state: employee,
+                              })
                             }
                           >
                             <EditLocation sx={{}} />
