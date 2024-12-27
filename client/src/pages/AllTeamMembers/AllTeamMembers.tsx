@@ -37,6 +37,7 @@ import { useNavigate } from "react-router-dom";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 import SnackbarContext from "../../context/SnackbarContext";
 import ConfirmationModal from "../../components/ui/ConfirmationModal";
+import Convert24To12HourFormat from "../../utils/24HourTo12HourFormat";
 
 function AllTeamMembers() {
   const qc = useQueryClient();
@@ -313,9 +314,9 @@ function AllTeamMembers() {
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                <TableCell align="center">Email</TableCell>
-                <TableCell align="center">Cab</TableCell>
                 <TableCell align="center">Location</TableCell>
+                <TableCell align="center">Shift</TableCell>
+                <TableCell align="center">Cab</TableCell>
                 <TableCell align="center">Office Location</TableCell>
                 <TableCell align="center">Status</TableCell>
                 <TableCell align="center">Cab Service</TableCell>
@@ -333,7 +334,7 @@ function AllTeamMembers() {
                       key={employee._id}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <TableCell width={"20%"} component="th" scope="row">
+                      <TableCell component="th" scope="row">
                         <Box
                           sx={{
                             display: "flex",
@@ -349,7 +350,14 @@ function AllTeamMembers() {
                           {employee.fname + " " + employee.lname}
                         </Box>
                       </TableCell>
-                      <TableCell align="center">{employee.email}</TableCell>
+                      <TableCell align="center">
+                        {employee.pickUp?.address}
+                      </TableCell>
+                      <TableCell align="center" width={"16%"}>
+                        {Convert24To12HourFormat(
+                          employee?.currentShift as string
+                        )}
+                      </TableCell>
                       <TableCell
                         sx={{
                           fontWeight: 600,
@@ -361,9 +369,7 @@ function AllTeamMembers() {
                       >
                         {empAssignedCab?.cab_number || "na"}
                       </TableCell>
-                      <TableCell align="center">
-                        {employee.pickUp?.address}
-                      </TableCell>
+
                       <TableCell width={"10%"} align="center">
                         {employee.workLocation}
                       </TableCell>
