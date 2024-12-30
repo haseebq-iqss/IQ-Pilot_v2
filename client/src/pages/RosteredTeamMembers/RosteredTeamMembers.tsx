@@ -31,6 +31,7 @@ import useAxios from "../../api/useAxios";
 import SnackbarContext from "../../context/SnackbarContext";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes";
 import ConfirmationModal from "../../components/ui/ConfirmationModal";
+import Convert24To12HourFormat from "../../utils/24HourTo12HourFormat";
 
 function RosteredTeamMembers() {
   const qc = useQueryClient();
@@ -158,13 +159,16 @@ function RosteredTeamMembers() {
               ),
             }}
           />
-          <Table sx={{ minWidth: {xs: "200%",lg:650} }} aria-label="TM's table">
+          <Table
+            sx={{ minWidth: { xs: "200%", lg: 650 } }}
+            aria-label="TM's table"
+          >
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                <TableCell align="center">Email</TableCell>
                 <TableCell align="center">Cab</TableCell>
                 <TableCell align="center">Location</TableCell>
+                <TableCell align="center">Shift</TableCell>
                 <TableCell align="center">Office Location</TableCell>
                 <TableCell align="center">Status</TableCell>
                 <TableCell align="center">Actions</TableCell>
@@ -197,7 +201,7 @@ function RosteredTeamMembers() {
                           {employee.fname + " " + employee.lname}
                         </Box>
                       </TableCell>
-                      <TableCell align="center">{employee.email}</TableCell>
+
                       <TableCell
                         sx={{
                           fontWeight: 600,
@@ -211,6 +215,11 @@ function RosteredTeamMembers() {
                       </TableCell>
                       <TableCell align="center">
                         {employee.pickUp?.address}
+                      </TableCell>
+                      <TableCell align="center" width={"16%"}>
+                        {Convert24To12HourFormat(
+                          employee?.currentShift as string
+                        )}
                       </TableCell>
                       <TableCell width={"10%"} align="center">
                         {employee.workLocation}

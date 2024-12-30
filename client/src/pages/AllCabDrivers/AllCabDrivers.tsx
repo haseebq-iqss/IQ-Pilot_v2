@@ -237,7 +237,8 @@ function AllCabDrivers() {
                         }}
                         onClick={() =>
                           navigate(
-                            `/admin/editDetails/${driver?.cabDriver?._id}`
+                            `/admin/editDriver/${driver?.cabDriver?._id}`,
+                            { state: driver }
                           )
                         }
                       >

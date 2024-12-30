@@ -9,6 +9,9 @@ type Cabtypes = {
   carModel?: string;
   carColor?: string;
   typeOfCab?: string;
+  mileage?: number;
+  androidSetup?: boolean;
+  acInstalled?: boolean;
 };
 
 export default Cabtypes;

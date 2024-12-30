@@ -33,6 +33,7 @@ import Settings from "../pages/Settings/Settings";
 import EditTMDetails from "../pages/EditTMDetails/EditTMDetails";
 import DriverSettings from "../pages/DriverSettings/DriverSettings";
 import EmployeeSettings from "../pages/EmployeeSettings/EmployeeSettings";
+import { EditDriver } from "../pages/EditDriver/EditDriver";
 
 function MainRouter() {
   const { userData }: UserContextTypes = useContext(UserDataContext);
@@ -118,6 +119,14 @@ function MainRouter() {
                 element={
                   <SlideInOut>
                     <EditDetails />
+                  </SlideInOut>
+                }
+              />
+              <Route
+                path="editDriver/:id"
+                element={
+                  <SlideInOut>
+                    <EditDriver />
                   </SlideInOut>
                 }
               />

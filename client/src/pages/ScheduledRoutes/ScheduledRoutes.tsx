@@ -143,6 +143,14 @@ function ScheduledRoutes() {
     }
   };
 
+  const handleEditRoute = () => {
+    setOpenSnack({
+      open: true,
+      message: "This feature not implemented yet!",
+      severity: "info",
+    });
+  };
+
   return (
     <PageContainer
       headerText={`All Routes (${routes?.length || 0})`}
@@ -388,6 +396,7 @@ function ScheduledRoutes() {
                             justifyContent: "flex-start",
                             gap: "10px",
                           }}
+                          onClick={handleEditRoute}
                         >
                           <EditLocation sx={{}} />
                           Edit Route
