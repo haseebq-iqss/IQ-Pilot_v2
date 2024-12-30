@@ -7,7 +7,7 @@ import RosterCard from "../../components/ui/RosterCard.tsx";
 import { ShiftTypes } from "../../types/ShiftTypes.ts";
 import EmployeeTypes from "../../types/EmployeeTypes.ts";
 import Cabtypes from "../../types/CabTypes.ts";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxios from "../../api/useAxios.ts";
 import {
@@ -41,7 +41,25 @@ import DriverCard from "../../components/ui/DriverCard.tsx";
 function CreateShift() {
   const location = useLocation();
   const routeState = location?.state;
-  // console.log(routeState.data.data);
+  // console.log(routeState.data.data[0].passengers);
+
+  const [availableTMs, setavailableTMs] = useState<[any]>([]);
+  const [availableDrivers, setavailableDrivers] = useState<[any]>([]);
+
+  // ALL PENDING PASSENGERS
+  const getPendingPassengersQF = () => {
+    return useAxios.get("routes/pendingPassengers");
+  };
+
+  const { data: pendingPassengers, status: pendingPassengersStatus } = useQuery(
+    {
+      queryFn: getPendingPassengersQF,
+      queryKey: ["All Pending Passengers"],
+      select: (data) => {
+        return data.data.pending_passengers;
+      },
+    }
+  );
 
   const fetchAvailableDrivers = async () => {
     try {
@@ -65,6 +83,11 @@ function CreateShift() {
       })
     );
   });
+
+  useEffect(() => {
+    setavailableTMs(pendingPassengers);
+    setavailableDrivers(unoccupiedDrivers);
+  }, [pendingPassengers, getDrivers]);
 
   const { isSM, isMD } = isXSmall();
 
@@ -121,7 +144,7 @@ function CreateShift() {
   });
 
   const regularColumns = columns.filter((column) => column.name !== "reserved");
-  console.log(columns);
+  // console.log(columns);
 
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -323,48 +346,48 @@ function CreateShift() {
       });
     }
 
-        // Move from Reserve column to Task column
-        const updatePassengerAndColumns = (
-          prevReserved,
-          activeId,
-          overId,
-          targetColumnId
-        ) => {
-          const activeIndex = getPassengerPos(activeId, prevReserved);
-          if (activeIndex === -1) return prevReserved; // Handle case where activeId is not found
-    
-          const passenger = prevReserved[activeIndex];
-    
-          // Remove the active passenger from the reserved list
-          const updatedReservedPassengers = prevReserved.filter(
-            (_, index) => index !== activeIndex
-          );
-    
-          // Create an updated passenger object with the new column ID
-          const updatedPassenger = { ...passenger, columnId: targetColumnId };
-    
-          // Update the passengers list with the updated passenger if it's not already present
-          setPassengers((prevPassengers) => {
-            if (!prevPassengers.some((p) => p.id === activeId)) {
-              return [...prevPassengers, updatedPassenger];
-            }
-            return prevPassengers;
-          });
-    
-          // Remove the passenger from the reserved column
-          setReservedColumn((prevColumns) =>
-            prevColumns.map((column) =>
-              column.id === "reserved"
-                ? {
-                    ...column,
-                    passengers: column.passengers.filter((p) => p.id !== activeId),
-                  }
-                : column
-            )
-          );
-    
-          return updatedReservedPassengers;
-        };
+    // Move from Reserve column to Task column
+    const updatePassengerAndColumns = (
+      prevReserved,
+      activeId,
+      overId,
+      targetColumnId
+    ) => {
+      const activeIndex = getPassengerPos(activeId, prevReserved);
+      if (activeIndex === -1) return prevReserved; // Handle case where activeId is not found
+
+      const passenger = prevReserved[activeIndex];
+
+      // Remove the active passenger from the reserved list
+      const updatedReservedPassengers = prevReserved.filter(
+        (_, index) => index !== activeIndex
+      );
+
+      // Create an updated passenger object with the new column ID
+      const updatedPassenger = { ...passenger, columnId: targetColumnId };
+
+      // Update the passengers list with the updated passenger if it's not already present
+      setPassengers((prevPassengers) => {
+        if (!prevPassengers.some((p) => p.id === activeId)) {
+          return [...prevPassengers, updatedPassenger];
+        }
+        return prevPassengers;
+      });
+
+      // Remove the passenger from the reserved column
+      setReservedColumn((prevColumns) =>
+        prevColumns.map((column) =>
+          column.id === "reserved"
+            ? {
+                ...column,
+                passengers: column.passengers.filter((p) => p.id !== activeId),
+              }
+            : column
+        )
+      );
+
+      return updatedReservedPassengers;
+    };
 
     // Move from Reserve column to Task column
     if (
@@ -503,10 +526,13 @@ function CreateShift() {
         cab: cabData,
         passengers: [],
         availableCapacity: cabData.seatingCapacity,
-        currentShift : routeState?.data?.currentShift,
-        workLocation : routeState?.data?.workLocation,
+        currentShift: routeState?.data?.currentShift,
+        workLocation: routeState?.data?.workLocation,
       },
     ]);
+    setavailableDrivers((prevAvailableDrivers:[any]) => prevAvailableDrivers.filter((driver) => {
+      return driver?._id != cabData?._id
+    }))
     setOpenAddExternalTmModal(false);
   };
 
@@ -701,10 +727,12 @@ function CreateShift() {
                       (passenger: EmployeeTypes) =>
                         passenger.columnId === shift.id
                     )}
-
                     reservedColumnSetter={setReservedColumn}
                     passengersSetter={setPassengers}
                     // expandedLayout={expandedLayout}
+                    pendingPassengers={availableTMs}
+                    pendingPassengerSetter={setavailableTMs}
+                    pendingPassengersStatus={pendingPassengersStatus}
                   />
                 ))}
               </SortableContext>
@@ -803,7 +831,7 @@ function CreateShift() {
             />
             <Box sx={{ ...ColFlex, width: "20%", alignItems: "flex-start" }}>
               <Typography sx={{ color: "white" }} variant="h5">
-                {unoccupiedDrivers?.length}
+                {availableDrivers?.length}
               </Typography>
               <Typography sx={{ color: "white" }} variant="body2">
                 Available Drivers
@@ -823,7 +851,7 @@ function CreateShift() {
               mt: 2.5,
             }}
           >
-            {unoccupiedDrivers
+            {availableDrivers
               ?.filter(
                 (driver) =>
                   (driver?.cabDriver[0] as EmployeeTypes)?.fname
@@ -834,7 +862,11 @@ function CreateShift() {
                     ?.includes(searchtext)
               )
               .map((driver) => (
-                <DriverCard cab={driver} onAddCab={addNewCab} />
+                <DriverCard
+                  key={driver?._id}
+                  cab={driver}
+                  onAddCab={addNewCab}
+                />
               ))}
           </Box>
         </Box>

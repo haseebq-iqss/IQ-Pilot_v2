@@ -50,7 +50,6 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
     { t4Time: "13:00", t2Time: "01:00 PM" },
     { t4Time: "14:00", t2Time: "02:00 PM" },
     { t4Time: "15:00", t2Time: "03:00 PM" },
-    { t4Time: "15:00", t2Time: "03:00 PM" },
     { t4Time: "16:00", t2Time: "04:00 PM" },
     { t4Time: "17:00", t2Time: "05:00 PM" },
   ];
@@ -277,6 +276,7 @@ export const CreateShiftModal: React.FC<CreateShiftModalProps> = ({
                   ? pickupTimings.map((time: any) => {
                       return (
                         <MenuItem
+                          key={time?.t4Time}
                           value={time?.t4Time}
                           sx={{ ...RowFlex, pl: 2.5, fontWeight: 600 }}
                         >

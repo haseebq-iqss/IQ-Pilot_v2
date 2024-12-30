@@ -189,10 +189,13 @@ function AllCabDrivers() {
                     {driver?.cabNumber}
                   </TableCell>
                   <TableCell align="center">{driver?.numberPlate}</TableCell>
-                  <TableCell align="center">
+                  <TableCell
+                    align="center"
+                    sx={{ color: "secondary.main", fontWeight: 600 }}
+                  >
                     {!(driver?.cabDriver as EmployeeTypes)?.isCabCancelled
                       ? "Active"
-                      : "Suspended"}
+                      : "Unavailable"}
                   </TableCell>
                   <TableCell align="center" sx={{ position: "relative" }}>
                     <MoreHoriz

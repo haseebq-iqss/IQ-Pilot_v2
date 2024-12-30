@@ -39,8 +39,6 @@ import MapComponent from "../Map.tsx";
 import AssignedPassengers from "./AssignedPassengers.tsx";
 import { SlideInOut } from "../../animations/transition.tsx";
 import GlobalModal from "./Modal";
-import useAxios from "../../api/useAxios.ts";
-import { useQuery } from "@tanstack/react-query";
 import EmployeeTab from "./EmployeeTab.tsx";
 import SnackbarContext from "../../context/SnackbarContext.ts";
 import { SnackBarContextTypes } from "../../types/SnackbarTypes.ts";
@@ -50,6 +48,9 @@ type RosterCardTypes = {
   passengersSetter: any;
   reservedColumnSetter: any;
   expandedLayout: any;
+  pendingPassengers?: any;
+  pendingPassengerSetter?: any;
+  pendingPassengersStatus?: any;
 };
 
 const RosterCard = ({
@@ -58,6 +59,9 @@ const RosterCard = ({
   passengersSetter,
   reservedColumnSetter,
   expandedLayout,
+  pendingPassengers,
+  pendingPassengerSetter,
+  pendingPassengersStatus,
 }: RosterCardTypes) => {
   const [activeRouteCoords, setActiveRouteCoords] = useState<Array<any>>([]);
   const [mapVisible, setMapVisible] = useState<boolean>(false);
@@ -84,7 +88,7 @@ const RosterCard = ({
     setMenuIndex(null);
   };
 
-  console.log(column);
+  // console.log(column);
 
   const handleViewMap = () => {
     if (expandedLayout == "expanded") {
@@ -217,21 +221,6 @@ const RosterCard = ({
     },
   });
 
-  // ALL PENDING PASSENGERS
-  const getPendingPassengersQF = () => {
-    return useAxios.get("routes/pendingPassengers");
-  };
-
-  const { data: pendingPassengers, status: pendingPassengersStatus } = useQuery(
-    {
-      queryFn: getPendingPassengersQF,
-      queryKey: ["All Pending Passengers"],
-      select: (data) => {
-        return data.data.pending_passengers;
-      },
-    }
-  );
-
   const handleAddNewPassenger = (newPassenger: EmployeeTypes) => {
     (newPassenger as any).columnId = column?.id;
     (newPassenger as any).id = newPassenger?._id;
@@ -241,6 +230,11 @@ const RosterCard = ({
       newPassenger,
       ...prevPassengers,
     ]);
+    pendingPassengerSetter!((prevAvailablePassengers: [EmployeeTypes]) =>
+      prevAvailablePassengers?.filter((emp: EmployeeTypes) => {
+        return emp?._id != newPassenger?._id;
+      })
+    );
   };
 
   const cardRef = useRef(null);
@@ -248,7 +242,6 @@ const RosterCard = ({
     event.preventDefault(); // Prevent the default right-click menu
 
     // Simulate the event object using the cardRef
-    console.log(cardRef.current);
     if (cardRef.current) {
       const simulatedEvent: any = { currentTarget: cardRef.current };
       handleMenuOpen(simulatedEvent, 12);
@@ -629,7 +622,7 @@ const RosterCard = ({
             </SlideInOut>
             <SlideInOut duration={0.3} delay={0.3}>
               <MenuItem
-              disabled
+                disabled
                 // onClick={AddNewTM}
                 sx={{ ...RowFlex, justifyContent: "flex-start", gap: 1 }}
                 onClick={handleClearCab}

@@ -4,9 +4,18 @@ import baseURL from "../../utils/baseURL";
 import { AirportShuttle, Numbers } from "@mui/icons-material";
 // import Cabtypes from "../../types/CabTypes";
 
-function DriverCard({ cab, onAddCab }: { cab: any; onAddCab: Function }) {
+function DriverCard({
+  cabKey,
+  cab,
+  onAddCab,
+}: {
+  cabKey: any;
+  cab: any;
+  onAddCab: Function;
+}) {
   return (
     <Box
+      key={cabKey}
       sx={{
         ...ColFlex,
         justifyContent: "flex-start",

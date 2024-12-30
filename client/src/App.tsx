@@ -53,12 +53,12 @@ function App() {
         .post("auth/autologin", {})
         .then((res) => {
           let user: EmployeeTypes = res.data.data;
-          console.log(user)
+          // console.log(user)
           const defaultAdminLogin = getItem("defaultAdminLogin") || "admin";
           if (user.role == "admin") {
             user.role = defaultAdminLogin as any 
             setUserData(user);
-            console.log(defaultAdminLogin)
+            // console.log(defaultAdminLogin)
             isBaseRoute && navigate(`/${defaultAdminLogin}`);
           }
           else {
