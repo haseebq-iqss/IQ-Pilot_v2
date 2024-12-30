@@ -530,9 +530,11 @@ function CreateShift() {
         workLocation: routeState?.data?.workLocation,
       },
     ]);
-    setavailableDrivers((prevAvailableDrivers:[any]) => prevAvailableDrivers.filter((driver) => {
-      return driver?._id != cabData?._id
-    }))
+    setavailableDrivers((prevAvailableDrivers: [any]) =>
+      prevAvailableDrivers.filter((driver) => {
+        return driver?._id != cabData?._id;
+      })
+    );
     setOpenAddExternalTmModal(false);
   };
 
