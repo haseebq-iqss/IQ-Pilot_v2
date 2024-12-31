@@ -48,6 +48,9 @@ function CreateShift() {
   if (!routeState) {
     navigate("-1");
   }
+  
+
+  const routeType = routeState?.data?.typeOfRoute;
   const routeTiming = routeState?.data?.currentShift;
   const routeLocation = routeState?.data?.workLocation;
   // console.log(routeState.data.data[0].passengers);
@@ -97,10 +100,17 @@ function CreateShift() {
   useEffect(() => {
     setavailableTMs(() =>
       pendingPassengers?.filter((emp: EmployeeTypes) => {
-        return (
-          emp?.currentShift?.split("-")[0] == routeTiming &&
-          emp?.workLocation == routeLocation
-        );
+        if (routeType == "drop") {
+          return (
+            emp?.currentShift?.split("-")[1] == routeTiming &&
+            emp?.workLocation == routeLocation
+          );
+        } else {
+          return (
+            emp?.currentShift?.split("-")[0] == routeTiming &&
+            emp?.workLocation == routeLocation
+          );
+        }
       })
     );
     setavailableDrivers(unoccupiedDrivers);
