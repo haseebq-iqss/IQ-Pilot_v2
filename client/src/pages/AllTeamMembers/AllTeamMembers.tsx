@@ -252,7 +252,12 @@ function AllTeamMembers() {
               >
                 All Team Members{" "}
                 <Typography sx={{ color: "inherit", fontWeight: 500, ml: 1 }}>
-                  {usingCab === "all" && `(${filteredTeamMembers?.length})`}
+                  {usingCab === "all" &&
+                    `(${
+                      filteredTeamMembers?.length
+                        ? filteredTeamMembers?.length
+                        : 0
+                    })`}
                 </Typography>
               </ToggleButton>
 
@@ -277,7 +282,12 @@ function AllTeamMembers() {
               >
                 Using Cab Service{" "}
                 <Typography sx={{ color: "white", fontWeight: 500, ml: 1 }}>
-                  {usingCab === "using" && `(${filteredTeamMembers?.length})`}
+                  {usingCab === "using" &&
+                    `(${
+                      filteredTeamMembers?.length
+                        ? filteredTeamMembers?.length
+                        : 0
+                    })`}
                 </Typography>
               </ToggleButton>
               <ToggleButton
@@ -302,7 +312,11 @@ function AllTeamMembers() {
                 Not Using Cab Service
                 <Typography sx={{ color: "white", fontWeight: 500, ml: 1 }}>
                   {usingCab === "notUsing" &&
-                    `(${filteredTeamMembers?.length})`}
+                    `(${
+                      filteredTeamMembers?.length
+                        ? filteredTeamMembers?.length
+                        : 0
+                    })`}
                 </Typography>
               </ToggleButton>
             </ToggleButtonGroup>

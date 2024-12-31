@@ -39,9 +39,19 @@ import GlobalModal from "../../components/ui/Modal.tsx";
 import DriverCard from "../../components/ui/DriverCard.tsx";
 
 function CreateShift() {
+  const qc = useQueryClient();
+  const navigate = useNavigate();
+
   const location = useLocation();
   const routeState = location?.state;
+
+  if (!routeState) {
+    navigate("-1");
+  }
+  const routeTiming = routeState?.data?.currentShift;
+  const routeLocation = routeState?.data?.workLocation;
   // console.log(routeState.data.data[0].passengers);
+  // console.log(routeTiming, routeLocation);
 
   const [availableTMs, setavailableTMs] = useState<[any]>([]);
   const [availableDrivers, setavailableDrivers] = useState<[any]>([]);
@@ -74,7 +84,7 @@ function CreateShift() {
     queryFn: fetchAvailableDrivers,
   });
 
-  const unoccupiedDrivers = getDrivers.filter((item) => {
+  const unoccupiedDrivers = getDrivers?.filter((item) => {
     const driverId = item?.cabDriver?.[0]?._id;
     return (
       driverId &&
@@ -85,7 +95,14 @@ function CreateShift() {
   });
 
   useEffect(() => {
-    setavailableTMs(pendingPassengers);
+    setavailableTMs(() =>
+      pendingPassengers?.filter((emp: EmployeeTypes) => {
+        return (
+          emp?.currentShift?.split("-")[0] == routeTiming &&
+          emp?.workLocation == routeLocation
+        );
+      })
+    );
     setavailableDrivers(unoccupiedDrivers);
   }, [pendingPassengers, getDrivers]);
 
@@ -145,9 +162,6 @@ function CreateShift() {
 
   const regularColumns = columns.filter((column) => column.name !== "reserved");
   // console.log(columns);
-
-  const qc = useQueryClient();
-  const navigate = useNavigate();
 
   const { mutate } = useMutation({
     mutationFn: async (data) => {

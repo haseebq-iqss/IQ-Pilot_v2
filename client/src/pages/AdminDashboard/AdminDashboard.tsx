@@ -50,14 +50,14 @@ function AdminDashboard() {
     });
   }, [socket]);
 
-  // ALL ASSIGNED ROUTES
+  // ACTIVE ROUTES
   const getAllAssignedRoutesQF = () => {
     return useAxios.get("routes/todayRoute");
   };
 
   const { data: allRoutes, status: allRoutesStatus } = useQuery({
     queryFn: getAllAssignedRoutesQF,
-    queryKey: ["All Assigned Routes"],
+    queryKey: ["All Active Routes"],
     select: (data) => {
       return data.data.todayRoute;
     },

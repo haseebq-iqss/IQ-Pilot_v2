@@ -285,7 +285,7 @@ exports.createShiftKM = catchAsync(async (req, res, next) => {
 
   // Using DBSCAN for grouping employees into clusters.
   const dbscan = new clustering.DBSCAN();
-  const EPSILON = 1000;
+  const EPSILON = 3000;
   const MIN_POINTS = 4;
   const MAX_CAB_CAPACITY = 6;
 
