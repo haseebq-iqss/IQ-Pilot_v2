@@ -22,6 +22,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Typography,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useContext, useEffect, useState } from "react";
@@ -36,9 +37,12 @@ import { CreateShiftModal } from "./CreateShiftModal";
 import Cabtypes from "./../../types/CabTypes";
 import baseURL from "../../utils/baseURL";
 import ThemeModeContext from "../../context/ThemeModeContext";
+import PilotAI from "../../AI/PilotAI";
 
 function Appbar() {
   const navigate = useNavigate();
+
+  const [openAIDrawer, setOpenAIDrawer] = useState<boolean>(false);
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
   const { themeMode, setThemeMode }: any = useContext(ThemeModeContext);
@@ -71,7 +75,6 @@ function Appbar() {
     { t4Time: "12:00", t2Time: "12:00 PM" },
     { t4Time: "13:00", t2Time: "01:00 PM" },
     { t4Time: "14:00", t2Time: "02:00 PM" },
-    { t4Time: "15:00", t2Time: "03:00 PM" },
     { t4Time: "15:00", t2Time: "03:00 PM" },
     { t4Time: "16:00", t2Time: "04:00 PM" },
     { t4Time: "17:00", t2Time: "05:00 PM" },
@@ -663,12 +666,36 @@ function Appbar() {
       >
         Create a Shift
       </Button>
+      <Button
+        sx={{
+          // backgroundColor: "text.primary",
+          color: "white",
+          // background: "#212A3B",
+          background: "linear-gradient(to right, #FF4500, #9329FC)",
+          borderRadius: "100px",
+          px: 2.5,
+        }}
+        variant="contained"
+        endIcon={
+          <Box
+            component={"img"}
+            sx={{ width: "25px", height: "auto" }}
+            src="/images/logo-pilot-ai-white.png"
+          />
+        }
+        onClick={() => setOpenAIDrawer(!openAIDrawer)}
+      >
+        <Typography variant="body2" fontWeight={600}>
+          Pilot AI
+        </Typography>
+      </Button>
       {openShiftModal && (
         <CreateShiftModal
           openModal={openShiftModal}
           setOpenModal={setShiftOpenModal}
         />
       )}
+      <PilotAI openDrawer={openAIDrawer} setOpenDrawer={setOpenAIDrawer} />
     </Box>
   );
 }
