@@ -621,12 +621,16 @@ function CreateShift() {
           <Box
             sx={{
               ...RowFlex,
-              width: isSM || isMD ? "100%" : "40%",
+              width: isSM || isMD ? "100%" : "60%",
               alignItems: "center",
               justifyContent: "flex-end",
               gap: 0,
             }}
           >
+            <Box sx={{...RowFlex, gap:1.5, mx:2.5}}>
+              <Typography variant="h4">{availableTMs?.length}</Typography>
+              <Typography variant="body2" sx={{lineHeight:"17.5px", width:"50%"}}>TMs Pending</Typography>
+            </Box>
             <Box
               sx={{
                 px: 3,

@@ -720,11 +720,8 @@ const RosterCard = ({
           <MapComponent
             // height="100%"
             mode="route-view"
-            activeRoute={
-              column.workLocation === "Rangreth"
-                ? [...activeRouteCoords, [34.00098208925866, 74.7934441780845]]
-                : [...activeRouteCoords, [34.173415, 74.808653]]
-            }
+            visibleOffice={passengerDetails[0]?.workLocation as any}
+            activeRoute={passengerDetails}
             zoom={11}
             center={routesCentralPoint}
           />

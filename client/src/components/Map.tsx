@@ -841,20 +841,31 @@ const MapComponent = ({
 
         {activeRoute?.length && (
           <>
-            <Polyline
+            {/* <Polyline
               key={Math.random() * 100}
               positions={activeRoute}
               color={"blue"}
               weight={3}
               dashArray={[5]}
-            />
-            {activeRoute.map((empLoc: any) => {
+            /> */}
+            {activeRoute.map((emp: EmployeeTypes) => {
               return (
                 <Marker
                   icon={empIcon}
-                  key={empLoc}
-                  position={empLoc as LatLngExpression}
-                />
+                  key={emp?._id}
+                  position={emp?.pickUp?.coordinates as LatLngExpression}
+                >
+                  <Tooltip
+                    className="employee-tooltip"
+                    direction="top"
+                    offset={[0, -40]}
+                    permanent
+                  >
+                    <span>
+                      {emp.fname + " " + emp.lname}
+                    </span>
+                  </Tooltip>
+                </Marker>
               );
             })}
           </>
