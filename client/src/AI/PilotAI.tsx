@@ -1,7 +1,15 @@
-import { Box, Drawer, IconButton, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Drawer,
+  IconButton,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { ColFlex, RowFlex } from "../style_extentions/Flex";
-import { Send } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { ArrowDownward, Send } from "@mui/icons-material";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 interface MessageInterface {
   id?: string;
@@ -14,6 +22,80 @@ interface MessageInterface {
 function PilotAI({ openDrawer, setOpenDrawer }: any) {
   const [prompt, setPrompt] = useState<string>("");
   const [messages, setMessages] = useState<MessageInterface[]>([]);
+  const [messageLockdown, setMessageLockdown] = useState<boolean>(false);
+
+  const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+
+  // Initialize Gemini
+  const genAi = new GoogleGenerativeAI(GEMINI_API_KEY);
+  const pilotAi = genAi.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+  async function GenerateContent(prompt: string) {
+    try {
+      const res = await pilotAi.generateContent(prompt);
+      // console.log(res)
+      return res.response.text();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  const messageBoxRef = useRef<HTMLDivElement>(null);
+  const lastMessageRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    if (messageBoxRef.current) {
+      messageBoxRef.current.scrollTop = messageBoxRef.current.scrollHeight;
+    }
+  };
+
+  const [isAtBottom, setIsAtBottom] = useState(true);
+
+  useEffect(() => {
+    const messageBox = messageBoxRef.current;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting) {
+          setIsAtBottom(true); // If it's visible in the viewport, update the state
+        }
+      },
+      {
+        root: null, // Observe relative to the viewport
+        rootMargin: "0px",
+        threshold: 0.1, // Trigger when 10% of the element is visible
+      }
+    );
+
+    if (lastMessageRef.current) {
+      observer.observe(lastMessageRef.current);
+    }
+
+    // Also check if user is scrolled to the bottom
+    const checkScrollPosition = () => {
+      if (
+        messageBox &&
+        messageBox.scrollTop + messageBox.clientHeight >=
+          messageBox.scrollHeight - 5
+      ) {
+        setIsAtBottom(true); // Near bottom
+      } else {
+        setIsAtBottom(false); // Not at bottom
+      }
+    };
+
+    // Initial check
+    checkScrollPosition();
+    // Add scroll listener
+    messageBox?.addEventListener("scroll", checkScrollPosition);
+
+    // Cleanup
+    return () => {
+      observer.disconnect();
+      messageBox?.removeEventListener("scroll", checkScrollPosition);
+    };
+  }, [messages]);
 
   // Data Structure For Message
   const CreateMessage = ({
@@ -38,25 +120,44 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
       message: prompt,
       owner,
     });
+
     setMessages((prevMessages: MessageInterface[]) => [
       ...prevMessages,
       message,
     ]);
-    if (owner == "user") {
-      setPrompt("");
-    }
-    // Send to AI
-    // Capture the response
-    // Recall the Send Message
 
+    if (owner === "user") {
+      // Lock the send button
+      setMessageLockdown(true);
+      setPrompt("");
+      scrollToBottom();
+    }
+
+    if (owner === "user") {
+      // Send to AI & Capture the response
+      const response = await GenerateContent(prompt);
+
+      // Send the AI response back as a new message
+      setMessages((prevMessages: MessageInterface[]) => [
+        ...prevMessages,
+        CreateMessage({
+          message: response as string,
+          owner: "ai",
+        }),
+      ]);
+    }
+
+    // Unlock the send button after AI response is added
+    setMessageLockdown(false);
     return;
   }
 
+  // Enter Listener to Send Prompt
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter" && e.target instanceof HTMLInputElement) {
         e.preventDefault();
-        if (prompt.length > 0) {
+        if (prompt.length > 0 && !messageLockdown) {
           SendMessage(prompt, "user");
         }
       }
@@ -69,6 +170,12 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [prompt]);
+
+  useLayoutEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // Startup Effects
 
   return (
     <Drawer
@@ -101,15 +208,18 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
             src="/images/logo-pilot-ai.png"
           />
         </Box>
+
         {/* Messages Box Container */}
         <Box
+          ref={messageBoxRef}
           sx={{
+            mb: 5,
             width: "100%",
             height: "90%",
             overflowY: "scroll",
-            scrollbarWidth: "none", // For Firefox
+            scrollbarWidth: "none",
             "&::-webkit-scrollbar": {
-              display: "none", // For Chrome, Safari, Edge
+              display: "none",
             },
           }}
         >
@@ -119,15 +229,16 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
               ...ColFlex,
               gap: 2.5,
               alignItems: "flex-end",
-              justifyContent: "flex-end",
+              // justifyContent: "flex-end",
               transition: "all 1s",
               width: "100%",
-              height: "100%",
+              // height: "100%",
             }}
           >
-            {messages?.map((messageBody: MessageInterface) => {
+            {messages?.map((messageBody: MessageInterface, index: number) => {
               return (
                 <Box
+                  ref={index === messages.length - 1 ? lastMessageRef : null}
                   className={"fade-slide-in"}
                   key={messageBody.id}
                   sx={{
@@ -142,7 +253,17 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
                     zIndex: 2,
                   }}
                 >
-                  <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontWeight: 600,
+                      ...(messageBody?.owner === "ai" && {
+                        background: "linear-gradient(90deg, #FF4500, #9329FC)", // Gradient for AI messages
+                        WebkitBackgroundClip: "text", // Clips background to text
+                        WebkitTextFillColor: "transparent", // Allows gradient to show through
+                      }),
+                    }}
+                  >
                     {messageBody?.owner == "user" ? "You" : "Pilot AI"}
                   </Typography>
                   <Typography variant="body1">
@@ -156,6 +277,7 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
         {/* Prompt fields */}
         <Box sx={{ width: "100%", mt: "auto" }}>
           <TextField
+            disabled={messageLockdown}
             fullWidth
             name="prompt"
             label="Message Pilot AI"
@@ -166,13 +288,32 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
             autoFocus
             InputProps={{
               endAdornment: (
-                <IconButton onClick={() => SendMessage(prompt, "user")}>
-                  <Send />
+                <IconButton
+                  className={messageLockdown ? "size-change-infinite" : ""}
+                  disabled={messageLockdown}
+                  onClick={() => SendMessage(prompt, "user")}
+                >
+                  {messageLockdown ? <CircularProgress size={20} /> : <Send />}
                 </IconButton>
               ),
             }}
           ></TextField>
         </Box>
+        {!isAtBottom && messages.length > 0 && (
+          <IconButton
+            className="fade-in-up"
+            onClick={() => scrollToBottom()}
+            sx={{
+              position: "absolute",
+              alignSelf: "center",
+              bottom: "15%",
+              backgroundColor: "#212A3B",
+              zIndex: 99,
+            }}
+          >
+            <ArrowDownward />
+          </IconButton>
+        )}
       </Box>
     </Drawer>
   );

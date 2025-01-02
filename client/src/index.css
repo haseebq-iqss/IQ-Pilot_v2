@@ -116,7 +116,15 @@ body {
 }
 
 .fade-slide-in {
-  animation: fade-slide-in 0.5s ease-out;
+  animation: fade-slide-in 0.25s ease-out;
+}
+
+.fade-in-up {
+  animation: fade-in-up 0.15s ease-out;
+}
+
+.size-change-infinite {
+  animation: size-change-infinite 0.5s ease-in-out infinite alternate;
 }
 
 @keyframes plane-rolling-anim {
@@ -153,10 +161,36 @@ body {
 @keyframes fade-slide-in {
   0% {
     opacity: 0;
-    transform: translateX(20px); /* Slide up from 20px below */
+    scale: 0.7;
+    transform: translateX(20px) translateY(20px) ; /* Slide right from 20px from left */
   }
   100% {
     opacity: 1;
-    transform: translateX(0); /* Final position */
+    scale: 1;
+    transform: translateX(0) translateY(0); /* Final position  */
+  }
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    scale: 0.7;
+    transform: translateY(20px) ; /* Slide right from 20px from left */
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    transform: translateY(0); /* Final position  */
+  }
+}
+
+@keyframes size-change-infinite {
+  0% {
+    opacity: 0;
+    scale: 0.7;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
   }
 }
