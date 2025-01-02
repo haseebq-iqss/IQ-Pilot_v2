@@ -89,7 +89,7 @@ function App() {
                     <MainRouter />
                   </DefaultMapStyleContext.Provider>
                 </DefaultCabViewMode.Provider>
-                {/* <ReactQueryDevtools /> */}
+                <ReactQueryDevtools />
               </UserDataContext.Provider>
             </ThemeModeContext.Provider>
           </SnackbarContext.Provider>
