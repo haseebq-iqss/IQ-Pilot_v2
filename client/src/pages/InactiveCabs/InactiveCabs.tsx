@@ -8,6 +8,7 @@ import {
 import {
   Avatar,
   Box,
+  CircularProgress,
   IconButton,
   Menu,
   MenuItem,
@@ -131,7 +132,7 @@ function InactiveCabs() {
           height: "50vh",
         }}
       >
-        <TableContainer sx={{}}>
+        {allCabs ? <TableContainer className="fade-in" sx={{}}>
           <TextField
             sx={{
               width: "40%",
@@ -278,7 +279,12 @@ function InactiveCabs() {
               ))}
             </TableBody>
           </Table>
-        </TableContainer>
+        </TableContainer> : <Box
+              sx={{ ...RowFlex, width: "100%", height: "50vh" }}
+              className={"size-change-infinite"}
+            >
+              <CircularProgress size={75} />
+            </Box>}
       </Box>
       <ConfirmationModal
         headerText="Confirm Your Action?"

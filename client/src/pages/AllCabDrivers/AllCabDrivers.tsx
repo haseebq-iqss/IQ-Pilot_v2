@@ -8,6 +8,7 @@ import {
 import {
   Avatar,
   Box,
+  CircularProgress,
   IconButton,
   Menu,
   MenuItem,
@@ -128,145 +129,154 @@ function AllCabDrivers() {
           height: "50vh",
         }}
       >
-        <TableContainer sx={{}}>
-          <TextField
-            sx={{
-              width: "40%",
-            }}
-            variant="outlined"
-            autoFocus
-            size="small"
-            onChange={(e) => {
-              setSearchText(e.target.value);
-            }}
-            placeholder="Search Drivers, Cab Number & Number Plate"
-            InputProps={{
-              startAdornment: (
-                <IconButton aria-label="search">
-                  <Search />
-                </IconButton>
-              ),
-            }}
-          />
-          <Table sx={{ minWidth: 650 }} aria-label="driver's table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Driver</TableCell>
-                <TableCell align="center">Cab Number</TableCell>
-                <TableCell align="center">Number Plate</TableCell>
-                <TableCell align="center">Status</TableCell>
-                <TableCell align="center">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredCabDrivers?.map((driver: Cabtypes, index: number) => (
-                <TableRow
-                  key={driver._id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "flex-start",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}
-                    >
-                      <Avatar
-                        src={
-                          baseURL +
-                          (driver?.cabDriver as EmployeeTypes)?.profilePicture
-                        }
-                        sx={{ width: "30px", height: "30px" }}
-                      />
-                      {(driver?.cabDriver as EmployeeTypes)?.fname +
-                        " " +
-                        (driver?.cabDriver as EmployeeTypes)?.lname}
-                    </Box>
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 600 }} align="center">
-                    {driver?.cabNumber}
-                  </TableCell>
-                  <TableCell align="center">{driver?.numberPlate}</TableCell>
-                  <TableCell
-                    align="center"
-                    sx={{ color: "secondary.main", fontWeight: 600 }}
-                  >
-                    {!(driver?.cabDriver as EmployeeTypes)?.isCabCancelled
-                      ? "Active"
-                      : "Unavailable"}
-                  </TableCell>
-                  <TableCell align="center" sx={{ position: "relative" }}>
-                    <MoreHoriz
-                      sx={{ cursor: "pointer" }}
-                      onClick={(e) => handleMenuOpen(e, index)}
-                    />
-                    <Menu
-                      key={driver?._id}
-                      elevation={1}
-                      anchorEl={anchorEl}
-                      open={menuIndex === index}
-                      onClose={handleMenuClose}
-                      MenuListProps={{
-                        "aria-labelledby": "basic-button",
-                      }}
-                    >
-                      <MenuItem
-                        sx={{
-                          ...RowFlex,
-                          color: "info.main",
-                          fontWeight: 600,
-                          justifyContent: "flex-start",
-                          gap: "10px",
-                        }}
-                        onClick={() => {
-                          handleDriverProfilePage(driver?._id as string);
-                        }}
-                      >
-                        <VisibilityIcon sx={{}} />
-                        View Details
-                      </MenuItem>
-                      <MenuItem
-                        sx={{
-                          ...RowFlex,
-                          color: "warning.main",
-                          fontWeight: 600,
-                          justifyContent: "flex-start",
-                          gap: "10px",
-                        }}
-                        onClick={() =>
-                          navigate(
-                            `/admin/editDriver/${driver?.cabDriver?._id}`,
-                            { state: driver }
-                          )
-                        }
-                      >
-                        <EditLocation sx={{}} />
-                        Edit Details
-                      </MenuItem>
-                      <MenuItem
-                        sx={{
-                          ...RowFlex,
-                          color: "error.main",
-                          fontWeight: 600,
-                          justifyContent: "flex-start",
-                          gap: "10px",
-                        }}
-                        onClick={() =>
-                          handleOpenDeleteModal(driver._id as string)
-                        }
-                      >
-                        <DeleteForever sx={{}} />
-                        Remove Driver
-                      </MenuItem>
-                    </Menu>
-                  </TableCell>
+        {cabDetails ? (
+          <TableContainer className="fade-in" sx={{}}>
+            <TextField
+              sx={{
+                width: "40%",
+              }}
+              variant="outlined"
+              autoFocus
+              size="small"
+              onChange={(e) => {
+                setSearchText(e.target.value);
+              }}
+              placeholder="Search Drivers, Cab Number & Number Plate"
+              InputProps={{
+                startAdornment: (
+                  <IconButton aria-label="search">
+                    <Search />
+                  </IconButton>
+                ),
+              }}
+            />
+            <Table sx={{ minWidth: 650 }} aria-label="driver's table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Driver</TableCell>
+                  <TableCell align="center">Cab Number</TableCell>
+                  <TableCell align="center">Number Plate</TableCell>
+                  <TableCell align="center">Status</TableCell>
+                  <TableCell align="center">Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {filteredCabDrivers?.map((driver: Cabtypes, index: number) => (
+                  <TableRow
+                    key={driver._id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "flex-start",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}
+                      >
+                        <Avatar
+                          src={
+                            baseURL +
+                            (driver?.cabDriver as EmployeeTypes)?.profilePicture
+                          }
+                          sx={{ width: "30px", height: "30px" }}
+                        />
+                        {(driver?.cabDriver as EmployeeTypes)?.fname +
+                          " " +
+                          (driver?.cabDriver as EmployeeTypes)?.lname}
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 600 }} align="center">
+                      {driver?.cabNumber}
+                    </TableCell>
+                    <TableCell align="center">{driver?.numberPlate}</TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{ color: "secondary.main", fontWeight: 600 }}
+                    >
+                      {!(driver?.cabDriver as EmployeeTypes)?.isCabCancelled
+                        ? "Active"
+                        : "Unavailable"}
+                    </TableCell>
+                    <TableCell align="center" sx={{ position: "relative" }}>
+                      <MoreHoriz
+                        sx={{ cursor: "pointer" }}
+                        onClick={(e) => handleMenuOpen(e, index)}
+                      />
+                      <Menu
+                        key={driver?._id}
+                        elevation={1}
+                        anchorEl={anchorEl}
+                        open={menuIndex === index}
+                        onClose={handleMenuClose}
+                        MenuListProps={{
+                          "aria-labelledby": "basic-button",
+                        }}
+                      >
+                        <MenuItem
+                          sx={{
+                            ...RowFlex,
+                            color: "info.main",
+                            fontWeight: 600,
+                            justifyContent: "flex-start",
+                            gap: "10px",
+                          }}
+                          onClick={() => {
+                            handleDriverProfilePage(driver?._id as string);
+                          }}
+                        >
+                          <VisibilityIcon sx={{}} />
+                          View Details
+                        </MenuItem>
+                        <MenuItem
+                          sx={{
+                            ...RowFlex,
+                            color: "warning.main",
+                            fontWeight: 600,
+                            justifyContent: "flex-start",
+                            gap: "10px",
+                          }}
+                          onClick={() =>
+                            navigate(
+                              `/admin/editDriver/${driver?.cabDriver?._id}`,
+                              { state: driver }
+                            )
+                          }
+                        >
+                          <EditLocation sx={{}} />
+                          Edit Details
+                        </MenuItem>
+                        <MenuItem
+                          sx={{
+                            ...RowFlex,
+                            color: "error.main",
+                            fontWeight: 600,
+                            justifyContent: "flex-start",
+                            gap: "10px",
+                          }}
+                          onClick={() =>
+                            handleOpenDeleteModal(driver._id as string)
+                          }
+                        >
+                          <DeleteForever sx={{}} />
+                          Remove Driver
+                        </MenuItem>
+                      </Menu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        ) : (
+          <Box
+            sx={{ ...RowFlex, width: "100%", height: "50vh" }}
+            className={"size-change-infinite"}
+          >
+            <CircularProgress size={75} />
+          </Box>
+        )}
       </Box>
       <ConfirmationModal
         headerText="Confirm Your Action?"

@@ -405,6 +405,7 @@ const MapComponent = ({
       <MapContainer
         id={"map"}
         // key={activeRoute.length ? "Primary Map" + Math.random() : "Primary Map"}
+        className="fade-in"
         key={"Primary Map"}
         style={{ height: "100%", width: "100%" }}
         center={center}

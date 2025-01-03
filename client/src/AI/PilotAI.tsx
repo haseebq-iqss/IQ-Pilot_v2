@@ -302,7 +302,7 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
                         typeSpeed={10}
                         loop={1}
                         cursor={true}
-                        cursorBlinking={true}
+                        cursorBlinking={false}
                         cursorStyle={"✨"}
                         onType={() => scrollToBottom()}
                       />

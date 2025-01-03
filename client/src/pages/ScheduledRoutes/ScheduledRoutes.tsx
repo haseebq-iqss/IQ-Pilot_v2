@@ -10,6 +10,7 @@ import {
 } from "@mui/icons-material";
 import {
   Box,
+  CircularProgress,
   Menu,
   MenuItem,
   Table,
@@ -245,191 +246,205 @@ function ScheduledRoutes() {
         </Box>
 
         {/* ACTIVE ROUTES */}
-        <TableContainer sx={{}}>
-          <Table sx={{ minWidth: 650 }} aria-label="routes table">
-            <TableHead>
-              <TableRow>
-                <TableCell align="left">Shift time</TableCell>
-                <TableCell align="left">Cab</TableCell>
-                <TableCell align="center">Priority Cab</TableCell>
-                <TableCell align="left">Driver</TableCell>
-                <TableCell align="center">Pickup/Drop</TableCell>
-                <TableCell align="center">Office</TableCell>
-                <TableCell align="center">Date</TableCell>
-                <TableCell align="center">Status</TableCell>
-                <TableCell align="center">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {selectedRoutes?.length ? (
-                selectedRoutes?.map((route: any, index: number) => (
-                  <TableRow
-                    key={route._id}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      <Box
+        {routes ? (
+          <TableContainer className="fade-in" sx={{}}>
+            <Table sx={{ minWidth: 650 }} aria-label="routes table">
+              <TableHead>
+                <TableRow>
+                  <TableCell align="left">Shift time</TableCell>
+                  <TableCell align="left">Cab</TableCell>
+                  <TableCell align="center">Priority Cab</TableCell>
+                  <TableCell align="left">Driver</TableCell>
+                  <TableCell align="center">Pickup/Drop</TableCell>
+                  <TableCell align="center">Office</TableCell>
+                  <TableCell align="center">Date</TableCell>
+                  <TableCell align="center">Status</TableCell>
+                  <TableCell align="center">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {selectedRoutes?.length ? (
+                  selectedRoutes?.map((route: any, index: number) => (
+                    <TableRow
+                      key={route._id}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "flex-start",
+                            alignItems: "center",
+                            gap: "10px",
+                            fontWeight: 600,
+                          }}
+                        >
+                          <AccessTime />
+                          {ConvertShiftTimeTo12HrFormat(
+                            route?.currentShift as string
+                          )}
+                        </Box>
+                      </TableCell>
+
+                      <TableCell
+                        sx={{ fontWeight: 600, color: "primary.dark" }}
+                        align="left"
+                      >
+                        {(selectedRoutes[index]?.cab as Cabtypes)?.cabNumber}
+                      </TableCell>
+                      <TableCell
                         sx={{
-                          display: "flex",
-                          justifyContent: "flex-start",
-                          alignItems: "center",
-                          gap: "10px",
+                          fontWeight: 600,
+                          color:
+                            (selectedRoutes[index]?.cab as Cabtypes)
+                              ?.typeOfCab === "inHouse"
+                              ? "success.dark"
+                              : (selectedRoutes[index]?.cab as Cabtypes)
+                                  ?.typeOfCab === "vendor"
+                              ? "warning.dark"
+                              : "default",
+                        }}
+                        align="center"
+                      >
+                        {" "}
+                        {(selectedRoutes[index]?.cab as Cabtypes)?.typeOfCab ===
+                        "inHouse"
+                          ? "Yes"
+                          : "No"}
+                      </TableCell>
+                      <TableCell align="center">
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "flex-start",
+                            alignItems: "center",
+                            gap: "10px",
+                          }}
+                        >
+                          {(
+                            (route?.cab as Cabtypes)?.cabDriver as EmployeeTypes
+                          )?.fname +
+                            " " +
+                            (
+                              (route?.cab as Cabtypes)
+                                ?.cabDriver as EmployeeTypes
+                            )?.lname}{" "}
+                        </Box>
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600 }} align="center">
+                        {(route.typeOfRoute
+                          ?.charAt(0)
+                          .toUpperCase() as string) +
+                          route.typeOfRoute?.slice(1, 99)}
+                      </TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 600 }}>
+                        {route.workLocation}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600 }} align="center">
+                        {/* {route.totalDistance || "Not Calculated"} */}
+                        {/* {DaysTillActive(route.createdAt, route.daysRouteIsActive)} */}
+                        {formatDateString(route?.activeOnDate)}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          color:
+                            route.routeStatus === "completed"
+                              ? "success.main"
+                              : route.routeStatus === "inProgress"
+                              ? "primary.main"
+                              : "inherit",
                           fontWeight: 600,
                         }}
+                        align="center"
                       >
-                        <AccessTime />
-                        {ConvertShiftTimeTo12HrFormat(
-                          route?.currentShift as string
-                        )}
-                      </Box>
-                    </TableCell>
-
-                    <TableCell
-                      sx={{ fontWeight: 600, color: "primary.dark" }}
-                      align="left"
-                    >
-                      {(selectedRoutes[index]?.cab as Cabtypes)?.cabNumber}
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        fontWeight: 600,
-                        color:
-                          (selectedRoutes[index]?.cab as Cabtypes)
-                            ?.typeOfCab === "inHouse"
-                            ? "success.dark"
-                            : (selectedRoutes[index]?.cab as Cabtypes)
-                                ?.typeOfCab === "vendor"
-                            ? "warning.dark"
-                            : "default",
-                      }}
-                      align="center"
-                    >
-                      {" "}
-                      {(selectedRoutes[index]?.cab as Cabtypes)?.typeOfCab ===
-                      "inHouse"
-                        ? "Yes"
-                        : "No"}
-                    </TableCell>
-                    <TableCell align="center">
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "flex-start",
-                          alignItems: "center",
-                          gap: "10px",
-                        }}
-                      >
-                        {((route?.cab as Cabtypes)?.cabDriver as EmployeeTypes)
-                          ?.fname +
-                          " " +
-                          ((route?.cab as Cabtypes)?.cabDriver as EmployeeTypes)
-                            ?.lname}{" "}
-                      </Box>
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: 600 }} align="center">
-                      {(route.typeOfRoute?.charAt(0).toUpperCase() as string) +
-                        route.typeOfRoute?.slice(1, 99)}
-                    </TableCell>
-                    <TableCell align="center" sx={{ fontWeight: 600 }}>
-                      {route.workLocation}
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: 600 }} align="center">
-                      {/* {route.totalDistance || "Not Calculated"} */}
-                      {/* {DaysTillActive(route.createdAt, route.daysRouteIsActive)} */}
-                      {formatDateString(route?.activeOnDate)}
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        color:
-                          route.routeStatus === "completed"
-                            ? "success.main"
-                            : route.routeStatus === "inProgress"
-                            ? "primary.main"
-                            : "inherit",
-                        fontWeight: 600,
-                      }}
-                      align="center"
-                    >
-                      {route.routeStatus === "notStarted"
-                        ? "Not Started"
-                        : route.routeStatus === "inProgress"
-                        ? "In Progress"
-                        : "Completed"}
-                    </TableCell>
-                    <TableCell align="center">
-                      <MoreHoriz
-                        sx={{ cursor: "pointer" }}
-                        onClick={(e: any) => handleMenuOpen(e, index)}
-                      />
-                      <Menu
-                        key={route?._id}
-                        elevation={1}
-                        anchorEl={anchorEl}
-                        open={menuIndex === index}
-                        onClose={handleMenuClose}
-                        MenuListProps={{
-                          "aria-labelledby": "basic-button",
-                        }}
-                      >
-                        <MenuItem
-                          sx={{
-                            ...RowFlex,
-                            color: "info.main",
-                            fontWeight: 600,
-                            justifyContent: "flex-start",
-                            gap: "10px",
+                        {route.routeStatus === "notStarted"
+                          ? "Not Started"
+                          : route.routeStatus === "inProgress"
+                          ? "In Progress"
+                          : "Completed"}
+                      </TableCell>
+                      <TableCell align="center">
+                        <MoreHoriz
+                          sx={{ cursor: "pointer" }}
+                          onClick={(e: any) => handleMenuOpen(e, index)}
+                        />
+                        <Menu
+                          key={route?._id}
+                          elevation={1}
+                          anchorEl={anchorEl}
+                          open={menuIndex === index}
+                          onClose={handleMenuClose}
+                          MenuListProps={{
+                            "aria-labelledby": "basic-button",
                           }}
-                          onClick={() =>
-                            navigate(`/admin/viewRoute/${route?._id}`, {
-                              state: route,
-                            })
-                          }
                         >
-                          <Visibility sx={{}} />
-                          View Route
-                        </MenuItem>
-                        <MenuItem
-                          sx={{
-                            ...RowFlex,
-                            color: "warning.main",
-                            fontWeight: 600,
-                            justifyContent: "flex-start",
-                            gap: "10px",
-                          }}
-                          onClick={handleEditRoute}
-                        >
-                          <EditLocation sx={{}} />
-                          Edit Route
-                        </MenuItem>
-                        <MenuItem
-                          sx={{
-                            ...RowFlex,
-                            color: "error.main",
-                            fontWeight: 600,
-                            justifyContent: "flex-start",
-                            gap: "10px",
-                          }}
-                          onClick={() => handleOpenDeleteModal(route?._id)}
-                        >
-                          <DeleteForever sx={{}} />
-                          Delete Route
-                        </MenuItem>
-                      </Menu>
+                          <MenuItem
+                            sx={{
+                              ...RowFlex,
+                              color: "info.main",
+                              fontWeight: 600,
+                              justifyContent: "flex-start",
+                              gap: "10px",
+                            }}
+                            onClick={() =>
+                              navigate(`/admin/viewRoute/${route?._id}`, {
+                                state: route,
+                              })
+                            }
+                          >
+                            <Visibility sx={{}} />
+                            View Route
+                          </MenuItem>
+                          <MenuItem
+                            sx={{
+                              ...RowFlex,
+                              color: "warning.main",
+                              fontWeight: 600,
+                              justifyContent: "flex-start",
+                              gap: "10px",
+                            }}
+                            onClick={handleEditRoute}
+                          >
+                            <EditLocation sx={{}} />
+                            Edit Route
+                          </MenuItem>
+                          <MenuItem
+                            sx={{
+                              ...RowFlex,
+                              color: "error.main",
+                              fontWeight: 600,
+                              justifyContent: "flex-start",
+                              gap: "10px",
+                            }}
+                            onClick={() => handleOpenDeleteModal(route?._id)}
+                          >
+                            <DeleteForever sx={{}} />
+                            Delete Route
+                          </MenuItem>
+                        </Menu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell sx={{ border: 0 }}>
+                      <Typography variant="h6" sx={{ p: 1, fontWeight: 500 }}>
+                        No {tableDataView} Routes Found 🤷‍♂️
+                      </Typography>
                     </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell sx={{ border: 0 }}>
-                    <Typography variant="h6" sx={{ p: 1, fontWeight: 500 }}>
-                      No {tableDataView} Routes Found 🤷‍♂️
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        ) : (
+          <Box
+            sx={{ ...RowFlex, width: "100%", height: "100%" }}
+            className={"size-change-infinite"}
+          >
+            <CircularProgress size={75} />
+          </Box>
+        )}
       </Box>
       <ConfirmationModal
         headerText="Confirm Your Action?"

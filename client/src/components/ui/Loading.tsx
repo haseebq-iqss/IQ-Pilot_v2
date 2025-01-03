@@ -4,7 +4,7 @@ import { ColFlex } from "./../../style_extentions/Flex";
 function Loading() {
   return (
       <Box
-      className="fade-in"
+      className="fade-in-slow"
       sx={{
         ...ColFlex,
         position:"absolute",

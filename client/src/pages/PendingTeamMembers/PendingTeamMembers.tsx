@@ -20,6 +20,7 @@ import {
   Avatar,
   Menu,
   MenuItem,
+  CircularProgress,
 } from "@mui/material";
 import PageContainer from "../../components/ui/PageContainer";
 import { RowFlex } from "../../style_extentions/Flex";
@@ -140,199 +141,210 @@ function PendingTeamMembers() {
       options={false}
     >
       <Box sx={{ width: "100%", height: "50vh" }}>
-        <TableContainer sx={{}}>
-          <TextField
-            sx={{
-              width: "40%",
-            }}
-            variant="outlined"
-            size="small"
-            autoFocus
-            onChange={(e) => {
-              setSearchText(e.target.value);
-            }}
-            placeholder="Search TMs, Address, Work Location..."
-            InputProps={{
-              startAdornment: (
-                <IconButton aria-label="search">
-                  <Search />
-                </IconButton>
-              ),
-            }}
-          />
-          <Table sx={{ minWidth: 650 }} aria-label="TM's table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell align="center">Location</TableCell>
-                <TableCell align="center">Shift</TableCell>
-                <TableCell align="center">Cab</TableCell>
-                <TableCell align="center">Office Location</TableCell>
-                <TableCell align="center">Status</TableCell>
-                <TableCell align="center">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredTeamMembers?.map(
-                (employee: EmployeeTypes, index: number) => {
-                  const empAssignedCab: any = cabNumersArray?.find(
-                    (cNum: any) => employee?._id === cNum?.id
-                  );
-                  return (
-                    <TableRow
-                      key={employee._id}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell width={"20%"} component="th" scope="row">
-                        <Box
+        {teamMemberData ? (
+          <TableContainer className="fade-in" sx={{}}>
+            <TextField
+              sx={{
+                width: "40%",
+              }}
+              variant="outlined"
+              size="small"
+              autoFocus
+              onChange={(e) => {
+                setSearchText(e.target.value);
+              }}
+              placeholder="Search TMs, Address, Work Location..."
+              InputProps={{
+                startAdornment: (
+                  <IconButton aria-label="search">
+                    <Search />
+                  </IconButton>
+                ),
+              }}
+            />
+            <Table sx={{ minWidth: 650 }} aria-label="TM's table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell align="center">Location</TableCell>
+                  <TableCell align="center">Shift</TableCell>
+                  <TableCell align="center">Cab</TableCell>
+                  <TableCell align="center">Office Location</TableCell>
+                  <TableCell align="center">Status</TableCell>
+                  <TableCell align="center">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredTeamMembers?.map(
+                  (employee: EmployeeTypes, index: number) => {
+                    const empAssignedCab: any = cabNumersArray?.find(
+                      (cNum: any) => employee?._id === cNum?.id
+                    );
+                    return (
+                      <TableRow
+                        key={employee._id}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell width={"20%"} component="th" scope="row">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "flex-start",
+                              alignItems: "center",
+                              gap: "10px",
+                            }}
+                          >
+                            <Avatar
+                              src={baseURL + employee?.profilePicture}
+                              sx={{ width: "30px", height: "30px" }}
+                            />
+                            {employee.fname + " " + employee.lname}
+                          </Box>
+                        </TableCell>
+                        <TableCell align="center">
+                          {employee.pickUp?.address}
+                        </TableCell>
+                        <TableCell align="center" width={"16%"}>
+                          {" "}
+                          {Convert24To12HourFormat(
+                            employee?.currentShift as string
+                          )}
+                        </TableCell>
+                        <TableCell
                           sx={{
-                            display: "flex",
-                            justifyContent: "flex-start",
-                            alignItems: "center",
-                            gap: "10px",
+                            fontWeight: 600,
+                            color: empAssignedCab?.cab_number
+                              ? "success.main"
+                              : "error.main",
                           }}
+                          align="center"
                         >
-                          <Avatar
-                            src={baseURL + employee?.profilePicture}
-                            sx={{ width: "30px", height: "30px" }}
-                          />
-                          {employee.fname + " " + employee.lname}
-                        </Box>
-                      </TableCell>
-                      <TableCell align="center">
-                        {employee.pickUp?.address}
-                      </TableCell>
-                      <TableCell align="center" width={"16%"}>
-                        {" "}
-                        {Convert24To12HourFormat(
-                          employee?.currentShift as string
-                        )}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          fontWeight: 600,
-                          color: empAssignedCab?.cab_number
-                            ? "success.main"
-                            : "error.main",
-                        }}
-                        align="center"
-                      >
-                        {empAssignedCab?.cab_number || "na"}
-                      </TableCell>
+                          {empAssignedCab?.cab_number || "na"}
+                        </TableCell>
 
-                      <TableCell width={"10%"} align="center">
-                        {employee.workLocation}
-                      </TableCell>
-                      <TableCell
-                        width={"10%"}
-                        sx={{
-                          color: employee.isCabCancelled
-                            ? "error.main"
-                            : "info.main",
-                          fontWeight: 600,
-                        }}
-                        align="center"
-                      >
-                        {!employee.isCabCancelled ? "In Office" : "On Leave"}
-                      </TableCell>
-                      <TableCell align="center" sx={{ position: "relative" }}>
-                        <MoreHoriz
-                          sx={{ cursor: "pointer" }}
-                          onClick={(e: any) => handleMenuOpen(e, index)}
-                        />
-                        <Menu
-                          key={employee?._id}
-                          elevation={1}
-                          anchorEl={anchorEl}
-                          open={menuIndex === index}
-                          onClose={handleMenuClose}
-                          MenuListProps={{
-                            "aria-labelledby": "basic-button",
+                        <TableCell width={"10%"} align="center">
+                          {employee.workLocation}
+                        </TableCell>
+                        <TableCell
+                          width={"10%"}
+                          sx={{
+                            color: employee.isCabCancelled
+                              ? "error.main"
+                              : "info.main",
+                            fontWeight: 600,
                           }}
+                          align="center"
                         >
-                          <MenuItem
-                            sx={{
-                              ...RowFlex,
-                              color: "info.main",
-                              fontWeight: 600,
-                              justifyContent: "flex-start",
-                              gap: "10px",
+                          {!employee.isCabCancelled ? "In Office" : "On Leave"}
+                        </TableCell>
+                        <TableCell align="center" sx={{ position: "relative" }}>
+                          <MoreHoriz
+                            sx={{ cursor: "pointer" }}
+                            onClick={(e: any) => handleMenuOpen(e, index)}
+                          />
+                          <Menu
+                            key={employee?._id}
+                            elevation={1}
+                            anchorEl={anchorEl}
+                            open={menuIndex === index}
+                            onClose={handleMenuClose}
+                            MenuListProps={{
+                              "aria-labelledby": "basic-button",
                             }}
-                            onClick={() =>
-                              navigate(
-                                `/admin/teamMemberProfile/${
-                                  employee?.fname + "-" + employee?.lname
-                                }`,
-                                { state: employee }
-                              )
-                            }
                           >
-                            <Visibility sx={{}} />
-                            View Details
-                          </MenuItem>
-                          {/* <Divider /> */}
-                          <MenuItem
-                            sx={{
-                              ...RowFlex,
-                              color: "warning.main",
-                              fontWeight: 600,
-                              justifyContent: "flex-start",
-                              gap: "10px",
-                            }}
-                            onClick={() =>
-                              navigate(`/admin/editDetails/${employee?._id}`)
-                            }
-                          >
-                            <EditLocation sx={{}} />
-                            Edit Details
-                          </MenuItem>
-                          {/* <Divider /> */}
-                          <MenuItem
-                            sx={{
-                              ...RowFlex,
-                              color: !employee?.isCabCancelled
-                                ? "warning.light"
-                                : "success.main",
-                              fontWeight: 600,
-                              justifyContent: "flex-start",
-                              gap: "10px",
-                            }}
-                            onClick={() =>
-                              // navigate(`/admin/editDetails/${employee?._id}`)
-                              // console.log(employee?._id, " is marked!")
-                              MarkAsAbsent(employee?._id as string)
-                            }
-                          >
-                            <ExitToApp sx={{}} />
-                            {employee?.isCabCancelled
-                              ? "Mark Present"
-                              : "Mark Absent"}
-                          </MenuItem>
-                          {/* <Divider /> */}
-                          <MenuItem
-                            sx={{
-                              ...RowFlex,
-                              color: "error.main",
-                              fontWeight: 600,
-                              justifyContent: "flex-start",
-                              gap: "10px",
-                            }}
-                            onClick={() =>
-                              handleOpenDeleteModal(employee._id as string)
-                            }
-                          >
-                            <DeleteForever sx={{}} />
-                            Remove Employee
-                          </MenuItem>
-                        </Menu>
-                      </TableCell>
-                    </TableRow>
-                  );
-                }
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                            <MenuItem
+                              sx={{
+                                ...RowFlex,
+                                color: "info.main",
+                                fontWeight: 600,
+                                justifyContent: "flex-start",
+                                gap: "10px",
+                              }}
+                              onClick={() =>
+                                navigate(
+                                  `/admin/teamMemberProfile/${
+                                    employee?.fname + "-" + employee?.lname
+                                  }`,
+                                  { state: employee }
+                                )
+                              }
+                            >
+                              <Visibility sx={{}} />
+                              View Details
+                            </MenuItem>
+                            {/* <Divider /> */}
+                            <MenuItem
+                              sx={{
+                                ...RowFlex,
+                                color: "warning.main",
+                                fontWeight: 600,
+                                justifyContent: "flex-start",
+                                gap: "10px",
+                              }}
+                              onClick={() =>
+                                navigate(`/admin/editDetails/${employee?._id}`)
+                              }
+                            >
+                              <EditLocation sx={{}} />
+                              Edit Details
+                            </MenuItem>
+                            {/* <Divider /> */}
+                            <MenuItem
+                              sx={{
+                                ...RowFlex,
+                                color: !employee?.isCabCancelled
+                                  ? "warning.light"
+                                  : "success.main",
+                                fontWeight: 600,
+                                justifyContent: "flex-start",
+                                gap: "10px",
+                              }}
+                              onClick={() =>
+                                // navigate(`/admin/editDetails/${employee?._id}`)
+                                // console.log(employee?._id, " is marked!")
+                                MarkAsAbsent(employee?._id as string)
+                              }
+                            >
+                              <ExitToApp sx={{}} />
+                              {employee?.isCabCancelled
+                                ? "Mark Present"
+                                : "Mark Absent"}
+                            </MenuItem>
+                            {/* <Divider /> */}
+                            <MenuItem
+                              sx={{
+                                ...RowFlex,
+                                color: "error.main",
+                                fontWeight: 600,
+                                justifyContent: "flex-start",
+                                gap: "10px",
+                              }}
+                              onClick={() =>
+                                handleOpenDeleteModal(employee._id as string)
+                              }
+                            >
+                              <DeleteForever sx={{}} />
+                              Remove Employee
+                            </MenuItem>
+                          </Menu>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  }
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        ) : (
+          <Box
+            sx={{ ...RowFlex, width: "100%", height: "50vh" }}
+            className={"size-change-infinite"}
+          >
+            <CircularProgress size={75} />
+          </Box>
+        )}
       </Box>
       <ConfirmationModal
         headerText="Confirm Your Action?"
