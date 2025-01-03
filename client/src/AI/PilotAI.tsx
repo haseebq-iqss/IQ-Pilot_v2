@@ -10,6 +10,9 @@ import { ColFlex, RowFlex } from "../style_extentions/Flex";
 import { ArrowDownward, Send } from "@mui/icons-material";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { ProcessPrompt } from "./ProcessPrompt";
+import { Typewriter } from "react-simple-typewriter";
+import { useNavigate } from "react-router-dom";
 
 interface MessageInterface {
   id?: string;
@@ -32,7 +35,8 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
 
   async function GenerateContent(prompt: string) {
     try {
-      const res = await pilotAi.generateContent(prompt);
+      const promptWithContext = await ProcessPrompt(prompt);
+      const res = await pilotAi.generateContent(promptWithContext);
       // console.log(res)
       return res.response.text();
     } catch (err) {
@@ -115,6 +119,9 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
     return newMessage;
   };
 
+  const navigate = useNavigate();
+
+  // Send Prompt to AI
   async function SendMessage(prompt: string, owner: "ai" | "user") {
     const message: MessageInterface = CreateMessage({
       message: prompt,
@@ -136,6 +143,26 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
     if (owner === "user") {
       // Send to AI & Capture the response
       const response = await GenerateContent(prompt);
+
+      // Check if it's an Action
+      if (response?.includes("navigation>>")) {
+        const match = response.match(/navigation>>"(.*?)"<</);
+
+        if (match) {
+          const dest = match[1];
+
+          // console.log("in action -> ", dest);
+          navigate(dest);
+        }
+
+        const urlRegex = /\/[a-zA-Z0-9\-\/]+/g; // Regex to detect relative URLs
+
+        const urlMatches = response.match(urlRegex);
+        if (urlMatches) {
+          console.log("Found URL(s):", urlMatches);
+          navigate(urlMatches[0]);
+        }
+      }
 
       // Send the AI response back as a new message
       setMessages((prevMessages: MessageInterface[]) => [
@@ -243,7 +270,7 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
                   key={messageBody.id}
                   sx={{
                     minWidth: "50px",
-                    maxWidth: "250px",
+                    maxWidth: "350px",
                     mr: messageBody?.owner == "user" ? "none" : "auto",
                     px: 1,
                     py: 0.5,
@@ -267,7 +294,19 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
                     {messageBody?.owner == "user" ? "You" : "Pilot AI"}
                   </Typography>
                   <Typography variant="body1">
-                    {messageBody?.message}
+                    {messageBody?.owner == "user" ? (
+                      messageBody?.message
+                    ) : (
+                      <Typewriter
+                        words={[messageBody?.message]}
+                        typeSpeed={10}
+                        loop={1}
+                        cursor={true}
+                        cursorBlinking={true}
+                        cursorStyle={"✨"}
+                        onType={() => scrollToBottom()}
+                      />
+                    )}
                   </Typography>
                 </Box>
               );
@@ -291,7 +330,7 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
                 <IconButton
                   className={messageLockdown ? "size-change-infinite" : ""}
                   disabled={messageLockdown}
-                  onClick={() => SendMessage(prompt, "user")}
+                  onClick={() => prompt?.length && SendMessage(prompt, "user")}
                 >
                   {messageLockdown ? <CircularProgress size={20} /> : <Send />}
                 </IconButton>

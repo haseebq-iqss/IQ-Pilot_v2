@@ -1,0 +1,56 @@
+# iQ-Pilot General Knowledge Base
+
+iQ-Pilot is an Automated Rostering System (ARS) designed to streamline cab management for companies, efficiently managing Team Members (TMs) and cab drivers. It automates the process of creating shifts based on location, office, and shift timings, replacing the manual effort previously required for rostering.
+
+## Key Features
+
+### Rostering & Shift Management:
+- **Automatic Rostering**: iQ-Pilot automatically creates shifts for TMs, grouping them by location, office, and shift timings.
+- **Route Manipulation**: Modify shifts before or after deployment for optimal flexibility.
+- **Route View**: View route details on the map in various formats.
+- **Route Management**: Modify or delete shifts as needed.
+- **TM Portal**: TMs can opt-in or opt-out of shifts and choose to participate in pickup/drop-off.
+
+### Driver Features:
+- **Assigned Routes**: Drivers receive a list of routes to start via the Driver App.
+- **Attendance Marking**: Drivers can mark TMs as present or absent based on their boarding status.
+- **Route Data Collection**: Collect data on cab paths (GPS coordinates) and time taken to complete routes.
+- **Suggested Routes**: Drivers are provided with optimized route suggestions.
+
+### Real-Time Location Tracking:
+- **Route Tracking**: The driver's real-time location is transmitted to both admins and TMs in the cab.
+- **Route Information**: TMs can view the exact location of their cab and plan accordingly.
+
+### Statistics & Monitoring:
+- **Monthly Cost Operations**: Track the total monthly cost of cab operations.
+- **Individual Cab Cost**: Track cost, route, and time spent for each cab.
+- **Distance Traveled**: Monitor total distances traveled by cabs.
+- **Cab Usage Status**: View the status of rostered and pending TMs.
+- **Team Member Status**: Track TMs' in-office status and whether they’ve opted-in or out of cab services for optimal rostering.
+
+### Admin Settings:
+- **Customization Options**: Admins can adjust settings like:
+  - Dark/Light mode
+  - Default map style
+  - Default view mode for active cabs (closed or open maps)
+  - Default alert bar position
+- **Admin Account Settings**: Admins can manage their account settings from the Settings page.
+
+### User-Friendly Interface:
+- **TM and Driver Access**: TMs and drivers have access to an intuitive app for:
+  - Routing information
+  - Leave/Opt-out requests
+  - SOS emergency activation
+  - Real-time updates on designated routes
+
+### Comprehensive Monitoring for Administrators:
+- **Cab Activity Monitoring**: Admins can monitor cab activity in real-time.
+- **Cost and Distance Reports**: Generate reports on daily costs and weekly/monthly distance traveled per cab.
+- **Automated Rostering**: Rosters are automatically created with minimal human intervention, improving efficiency.
+
+### Creators & Place of Development:
+- **Pilot AI was created by Haseeb Qureshi at IQuasar Software Solutions.
+- **This app was created in 2024-2025
+
+## iQ-Pilot v2: Streamlining Operations
+iQ-Pilot v2 enhances user experience, optimizes costs, and improves overall cab management efficiency.

@@ -1,0 +1,2 @@
+This app has a statistics page which shows the Shrinkage (TMs who were rostered but didnt take the cab), total kilometers travelled by all company's cabs and Total cost incurred (fuel used * gas price).
+This page can be accessed from the sidebar of the app by clicking the Admin Statics Button. 

@@ -1,0 +1,2 @@
+This app is able to Pickup and Drop Roster Team Members from Home to Office and Office to home at their respective shift timings. 
+It can be done by clicking the Schedule a Route button on the top right corner of the app.

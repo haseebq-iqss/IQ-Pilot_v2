@@ -1,0 +1,129 @@
+# iQ-Pilot App Structure Overview
+
+The iQ-Pilot app is designed with intuitive navigation and clear sections tailored to the specific needs of different user roles. Below is a detailed overview of the app’s structure, functionalities, and navigation flow to guide users and developers alike.
+
+---
+
+## **User Roles**
+The app supports three primary user roles:
+1. **Admin**: Manages team members, drivers, routes, and overall operations.
+2. **Driver**: Handles assigned routes, attendance, and emergency scenarios.
+3. **Team Member (TM)**: Views assigned shifts, tracks rides, and manages personal settings.
+
+---
+
+## **Admin Portal Structure**
+Admin users have access to a comprehensive set of tools for managing the app's operations.
+
+### **Key Features and Pages:**
+- **Dashboard**: Displays a summary of active TMs, route statuses, and operational costs.
+- **Roster Management**: Manage and view shift rosters and create new schedules.
+- **Settings**: Customize app preferences (e.g., Dark/Light Mode, Map Style) and manage account settings.
+- **Reports**: Access detailed reports on costs, distance traveled, and cab usage.
+- **Live Tracking**: Monitor real-time cab locations and route progress.
+
+### **Admin Routes:**
+Admins have exclusive access to the following routes:
+1. **Dashboard**: `/admin`
+2. **Statistics**: `/admin/adminStatistics`
+3. **Scheduled Routes**: `/admin/scheduledRoutes`
+4. **All Cab Drivers**: `/admin/allCabDrivers`
+5. **Inactive Cabs**: `/admin/inactiveCabs`
+6. **All Team Members**: `/admin/allTeamMembers`
+7. **Pending Team Members**: `/admin/pendingTeamMembers`
+8. **Rostered Team Members**: `/admin/rosteredTeamMembers`
+9. **Live Driver Tracking**: `/admin/live-driver-tracking`
+10. **Settings**: `/admin/settings`
+11. **Create Shift**: `/admin/createShift`
+12. **Add Passengers**: `/admin/addPassengers`
+13. **Assigned Routes**: `/admin/assignedRoutes`
+14. **View Route**: `/admin/viewRoute/:rid`
+15. **Driver Profile**: `/admin/driverProfile/:id`
+16. **Team Member Profile**: `/admin/teamMemberProfile/:id`
+
+---
+
+## **Driver Portal Structure**
+Driver users focus on operational tasks and route management.
+
+### **Key Features and Pages:**
+- **Route List**: Displays assigned routes for the day, with options to start and complete routes.
+- **Attendance**: Mark TMs as present or absent based on boarding status.
+- **Route Details**: View navigation instructions and suggested routes.
+- **SOS Feature**: Activate in emergencies.
+
+### **Driver Routes:**
+1. **Dashboard**: `/driver`
+2. **Start Route**: `/driver/startRoute`
+3. **Route Completed**: `/driver/routeCompleted`
+4. **Driver Profile**: `/driver/profile/:id`
+5. **Settings**: `/driver/settings`
+
+---
+
+## **Team Member (TM) Portal Structure**
+Team Member users manage their shifts and track assigned cabs.
+
+### **Key Features and Pages:**
+- **Upcoming Shifts**: View and opt-in or opt-out of upcoming shifts.
+- **Leave Requests**: Submit leave or opt-out requests for specific days or routes.
+- **SOS Feature**: Activate during emergencies.
+- **Route Status**: Track the real-time location of assigned cabs.
+
+### **TM Routes:**
+1. **Dashboard**: `/employee`
+2. **Profile**: `/employee/profile/:id`
+3. **Edit Profile**: `/employee/editProfile/:id`
+4. **Settings**: `/employee/settings`
+
+---
+
+## **Navigation Flow**
+The app is organized for ease of use, ensuring that each user role can quickly access the functionalities they need.
+
+### **Global Navigation:**
+- **Dashboard**: Provides a summary of key functionalities for each role.
+- **Top Menu**: Allows users to navigate between primary sections (e.g., Dashboard, Roster Management, Route Details).
+- **Settings**: Accessible via the main menu for customization and account management.
+
+### **Customizable Views:**
+Each user role has tailored views to enhance usability:
+- **Admin**: Toggle between dashboard views (e.g., active cabs, pending TMs, reports).
+- **Driver**: Switch between map views and route list views.
+- **TM**: Choose between list and calendar views for upcoming shifts.
+
+---
+
+## **AI Commands and Actions**
+The AI can assist users by issuing commands for navigation and actions based on their roles.
+
+### **Example Commands:**
+1. **Navigate to Admin Dashboard**: "Navigate to the Admin Dashboard."
+2. **Open Live Driver Tracking**: "Open the Live Driver Tracking page."
+3. **Start New Shift**: "Go to the Create Shift page."
+4. **View Route Details**: "Show me the details for route [RouteID]."
+5. **Start Route as Driver**: "Navigate to the Start Route page."
+6. **View Driver Profile**: "Show me my profile."
+
+### **Dynamic Route Handling:**
+- The AI processes dynamic parameters (e.g., `/admin/viewRoute/:rid`, `/driver/profile/:id`) by replacing placeholders (`:rid`, `:id`) with actual values based on the user’s query.
+
+---
+
+## **Role-Based Access**
+### **Admin Users:**
+- Access to all Admin routes and functionalities, including managing drivers, TMs, and reports.
+
+### **Driver Users:**
+- Access to Driver-specific routes for operational tasks like starting/completing routes and marking attendance.
+
+### **TM Users:**
+- Access to TM-specific routes for managing shifts, leave requests, and tracking rides.
+
+---
+
+## **Additional Notes**
+- This structure ensures clarity and efficiency in navigating the app.
+- The AI leverages this structure to guide users to the appropriate pages and perform actions effectively.
+- Developers can use the detailed route paths and role-specific functionalities to implement or enhance app features.
+

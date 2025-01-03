@@ -1,5 +1,5 @@
 import { Call, Close, Warning } from "@mui/icons-material";
-import { Box, Button, Modal, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Modal, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useContext, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
@@ -459,15 +459,21 @@ function AdminDashboard() {
           overflow: "hidden",
         }}
       >
-        <MapComponent
-          height="100%"
-          employees={
-            allEmployeesStatus === "success" &&
-            allEmployees?.length > 1 &&
-            allEmployees
-          }
-          unrosteredTms={pendingPassengers}
-        />
+        {allEmployeesStatus === "success" ? (
+          <MapComponent
+            height="100%"
+            employees={
+              allEmployeesStatus === "success" &&
+              allEmployees?.length > 1 &&
+              allEmployees
+            }
+            unrosteredTms={pendingPassengers}
+          />
+        ) : (
+          <Box sx={{width:"100%", height:"100%", ...RowFlex}} className={"size-change-infinite"}>
+            <CircularProgress size={75} />
+          </Box>
+        )}
       </Box>
     </Box>
   );
