@@ -1,4 +1,4 @@
-import { Alert, Snackbar } from "@mui/material";
+import { Alert, Box, LinearProgress, Snackbar } from "@mui/material";
 import {
   Dispatch,
   SetStateAction,
@@ -8,6 +8,7 @@ import {
 } from "react";
 import { SnackbarTypes } from "../../types/SnackbarTypes";
 import DefaultSnackPositionContext from "../../context/DefaultSnackPositionContext";
+import { ColFlex } from "../../style_extentions/Flex";
 
 interface SnackbarPropTypes {
   value: {
@@ -31,6 +32,28 @@ const GlobalSnackbar = ({
     setSnackPostion(defaultSnackbarPosition);
   }, [defaultSnackbarPosition]);
 
+  const LoadingIcon = () => {
+    return (
+      <Box
+        className={"size-change-infinite"}
+        sx={{
+          ...ColFlex,
+          width: "100%",
+          height: "100%",
+          ml: "15%",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {/* <CircularProgress color="inherit" size={25} sx={{zIndex:99}} /> */}
+        <LinearProgress
+          color="inherit"
+          sx={{ width: "50px", height: "10px" }}
+        />
+      </Box>
+    );
+  };
+
   return (
     <Snackbar
       sx={{ borderRadius: "100px" }}
@@ -39,7 +62,7 @@ const GlobalSnackbar = ({
         vertical: snackPostion?.split(" ")[0] as any,
         horizontal: snackPostion?.split(" ")[1] as any,
       }}
-      autoHideDuration={4000}
+      autoHideDuration={openSnack?.message.includes("Processing") ? 2500 : 4000}
       onClick={() =>
         setOpenSnack({
           open: false,
@@ -56,8 +79,18 @@ const GlobalSnackbar = ({
       }
     >
       <Alert
-        sx={{ color: "white" }}
+        sx={{
+          ...ColFlex,
+          color: "white",
+          overflow: "hidden",
+          alignItems: "center",
+          justifyContent: "center",
+          ...(openSnack?.message.includes("Processing") && {
+            background: "linear-gradient(90deg, #FF4500, #9329FC)", // Gradient for AI messages
+          }),
+        }}
         severity={openSnack.severity || "info"}
+        icon={openSnack?.message.includes("Processing") ? <LoadingIcon /> : ""}
         variant="filled"
       >
         {openSnack.message}

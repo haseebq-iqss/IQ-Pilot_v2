@@ -12,7 +12,9 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ProcessPrompt } from "./ProcessPrompt";
 import { Typewriter } from "react-simple-typewriter";
-import { useNavigate } from "react-router-dom";
+import { ExtractJSON } from "./JSONExtractor";
+import { CommandInterface } from "../types/CommandInterface";
+import ProcessCommand from "./CommandProcessor";
 
 interface MessageInterface {
   id?: string;
@@ -119,8 +121,6 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
     return newMessage;
   };
 
-  const navigate = useNavigate();
-
   // Send Prompt to AI
   async function SendMessage(prompt: string, owner: "ai" | "user") {
     const message: MessageInterface = CreateMessage({
@@ -142,36 +142,29 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
 
     if (owner === "user") {
       // Send to AI & Capture the response
-      const response = await GenerateContent(prompt);
+      const response: string | undefined = await GenerateContent(prompt);
 
-      // Check if it's an Action
-      if (response?.includes("navigation>>")) {
-        const match = response.match(/navigation>>"(.*?)"<</);
+      // Convert Response into Usable JSON
+      const responseCommand: CommandInterface = ExtractJSON(response as string);
+      // console.log(responseCommand)
 
-        if (match) {
-          const dest = match[1];
-
-          // console.log("in action -> ", dest);
-          navigate(dest);
-        }
-
-        const urlRegex = /\/[a-zA-Z0-9\-\/]+/g; // Regex to detect relative URLs
-
-        const urlMatches = response.match(urlRegex);
-        if (urlMatches) {
-          console.log("Found URL(s):", urlMatches);
-          navigate(urlMatches[0]);
-        }
+      // Check command type
+      if (responseCommand?.type == "message") {
+        // Send the AI response back as a new message
+        setMessages((prevMessages: MessageInterface[]) => [
+          ...prevMessages,
+          CreateMessage({
+            message: responseCommand?.message as string,
+            owner: "ai",
+          }),
+        ]);
+      } else {
+        // Close AI for a Clean Transition
+        setOpenDrawer(false);
+        // Process the command
+        ProcessCommand(responseCommand);
+        // Send a "Working on it" Message
       }
-
-      // Send the AI response back as a new message
-      setMessages((prevMessages: MessageInterface[]) => [
-        ...prevMessages,
-        CreateMessage({
-          message: response as string,
-          owner: "ai",
-        }),
-      ]);
     }
 
     // Unlock the send button after AI response is added

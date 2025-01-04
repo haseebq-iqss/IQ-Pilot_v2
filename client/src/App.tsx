@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import UserDataContext from "./context/UserDataContext";
 import MainRouter from "./router/MainRouter";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -18,12 +18,22 @@ import useLocalStorage from "./hooks/useLocalStorage";
 import DefaultCabViewMode from "./context/DefaultCabViewModeContext";
 import DefaultMapStyleContext from "./context/DefaultMapStyleContext";
 
+declare global {
+  interface Window {
+    navigateApp: (path: string, state?: Record<string, any>) => void;
+    openSnackbar: (options: {
+      open: boolean;
+      message: string;
+      severity?: "success" | "error" | "info" | "warning";
+    }) => void;
+  }
+}
+
 function App() {
   registerServiceWorker();
 
   const { getItem } = useLocalStorage();
 
-  const navigate = useNavigate();
   const [userData, setUserData] = useState<EmployeeTypes>();
   const [themeMode, setThemeMode] = useState<PaletteMode>("dark");
   const [openSnack, setOpenSnack] = useState<SnackbarTypes>({
@@ -47,6 +57,17 @@ function App() {
     !location.pathname.includes("employee") &&
     !location.pathname.includes("driver");
 
+  // Expose the navigate function to a global reference
+  const navigate = useNavigate();
+  const navigateRef = useRef<typeof navigate | null>(navigate);
+  useEffect(() => {
+    navigateRef.current = navigate;
+    window.navigateApp = navigate;
+    window.openSnackbar = ({ message, severity = "success" }) => {
+      setOpenSnack({ open: true, message, severity });
+    };
+  }, []);
+
   useEffect(() => {
     if (!userData) {
       useAxios
@@ -56,12 +77,11 @@ function App() {
           // console.log(user)
           const defaultAdminLogin = getItem("defaultAdminLogin") || "admin";
           if (user.role == "admin") {
-            user.role = defaultAdminLogin as any 
+            user.role = defaultAdminLogin as any;
             setUserData(user);
             // console.log(defaultAdminLogin)
             isBaseRoute && navigate(`/${defaultAdminLogin}`);
-          }
-          else {
+          } else {
             setUserData(user);
             isBaseRoute && navigate(`/${user.role}`);
           }
