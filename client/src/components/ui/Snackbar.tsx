@@ -32,6 +32,10 @@ const GlobalSnackbar = ({
     setSnackPostion(defaultSnackbarPosition);
   }, [defaultSnackbarPosition]);
 
+  const isFromAI =
+    openSnack?.message.includes("Processing") ||
+    openSnack?.message.toLowerCase().includes("pilot");
+
   const LoadingIcon = () => {
     return (
       <Box
@@ -62,7 +66,7 @@ const GlobalSnackbar = ({
         vertical: snackPostion?.split(" ")[0] as any,
         horizontal: snackPostion?.split(" ")[1] as any,
       }}
-      autoHideDuration={openSnack?.message.includes("Processing") ? 2500 : 4000}
+      autoHideDuration={isFromAI ? 2500 : 4000}
       onClick={() =>
         setOpenSnack({
           open: false,
@@ -85,12 +89,12 @@ const GlobalSnackbar = ({
           overflow: "hidden",
           alignItems: "center",
           justifyContent: "center",
-          ...(openSnack?.message.includes("Processing") && {
+          ...(isFromAI && {
             background: "linear-gradient(90deg, #FF4500, #9329FC)", // Gradient for AI messages
           }),
         }}
         severity={openSnack.severity || "info"}
-        icon={openSnack?.message.includes("Processing") ? <LoadingIcon /> : ""}
+        icon={isFromAI ? <LoadingIcon /> : ""}
         variant="filled"
       >
         {openSnack.message}

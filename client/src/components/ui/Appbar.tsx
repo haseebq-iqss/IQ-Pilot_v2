@@ -9,10 +9,7 @@ import {
   LightMode,
   Notifications,
   Route,
-  ScheduleSend,
-  Send,
   Settings,
-  Timelapse,
 } from "@mui/icons-material";
 import {
   Avatar,
@@ -54,7 +51,7 @@ function Appbar() {
   const [selectedDriver, setSelectedDriver] = useState<any>({});
   const [routeType, setRouteType] = useState<"pickup" | "drop">("pickup");
   const [office, setOffice] = useState("");
-  const [activationMode, setActivationMode] = useState<any>();
+  // const [activationMode, setActivationMode] = useState<any>();
 
   // const qc = useQueryClient();
 
@@ -95,7 +92,7 @@ function Appbar() {
   ];
 
   const [currentShift, setcurrentShift] = useState("");
-  const [activeDays, setActiveDays] = useState<number>(1);
+  // const [activeDays, setActiveDays] = useState<number>(1);
 
   const handleSelectDriver = (event: any) => {
     console.log(event.target.value);
@@ -107,10 +104,8 @@ function Appbar() {
       const routeStateData = {
         driver: selectedDriver,
         currentShift,
-        daysRouteIsActive: activeDays,
         typeOfRoute: routeType,
         office,
-        activationMode,
       };
       // console.log(routeStateData);
       navigate("/admin/addPassengers", { state: routeStateData });
@@ -345,161 +340,104 @@ function Appbar() {
                 gap: "15px",
               }}
             >
-              {/* Current Shift*/}
-              <FormControl sx={{ width: "50%" }}>
-                <InputLabel id="shift-currentShift-label">
-                  Current Shift
-                </InputLabel>
-                <Select
-                  labelId="shift-currentShift-label"
-                  id="shift-currentShift-label"
-                  value={currentShift}
-                  label="Shift currentShift"
-                  onChange={(e) => setcurrentShift(e.target.value)}
-                >
-                  {routeType === "pickup"
-                    ? pickupTimings.map((time: any) => {
+              <Box
+                sx={{
+                  ...RowFlex,
+                  width: "100%",
+                  justifyContent: "space-between",
+                  gap: "15px",
+                }}
+              >
+                {/* Current Shift*/}
+                <FormControl sx={{ width: "100%" }}>
+                  <InputLabel id="shift-currentShift-label">
+                    Current Shift
+                  </InputLabel>
+                  <Select
+                    labelId="shift-currentShift-label"
+                    id="shift-currentShift-label"
+                    value={currentShift}
+                    label="Shift currentShift"
+                    onChange={(e) => setcurrentShift(e.target.value)}
+                  >
+                    {routeType === "pickup"
+                      ? pickupTimings.map((time: any) => {
+                          return (
+                            <MenuItem
+                              key={time?.t4Time}
+                              value={time?.t4Time}
+                              sx={{ ...RowFlex, pl: 2.5, fontWeight: 600 }}
+                            >
+                              <LightMode sx={{ mr: 1 }} />
+                              {time.t2Time}
+                            </MenuItem>
+                          );
+                        })
+                      : dropTimings.map((time: any) => {
+                          return (
+                            <MenuItem
+                              key={time?.t4Time}
+                              value={time?.t4Time}
+                              sx={{ ...RowFlex, pl: 2.5, fontWeight: 600 }}
+                            >
+                              <DarkMode sx={{ mr: 1 }} />
+                              {time.t2Time}
+                            </MenuItem>
+                          );
+                        })}
+                  </Select>
+                </FormControl>
+              </Box>
+              <Box
+                sx={{
+                  ...RowFlex,
+                  width: "100%",
+                  justifyContent: "space-between",
+                  gap: "15px",
+                }}
+              >
+                <FormControl sx={{ width: "100%" }}>
+                  <InputLabel id="select-driver-label">
+                    Select Driver
+                  </InputLabel>
+                  <Select
+                    labelId="select-driver-label"
+                    id="select-driver"
+                    value={selectedDriver}
+                    label="Pickup or Drop"
+                    onChange={handleSelectDriver}
+                  >
+                    {/* {console.log(cabs)} */}
+                    {availableCabsOnShift?.length ? (
+                      availableCabsOnShift?.map((driver: any) => {
+                        // console.log(driver);
                         return (
                           <MenuItem
-                            key={time?.t4Time}
-                            value={time?.t4Time}
-                            sx={{ ...RowFlex, pl: 2.5, fontWeight: 600 }}
+                            key={driver?.cabDriver?.[0]._id}
+                            value={driver as any}
                           >
-                            <LightMode sx={{ mr: 1 }} />
-                            {time.t2Time}
+                            <Avatar
+                              sx={{ width: 30, height: 30, m: 1 }}
+                              src={
+                                (baseURL +
+                                  (driver?.cabDriver[0] as EmployeeTypes)
+                                    ?.profilePicture) as string
+                              }
+                            />
+                            {(driver?.cabDriver[0] as EmployeeTypes)?.fname +
+                              " " +
+                              (driver?.cabDriver[0] as EmployeeTypes)?.lname}
                           </MenuItem>
                         );
                       })
-                    : dropTimings.map((time: any) => {
-                        return (
-                          <MenuItem
-                            key={time?.t4Time}
-                            value={time?.t4Time}
-                            sx={{ ...RowFlex, pl: 2.5, fontWeight: 600 }}
-                          >
-                            <DarkMode sx={{ mr: 1 }} />
-                            {time.t2Time}
-                          </MenuItem>
-                        );
-                      })}
-                </Select>
-              </FormControl>
-              {/* Immediate Shift */}
-              <FormControl sx={{ width: "50%" }}>
-                <InputLabel id="central-point-label">
-                  Activation Mode
-                </InputLabel>
-                <Select
-                  labelId="central-point-label"
-                  id="central-point-label"
-                  value={activationMode}
-                  label="central-point-label"
-                  onChange={(e) => setActivationMode(e.target.value)}
-                >
-                  <MenuItem
-                    value={"immediate"}
-                    sx={{
-                      ...RowFlex,
-                      pl: 2.5,
-                      fontWeight: 600,
-                      justifyContent: "flex-start",
-                    }}
-                  >
-                    <Send sx={{ mr: 1 }} />
-                    Immediate (Shift will activate right now)
-                  </MenuItem>
-                  <MenuItem
-                    value={"next-day"}
-                    sx={{
-                      ...RowFlex,
-                      pl: 2.5,
-                      fontWeight: 600,
-                      justifyContent: "flex-start",
-                    }}
-                  >
-                    <ScheduleSend sx={{ mr: 1 }} />
-                    Next Day (Shift will activate on the next day's start)
-                  </MenuItem>
-                </Select>
-              </FormControl>
-              {/* Active for days */}
-              <FormControl sx={{ width: "50%" }}>
-                <InputLabel id="pickup-or-drop-label">
-                  Active for Days
-                </InputLabel>
-                <Select
-                  labelId="active-time"
-                  id="active-time"
-                  value={activeDays}
-                  label="Active For Days"
-                  onChange={(e: any) => setActiveDays(e.target.value)}
-                >
-                  {Array.from({ length: 7 }).map((_, index: any) => {
-                    return (
-                      <MenuItem
-                        value={index + 1}
-                        key={index}
-                        sx={{
-                          ...RowFlex,
-                          pl: 2.5,
-                          fontWeight: 600,
-                          justifyContent: "flex-start",
-                        }}
-                      >
-                        <Timelapse sx={{ mr: 1 }} />
-                        {index + 1}
+                    ) : (
+                      <MenuItem value={"No Driver"}>
+                        No Driver Available
                       </MenuItem>
-                    );
-                  })}
-                </Select>
-              </FormControl>
-            </Box>
-
-            <Box
-              sx={{
-                ...RowFlex,
-                width: "100%",
-                justifyContent: "space-between",
-                gap: "15px",
-              }}
-            >
-              <FormControl sx={{ width: "100%" }}>
-                <InputLabel id="select-driver-label">Select Driver</InputLabel>
-                <Select
-                  labelId="select-driver-label"
-                  id="select-driver"
-                  value={selectedDriver}
-                  label="Pickup or Drop"
-                  onChange={handleSelectDriver}
-                >
-                  {/* {console.log(cabs)} */}
-                  {availableCabsOnShift?.length ? (
-                    availableCabsOnShift?.map((driver: any) => {
-                      // console.log(driver);
-                      return (
-                        <MenuItem
-                          key={driver?.cabDriver?.[0]._id}
-                          value={driver as any}
-                        >
-                          <Avatar
-                            sx={{ width: 30, height: 30, m: 1 }}
-                            src={
-                              (baseURL +
-                                (driver?.cabDriver[0] as EmployeeTypes)
-                                  ?.profilePicture) as string
-                            }
-                          />
-                          {(driver?.cabDriver[0] as EmployeeTypes)?.fname +
-                            " " +
-                            (driver?.cabDriver[0] as EmployeeTypes)?.lname}
-                        </MenuItem>
-                      );
-                    })
-                  ) : (
-                    <MenuItem value={"No Driver"}>No Driver Available</MenuItem>
-                  )}
-                </Select>
-              </FormControl>
+                    )}
+                  </Select>
+                </FormControl>
+              </Box>
             </Box>
             <Button
               sx={{

@@ -1,3 +1,4 @@
+import ExportRoster from "../actions/ExportRoster"
 import RequestShift from "../actions/RequestShift"
 import { CommandInterface } from "../types/CommandInterface"
 
@@ -8,9 +9,9 @@ async function ProcessCommand(command: CommandInterface) {
   }
   else {
     window.openSnackbar({
-      open:true,
-      message:"Processing",
-      severity:"info",
+      open: true,
+      message: "Processing",
+      severity: "info",
     })
     if (command.data?.action_name == "create_shift") {
       const shiftData = {
@@ -20,6 +21,7 @@ async function ProcessCommand(command: CommandInterface) {
       }
       await RequestShift(shiftData)
     }
+    if (command.data?.action_name == "export_roster") ExportRoster()
   }
   return command
 }

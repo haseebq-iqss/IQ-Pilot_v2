@@ -15,6 +15,7 @@ import { Typewriter } from "react-simple-typewriter";
 import { ExtractJSON } from "./JSONExtractor";
 import { CommandInterface } from "../types/CommandInterface";
 import ProcessCommand from "./CommandProcessor";
+import TextToSpeech from "./PilotSpeechSynth";
 
 interface MessageInterface {
   id?: string;
@@ -35,6 +36,9 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
   const genAi = new GoogleGenerativeAI(GEMINI_API_KEY);
   const pilotAi = genAi.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+  // Initialize TTS
+  const tts = TextToSpeech.getInstance();
+
   async function GenerateContent(prompt: string) {
     try {
       const promptWithContext = await ProcessPrompt(prompt);
@@ -43,6 +47,16 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
       return res.response.text();
     } catch (err) {
       console.log(err);
+      // Send a "Oops, i think somethings broken!" Message on error
+      setMessages((prevMessages: MessageInterface[]) => [
+        ...prevMessages,
+        CreateMessage({
+          message: "Oops, i think somethings broken! ",
+          owner: "ai",
+        }),
+      ]);
+      // Activate TTS
+      tts.Speak("Oops, i think somethings broken!");
     }
   }
 
@@ -145,12 +159,14 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
       const response: string | undefined = await GenerateContent(prompt);
 
       // Convert Response into Usable JSON
+      console.log(response);
       const responseCommand: CommandInterface = ExtractJSON(response as string);
       // console.log(responseCommand)
 
       // Check command type
       if (responseCommand?.type == "message") {
         // Send the AI response back as a new message
+        tts.Speak(responseCommand?.message as string);
         setMessages((prevMessages: MessageInterface[]) => [
           ...prevMessages,
           CreateMessage({
@@ -159,11 +175,24 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
           }),
         ]);
       } else {
-        // Close AI for a Clean Transition
-        setOpenDrawer(false);
-        // Process the command
-        ProcessCommand(responseCommand);
         // Send a "Working on it" Message
+        setMessages((prevMessages: MessageInterface[]) => [
+          ...prevMessages,
+          CreateMessage({
+            message: "Sure, Working on it ✈️",
+            owner: "ai",
+          }),
+        ]);
+        // Activate TTS
+        tts.Speak("Sure, Working on it");
+        // Create a Artificial Delay for UX
+        const artificialDelayTOut = setInterval(() => {
+          // Close AI for a Clean Transition
+          setOpenDrawer(false);
+          // Process the command
+          ProcessCommand(responseCommand);
+          return clearInterval(artificialDelayTOut);
+        }, 2000);
       }
     }
 
