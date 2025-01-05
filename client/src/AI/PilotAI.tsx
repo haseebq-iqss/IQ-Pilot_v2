@@ -186,7 +186,7 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
         // Activate TTS
         tts.Speak("Sure, Working on it");
         // Create a Artificial Delay for UX
-        const artificialDelayTOut = setInterval(() => {
+        const artificialDelayTOut:NodeJS.Timeout = setInterval(() => {
           // Close AI for a Clean Transition
           setOpenDrawer(false);
           // Process the command
