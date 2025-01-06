@@ -4,6 +4,7 @@ import Speech from "speak-tts";
 export default class TextToSpeech {
     private static instance: TextToSpeech;
     private speech: Speech;
+    private isPaused: boolean = false;
 
     private constructor() {
         this.speech = new Speech();
@@ -33,8 +34,7 @@ export default class TextToSpeech {
                 pitch: 1,
             })
             .then((_data: any) => {
-                // console.log("Speech synthesis initialized successfully", data);
-                console.log(">> Synthesizing Voice <<");
+                console.log(">> Synthesizing Voice Initialized <<");
             })
             .catch((error: any) => {
                 console.error("Error initializing speech synthesis:", error);
@@ -47,12 +47,77 @@ export default class TextToSpeech {
      */
     public Speak(text: string): void {
         this.speech
-            .speak({ text })
+            .speak({
+                text,
+                queue: false,
+                listeners: {
+                    onstart: () => {
+                        // console.log("Speech started");
+                    },
+                    onend: () => {
+                        // console.log("Speech ended");
+                        this.isPaused = false;
+                    },
+                    onpause: () => {
+                        // console.log("Speech paused");
+                    },
+                    onresume: () => {
+                        // console.log("Speech resumed");
+                    },
+                },
+            })
             .then(() => {
-                console.log(`Speech completed: "${text}"`);
+                // console.log(`Speech completed: "${text}"`);
             })
             .catch((error: any) => {
                 console.error("Error during speech synthesis:", error);
             });
+    }
+
+    /**
+     * Pauses the ongoing speech synthesis.
+     */
+    public Pause(): void {
+        if (this.speech.speaking()) {
+            this.speech.pause();
+            this.isPaused = true;
+            console.log("Speech paused");
+        } else {
+            console.log("No speech is currently playing to pause");
+        }
+    }
+
+    /**
+     * Resumes the paused speech synthesis.
+     */
+    public Resume(): void {
+        if (this.isPaused) {
+            this.speech.resume();
+            this.isPaused = false;
+            console.log("Speech resumed");
+        } else {
+            console.log("No paused speech to resume");
+        }
+    }
+
+    /**
+     * Stops the ongoing speech synthesis.
+     */
+    public Stop(): void {
+        if (this.speech.speaking()) {
+            this.speech.cancel();
+            this.isPaused = false;
+            // console.log("Speech stopped");
+        } else {
+            console.log("No speech is currently playing to stop");
+        }
+    }
+
+    /**
+     * Returns the current status of the speech synthesis.
+     * @returns true if speech synthesis is speaking, false otherwise.
+     */
+    public Status(): boolean {
+        return this.speech.speaking();
     }
 }

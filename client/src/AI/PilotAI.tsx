@@ -3,11 +3,12 @@ import {
   CircularProgress,
   Drawer,
   IconButton,
+  LinearProgress,
   TextField,
   Typography,
 } from "@mui/material";
 import { ColFlex, RowFlex } from "../style_extentions/Flex";
-import { ArrowDownward, Send } from "@mui/icons-material";
+import { ArrowDownward, Send, StopCircle } from "@mui/icons-material";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ProcessPrompt } from "./ProcessPrompt";
@@ -38,6 +39,7 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
 
   // Initialize TTS
   const tts = TextToSpeech.getInstance();
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   async function GenerateContent(prompt: string) {
     try {
@@ -159,7 +161,7 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
       const response: string | undefined = await GenerateContent(prompt);
 
       // Convert Response into Usable JSON
-      console.log(response);
+      // console.log(response);
       const responseCommand: CommandInterface = ExtractJSON(response as string);
       // console.log(responseCommand)
 
@@ -186,7 +188,7 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
         // Activate TTS
         tts.Speak("Sure, Working on it");
         // Create a Artificial Delay for UX
-        const artificialDelayTOut:NodeJS.Timeout = setInterval(() => {
+        const artificialDelayTOut: NodeJS.Timeout = setInterval(() => {
           // Close AI for a Clean Transition
           setOpenDrawer(false);
           // Process the command
@@ -200,6 +202,12 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
     setMessageLockdown(false);
     return;
   }
+
+  // Stop TTS Speaking
+  const StopSpeaking = () => {
+    tts.Stop();
+    setIsSpeaking(false);
+  };
 
   // Enter Listener to Send Prompt
   useEffect(() => {
@@ -219,6 +227,17 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [prompt]);
+
+  useEffect(() => {
+    // Polling every 500ms to check the speaking status.
+    const interval = setInterval(() => {
+      const status = tts.Status();
+      setIsSpeaking(status);
+    }, 500);
+
+    // Clear the interval when the component unmounts.
+    return () => clearInterval(interval);
+  }, [tts]);
 
   useLayoutEffect(() => {
     scrollToBottom();
@@ -302,19 +321,39 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
                     zIndex: 2,
                   }}
                 >
-                  <Typography
-                    variant="caption"
+                  <Box
                     sx={{
-                      fontWeight: 600,
-                      ...(messageBody?.owner === "ai" && {
-                        background: "linear-gradient(90deg, #FF4500, #9329FC)", // Gradient for AI messages
-                        WebkitBackgroundClip: "text", // Clips background to text
-                        WebkitTextFillColor: "transparent", // Allows gradient to show through
-                      }),
+                      ...RowFlex,
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      lineHeight: "auto",
                     }}
                   >
-                    {messageBody?.owner == "user" ? "You" : "Pilot AI"}
-                  </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontWeight: 600,
+                        ...(messageBody?.owner === "ai" && {
+                          background:
+                            "linear-gradient(90deg, #FF4500, #9329FC)", // Gradient for AI messages
+                          WebkitBackgroundClip: "text", // Clips background to text
+                          WebkitTextFillColor: "transparent", // Allows gradient to show through
+                        }),
+                      }}
+                    >
+                      {messageBody?.owner == "user" ? "You" : "Pilot AI"}
+                    </Typography>
+                    {isSpeaking &&
+                      messageBody.owner == "ai" &&
+                      index == messages.length - 1 && (
+                        <LinearProgress
+                          className={"size-change-infinite"}
+                          color="inherit"
+                          sx={{ width: "20px", height: "10px" }}
+                        />
+                      )}
+                  </Box>
+
                   <Typography variant="body1">
                     {messageBody?.owner == "user" ? (
                       messageBody?.message
@@ -352,9 +391,19 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
                 <IconButton
                   className={messageLockdown ? "size-change-infinite" : ""}
                   disabled={messageLockdown}
-                  onClick={() => prompt?.length && SendMessage(prompt, "user")}
+                  onClick={() =>
+                    !isSpeaking
+                      ? prompt?.length && SendMessage(prompt, "user")
+                      : StopSpeaking()
+                  }
                 >
-                  {messageLockdown ? <CircularProgress size={20} /> : <Send />}
+                  {messageLockdown ? (
+                    <CircularProgress size={20} />
+                  ) : isSpeaking ? (
+                    <StopCircle />
+                  ) : (
+                    <Send />
+                  )}
                 </IconButton>
               ),
             }}
