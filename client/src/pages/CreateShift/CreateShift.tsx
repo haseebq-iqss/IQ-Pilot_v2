@@ -48,7 +48,6 @@ function CreateShift() {
   if (!routeState) {
     navigate("-1");
   }
-  
 
   const routeType = routeState?.data?.typeOfRoute;
   const routeTiming = routeState?.data?.currentShift;
@@ -97,18 +96,41 @@ function CreateShift() {
     );
   });
 
+  const tmsInShift = () => {
+    if (routeState.data.data) {
+      // Extract TMs which are being rostered
+      const tmsArray = [];
+      const tms = routeState.data.data.map((route: any) => {
+        tmsArray.push(...route.passengers);
+      });
+
+      // Extract thier IDs in a Set
+      const tmsIdSet = new Set();
+      tmsArray.map((tm: any) => {
+        tmsIdSet.add(tm._id);
+      });
+
+      // Return the Set
+      return tmsIdSet;
+    }
+  };
+
+  const tmIdsSet = tmsInShift();
+
   useEffect(() => {
     setavailableTMs(() =>
       pendingPassengers?.filter((emp: EmployeeTypes) => {
         if (routeType == "drop") {
           return (
             emp?.currentShift?.split("-")[1] == routeTiming &&
-            emp?.workLocation == routeLocation
+            emp?.workLocation == routeLocation &&
+            !tmIdsSet?.has(emp._id)
           );
         } else {
           return (
             emp?.currentShift?.split("-")[0] == routeTiming &&
-            emp?.workLocation == routeLocation
+            emp?.workLocation == routeLocation &&
+            !tmIdsSet?.has(emp._id)
           );
         }
       })
@@ -126,11 +148,16 @@ function CreateShift() {
 
   const [activeTask, setActiveTask] = useState<EmployeeTypes | null>(null);
 
+  // console.log(routeState?.data);
+
   const [columns, setColumns] = useState([
     ...((routeState?.data?.data || []).map(
       (shift: ShiftTypes, index: number) => ({
         ...shift,
         id: `Roster${index.toString()}`,
+        currentShift: routeState?.data.currentShift,
+        workLocation: routeState?.data.workLocation,
+        typeOfRoute: routeState?.data.typeOfRoute,
       })
     ) || []),
   ]);
@@ -627,9 +654,14 @@ function CreateShift() {
               gap: 0,
             }}
           >
-            <Box sx={{...RowFlex, gap:1.5, mx:2.5}}>
+            <Box sx={{ ...RowFlex, gap: 1.5, mx: 2.5 }}>
               <Typography variant="h4">{availableTMs?.length}</Typography>
-              <Typography variant="body2" sx={{lineHeight:"17.5px", width:"50%"}}>TMs Pending</Typography>
+              <Typography
+                variant="body2"
+                sx={{ lineHeight: "17.5px", width: "50%" }}
+              >
+                TMs Pending
+              </Typography>
             </Box>
             <Box
               sx={{

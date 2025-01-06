@@ -252,9 +252,10 @@ function ScheduledRoutes() {
               <TableHead>
                 <TableRow>
                   <TableCell align="left">Shift time</TableCell>
-                  <TableCell align="left">Cab</TableCell>
+                  <TableCell align="center">Cab</TableCell>
                   <TableCell align="center">Priority Cab</TableCell>
                   <TableCell align="left">Driver</TableCell>
+                  <TableCell align="center">No. of TMs</TableCell>
                   <TableCell align="center">Pickup/Drop</TableCell>
                   <TableCell align="center">Office</TableCell>
                   <TableCell align="center">Date</TableCell>
@@ -288,7 +289,7 @@ function ScheduledRoutes() {
 
                       <TableCell
                         sx={{ fontWeight: 600, color: "primary.dark" }}
-                        align="left"
+                        align="center"
                       >
                         {(selectedRoutes[index]?.cab as Cabtypes)?.cabNumber}
                       </TableCell>
@@ -330,6 +331,9 @@ function ScheduledRoutes() {
                                 ?.cabDriver as EmployeeTypes
                             )?.lname}{" "}
                         </Box>
+                      </TableCell>
+                      <TableCell align="center">
+                        {selectedRoutes[index]?.passengers?.length}
                       </TableCell>
                       <TableCell sx={{ fontWeight: 600 }} align="center">
                         {(route.typeOfRoute
