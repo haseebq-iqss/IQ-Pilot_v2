@@ -8,7 +8,12 @@ import {
   Typography,
 } from "@mui/material";
 import { ColFlex, RowFlex } from "../style_extentions/Flex";
-import { ArrowDownward, Send, StopCircle } from "@mui/icons-material";
+import {
+  ArrowDownward,
+  Assistant,
+  Send,
+  StopCircle,
+} from "@mui/icons-material";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ProcessPrompt } from "./ProcessPrompt";
@@ -17,6 +22,7 @@ import { ExtractJSON } from "./JSONExtractor";
 import { CommandInterface } from "../types/CommandInterface";
 import ProcessCommand from "./CommandProcessor";
 import TextToSpeech from "./PilotSpeechSynth";
+import createSpeechListenerWithSilenceTimeout from "./VocalEngine";
 
 interface MessageInterface {
   id?: string;
@@ -209,6 +215,30 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
     setIsSpeaking(false);
   };
 
+  const [listening, isListening] = useState<boolean>(false);
+  const { startListening, stopListening } = createSpeechListenerWithSilenceTimeout("en-US");
+
+  // Function to use Voice to interact with Pilot AI
+  const StartListening = () => {
+    // Start listening dynamically
+    isListening(true);
+    let latestText: string;
+    startListening(
+      (text) => {
+        latestText = text;
+        setPrompt(text);
+      },
+      () => {
+        // Trigger SendMessage with the latest `text` directly
+        if (latestText?.length) {
+          SendMessage(latestText, "user");
+          stopListening()
+        }
+        isListening(false);
+      }
+    );
+  };
+
   // Enter Listener to Send Prompt
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -379,32 +409,55 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
           <TextField
             disabled={messageLockdown}
             fullWidth
+            multiline
+            spellCheck={true}
             name="prompt"
             label="Message Pilot AI"
             placeholder="Ask Pilot AI"
             value={prompt}
-            // InputLabelProps={{ shrink: true }}
+            InputLabelProps={{ shrink: true }}
             onChange={(e) => setPrompt(e.target.value)}
             autoFocus
             InputProps={{
               endAdornment: (
-                <IconButton
-                  className={messageLockdown ? "size-change-infinite" : ""}
-                  disabled={messageLockdown}
-                  onClick={() =>
-                    !isSpeaking
-                      ? prompt?.length && SendMessage(prompt, "user")
-                      : StopSpeaking()
-                  }
-                >
-                  {messageLockdown ? (
-                    <CircularProgress size={20} />
-                  ) : isSpeaking ? (
-                    <StopCircle />
-                  ) : (
-                    <Send />
-                  )}
-                </IconButton>
+                <>
+                  <IconButton
+                    className={messageLockdown ? "size-change-infinite" : ""}
+                    disabled={messageLockdown}
+                    onClick={() => StartListening()}
+                  >
+                    {listening ? (
+                      <Box
+                        className={"size-change-infinite"}
+                        sx={{
+                          width: "12.5px",
+                          height: "12.5px",
+                          borderRadius: 100,
+                          backgroundColor: "limegreen",
+                        }}
+                      />
+                    ) : (
+                      <Assistant />
+                    )}
+                  </IconButton>
+                  <IconButton
+                    className={messageLockdown ? "size-change-infinite" : ""}
+                    disabled={messageLockdown}
+                    onClick={() =>
+                      !isSpeaking
+                        ? prompt?.length && SendMessage(prompt, "user")
+                        : StopSpeaking()
+                    }
+                  >
+                    {messageLockdown ? (
+                      <CircularProgress size={20} />
+                    ) : isSpeaking ? (
+                      <StopCircle />
+                    ) : (
+                      <Send />
+                    )}
+                  </IconButton>
+                </>
               ),
             }}
           ></TextField>

@@ -26,6 +26,7 @@ declare global {
       message: string;
       severity?: "success" | "error" | "info" | "warning";
     }) => void;
+    SpeechRecognition: any;
   }
 }
 
