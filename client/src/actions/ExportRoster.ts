@@ -3,35 +3,45 @@ import useAxios from "../api/useAxios";
 function getFormattedFileName() {
     const today = new Date();
     const day = today.getDate().toString().padStart(2, "0");
-    const month = (today.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based, so add 1
+    const month = (today.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based
     const year = today.getFullYear();
 
-    // Construct the file name with the day-first format
-    return `iQSS-Team Route Planning (${day}/${month}/${year}).xlsx`;
+    return `iQSS-Team Route Planning (${day}-${month}-${year}).xlsx`; // Use a consistent format
 }
 
 async function ExportRoster() {
-    const excelFileRaw = await useAxios.get("/routes/exports/shifts-data", {
-        responseType: "arraybuffer", // Ensure data is received as an ArrayBuffer
-    });
-
-    if (excelFileRaw) {
-        // Create a Blob from the ArrayBuffer data
-        const blob = new Blob([excelFileRaw as unknown as BlobPart], {
-            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    try {
+        // Fetch the Excel file from the server
+        const response = await useAxios.get("/routes/exports/shifts-data", {
+            responseType: "arraybuffer", // Ensure binary data is received
         });
 
-        // Create a download link
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        const fileName = getFormattedFileName();
-        link.setAttribute("download", fileName); // File name for the download
-        // link.setAttribute("download", "iQSS-Team Route Planning (10/01).xlsx"); // File name for the download
-        document.body.appendChild(link);
-        link.click();
-        link.parentNode?.removeChild(link); // Clean up the link
+        // Check if the response is valid
+        if (response && response.data) {
+            // Create a Blob from the ArrayBuffer data
+            const blob = new Blob([response.data], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+
+            // Generate a URL for the Blob
+            const url = window.URL.createObjectURL(blob);
+
+            // Create an anchor element for download
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", getFormattedFileName()); // Set the file name
+            document.body.appendChild(link);
+            link.click();
+
+            // Clean up the URL and link element
+            window.URL.revokeObjectURL(url);
+            link.remove();
+        } else {
+            console.error("Failed to fetch Excel data: Empty response.");
+        }
+    } catch (error) {
+        console.error("Error while exporting roster:", error);
     }
 }
 
-export default ExportRoster
+export default ExportRoster;
