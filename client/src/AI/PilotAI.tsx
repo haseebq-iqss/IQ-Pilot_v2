@@ -23,6 +23,9 @@ import { CommandInterface } from "../types/CommandInterface";
 import ProcessCommand from "./CommandProcessor";
 import TextToSpeech from "./PilotSpeechSynth";
 import createSpeechListenerWithSilenceTimeout from "./VocalEngine";
+import TalkingPilot from "./TalkingPilot";
+import ListeningSound from "../assets/sounds/carbon.mp3";
+import ListeningStoppedSound from "../assets/sounds/sound.mp3";
 
 interface MessageInterface {
   id?: string;
@@ -32,7 +35,20 @@ interface MessageInterface {
   timeStamp?: string;
 }
 
-function PilotAI({ openDrawer, setOpenDrawer }: any) {
+interface PilotAIInterface {
+  openDrawer: boolean;
+  setOpenDrawer: (openDrawerState: boolean) => void;
+  initialState?: {
+    voiceActivated?: boolean;
+    prompt?: string;
+  };
+}
+
+function PilotAI({
+  openDrawer,
+  setOpenDrawer,
+  initialState,
+}: PilotAIInterface) {
   const [prompt, setPrompt] = useState<string>("");
   const [messages, setMessages] = useState<MessageInterface[]>([]);
   const [messageLockdown, setMessageLockdown] = useState<boolean>(false);
@@ -46,6 +62,28 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
   // Initialize TTS
   const tts = TextToSpeech.getInstance();
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+
+  // Invokation Mode
+  console.log(initialState);
+  const [openTalkModal, setOpenTalkModal] = useState<boolean>(false);
+
+  const PlaySound = (sound:string) => {
+    const audio = new Audio(sound);
+    audio.play();
+  };
+
+  useEffect(() => {
+    if (initialState?.voiceActivated == true) {
+      PlaySound(ListeningSound);
+      // Adding an Aritificial Delay for UX
+      const interval = setInterval(() => {
+        setOpenTalkModal(true);
+        StartListening();
+        return clearInterval(interval);
+      }, 1000);
+      // setOpenDrawer(false);
+    }
+  }, [initialState]);
 
   async function GenerateContent(prompt: string) {
     try {
@@ -216,7 +254,8 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
   };
 
   const [listening, isListening] = useState<boolean>(false);
-  const { startListening, stopListening } = createSpeechListenerWithSilenceTimeout("en-US");
+  const { startListening, stopListening } =
+    createSpeechListenerWithSilenceTimeout("en-US");
 
   // Function to use Voice to interact with Pilot AI
   const StartListening = () => {
@@ -232,9 +271,14 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
         // Trigger SendMessage with the latest `text` directly
         if (latestText?.length) {
           SendMessage(latestText, "user");
-          stopListening()
+          stopListening();
+          if (!openTalkModal) {
+            PlaySound(ListeningStoppedSound);
+          }
+          setOpenTalkModal(false);
         }
         isListening(false);
+        setOpenTalkModal(false);
       }
     );
   };
@@ -478,6 +522,12 @@ function PilotAI({ openDrawer, setOpenDrawer }: any) {
           </IconButton>
         )}
       </Box>
+      {/* Pilot Live Talking Interface */}
+      <TalkingPilot
+        openTalkModal={openTalkModal}
+        setOpenTalkModal={setOpenTalkModal}
+        prompt={prompt}
+      />
     </Drawer>
   );
 }

@@ -159,6 +159,34 @@ function Appbar() {
     return `iQSS-Team Route Planning (${day}/${month}/${year}).xlsx`;
   }
 
+  const [longPress, setLongPress] = useState<boolean>(false);
+  const [initialAIProps,setInitialAIProps] = useState<any>();
+  let timer: NodeJS.Timeout;
+
+  const handleMouseDown = () => {
+    timer = setTimeout(() => {
+      setLongPress(true);
+      console.log("Long press triggered!");
+      setOpenAIDrawer(true)
+      setInitialAIProps({
+        voiceActivated: true
+      })
+      // Perform your action here immediately after the long press
+    }, 500); // 500-millisecond long press
+  };
+  
+  const handleMouseUp = () => {
+    clearTimeout(timer);
+    if (!longPress) {
+      // Handle short press here
+      setOpenAIDrawer(true);
+      setInitialAIProps({
+        voiceActivated: false
+      })
+    }
+    setLongPress(false); // Reset long press state
+  };
+
   useEffect(() => {
     if (exportXlsx && downloadXlsx) {
       // Create a Blob from the ArrayBuffer data
@@ -621,7 +649,9 @@ function Appbar() {
             src="/images/logo-pilot-ai-white.png"
           />
         }
-        onClick={() => setOpenAIDrawer(!openAIDrawer)}
+        onMouseDown={() => handleMouseDown()}
+        onMouseUp={() => handleMouseUp()}
+        // onClick={() => setOpenAIDrawer(!openAIDrawer)}
       >
         <Typography variant="body2" fontWeight={600}>
           Pilot AI
@@ -633,7 +663,7 @@ function Appbar() {
           setOpenModal={setShiftOpenModal}
         />
       )}
-      <PilotAI openDrawer={openAIDrawer} setOpenDrawer={setOpenAIDrawer} />
+      <PilotAI openDrawer={openAIDrawer} setOpenDrawer={setOpenAIDrawer} initialState={initialAIProps} />
     </Box>
   );
 }

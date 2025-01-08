@@ -115,6 +115,14 @@ body {
   animation: fade-in-anim 0.4s ease-in-out;
 }
 
+.fade-in-infinite {
+  animation: fade-in-anim 1s ease-in-out alternate infinite;
+}
+
+.ai-listening {
+  animation: ai-listening-anim 0.5s ease-in-out alternate infinite;
+}
+
 .fade-in-slow {
   animation: fade-in-anim 0.5s ease-in-out;
 }
@@ -150,6 +158,16 @@ body {
     transform:  translateX(-500px) translateY(500px) rotateZ(-90deg);
     transition: all 1s ease;
   } */
+}
+
+@keyframes ai-listening-anim {
+  0% {
+    opacity: 0.2;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes fade-in-anim {
