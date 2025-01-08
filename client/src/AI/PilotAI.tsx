@@ -67,7 +67,7 @@ function PilotAI({
   console.log(initialState);
   const [openTalkModal, setOpenTalkModal] = useState<boolean>(false);
 
-  const PlaySound = (sound:string) => {
+  const PlaySound = (sound: string) => {
     const audio = new Audio(sound);
     audio.play();
   };
@@ -76,7 +76,7 @@ function PilotAI({
     if (initialState?.voiceActivated == true) {
       PlaySound(ListeningSound);
       // Adding an Aritificial Delay for UX
-      const interval = setInterval(() => {
+      const interval: NodeJS.Timeout = setInterval(() => {
         setOpenTalkModal(true);
         StartListening();
         return clearInterval(interval);
