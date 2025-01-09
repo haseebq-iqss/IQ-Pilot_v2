@@ -160,30 +160,62 @@ function Appbar() {
   }
 
   const [longPress, setLongPress] = useState<boolean>(false);
-  const [initialAIProps,setInitialAIProps] = useState<any>();
-  let timer: NodeJS.Timeout;
+  const [initialAIProps, setInitialAIProps] = useState<any>();
+  let timer: NodeJS.Timeout | null = null;
+  let touchStartTime = 0;
+  let touchStartX = 0;
+  let touchStartY = 0;
 
-  const handleMouseDown = () => {
+  const handleMouseDown = (e: React.TouchEvent | React.MouseEvent) => {
+    // For touch events, we track the start time and position
+    if ("touches" in e) {
+      touchStartTime = Date.now();
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }
+
+    // Start long press timer
     timer = setTimeout(() => {
       setLongPress(true);
       console.log("Long press triggered!");
-      setOpenAIDrawer(true)
-      setInitialAIProps({
-        voiceActivated: true
-      })
-      // Perform your action here immediately after the long press
-    }, 500); // 500-millisecond long press
-  };
-  
-  const handleMouseUp = () => {
-    clearTimeout(timer);
-    if (!longPress) {
-      // Handle short press here
       setOpenAIDrawer(true);
       setInitialAIProps({
-        voiceActivated: false
-      })
+        voiceActivated: true,
+      });
+    }, 500); // 500-millisecond long press
+  };
+
+  const handleMouseUp = (e: React.TouchEvent | React.MouseEvent) => {
+    if (timer) clearTimeout(timer);
+
+    // For touch events, we check the duration and distance
+    if ("changedTouches" in e) {
+      const touchDuration = Date.now() - touchStartTime;
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+
+      const isTap =
+        touchDuration < 300 &&
+        Math.abs(touchEndX - touchStartX) < 10 &&
+        Math.abs(touchEndY - touchStartY) < 10;
+
+      if (!longPress && isTap) {
+        // Handle short press (tap)
+        setOpenAIDrawer(true);
+        setInitialAIProps({
+          voiceActivated: false,
+        });
+      }
+    } else {
+      // For mouse events, we directly consider it a tap (if no long press)
+      if (!longPress) {
+        setOpenAIDrawer(true);
+        setInitialAIProps({
+          voiceActivated: false,
+        });
+      }
     }
+
     setLongPress(false); // Reset long press state
   };
 
@@ -229,11 +261,11 @@ function Appbar() {
         justifyContent: "flex-end",
         backgroundColor: "background.default",
         width: "100%",
-        flexWrap:{xs:"wrap", md: "nowrap"},
+        flexWrap: { xs: "wrap", md: "nowrap" },
         // border: "",
         // height: "10vh",
         padding: "10px",
-        borderRadius: {xs:"10px", md: "150px"},
+        borderRadius: { xs: "10px", md: "150px" },
         gap: "20px",
         pr: "15px",
       }}
@@ -650,10 +682,10 @@ function Appbar() {
             src="/images/logo-pilot-ai-white.png"
           />
         }
-        onMouseDown={() => handleMouseDown()}
-        onMouseUp={() => handleMouseUp()}
-        onTouchStart={() => handleMouseDown()}
-        onTouchEnd={() => handleMouseUp()}
+        onMouseDown={(e) => handleMouseDown(e)}
+        onMouseUp={(e) => handleMouseUp(e)}
+        onTouchStart={(e) => handleMouseDown(e)}
+        onTouchEnd={(e) => handleMouseUp(e)}
         // onClick={() => setOpenAIDrawer(!openAIDrawer)}
       >
         <Typography variant="body2" fontWeight={600}>
@@ -666,7 +698,11 @@ function Appbar() {
           setOpenModal={setShiftOpenModal}
         />
       )}
-      <PilotAI openDrawer={openAIDrawer} setOpenDrawer={setOpenAIDrawer} initialState={initialAIProps} />
+      <PilotAI
+        openDrawer={openAIDrawer}
+        setOpenDrawer={setOpenAIDrawer}
+        initialState={initialAIProps}
+      />
     </Box>
   );
 }
