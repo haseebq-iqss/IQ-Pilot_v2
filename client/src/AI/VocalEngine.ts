@@ -6,9 +6,9 @@ type SpeechListener = {
     stopListening: () => void;
 };
 
-const createSpeechListenerWithSilenceTimeout = (
+const createSpeechListenerWithWordTimeout = (
     lang: string = "en-US",
-    silenceTimeoutMs: number = 2000
+    wordTimeoutMs: number = 2000
 ): SpeechListener => {
     const SpeechRecognition =
         window.SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -19,34 +19,34 @@ const createSpeechListenerWithSilenceTimeout = (
 
     const recognition = new SpeechRecognition();
     recognition.lang = lang;
-    recognition.continuous = true; // Continuous listening
-    recognition.interimResults = true; // Allow partial results
+    recognition.continuous = true;
+    recognition.interimResults = true;
 
-    let isListening = false;
-    let silenceTimeout: NodeJS.Timeout | null = null;
+    let wordTimeout: NodeJS.Timeout | null = null;
 
     const startListening = (
         onResult: (text: string) => void,
-        onSilence: () => void // Accept onSilence callback
+        onNoNewWord: () => void
     ): void => {
-        if (isListening) return; // Prevent multiple starts
-        isListening = true;
-
         recognition.start();
 
         recognition.onresult = (event: any): void => {
             let transcript = "";
+
+            // Build the transcript from the current event
             for (let i = 0; i < event.results.length; i++) {
                 transcript += event.results[i][0].transcript + " ";
             }
-            onResult(transcript.trim()); // Send live transcript to callback
 
-            // Reset the silence timeout
-            if (silenceTimeout) clearTimeout(silenceTimeout);
-            silenceTimeout = setTimeout(() => {
-                console.log("No speech detected for 3 seconds. Triggering silence callback...");
-                onSilence(); // Trigger the silence callback
-            }, silenceTimeoutMs);
+            onResult(transcript.trim());
+
+            // Reset the timeout when new words are detected
+            if (wordTimeout) clearTimeout(wordTimeout);
+            wordTimeout = setTimeout(() => {
+                // console.log("No new word detected in the last 1 second.");
+                onNoNewWord(); // Trigger the silence callback
+                stopListening(); // Stop the recognition
+            }, wordTimeoutMs);
         };
 
         recognition.onerror = (event: any): void => {
@@ -55,28 +55,26 @@ const createSpeechListenerWithSilenceTimeout = (
         };
 
         recognition.onend = (): void => {
-            if (isListening) {
-                console.log("Restarting speech recognition...");
-                recognition.start(); // Restart if still listening
-            }
+            // console.log("Recognition ended.");
         };
 
-        // Start the silence timeout immediately
-        silenceTimeout = setTimeout(() => {
-            console.log("No speech detected for 2 seconds. Triggering silence callback...");
-            onSilence(); // Trigger the silence callback
-        }, silenceTimeoutMs);
+        // Start the initial word timeout
+        wordTimeout = setTimeout(() => {
+            // console.log("No new word detected (initial timeout).");
+            onNoNewWord();
+            stopListening();
+        }, wordTimeoutMs);
     };
 
     const stopListening = (): void => {
-        isListening = false;
+        recognition.onend = null; // Prevent auto-restart
         recognition.stop();
 
-        if (silenceTimeout) {
-            clearTimeout(silenceTimeout);
-            silenceTimeout = null;
+        if (wordTimeout) {
+            clearTimeout(wordTimeout);
+            wordTimeout = null;
         }
-        console.log("Speech recognition stopped.");
+        // console.log("Stopped listening.");
     };
 
     return {
@@ -85,4 +83,5 @@ const createSpeechListenerWithSilenceTimeout = (
     };
 };
 
-export default createSpeechListenerWithSilenceTimeout;
+
+export default createSpeechListenerWithWordTimeout;

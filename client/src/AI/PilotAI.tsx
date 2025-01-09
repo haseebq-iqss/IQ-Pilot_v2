@@ -64,7 +64,6 @@ function PilotAI({
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   // Invokation Mode
-  console.log(initialState);
   const [openTalkModal, setOpenTalkModal] = useState<boolean>(false);
 
   const PlaySound = (sound: string) => {

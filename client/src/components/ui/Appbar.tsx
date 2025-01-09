@@ -651,6 +651,8 @@ function Appbar() {
         }
         onMouseDown={() => handleMouseDown()}
         onMouseUp={() => handleMouseUp()}
+        onTouchStart={() => handleMouseDown()}
+        onTouchEnd={() => handleMouseUp()}
         // onClick={() => setOpenAIDrawer(!openAIDrawer)}
       >
         <Typography variant="body2" fontWeight={600}>
