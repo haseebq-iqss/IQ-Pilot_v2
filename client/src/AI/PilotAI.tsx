@@ -328,7 +328,7 @@ function PilotAI({
         sx={{
           ...ColFlex,
           alignItems: "flex-start",
-          width: "30vw",
+          width: { xs: "75vw", md: "40vw", lg: "30vw" },
           height: "100%",
           backgroundColor: "background.default",
           p: 2.5,

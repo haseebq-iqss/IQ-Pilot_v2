@@ -23,7 +23,7 @@ function AdminDashboard() {
   const audioRef = useRef<any>();
   const navigate = useNavigate();
 
-  const { isSM, isMD } = isXSmall();
+  const { isXS, isSM, isMD } = isXSmall();
 
   const { setOpenSnack }: SnackBarContextTypes = useContext(SnackbarContext);
 
@@ -242,26 +242,26 @@ function AdminDashboard() {
       <Box
         sx={{
           ...RowFlex,
-          flexDirection: isSM || isMD ? "column" : "row",
+          flexDirection: isXS || isSM || isMD ? "column" : "row",
           width: "100%",
-          height: isSM || isMD ? "auto" : "20%",
+          height: isXS || isSM || isMD ? "auto" : "20%",
           backgroundColor: "background.default",
           borderRadius: "15px",
           justifyContent: "space-between",
-          py: isSM || isMD ? 2.5 : 0,
+          py: isXS || isSM || isMD ? 2.5 : 0,
         }}
       >
         {/* section-1 */}
         <Box
           sx={{
             ...RowFlex,
-            width: isSM || isMD ? "75%" : "40%",
-            height: isSM || isMD ? "auto" : "20%",
+            width: isXS || isSM || isMD ? "75%" : "40%",
+            height: isXS || isSM || isMD ? "auto" : "20%",
             backgroundColor: "background.default",
             borderRadius: "15px",
-            justifyContent: isSM || isMD ? "center" : "flex-start",
-            marginLeft: isSM || isMD ? 0 : "50px",
-            mb: isSM || isMD ? 4 : 0,
+            justifyContent: isXS || isSM || isMD ? "center" : "flex-start",
+            marginLeft: isXS || isSM || isMD ? 0 : "50px",
+            mb: isXS || isSM || isMD ? 4 : 0,
           }}
         >
           <Box
@@ -269,14 +269,14 @@ function AdminDashboard() {
               ...ColFlex,
               alignItems: "flex-start",
               justifyContent: "center",
-              width: isSM || isMD ? "100%" : "auto",
+              width: isXS || isSM || isMD ? "100%" : "auto",
               gap: "5px",
               color: "text.primary",
-              textAlign: isSM || isMD ? "center" : "start",
+              textAlign: isXS || isSM || isMD ? "center" : "start",
             }}
           >
             <Typography
-              sx={{ width: isSM || isMD ? "100%" : "auto" }}
+              sx={{ width: isXS || isSM || isMD ? "100%" : "auto" }}
               variant="h4"
               fontWeight={600}
             >
@@ -295,8 +295,8 @@ function AdminDashboard() {
         <Box
           sx={{
             ...RowFlex,
-            width: isSM || isMD ? "100%" : "60%",
-            height: isSM || isMD ? "auto" : "20%",
+            width: isXS || isSM || isMD ? "100%" : "60%",
+            height: isXS || isSM || isMD ? "auto" : "20%",
             backgroundColor: "background.default",
             borderRadius: "15px",
             justifyContent: "space-evenly",

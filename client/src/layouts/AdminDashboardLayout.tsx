@@ -7,7 +7,7 @@ import isXSmall from "../utils/isXSmall";
 
 function AdminDashboardLayout() {
 
-  const {isSM,isMD} = isXSmall()
+  const {isXS, isSM,isMD} = isXSmall()
 
   return (
     <Box
@@ -15,8 +15,8 @@ function AdminDashboardLayout() {
         ...RowFlex,
         width: "100%",
         height: "100vh",
-        alignItems: "flex-start",
-        justifyContent: isSM || isMD ? "center"  : "flex-start",
+        alignItems: "flex",
+        justifyContent: isXS || isSM || isMD ? "center"  : "flex-start",
         p: "15px",
         gap: "15px",
         backgroundColor: "#1E375B",

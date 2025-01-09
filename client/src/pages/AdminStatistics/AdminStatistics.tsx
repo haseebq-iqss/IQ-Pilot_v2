@@ -38,7 +38,7 @@ import isXSmall from "../../utils/isXSmall";
 function AdminStatistics() {
   const navigate = useNavigate();
 
-  const { isSM, isMD } = isXSmall();
+  const { isXS, isSM, isMD } = isXSmall();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
@@ -106,48 +106,55 @@ function AdminStatistics() {
       <Box
         sx={{
           ...RowFlex,
+          flexDirection: { xs: "column", md: "row" },
           width: "100%",
           height: "20%",
           backgroundColor: "background.default",
           borderRadius: "15px",
-          justifyContent: "space-between",
+          justifyContent: { xs: "flex-start", md: "space-between" },
+          gap: { xs: "50px", md: "0px" },
         }}
       >
         {/* section-1 */}
         <Box
           sx={{
             ...RowFlex,
-            width: isSM || isMD ? "50%" : "40%",
+            width: isSM || isMD ? "50%" : isXS ? "100%" : "40%",
             height: "20%",
             backgroundColor: "background.default",
             borderRadius: "15px",
             justifyContent: "flex-start",
-            marginLeft: "50px",
+            marginLeft: {xs:"0",md:"50px"},
           }}
         >
           <Box
             sx={{
               ...ColFlex,
-              alignItems: "flex-start",
+              width:{xs:"100%", md: "auto"},
+              alignItems: {xs:"center",md:"flex-start"},
               gap: "5px",
+              mt:{xs:"25px", md:"0"},
               color: "text.primary",
             }}
           >
-            <Typography variant={isSM || isMD ? "h4" : "h4"} fontWeight={700}>
+            <Typography
+              variant={ isSM || isMD ? "h4" : isXS ? "h6" : "h4"}
+              fontWeight={700}
+            >
               {GetCurrentMonth()}'s Statistics
             </Typography>
-            <Typography color={"GrayText"} variant="body1">
+            {!isXS && <Typography color={"GrayText"} variant="body1">
               <span style={{ fontWeight: 600 }}>
                 ~ {GetDaysLeftInCurrentMonth()} days left in this month
               </span>
-            </Typography>
+            </Typography>}
           </Box>
         </Box>
         {/* section-2 */}
         <Box
           sx={{
             ...RowFlex,
-            width: "60%",
+            width: {xs:"90%", md:"60%"},
             height: "20%",
             backgroundColor: "background.default",
             color: "text.primary",
@@ -164,7 +171,7 @@ function AdminStatistics() {
             //   navigate("assignedRoutes", { state: allRoutes });
             // }}
           >
-            <Typography sx={{ fontWeight: 600 }} variant="h4">
+            <Typography sx={{ fontWeight: 600 }} variant={isXS ? "h6" :"h4"}>
               {totalShrinkage ? totalShrinkage : 0}
               <Box
                 component={"span"}
@@ -178,7 +185,7 @@ function AdminStatistics() {
                 width: "100%",
                 textAlign: "center",
                 color: "text.secondary",
-                fontSize: "0.8rem",
+                fontSize: {xs:"0.5rem", md:"0.8rem"},
                 lineHeight: "15px",
                 fontWeight: 600,
               }}
@@ -193,7 +200,7 @@ function AdminStatistics() {
             }
             sx={{ ...ColFlex, gap: "5px" }}
           >
-            <Typography sx={{ fontWeight: 600 }} variant="h4">
+            <Typography sx={{ fontWeight: 600 }} variant={isXS ? "h6" :"h4"}>
               {totalKilometers?.length
                 ? BigNumberFormatter(
                     ((totalKilometers / 15) * 100).toFixed(
@@ -212,7 +219,7 @@ function AdminStatistics() {
               sx={{
                 width: "100%",
                 textAlign: "center",
-                fontSize: "0.8rem",
+                fontSize: {xs:"0.5rem", md:"0.8rem"},
                 lineHeight: "15px",
                 fontWeight: 600,
               }}
@@ -232,7 +239,7 @@ function AdminStatistics() {
               "& > [title]:hover::after": { color: "red" },
             }}
           >
-            <Typography sx={{ fontWeight: 600 }} variant="h4">
+            <Typography sx={{ fontWeight: 600 }} variant={isXS ? "h6" :"h4"}>
               {totalKilometers?.length
                 ? BigNumberFormatter(totalKilometers)
                 : 0}
@@ -247,7 +254,7 @@ function AdminStatistics() {
               sx={{
                 width: "100%",
                 textAlign: "center",
-                fontSize: "0.8rem",
+                fontSize: {xs:"0.5rem", md:"0.8rem"},
                 lineHeight: "15px",
                 fontWeight: 600,
               }}

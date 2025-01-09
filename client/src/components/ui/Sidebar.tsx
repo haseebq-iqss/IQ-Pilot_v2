@@ -44,7 +44,7 @@ function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { isSM, isMD } = isXSmall();
+  const { isXS, isSM, isMD } = isXSmall();
 
   function Logout() {
     axios
@@ -73,7 +73,7 @@ function Sidebar() {
           borderRadius: "100px",
           backgroundColor: isActive ? "text.primary" : "inherit",
           color: !isActive ? "text.primary" : "background.default",
-          width: isSM || isMD ? "10%" : "90%",
+          width: isXS || isSM || isMD ? "10%" : "90%",
           py: "10px",
           justifyContent: "flex-start",
           gap: "10px",
@@ -84,7 +84,7 @@ function Sidebar() {
         {...rest}
         size="small"
       >
-        {isSM || isMD ? "" : text}
+        {isXS || isSM || isMD ? "" : text}
       </Button>
     );
   };
@@ -93,7 +93,7 @@ function Sidebar() {
     <Box
       sx={{
         backgroundColor: "background.default",
-        width: isSM || isMD ? "10%" : "20%",
+        width: isXS || isSM || isMD ? "10%" : "20%",
         height: "100%",
         borderRadius: "15px",
       }}
@@ -103,7 +103,7 @@ function Sidebar() {
         <Box
           component={"img"}
           src="/images/logo_new.png"
-          sx={{ width: isSM || isMD ? "50px" : "75px", aspectRatio: 0.95 }}
+          sx={{ width: isXS || isSM || isMD ? "50px" : "75px", aspectRatio: 0.95 }}
         />
       </Box>
 
@@ -123,7 +123,7 @@ function Sidebar() {
           scrollbarWidth: "none",
         }}
       >
-        {isSM || isMD ? (
+        {isXS || isSM || isMD ? (
           <></>
         ) : (
           <Box sx={{ position: "absolute", left: "17.5%", bottom: "27.5%" }}>
@@ -202,13 +202,13 @@ function Sidebar() {
           ...ColFlex,
           width: "100%",
           height: "25%",
-          justifyContent: isSM || isMD ? "flex-end" : "flex-start",
+          justifyContent: isXS || isSM || isMD ? "flex-end" : "flex-start",
         }}
       >
         <Avatar
           sx={{
-            width: isSM || isMD ? "30px" : "60px",
-            height: isSM || isMD ? "30px" : "60px",
+            width: isXS || isSM || isMD ? "30px" : "60px",
+            height: isXS || isSM || isMD ? "30px" : "60px",
             mb: "10px",
           }}
           src={baseURL + userData?.profilePicture}
@@ -218,11 +218,11 @@ function Sidebar() {
           fontWeight={600}
           sx={{ color: "text.primary" }}
         >
-          {isSM || isMD
+          {isXS || isSM || isMD
             ? (userData as any)?.fname[0] + " . " + (userData as any)?.lname[0]
             : userData?.fname + " " + userData?.lname![0] + "."}
         </Typography>
-        {isSM || isMD ? (
+        {isXS || isSM || isMD ? (
           <></>
         ) : (
           <Typography
@@ -237,7 +237,7 @@ function Sidebar() {
             {userData?.email}
           </Typography>
         )}
-        {isSM || isMD ? (
+        {isXS || isSM || isMD ? (
           <Button onClick={Logout} sx={{ width: "100%", aspectRatio: 1, borderRadius: "20px" }}>
             <PowerSettingsNew
               sx={{ fontSize: "1.5rem", color: "error.main" }}
@@ -257,7 +257,7 @@ function Sidebar() {
             color="error"
             // startIcon={<PowerSettingsNew />}
           >
-            {isSM || isMD ? "" : "LOG OUT"}
+            {isXS || isSM || isMD ? "" : "LOG OUT"}
           </Button>
         )}
       </Box>

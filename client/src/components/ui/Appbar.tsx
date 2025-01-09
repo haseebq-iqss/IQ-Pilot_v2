@@ -229,10 +229,11 @@ function Appbar() {
         justifyContent: "flex-end",
         backgroundColor: "background.default",
         width: "100%",
+        flexWrap:{xs:"wrap", md: "nowrap"},
         // border: "",
         // height: "10vh",
         padding: "10px",
-        borderRadius: "150px",
+        borderRadius: {xs:"10px", md: "150px"},
         gap: "20px",
         pr: "15px",
       }}
