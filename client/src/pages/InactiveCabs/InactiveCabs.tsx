@@ -251,7 +251,7 @@ function InactiveCabs() {
                         }}
                         onClick={() =>
                           navigate(
-                            `/admin/editDetails/${driver?.cabDriver?._id}`
+                            `/admin/editDetails/${driver?.cabDriver[0]?._id}`
                           )
                         }
                       >

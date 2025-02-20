@@ -589,6 +589,20 @@ function CreateShift() {
     setOpenAddExternalTmModal(false);
   };
 
+  // const removeCab = () => {
+  //   setColumns((prevColumns) => [
+  //     ...prevColumns,
+  //     {
+  //       id: "Roster" + columns?.length,
+  //       cab: cabData,
+  //       passengers: [],
+  //       availableCapacity: cabData.seatingCapacity,
+  //       currentShift: routeState?.data?.currentShift,
+  //       workLocation: routeState?.data?.workLocation,
+  //     },
+  //   ]);
+  // }
+
   return (
     <DndContext
       onDragOver={onDragOver}

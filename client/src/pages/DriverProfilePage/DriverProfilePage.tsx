@@ -116,7 +116,7 @@ const DriverProfile = () => {
     setMenuIndex(null);
   };
 
-  console.log(driverRoutes);
+  // console.log(driverRoutes);
 
   return (
     <Box
@@ -125,7 +125,7 @@ const DriverProfile = () => {
         p: 2.5,
         backgroundColor: "background.default",
         color: "text.primary",
-        height: isXS ? "auto" : "100vh",
+        height: "auto",
       }}
     >
       <Box sx={{}}>

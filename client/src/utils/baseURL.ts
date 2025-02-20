@@ -9,7 +9,9 @@
 // ACTIVE DEPLOYMENTS
 // const baseURL = "http://localhost:3001/"; // LOCAL REPO <HTTP>
 // const baseURL = "https://localhost:3001/"; // IQSS REPO <HTTPS>
-const baseURL = "https://iq-pilot-v2.onrender.com/";
+// const baseURL = "https://iq-pilot-v2.onrender.com/";
 // const baseURL = "https://api-iqpilot.iquasarsolutions.com/"     //AWS Deployment -- FINAL;
+// const baseURL = "https://a7cad2d4037a64e49b6cf9d2cb980663-1942625029.ap-south-1.elb.amazonaws.com/"     //NEW AWS Deployment;
+const baseURL = "https://api-iqpilot.iquasarsolutions.com/"     //NEW AWS Deployment;
 
 export default baseURL;

@@ -222,13 +222,23 @@ export const EditDriver = () => {
             onChange={(e) => setMileage(Number(e.target.value))}
             required
           />
-          <TextField
-            fullWidth
-            label="Type of Cab"
-            value={typeOfCab}
-            onChange={(e) => setTypeOfCab(e.target.value)}
-            required
-          />
+          <FormControl fullWidth>
+            <InputLabel
+              sx={{ lineHeight: "10px", fontSize: "0.8rem" }}
+              id="Installed-label"
+            >
+              Type of Cab
+            </InputLabel>
+            <Select
+              // size="small"
+              label="Type Of Cab"
+              value={typeOfCab}
+              onChange={(e: any) => setTypeOfCab(e.target.value)}
+            >
+              <MenuItem value={'inHouse'}>InHouse</MenuItem>
+              <MenuItem value={'vendor'}>Vendor</MenuItem>
+            </Select>
+          </FormControl>
         </Box>
         <Box
           sx={{

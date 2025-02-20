@@ -29,6 +29,7 @@ export const AddTeamMembers = () => {
   const [androidSetup, setAndroidSetup] = useState(true);
   const [typeOfCab, setTypeOfCab] = useState("vendor");
   const [hasCabService, setHasCabService] = useState("true");
+  const [tmShift, setTmShift] = useState("14:00-20:30");
 
   const navigate = useNavigate();
 
@@ -92,6 +93,38 @@ export const AddTeamMembers = () => {
       });
     },
   });
+
+    // Define timing options (removed duplicate entry)
+    const pickupTimings = [
+      { t4Time: "09:00", t2Time: "09:00 AM" },
+      { t4Time: "10:00", t2Time: "10:00 AM" },
+      { t4Time: "11:00", t2Time: "11:00 AM" },
+      { t4Time: "12:00", t2Time: "12:00 PM" },
+      { t4Time: "13:00", t2Time: "01:00 PM" },
+      { t4Time: "14:00", t2Time: "02:00 PM" },
+      { t4Time: "15:00", t2Time: "03:00 PM" },
+      { t4Time: "16:00", t2Time: "04:00 PM" },
+      { t4Time: "17:00", t2Time: "05:00 PM" },
+      { t4Time: "18:00", t2Time: "06:00 PM" },
+    ];
+  
+    const dropTimings = [
+      { t4Time: "13:00", t2Time: "01:00 PM" },
+      { t4Time: "17:00", t2Time: "05:00 PM" },
+      { t4Time: "17:30", t2Time: "05:30 PM" },
+      { t4Time: "18:00", t2Time: "06:00 PM" },
+      { t4Time: "18:30", t2Time: "06:30 PM" },
+      { t4Time: "20:30", t2Time: "08:30 PM" },
+      { t4Time: "22:00", t2Time: "10:00 PM" },
+      { t4Time: "22:30", t2Time: "10:30 PM" },
+      { t4Time: "23:00", t2Time: "11:00 PM" },
+      { t4Time: "01:00", t2Time: "01:00 AM" },
+    ];
+  
+    const combinedTimings = pickupTimings.map((pickup, index) => {
+      const drop = dropTimings[index];
+      return `${pickup.t4Time}-${drop.t4Time}`;
+    });
 
   function HandleCabDriver(e: FormEvent) {
     e.preventDefault();
@@ -183,7 +216,8 @@ export const AddTeamMembers = () => {
       email: currentTarget.email.value,
       phone: currentTarget.phone.value,
       address: currentTarget.address.value,
-      // profilePicture: currentTarget.profilePicture.files[0],
+      profilePicture: currentTarget.profilePicture.files[0],
+      currentShift: tmShift,
       pickUp: {
         coordinates: currentTarget.coordinates.value.split(",").map(Number) as [
           number,
@@ -526,9 +560,36 @@ export const AddTeamMembers = () => {
                   }}
                   label="Cab Service"
                 >
-                  <MenuItem value={"true"}>True</MenuItem>
-                  <MenuItem value={"false"}>False </MenuItem>
+                  <MenuItem value={"true"}>Yes</MenuItem>
+                  <MenuItem value={"false"}>No</MenuItem>
                 </Select>
+              </FormControl>
+            )}
+
+{!driverPath && (
+              <FormControl fullWidth>
+                <InputLabel
+                  sx={{ lineHeight: "10px", fontSize: "0.8rem" }}
+                  id="hasCabService-label"
+                >
+                  TMs Shift
+                </InputLabel>
+
+                <Select
+                    name="currentShift"
+                    label="Current Shift"
+                    value={tmShift}
+                    onChange={(e) =>
+                      setTmShift(e.target.value)
+                    }
+                    labelId="currentShift-label"
+                  >
+                    {combinedTimings.map((timeSlot, index) => (
+                      <MenuItem key={index} value={timeSlot}>
+                        {timeSlot}
+                      </MenuItem>
+                    ))}
+                  </Select>
               </FormControl>
             )}
           </Box>
@@ -760,7 +821,6 @@ export const AddTeamMembers = () => {
                 type="file"
                 // accept="image/png, image/gif, image/jpeg"
                 hidden
-                name="profilePicture"
               />
             </Button>
           )}

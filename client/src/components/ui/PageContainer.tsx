@@ -87,14 +87,15 @@ function PageContainer({
             startIcon={
               !location.pathname.includes("/admin/addTeamMembers") &&
               !location.pathname.includes("/admin/addCabDrivers") &&
-              !location.pathname.includes("/admin/editDetails") ? (
+              !location.pathname.includes("/admin/editDetails") &&
+              !location.pathname.includes("/admin/editDriver") ? (
                 <AddCircleOutline />
               ) : (
                 <ChevronLeftIcon />
               )
             }
             onClick={() =>
-              location.pathname.includes("/admin/allCabDrivers")
+              location.pathname.includes("/admin/allCabDrivers") || location.pathname.includes("/admin/inactiveCabs")
                 ? navigate("/admin/addCabDrivers")
                 : location.pathname.includes("/admin/allTeamMembers")
                 ? navigate("/admin/addTeamMembers")
@@ -106,7 +107,8 @@ function PageContainer({
                 ? "Add TMs"
                 : location.pathname.includes("/admin/addTeamMembers") ||
                   location.pathname.includes("/admin/addCabDrivers") ||
-                  location.pathname.includes("/admin/editDetails")
+                  location.pathname.includes("/admin/editDetails") ||
+                  location.pathname.includes("/admin/editDriver")
                 ? "Go Back"
                 : " Add Cab Driver"
             }`}

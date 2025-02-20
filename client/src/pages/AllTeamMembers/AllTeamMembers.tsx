@@ -117,8 +117,7 @@ function AllTeamMembers() {
   };
 
   const handleDeleteEmployee = () => {
-    // deleteEmpMf(selectedEmployee);
-    console.log("employee deleted");
+    deleteEmpMf(selectedEmployee);
     setOpenConfirmModal(false);
   };
 
